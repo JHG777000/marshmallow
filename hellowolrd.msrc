@@ -1,0 +1,27 @@
+module mymod.
+
+ u64 myvar := 0xff.
+
+ u64 myvar0.
+
+ external function puts(u64 val).
+
+function main().
+
+  u64 myvar := 0xff.
+
+  puts("Hello").
+
+  myvar := 3.
+
+  if ( 1 ).
+
+   myvar := 2.
+
+   puts("World!!!!").
+
+  end if.
+
+ end function.
+
+end module.
