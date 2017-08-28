@@ -1,4 +1,4 @@
-#marshmallow
+# marshmallow
 
 
 Marshmallow is a work in progress programming language.
@@ -7,7 +7,7 @@ The goal is to create a language comparable to C in terms of flexibility, and cl
 
 Marshmallow aims to be an object-oriented language with support for lambdas, bounds-checking, multiple returns, and an advanced macro system that supports generics and metaprogramming.
 
-###Goal:
+### Goal:
 
 The following is an example of what marshmallow aims to be:
 
@@ -90,17 +90,17 @@ The following is an example of what marshmallow aims to be:
 	end module.
 
 
-###Module System:
+### Module System:
 
 The concept for marshmallow is that it be based around an advanced module system; that allows macros and high-level type information to be stored along with code in binary files using bytecode. Marshmallow would use an [AOT](https://en.wikipedia.org/wiki/Ahead-of-time_compilation) based system, with each "compiled" module stored in a high-level bytecode file(.mmod), and distributed in a platform neutral manner. This removes the need for header files and allows for an advanced macro and type system, while maintaining native performance. In addition the possibility for a package file exists(.mpck), a binary archive file that includes many (.mmod) files as well as additional resources.
 
-###Current Backend:
+### Current Backend:
 
 Marshmallow currently compiles to C. A [LLVM](https://llvm.org) or [QBE](https://c9x.me/compile/) backend may be implemented in the future.
 
 Currently to compile marshmallow code you will need a C compiler and to manually invoke the compiler on the generated C code.
 
-###Current Status:
+### Current Status:
 
 Marshmallow as of now, is very much a work in progress. Core language features have yet to be implemented:  type checking, while loops, and most types, etc.
 
@@ -108,23 +108,23 @@ The compiler is full of bugs and memory leaks, as such marshmallow has a long wa
 
 helloworld.msrc provides a working example of marshmallow, while hellowolrd\_C_output.c is the C code marshmallow will  generate from helloworld.msrc.
 
-###File Extensions:
+### File Extensions:
 
-#####.msrc - marshmallow source
+##### .msrc - marshmallow source
 
-#####.mmod - marshmallow module
+##### .mmod - marshmallow module
 
-#####.mpck - marshmallow package
+##### .mpck - marshmallow package
 
-##Building marshmallow
+## Building marshmallow
 
 Any standard C11 compliant C compiler should be able to compile marshmallow, and the code it generates.
 
-####Dependencies for building marshmallow: 
+#### Dependencies for building marshmallow: 
 
  -RKLib https://github.com/JHG777000/RKLib
  
-##License
+## License
 
 
  Copyright (c) 2017 Jacob Gordon. All rights reserved.
