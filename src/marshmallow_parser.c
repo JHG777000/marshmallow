@@ -1140,6 +1140,13 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                 
             case entity_function:
                 
+                if ( RKStack_IsEmpty(scope_stack) ) {
+                    
+                    printf("No scope.\n") ;
+                    
+                    exit(EXIT_FAILURE) ;
+                }
+                
                 if ( !(((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type == entity_module) ) {
                     
                     printf("Expected module. Function and methods must exist within a module.\n") ;
@@ -1162,6 +1169,13 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                 break;
                 
             case entity_statement:
+                
+                if ( RKStack_IsEmpty(scope_stack) ) {
+                    
+                    printf("No scope.\n") ;
+                    
+                    exit(EXIT_FAILURE) ;
+                }
                 
                 if ( !(((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type == entity_function) &&
                     !(((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type == entity_statement) &&
