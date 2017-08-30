@@ -14,20 +14,20 @@ typedef signed long MLong ;
 typedef unsigned long MULong ;
 #endif
 
-void puts(MULong marshmallow_mymod_variable_val) ;
-void marshmallow_mymod_function_main()  ;
+void puts(MULong val) ;
+void function_main()  ;
 int main(int argc, const char **argv) {
-marshmallow_mymod_function_main() ;
+function_main() ;
 return 0 ; 
 } 
-MULong marshmallow_mymod_variable_myvar = 0xff ;
-MULong marshmallow_mymod_variable_myvar0 ;
-void marshmallow_mymod_function_main() {
-MULong marshmallow_mymod_variable_myvar = 0xff ;
+MULong marshmallow_mymod_myvar = 0xff ;
+MULong marshmallow_mymod_myvar0 ;
+void function_main() {
+MULong myvar = 0xff ;
 puts("Hello");  ;
-marshmallow_mymod_variable_myvar=3  ;
+myvar=3  ;
 if (1) {
-marshmallow_mymod_variable_myvar=2  ;
+myvar=2  ;
 puts("World!!!!");  ;
 }  ;
 }

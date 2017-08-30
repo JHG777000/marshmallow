@@ -20,30 +20,37 @@
 
 static void output_symbol( marshmallow_context context, FILE* file, RKString name, marshmallow_module module, int is_global ) {
     
-    RKString underscore = rkstr("_") ;
+    if ( is_global ) {
     
-    RKString str0 = RKString_AppendString(rkstr("marshmallow_"), module->name) ;
+     RKString underscore = rkstr("_") ;
     
-    RKString str1  = RKString_AppendString(str0, underscore) ;
+     RKString str0 = RKString_AppendString(rkstr("marshmallow_"), module->name) ;
     
-    RKString str2 = RKString_AppendString(str1, name) ;
+     RKString str1  = RKString_AppendString(str0, underscore) ;
     
-    if ( RKStore_ItemExists(context->symbols, RKString_GetString(str2)) && is_global ) {
+     RKString str2 = RKString_AppendString(str1, name) ;
+    
+     if ( RKStore_ItemExists(context->symbols, RKString_GetString(str2)) ) {
         
-        if ( name != RKStore_GetItem(context->symbols, RKString_GetString(str2)) ) {
+         if ( name != RKStore_GetItem(context->symbols, RKString_GetString(str2)) ) {
             
-            printf("Error: symbol '%s', already exists.\n",RKString_GetString(str2)) ;
+             printf("Error: symbol '%s', already exists.\n",RKString_GetString(str2)) ;
             
             exit(EXIT_FAILURE) ;
             
-        }
+         }
+     }
+    
+     fprintf(file, "%s", RKString_GetString(str2)) ;
+     
+     if ( is_global ) RKStore_AddItem(context->symbols, name, RKString_GetString(str2)) ;
+    
+     RKString_DestroyString(underscore) ;
+        
+    } else {
+        
+        fprintf(file, "%s", RKString_GetString(name)) ;
     }
-    
-    fprintf(file, "%s", RKString_GetString(str2)) ;
-    
-    if ( is_global ) RKStore_AddItem(context->symbols, name, RKString_GetString(str2)) ;
-    
-    RKString_DestroyString(underscore) ;
 }
 
 static void output_type( marshmallow_context context, FILE* file, marshmallow_type type, marshmallow_module module ) {
@@ -115,7 +122,7 @@ static void output_variable( marshmallow_context context, FILE* file, marshmallo
     
     output_type(context, file, variable->type, module) ;
     
-    output_symbol(context, file, RKString_AppendString(rkstr("variable_"),variable->name), module, is_global) ;
+     output_symbol(context, file, variable->name, module, is_global) ;
     
     output_array(context, file, variable->type, module) ;
     
@@ -152,7 +159,7 @@ static void output_value(marshmallow_context context, FILE* file, marshmallow_va
     
     if ( value->type->root_type == unknown && value->name != NULL ) {
         
-        output_symbol(context, file, RKString_AppendString(rkstr("variable_"),value->name), module, 0) ;
+        output_symbol(context, file, value->name, module, 0) ;
     }
     
 }
