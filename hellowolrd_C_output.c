@@ -23,6 +23,7 @@ return 0 ;
 MULong marshmallow_mymod_variable_myvar = 0xff ;
 MULong marshmallow_mymod_variable_myvar0 ;
 void marshmallow_mymod_function_main() {
+MULong marshmallow_mymod_variable_myvar = 0xff ;
 puts("Hello");  ;
 marshmallow_mymod_variable_myvar=3  ;
 if (1) {
