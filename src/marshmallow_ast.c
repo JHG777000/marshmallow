@@ -258,6 +258,8 @@ marshmallow_statement marshmallow_new_statement( marshmallow_op_type op_type, in
     
     statement->statements = RKList_NewList() ;
     
+    statement->function = NULL ;
+    
     statement->op = op_type ;
     
     statement->var_a = a ;
@@ -316,6 +318,8 @@ marshmallow_function_body marshmallow_new_function_body( marshmallow_function_si
 }
 
 void marshmallow_add_statement_to_function( marshmallow_function_body function, marshmallow_statement statement ) {
+    
+    statement->function = function ;
     
     RKList_AddToList(function->statements, statement) ;
 }

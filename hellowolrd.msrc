@@ -16,6 +16,8 @@ function main().
 
   if ( 1 ).
 
+   u64 myvar2 := 0xff.
+
    myvar := 2.
 
    puts("World!!!!").

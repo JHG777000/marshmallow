@@ -81,7 +81,7 @@ marshmallow_function_signature signature ; } *marshmallow_function_body ;
 
 typedef struct marshmallow_statement_s { marshmallow_entity_type entity_type ; RKList statements ; int is_expression ; marshmallow_op_type op ;
     
-marshmallow_entity var_a ; marshmallow_entity var_b ; } *marshmallow_statement ;
+marshmallow_entity var_a ; marshmallow_entity var_b ; marshmallow_function_body function ; } *marshmallow_statement ;
 
 typedef struct marshmallow_module_s { marshmallow_entity_type entity_type ; RKList statements ; RKStore declarations ; RKStore types ; RKStore variables ;
     

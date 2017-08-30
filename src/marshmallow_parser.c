@@ -1095,7 +1095,33 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                     exit(EXIT_FAILURE) ;
                 }
                 
+                if ( !(((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type == entity_module)
+                    && !(((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type == entity_function) &&
+                    !(((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type == entity_statement) &&
+                    !(((marshmallow_statement)RKStack_Peek(scope_stack))->op == ifop || ((marshmallow_statement)RKStack_Peek(scope_stack))->op == whileop) ) {
+                    
+                    printf("Expected module or function. Variables must exist within a module or function.\n") ;
+                    
+                    exit(EXIT_FAILURE) ;
+                }
+                
+                if ( (((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type == entity_module)
+                    || (((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type == entity_function) ) {
+                
                 marshmallow_add_variable_to_scope(RKStack_Peek(scope_stack), (marshmallow_variable)entity) ;
+                    
+                } else if ( (((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type == entity_statement) &&
+                           (((marshmallow_statement)RKStack_Peek(scope_stack))->op == ifop || ((marshmallow_statement)RKStack_Peek(scope_stack))->op == whileop) ) {
+                    
+                    if ( (marshmallow_scope)((marshmallow_statement)RKStack_Peek(scope_stack))->function == NULL ) {
+                        
+                        printf("If or while statement without a function.\n") ;
+                        
+                        exit(EXIT_FAILURE) ;
+                    }
+                    
+                    marshmallow_add_variable_to_scope((marshmallow_scope)((marshmallow_statement)RKStack_Peek(scope_stack))->function, (marshmallow_variable)entity) ;
+                }
                 
                 break;
                 
