@@ -444,7 +444,14 @@ static void output_main( marshmallow_context context, FILE* file, marshmallow_mo
     
     static int init = 0 ;
     
-    if ( init ) return ;
+    if ( !RKStore_ItemExists(module->functions_and_methods, "main") ) return ;
+    
+    if ( init ) {
+        
+        printf("Multiple main functions. Only one main function can exist in a marshmallow program.\n") ;
+        
+        exit(EXIT_FAILURE) ;
+    }
     
     if ( !init ) init++ ;
     
@@ -468,38 +475,41 @@ static void output_module( marshmallow_context context, FILE* file, marshmallow_
     
     output_declarations(context, file, module->declarations, module, 1) ;
     
-    list = RKStore_GetList(module->variables) ;
-    
-    if ( list == NULL ) return ;
-    
     output_main(context, file, module) ;
     
-    node = RKList_GetFirstNode(list) ;
+    list = RKStore_GetList(module->variables) ;
     
-    while (node != NULL) {
+    if ( list != NULL ) {
+    
+      node = RKList_GetFirstNode(list) ;
+    
+      while (node != NULL) {
         
-        output_variable(context, file, RKList_GetData(node), module, 1, 0) ;
+          output_variable(context, file, RKList_GetData(node), module, 1, 0) ;
         
-        fprintf(file, " ;\n") ;
+          fprintf(file, " ;\n") ;
         
-        node = RKList_GetNextNode(node) ;
+          node = RKList_GetNextNode(node) ;
         
+      }
+    
     }
     
     list = RKStore_GetList(module->functions_and_methods) ;
     
-    if ( list == NULL ) return ;
+    if ( list != NULL ) {
     
-    node = RKList_GetFirstNode(list) ;
+      node = RKList_GetFirstNode(list) ;
     
-    while (node != NULL) {
+      while (node != NULL) {
         
-        output_function(context, file, RKList_GetData(node), module) ;
+          output_function(context, file, RKList_GetData(node), module) ;
         
-        node = RKList_GetNextNode(node) ;
+          node = RKList_GetNextNode(node) ;
+        
+      }
         
     }
-    
 }
 
 static void output_runtime( marshmallow_context context, FILE* file ) {
