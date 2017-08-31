@@ -18,7 +18,7 @@
 #include "marshmallow.h"
 
 
-static void output_symbol( marshmallow_context context, FILE* file, RKString name, marshmallow_module module, int is_global ) {
+static void output_symbol( marshmallow_context context, FILE* file, RKString name, marshmallow_module module, int is_global, int is_definition ) {
     
     if ( is_global ) {
     
@@ -30,7 +30,7 @@ static void output_symbol( marshmallow_context context, FILE* file, RKString nam
     
      RKString str2 = RKString_AppendString(str1, name) ;
     
-     if ( RKStore_ItemExists(context->symbols, RKString_GetString(str2)) ) {
+     if ( RKStore_ItemExists(context->symbols, RKString_GetString(str2)) && is_definition ) {
         
          if ( name != RKStore_GetItem(context->symbols, RKString_GetString(str2)) ) {
             
@@ -43,7 +43,7 @@ static void output_symbol( marshmallow_context context, FILE* file, RKString nam
     
      fprintf(file, "%s", RKString_GetString(str2)) ;
      
-     if ( is_global ) RKStore_AddItem(context->symbols, name, RKString_GetString(str2)) ;
+     if ( is_definition ) RKStore_AddItem(context->symbols, name, RKString_GetString(str2)) ;
     
      RKString_DestroyString(underscore) ;
         
@@ -80,7 +80,7 @@ loop:
         
     } else {
         
-        output_symbol(context, file, t->type_name, module, 1) ;
+        output_symbol(context, file, t->type_name, module, 1, 0) ;
         
         fprintf(file, " ") ;
     }
@@ -122,7 +122,7 @@ static void output_variable( marshmallow_context context, FILE* file, marshmallo
     
     output_type(context, file, variable->type, module) ;
     
-     output_symbol(context, file, variable->name, module, is_global) ;
+     output_symbol(context, file, variable->name, module, is_global, 1) ;
     
     output_array(context, file, variable->type, module) ;
     
@@ -159,7 +159,7 @@ static void output_value(marshmallow_context context, FILE* file, marshmallow_va
     
     if ( value->type->root_type == unknown && value->name != NULL ) {
         
-        output_symbol(context, file, value->name, module, 0) ;
+        output_symbol(context, file, value->name, module, 0, 0) ;
     }
     
 }
@@ -292,7 +292,7 @@ static void output_signature( marshmallow_context context, FILE* file, marshmall
     
     if ( !signature->is_external ) {
         
-        output_symbol(context, file, RKString_AppendString(rkstr("function_"), signature->func_name), module, 0) ;
+        output_symbol(context, file, signature->func_name, module, 1, 1) ;
         
     } else {
         
@@ -450,7 +450,7 @@ static void output_main( marshmallow_context context, FILE* file, marshmallow_mo
     
     fprintf(file, "int main(int argc, const char **argv) {\n") ;
     
-    output_symbol(context, file, RKString_AppendString(rkstr("function_"), rkstr("main")), module, 0) ;
+    output_symbol(context, file, rkstr("main"), module, 1, 0) ;
     
     fprintf(file, "() ;\n") ;
     

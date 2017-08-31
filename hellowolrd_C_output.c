@@ -15,14 +15,14 @@ typedef unsigned long MULong ;
 #endif
 
 void puts(MULong val) ;
-void function_main()  ;
+void marshmallow_mymod_main()  ;
 int main(int argc, const char **argv) {
-function_main() ;
+marshmallow_mymod_main() ;
 return 0 ; 
 } 
 MULong marshmallow_mymod_myvar = 0xff ;
 MULong marshmallow_mymod_myvar0 ;
-void function_main() {
+void marshmallow_mymod_main() {
 MULong myvar = 0xff ;
 MULong myvar2 = 0xff ;
 puts("Hello");  ;
