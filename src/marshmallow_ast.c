@@ -222,6 +222,13 @@ marshmallow_variable marshmallow_new_variable( void ) {
 
 void marshmallow_add_variable_to_scope( marshmallow_scope scope, marshmallow_variable variable ) {
     
+    if ( RKStore_ItemExists(scope->variables, RKString_GetString(variable->name)) ) {
+        
+        printf("Variable name already used in this scope.\n") ;
+        
+        exit(EXIT_FAILURE) ;
+    }
+    
     RKStore_AddItem(scope->variables, variable, RKString_GetString(variable->name)) ;
 }
 
@@ -326,10 +333,24 @@ void marshmallow_add_statement_to_function( marshmallow_function_body function, 
 
 void marshmallow_add_function_to_module( marshmallow_function_body function, marshmallow_module module ) {
     
+    if ( RKStore_ItemExists(module->functions_and_methods, RKString_GetString(function->signature->func_name)) ) {
+        
+        printf("Function name already used in this module.\n") ;
+        
+        exit(EXIT_FAILURE) ;
+    }
+    
     RKStore_AddItem(module->functions_and_methods, function, RKString_GetString(function->signature->func_name)) ;
 }
 
 void marshmallow_add_function_to_module_declarations( marshmallow_function_body function, marshmallow_module module ) {
     
+    if ( RKStore_ItemExists(module->declarations, RKString_GetString(function->signature->func_name)) ) {
+        
+        printf("Declaration name already used in this module.\n") ;
+        
+        exit(EXIT_FAILURE) ;
+    }
+
     RKStore_AddItem(module->declarations, function, RKString_GetString(function->signature->func_name)) ;
 }
