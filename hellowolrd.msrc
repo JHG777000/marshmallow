@@ -20,11 +20,11 @@ function main().
 
    u64 myvar2 := 0xff.
 
-   myvar := 2.
+   myvar := (2+2).
 
    puts("World!!!!").
 
-   (i++).
+   i++.
 
   end while.
 

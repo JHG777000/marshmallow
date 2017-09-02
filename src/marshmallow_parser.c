@@ -189,14 +189,14 @@ static marshmallow_token marshmallow_get_token( RKList_node node ) {
 
 int marshmallow_accept_or_expect( RKList_node startnode, RKString symbol_name, marshmallow_keyword symbol, int expect ) {
     
+    marshmallow_token token = NULL ;
+    
     if ( startnode == NULL ) {
         
-        printf("Bad Syntax!\n") ;
-        
-        exit(EXIT_FAILURE) ;
+        token = marshmallow_get_token(NULL) ;
     }
     
-    marshmallow_token token = RKList_GetData(startnode) ;
+    if ( token == NULL ) token = RKList_GetData(startnode) ;
     
     if (expect) if ( symbol != token->keyword ) {
         
@@ -799,6 +799,8 @@ m_processor(assignment) {
     
     if ( op == assignment && b->type->root_type == expression ) m_advanceN(1) ;
     
+    if ( op == inc || op == dec ) m_advanceN(3) ;
+   
     return marshmallow_new_statement(op, 0, (marshmallow_entity)a, (marshmallow_entity)b) ;
 }
 
@@ -965,7 +967,8 @@ m_processor(variable) {
             return marshmallow_new_statement(call, 0, (marshmallow_entity)function, (marshmallow_entity)variable) ;
         }
         
-        if ( is_assignment(startnode, n) ) {
+        if ( is_assignment(startnode, n) || ( (m_peek(n+0)->keyword == mgk(plus)) && (m_peek(n+1)->keyword == mgk(plus)) )
+            || ( (m_peek(n+0)->keyword == mgk(minus)) && (m_peek(n+1)->keyword == mgk(minus)) )) {
             
             *startnode = base_node ;
             

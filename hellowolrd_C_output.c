@@ -29,8 +29,8 @@ MULong myvar2 = 0xff ;
 puts("Hello");  ;
 myvar=3  ;
 while ((i<2)) {
-myvar=2  ;
+myvar=(2+2)  ;
 puts("World!!!!");  ;
-(i++)  ;
+i++  ;
 }  ;
 }
