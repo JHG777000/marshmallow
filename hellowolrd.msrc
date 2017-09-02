@@ -10,11 +10,13 @@ function main().
 
   u64 myvar := 0xff.
 
+  u64 i := 0.
+
   puts("Hello").
 
   myvar := 3.
 
-  if ( 1 ).
+  while ( i < 2 ).
 
    u64 myvar2 := 0xff.
 
@@ -22,7 +24,9 @@ function main().
 
    puts("World!!!!").
 
-  end if.
+   (i++).
+
+  end while.
 
  end function.
 

@@ -24,11 +24,13 @@ MULong marshmallow_mymod_myvar = 0xff ;
 MULong marshmallow_mymod_myvar0 ;
 void marshmallow_mymod_main() {
 MULong myvar = 0xff ;
+MULong i = 0 ;
 MULong myvar2 = 0xff ;
 puts("Hello");  ;
 myvar=3  ;
-if (1) {
+while ((i<2)) {
 myvar=2  ;
 puts("World!!!!");  ;
+(i++)  ;
 }  ;
 }

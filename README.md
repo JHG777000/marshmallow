@@ -102,7 +102,7 @@ Currently to compile marshmallow code you will need a C compiler and to manually
 
 ### Current Status:
 
-Marshmallow as of now, is very much a work in progress. Core language features have yet to be implemented:  type checking, while loops, and most types, etc.
+Marshmallow as of now, is very much a work in progress. Core language features have yet to be implemented:  type checking, classes, lambdas, function returns, and most types, etc.
 
 The compiler is full of bugs and memory leaks, as such marshmallow has a long way to go before v1.0, however work is ongoing and active.
 

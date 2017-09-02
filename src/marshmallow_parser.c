@@ -474,7 +474,9 @@ m_processor(expression) {
     
     if ( m_peek(n+0)->keyword == mgk(minus) )  op = negate ;
     
-    if ( op == addrof || op == deref || op == negate  ) n++ ;
+    if ( m_peek(n+0)->keyword == mgk(epoint) )  op = not ;
+    
+    if ( op == addrof || op == deref || op == negate || op == not ) n++ ;
     
     if ( marshmallow_is_token_root_type(m_peek(n+0)) ) {
         
@@ -516,7 +518,7 @@ m_processor(expression) {
         exit(EXIT_FAILURE) ;
     }
     
-    if ( op != addrof && op != deref && op != negate  ) {
+    if ( op != addrof && op != deref && op != negate && op != not ) {
         
         switch ( m_peek(n+1)->keyword ) {
                 
@@ -524,7 +526,12 @@ m_processor(expression) {
                 
                 op = add ;
                 
-                if ( m_peek(n+2)->keyword == mgk(plus) ) op = inc ;
+                if ( m_peek(n+2)->keyword == mgk(plus) ) {
+                    
+                    op = inc ;
+                    
+                    n++ ;
+                }
                 
                 break;
                 
@@ -532,7 +539,12 @@ m_processor(expression) {
                 
                 op = sub ;
                 
-                if ( m_peek(n+2)->keyword == mgk(minus) ) op = dec ;
+                if ( m_peek(n+2)->keyword == mgk(minus) ) {
+                    
+                    op = dec ;
+                    
+                    n++ ;
+                }
                 
                 break;
                 
@@ -556,6 +568,48 @@ m_processor(expression) {
                 }
                 
                 n++ ;
+                
+                break;
+                
+                
+            case mgk(epoint):
+                
+                if ( m_peek(n+2)->keyword == mgk(eql) ) op = is_not_equal ;
+                
+                if ( op != is_not_equal ) {
+                    
+                    printf("Unknown operator. %s is not a operator.\n",RKString_GetString(m_peek(n+2)->value)) ;
+                    
+                    exit(EXIT_FAILURE) ;
+                }
+                
+                n++ ;
+                
+                break;
+                
+            case mgk(greaterthan):
+                
+                op = is_greaterthan ;
+                
+                if ( m_peek(n+2)->keyword == mgk(eql) ){
+                    
+                    op = is_greaterthan_or_equal ;
+                    
+                    n++ ;
+                }
+                
+                break;
+                
+            case mgk(lessthan):
+                
+                op = is_lessthan ;
+                
+                if ( m_peek(n+2)->keyword == mgk(eql) ){
+                    
+                    op = is_lessthan_or_equal ;
+                    
+                    n++ ;
+                }
                 
                 break;
                 

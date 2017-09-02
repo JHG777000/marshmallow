@@ -63,6 +63,12 @@ token(eql, "=")
 
 token(colon, ":")
 
+token(epoint, "!")
+
+token(greaterthan,">")
+
+token(lessthan,"<")
+
 token(pipe, "|")
 
 token(end_of_line, "")

@@ -199,17 +199,55 @@ static void output_statement( marshmallow_context context, FILE* file, marshmall
     if ( statement->entity_type == entity_variable ) {
         
         output_value(context, file, (marshmallow_variable)statement, module) ;
+        
+        return ;
     }
     
     if ( statement->is_expression ) fprintf(file, "(") ;
     
     switch ( statement->op ) {
+         
+        case noop:
+         
+             output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+            
+            break;
             
         case ifop:
             
             fprintf(file,"if (") ;
             
-            output_value(context, file, ((marshmallow_variable)statement->var_a)->data, module) ;
+            output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+            
+            fprintf(file,") {\n") ;
+            
+            list = statement->statements ;
+            
+            if ( list != NULL ) {
+                
+                node = RKList_GetFirstNode(list) ;
+                
+                while (node != NULL) {
+                    
+                    output_statement(context, file, RKList_GetData(node), module) ;
+                    
+                    fprintf(file, " ") ;
+                    
+                    fprintf(file, " ;\n") ;
+                    
+                    node = RKList_GetNextNode(node) ;
+                }
+            }
+            
+            fprintf(file,"}") ;
+            
+            break;
+            
+        case whileop:
+            
+            fprintf(file,"while (") ;
+            
+            output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
             
             fprintf(file,") {\n") ;
             
@@ -237,7 +275,15 @@ static void output_statement( marshmallow_context context, FILE* file, marshmall
             
         case call:
             
-            fprintf(file, "%s",RKString_GetString(((RKString)((marshmallow_function_body)statement->var_a)->signature->func_name))) ;
+            if ( 0 /*!((marshmallow_function_body)statement->var_a)->signature->is_external*/ ) {
+                
+                //output_symbol(context, file, ((marshmallow_function_body)statement->var_a)->signature->func_name, module, 1, 0) ;
+                
+            } else {
+                
+                fprintf(file, "%s", RKString_GetString(((marshmallow_function_body)statement->var_a)->signature->func_name)) ;
+                
+            }
             
             fprintf(file, "(") ;
             
@@ -270,6 +316,56 @@ static void output_statement( marshmallow_context context, FILE* file, marshmall
             fprintf(file, "=") ;
             
             output_value(context, file, (marshmallow_variable)statement->var_b, module) ;
+            
+            break;
+            
+        case is_greaterthan:
+            
+            output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+            
+            fprintf(file, ">") ;
+            
+            output_value(context, file, (marshmallow_variable)statement->var_b, module) ;
+            
+            break;
+            
+        case is_greaterthan_or_equal:
+            
+            output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+            
+            fprintf(file, ">=") ;
+            
+            output_value(context, file, (marshmallow_variable)statement->var_b, module) ;
+            
+            break;
+            
+        case is_lessthan:
+            
+            output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+            
+            fprintf(file, "<") ;
+            
+            output_value(context, file, (marshmallow_variable)statement->var_b, module) ;
+            
+            break;
+            
+        case is_lessthan_or_equal:
+            
+            output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+            
+            fprintf(file, "<=") ;
+            
+            output_value(context, file, (marshmallow_variable)statement->var_b, module) ;
+            
+            break;
+            
+        case inc:
+            
+            output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+            
+            fprintf(file, "++") ;
+            
+            //output_value(context, file, (marshmallow_variable)statement->var_b, module) ;
             
             break;
             
