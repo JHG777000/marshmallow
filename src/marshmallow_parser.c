@@ -372,6 +372,43 @@ m_processor(function) {
     return function ;
 }
 
+m_processor(if) ;
+
+m_processor(while) ;
+
+m_processor(statement) {
+    
+    switch (m_peek(0)->keyword) {
+            
+        case mgk(pleft):
+            
+            return m_process(assignment) ;
+            
+            break;
+            
+        case mgk(if):
+            
+            return m_process(if) ;
+            
+            break;
+            
+        case mgk(while):
+            
+            return m_process(while) ;
+            
+            break;
+            
+        default:
+            break;
+    }
+    
+    printf("Expected statement. '%s' is not a statement.\n",RKString_GetString(m_peek(0)->value)) ;
+    
+    exit(EXIT_FAILURE) ;
+    
+    return NULL ;
+}
+
 m_processor(if) {
     
     int n = 0 ;
@@ -402,9 +439,20 @@ m_processor(if) {
         
     }
     
-    m_expect(end_of_line) ;
+    if ( m_gettoken->keyword == mgk(end_of_line) ) {
+        
+        return marshmallow_new_statement(ifop, 0, (marshmallow_entity)a, NULL) ;
+    }
     
-    return marshmallow_new_statement(ifop, 0, (marshmallow_entity)a, NULL) ;
+    marshmallow_variable b = marshmallow_new_variable() ;
+    
+    b->type = marshmallow_new_type() ;
+    
+    b->type->root_type = expression ;
+    
+    b->data = m_process(statement) ;
+    
+    return marshmallow_new_statement(slifop, 0, (marshmallow_entity)a, (marshmallow_entity)b) ;
 }
 
 m_processor(while) {
@@ -1138,6 +1186,10 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                 
             default:
                 
+                printf("Unknown keyword or symbol: %s.\n",RKString_GetString(symbol->value)) ;
+                
+                exit(EXIT_FAILURE) ;
+                
                 break;
         }
         
@@ -1171,7 +1223,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                            (((marshmallow_statement)RKStack_Peek(scope_stack))->op == ifop || ((marshmallow_statement)RKStack_Peek(scope_stack))->op == whileop) ) {
                     
                     if ( (marshmallow_scope)((marshmallow_statement)RKStack_Peek(scope_stack))->function == NULL ) {
-                        
+                        marshmallow_statement s = RKStack_Peek(scope_stack) ;
                         printf("If or while statement without a function.\n") ;
                         
                         exit(EXIT_FAILURE) ;
@@ -1236,7 +1288,8 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                 
                 if ( !(((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type == entity_function) &&
                     !(((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type == entity_statement) &&
-                    !(((marshmallow_statement)entity)->op == ifop || ((marshmallow_statement)entity)->op == whileop)) {
+                    !(((marshmallow_statement)RKStack_Peek(scope_stack))->op == ifop || ((marshmallow_statement)RKStack_Peek(scope_stack))->op == whileop
+                      || ((marshmallow_statement)RKStack_Peek(scope_stack))->op == slifop )) {
                     
                     printf("Expected function. Statements must exist within a function.\n") ;
                     
@@ -1244,6 +1297,35 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                 }
                 
                 marshmallow_add_statement_to_function(RKStack_Peek(scope_stack), (marshmallow_statement)entity) ;
+                
+                if ( ((marshmallow_entity)entity)->entity_type == entity_statement &&
+                    ((marshmallow_statement)entity)->op == slifop ) {
+                    
+                    if ( ((marshmallow_variable)((marshmallow_statement)entity)->var_b)->type->root_type == expression ) {
+                        
+                        marshmallow_variable var = (marshmallow_variable)((marshmallow_statement)entity)->var_b ;
+                    loop:
+                        if ( var->type->root_type == expression ) {
+                            
+                            if ( ((marshmallow_statement)var->data)->op == slifop ) {
+                                
+                                var = (marshmallow_variable)((marshmallow_statement)var->data)->var_b ;
+                                
+                                goto loop ;
+                            }
+                            
+                            if ( ((marshmallow_statement)var->data)->op == ifop || ((marshmallow_statement)var->data)->op == whileop ) {
+                                
+                                ((marshmallow_statement)var->data)->function = RKStack_Peek(scope_stack) ;
+                                
+                                RKStack_Push(scope_stack, var->data) ;
+                            }
+                            
+                        }
+                        
+                    }
+                    
+                }
                 
                 if ( ((marshmallow_statement)entity)->op == ifop || ((marshmallow_statement)entity)->op == whileop ) {
                     

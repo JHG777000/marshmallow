@@ -63,6 +63,8 @@ marshmallow_context marshmallow_new_context( void ) {
     
     context->symbols = RKStore_NewStore() ;
     
+    context->program_has_main = 0 ;
+    
     marshmallow_words(context->words) ;
     
     return context ;

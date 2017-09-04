@@ -213,6 +213,20 @@ static void output_statement( marshmallow_context context, FILE* file, marshmall
             
             break;
             
+        case slifop:
+            
+            fprintf(file,"if (") ;
+            
+            output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+            
+            fprintf(file,") \n") ;
+            
+            fprintf(file," ") ;
+            
+            output_value(context, file, (marshmallow_variable)statement->var_b, module) ;
+            
+            break;
+            
         case ifop:
             
             fprintf(file,"if (") ;
@@ -538,18 +552,16 @@ static void output_function( marshmallow_context context, FILE* file, marshmallo
 
 static void output_main( marshmallow_context context, FILE* file, marshmallow_module module ) {
     
-    static int init = 0 ;
-    
     if ( !RKStore_ItemExists(module->functions_and_methods, "main") ) return ;
     
-    if ( init ) {
+    if ( context->program_has_main ) {
         
         printf("Multiple main functions. Only one main function can exist in a marshmallow program.\n") ;
         
         exit(EXIT_FAILURE) ;
     }
     
-    if ( !init ) init++ ;
+    if ( !context->program_has_main ) context->program_has_main++ ;
     
     fprintf(file, "int main(int argc, const char **argv) {\n") ;
     

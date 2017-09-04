@@ -6,7 +6,7 @@ module mymod.
 
  external function puts(u64 val).
 
-function main().
+ function main().
 
   u64 myvar := 0xff.
 
@@ -14,9 +14,9 @@ function main().
 
   puts("Hello").
 
-  myvar := 3.
+  myvar := 52.
 
-  while ( i < 2 ).
+   if (1) while ( i < 2 ).
 
    u64 myvar2 := 0xff.
 

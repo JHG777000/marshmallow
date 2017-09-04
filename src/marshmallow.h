@@ -31,9 +31,9 @@ typedef enum { i8, u8, i16, u16, i32, u32, i64, u64, f32, f64, hex, string, clas
     
 unknown, arguments } marshmallow_root_type ;
 
-typedef enum { noop, svalue, assignment, is_equal, is_not_equal, is_greaterthan, is_greaterthan_or_equal, is_lessthan, is_lessthan_or_equal,
+typedef enum { noop, assignment, is_equal, is_not_equal, is_greaterthan, is_greaterthan_or_equal, is_lessthan, is_lessthan_or_equal,
     
-not, add, sub, negate, mult, mdiv, rem, deref, addrof, msizeof, itemsof, inc, dec, call, ifop, whileop } marshmallow_op_type ;
+not, add, sub, negate, mult, mdiv, rem, deref, addrof, msizeof, itemsof, inc, dec, call, slifop, ifop, whileop, ret } marshmallow_op_type ;
 
 typedef enum { entity_module, entity_class, entity_function, entity_variable, entity_data_type, entity_statement, entity_space, entity_end } marshmallow_entity_type ;
 
@@ -95,7 +95,7 @@ typedef struct marshmallow_scope_s { marshmallow_entity_type entity_type ; /*for
     
 RKStore variables ; RKStore macros ; } *marshmallow_scope ;
 
-typedef struct marshmallow_context_s { RKStore modules ; RKStore words ; RKStore symbols ; } *marshmallow_context ;
+typedef struct marshmallow_context_s { RKStore modules ; RKStore words ; RKStore symbols ; int program_has_main ; } *marshmallow_context ;
 
 //keywords and tokens
 
