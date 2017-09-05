@@ -33,7 +33,7 @@ unknown, arguments } marshmallow_root_type ;
 
 typedef enum { noop, assignment, is_equal, is_not_equal, is_greaterthan, is_greaterthan_or_equal, is_lessthan, is_lessthan_or_equal,
     
-not, add, sub, negate, mult, mdiv, rem, deref, addrof, msizeof, itemsof, inc, dec, call, slifop, ifop, whileop, ret } marshmallow_op_type ;
+not, add, sub, negate, mult, mdiv, rem, deref, addrof, msizeof, itemsof, inc, dec, call, slifop, ifop, whileop, switchop, section, gotoop, ret } marshmallow_op_type ;
 
 typedef enum { entity_module, entity_class, entity_function, entity_variable, entity_data_type, entity_statement, entity_space, entity_end } marshmallow_entity_type ;
 

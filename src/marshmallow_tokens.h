@@ -93,6 +93,10 @@ token(if,"if")
 
 token(while,"while")
 
+token(section,"section")
+
+token(goto,"goto")
+
 token(declare,"declare")
 
 token(external,"external")

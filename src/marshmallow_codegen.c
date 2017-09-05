@@ -162,6 +162,11 @@ static void output_value(marshmallow_context context, FILE* file, marshmallow_va
         output_symbol(context, file, value->name, module, 0, 0) ;
     }
     
+    if ( value->type->root_type == unknown && value->name == NULL ) {
+        
+         fprintf(file, "%s", RKString_GetString(((marshmallow_value)value->data)->value)) ;
+    }
+    
 }
 
 static void output_arguments( marshmallow_context context, FILE* file, marshmallow_variable args, marshmallow_module module ) {
@@ -213,13 +218,31 @@ static void output_statement( marshmallow_context context, FILE* file, marshmall
             
             break;
             
+        case section:
+            
+            output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+            
+            fprintf(file,":") ;
+            
+            break;
+            
+        case gotoop:
+            
+            fprintf(file,"goto ") ;
+            
+            output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+            
+            fprintf(file,";") ;
+            
+            break;
+            
         case slifop:
             
             fprintf(file,"if (") ;
             
             output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
             
-            fprintf(file,") \n") ;
+            fprintf(file,")") ;
             
             fprintf(file," ") ;
             
@@ -379,9 +402,16 @@ static void output_statement( marshmallow_context context, FILE* file, marshmall
             
             fprintf(file, "++") ;
             
-            //output_value(context, file, (marshmallow_variable)statement->var_b, module) ;
+            break;
+            
+        case dec:
+            
+            output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+            
+            fprintf(file, "--") ;
             
             break;
+
             
         default:
             break;

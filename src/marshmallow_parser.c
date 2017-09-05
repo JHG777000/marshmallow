@@ -372,6 +372,8 @@ m_processor(function) {
     return function ;
 }
 
+m_processor(goto) ;
+
 m_processor(if) ;
 
 m_processor(while) ;
@@ -383,6 +385,12 @@ m_processor(statement) {
         case mgk(pleft):
             
             return m_process(assignment) ;
+            
+            break;
+          
+        case mgk(goto):
+            
+            return m_process(goto) ;
             
             break;
             
@@ -405,6 +413,52 @@ m_processor(statement) {
     printf("Expected statement. '%s' is not a statement.\n",RKString_GetString(m_peek(0)->value)) ;
     
     exit(EXIT_FAILURE) ;
+    
+    return NULL ;
+}
+
+m_processor(section) {
+    
+    marshmallow_variable a = marshmallow_new_variable() ;
+    
+    a->type = marshmallow_new_type() ;
+    
+    if ( m_peek(0)->keyword == mgk(section) ) {
+       
+        if ( m_peek(1)->keyword == mgk(identifier) ) {
+            
+            marshmallow_parse_value(m_peek(1), a) ;
+            
+            m_advanceN(2) ;
+            
+            m_expect(end_of_line) ;
+            
+            return marshmallow_new_statement(section, 0, (marshmallow_entity)a, NULL) ;
+        }
+    }
+    
+    return NULL ;
+}
+
+m_processor(goto) {
+    
+    marshmallow_variable a = marshmallow_new_variable() ;
+    
+    a->type = marshmallow_new_type() ;
+    
+    if ( m_peek(0)->keyword == mgk(goto) ) {
+        
+        if ( m_peek(1)->keyword == mgk(identifier) ) {
+            
+            marshmallow_parse_value(m_peek(1), a) ;
+            
+            m_advanceN(2) ;
+            
+            m_expect(end_of_line) ;
+            
+            return marshmallow_new_statement(gotoop, 0, (marshmallow_entity)a, NULL) ;
+        }
+    }
     
     return NULL ;
 }
@@ -1105,6 +1159,22 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
         symbol = RKList_GetData(node) ;
         
         switch (symbol->keyword) {
+            
+            case mgk(section):
+                
+                entity = m_process(section) ;
+                
+                entity_type = entity->entity_type ;
+                
+                break;
+                
+            case mgk(goto):
+                
+                entity = m_process(goto) ;
+                
+                entity_type = entity->entity_type ;
+                
+                break;
                 
             case mgk(if):
                 
@@ -1223,7 +1293,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                            (((marshmallow_statement)RKStack_Peek(scope_stack))->op == ifop || ((marshmallow_statement)RKStack_Peek(scope_stack))->op == whileop) ) {
                     
                     if ( (marshmallow_scope)((marshmallow_statement)RKStack_Peek(scope_stack))->function == NULL ) {
-                        marshmallow_statement s = RKStack_Peek(scope_stack) ;
+                        
                         printf("If or while statement without a function.\n") ;
                         
                         exit(EXIT_FAILURE) ;

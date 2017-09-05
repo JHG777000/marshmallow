@@ -12,6 +12,14 @@ module mymod.
 
   u64 i := 0.
 
+  u64 j := 2.
+
+  section helloworld.
+
+  j--.
+
+  i := 0.
+
   puts("Hello").
 
   myvar := 52.
@@ -27,6 +35,8 @@ module mymod.
    i++.
 
   end while.
+
+  if (j) goto helloworld.
 
  end function.
 
