@@ -1160,6 +1160,13 @@ m_processor(variable) {
     
     n++ ;
     
+    if ( pointers > 0 ) {
+        
+         m_advanceN(pointers) ;
+        
+        //n = 1 ;
+    }
+    
     if ( is_assignment(startnode, n) ) {
         
         n+=2 ;
@@ -1307,8 +1314,78 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                 entity_type = entity->entity_type ;
                 
                 break;
+             
+            case mgk(u8type):
+                
+                entity = m_process(variable) ;
+                
+                m_expect(end_of_line) ;
+                
+                entity_type = entity->entity_type ;
+                
+                break;
+                
+            case mgk(i8type):
+                
+                entity = m_process(variable) ;
+                
+                m_expect(end_of_line) ;
+                
+                entity_type = entity->entity_type ;
+                
+                break;
+                
+            case mgk(u16type):
+                
+                entity = m_process(variable) ;
+                
+                m_expect(end_of_line) ;
+                
+                entity_type = entity->entity_type ;
+                
+                break;
+                
+            case mgk(i16type):
+                
+                entity = m_process(variable) ;
+                
+                m_expect(end_of_line) ;
+                
+                entity_type = entity->entity_type ;
+                
+                break;
+                
+            case mgk(u32type):
+                
+                entity = m_process(variable) ;
+                
+                m_expect(end_of_line) ;
+                
+                entity_type = entity->entity_type ;
+                
+                break;
+
+            case mgk(i32type):
+                
+                entity = m_process(variable) ;
+                
+                m_expect(end_of_line) ;
+                
+                entity_type = entity->entity_type ;
+                
+                break;
                 
             case mgk(u64type):
+                
+                entity = m_process(variable) ;
+                
+                m_expect(end_of_line) ;
+                
+                entity_type = entity->entity_type ;
+                
+                break;
+                
+            case mgk(i64type):
                 
                 entity = m_process(variable) ;
                 
@@ -1477,9 +1554,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                             
                         }
                     }
-                    marshmallow_statement s = RKStack_Peek(scope_stack) ;
-                    
-                    marshmallow_statement s2 = entity;
+                  
                     if ( ((marshmallow_statement)RKStack_Peek(scope_stack))->op != switchop && ((marshmallow_statement)RKStack_Peek(scope_stack))->op != caseop ) {
                         
                         printf("Expected switch statement. Cases and default statements can only exist within a switch statement.\n") ;

@@ -307,17 +307,11 @@ marshmallow_function_body marshmallow_new_function_body( marshmallow_function_si
     
     marshmallow_function_body function = RKMem_NewMemOfType(struct marshmallow_function_body_s) ;
     
-    function->declarations = RKStore_NewStore() ;
-    
     function->entity_type = entity_function ;
-    
-    function->macros = RKStore_NewStore() ;
     
     function->signature = signature ;
     
     function->statements = RKList_NewList() ;
-    
-    function->types = RKStore_NewStore() ;
     
     function->variables = RKStore_NewStore() ;
     

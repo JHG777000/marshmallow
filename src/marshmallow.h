@@ -61,6 +61,8 @@ typedef struct marshmallow_scope_s* marshmallow_scope ;
 
 typedef struct marshmallow_context_s* marshmallow_context ;
 
+#define marshmallow_scope_protocol /*for alignment*/RKList statements ; RKStore variables ;
+
 typedef struct marshmallow_class_s { marshmallow_entity_type entity_type ; RKStore variables ; marshmallow_function_body init_function ; } *marshmallow_class ;
 
 typedef struct marshmallow_type_s { marshmallow_entity_type entity_type ; RKString type_name ;
@@ -79,7 +81,7 @@ typedef struct marshmallow_function_signature_s { int is_method ; int is_declare
     
 RKStore parameters ; RKList returns ; } *marshmallow_function_signature ;
 
-typedef struct marshmallow_function_body_s { marshmallow_entity_type entity_type ; RKList statements ; RKStore declarations ; RKStore types ; RKStore variables ; RKStore macros ;
+typedef struct marshmallow_function_body_s { marshmallow_entity_type entity_type ; marshmallow_scope_protocol
     
 marshmallow_function_signature signature ; } *marshmallow_function_body ;
 
@@ -87,15 +89,13 @@ typedef struct marshmallow_statement_s { marshmallow_entity_type entity_type ; R
     
 marshmallow_entity var_a ; marshmallow_entity var_b ; marshmallow_function_body function ; } *marshmallow_statement ;
 
-typedef struct marshmallow_module_s { marshmallow_entity_type entity_type ; RKList statements ; RKStore declarations ; RKStore types ; RKStore variables ;
+typedef struct marshmallow_module_s { marshmallow_entity_type entity_type ; marshmallow_scope_protocol RKStore declarations ; RKStore types ;
     
 RKStore macros ; RKStore modules ;
     
 RKStore functions_and_methods ; RKString name ; } *marshmallow_module ;
 
-typedef struct marshmallow_scope_s { marshmallow_entity_type entity_type ; /*for alignment*/RKList statements ; RKStore declarations ; RKStore types ;
-    
-RKStore variables ; RKStore macros ; } *marshmallow_scope ;
+typedef struct marshmallow_scope_s { marshmallow_entity_type entity_type ; marshmallow_scope_protocol } *marshmallow_scope ;
 
 typedef struct marshmallow_context_s { RKStore modules ; RKStore words ; RKStore symbols ; int program_has_main ; } *marshmallow_context ;
 

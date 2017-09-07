@@ -4,7 +4,7 @@ module mymod.
 
  u64 myvar0.
 
- external function puts(u64 val).
+ external function puts(u8* string).
 
  function main().
 

@@ -14,7 +14,7 @@ typedef signed long MLong ;
 typedef unsigned long MULong ;
 #endif
 
-void puts(MULong val) ;
+void puts(MByte *string) ;
 void marshmallow_mymod_main()  ;
 int main(int argc, const char **argv) {
 marshmallow_mymod_main() ;

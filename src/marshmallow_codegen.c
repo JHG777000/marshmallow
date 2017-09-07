@@ -66,10 +66,52 @@ loop:
     if ( t->root_type != unknown ) {
         
         switch (t->root_type) {
+             
+            case u8:
                 
+                fprintf(file, "MByte ") ;
+                
+                break;
+                
+            case i8:
+                
+                fprintf(file, "MSByte ") ;
+                
+                break;
+                
+            case u16:
+                
+                fprintf(file, "MUShort ") ;
+                
+                break;
+                
+            case i16:
+                
+                fprintf(file, "MShort ") ;
+                
+                break;
+                
+            case u32:
+                
+                fprintf(file, "MUInt ") ;
+                
+                break;
+                
+            case i32:
+                
+                fprintf(file, "MInt ") ;
+                
+                break;
+
             case u64:
                 
                 fprintf(file, "MULong ") ;
+                
+                break;
+                
+            case i64:
+                
+                fprintf(file, "MLong ") ;
                 
                 break;
                 
