@@ -310,6 +310,88 @@ static void output_statement( marshmallow_context context, FILE* file, marshmall
             
             break;
             
+        case switchop:
+            
+            fprintf(file,"switch (") ;
+            
+            output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+            
+            fprintf(file,") {\n") ;
+            
+            list = statement->statements ;
+            
+            if ( list != NULL ) {
+                
+                node = RKList_GetFirstNode(list) ;
+                
+                while (node != NULL) {
+                    
+                    output_statement(context, file, RKList_GetData(node), module) ;
+                    
+                    node = RKList_GetNextNode(node) ;
+                }
+            }
+            
+            fprintf(file,"}") ;
+            
+            break;
+            
+        case caseop:
+            
+            fprintf(file,"case ") ;
+            
+            output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+            
+            fprintf(file,":\n") ;
+            
+            list = statement->statements ;
+            
+            if ( list != NULL ) {
+                
+                node = RKList_GetFirstNode(list) ;
+                
+                while (node != NULL) {
+                    
+                    output_statement(context, file, RKList_GetData(node), module) ;
+                    
+                    fprintf(file, " ") ;
+                    
+                    fprintf(file, " ;\n") ;
+                    
+                    node = RKList_GetNextNode(node) ;
+                }
+            }
+            
+            fprintf(file,"break;") ;
+            
+            break;
+            
+        case defaultop:
+            
+            fprintf(file,"default:") ;
+            
+            list = statement->statements ;
+            
+            if ( list != NULL ) {
+                
+                node = RKList_GetFirstNode(list) ;
+                
+                while (node != NULL) {
+                    
+                    output_statement(context, file, RKList_GetData(node), module) ;
+                    
+                    fprintf(file, " ") ;
+                    
+                    fprintf(file, " ;\n") ;
+                    
+                    node = RKList_GetNextNode(node) ;
+                }
+            }
+            
+            fprintf(file,"break;") ;
+            
+            break;
+
         case call:
             
             if ( 0 /*!((marshmallow_function_body)statement->var_a)->signature->is_external*/ ) {

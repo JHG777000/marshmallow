@@ -93,6 +93,12 @@ token(if,"if")
 
 token(while,"while")
 
+token(switch,"switch")
+
+token(case,"case")
+
+token(default,"default")
+
 token(section,"section")
 
 token(goto,"goto")

@@ -465,15 +465,13 @@ m_processor(goto) {
 
 m_processor(if) {
     
-    int n = 0 ;
-    
     marshmallow_variable a = marshmallow_new_variable() ;
     
     a->type = marshmallow_new_type() ;
     
-    if ( m_peek(n+0)->keyword == mgk(if) ) {
+    if ( m_peek(0)->keyword == mgk(if) ) {
         
-        if ( m_peek(n+1)->keyword == mgk(pleft) ) {
+        if ( m_peek(1)->keyword == mgk(pleft) ) {
             
             m_advanceN(2) ;
             
@@ -481,11 +479,9 @@ m_processor(if) {
             
             a->data = m_process(expression) ;
             
-            n = n-1 ;
-            
         } else {
             
-            printf("Expected expression. '%s' is not an expression.\n",RKString_GetString(m_peek(n+0)->value)) ;
+            printf("Expected expression. '%s' is not an expression.\n",RKString_GetString(m_peek(0)->value)) ;
             
             exit(EXIT_FAILURE) ;
             
@@ -511,15 +507,13 @@ m_processor(if) {
 
 m_processor(while) {
     
-    int n = 0 ;
-    
     marshmallow_variable a = marshmallow_new_variable() ;
     
     a->type = marshmallow_new_type() ;
     
-    if ( m_peek(n+0)->keyword == mgk(while) ) {
+    if ( m_peek(0)->keyword == mgk(while) ) {
         
-        if ( m_peek(n+1)->keyword == mgk(pleft) ) {
+        if ( m_peek(1)->keyword == mgk(pleft) ) {
             
             m_advanceN(2) ;
             
@@ -527,11 +521,9 @@ m_processor(while) {
             
             a->data = m_process(expression) ;
             
-            n = n-1 ;
-            
         } else {
             
-            printf("Expected expression. '%s' is not an expression.\n",RKString_GetString(m_peek(n+0)->value)) ;
+            printf("Expected expression. '%s' is not an expression.\n",RKString_GetString(m_peek(0)->value)) ;
             
             exit(EXIT_FAILURE) ;
             
@@ -541,7 +533,87 @@ m_processor(while) {
     
     m_expect(end_of_line) ;
     
-    return  marshmallow_new_statement(whileop, 0, (marshmallow_entity)a, NULL) ;
+    return marshmallow_new_statement(whileop, 0, (marshmallow_entity)a, NULL) ;
+}
+
+m_processor(switch) {
+    
+    marshmallow_variable a = marshmallow_new_variable() ;
+    
+    a->type = marshmallow_new_type() ;
+    
+    if ( m_peek(0)->keyword == mgk(switch) ) {
+        
+        if ( m_peek(1)->keyword == mgk(pleft) ) {
+            
+            m_advanceN(2) ;
+            
+            a->type->root_type = expression ;
+            
+            a->data = m_process(expression) ;
+            
+        } else {
+            
+            printf("Expected expression. '%s' is not an expression.\n",RKString_GetString(m_peek(0)->value)) ;
+            
+            exit(EXIT_FAILURE) ;
+            
+        }
+        
+    }
+    
+    m_expect(end_of_line) ;
+    
+    return marshmallow_new_statement(switchop, 0, (marshmallow_entity)a, NULL) ;
+}
+
+m_processor(case) {
+    
+    marshmallow_variable a = marshmallow_new_variable() ;
+    
+    a->type = marshmallow_new_type() ;
+    
+    if ( m_peek(0)->keyword == mgk(case) ) {
+        
+        if ( m_peek(1)->keyword == mgk(pleft) ) {
+            
+            m_advanceN(2) ;
+            
+            a->type->root_type = expression ;
+            
+            a->data = m_process(expression) ;
+            
+        } else {
+            
+            printf("Expected expression. '%s' is not an expression.\n",RKString_GetString(m_peek(0)->value)) ;
+            
+            exit(EXIT_FAILURE) ;
+            
+        }
+        
+    }
+    
+    m_expect(end_of_line) ;
+    
+    return marshmallow_new_statement(caseop, 0, (marshmallow_entity)a, NULL) ;
+}
+
+m_processor(default) {
+    
+    if ( m_peek(0)->keyword == mgk(default) ) {
+        
+        m_advance ;
+        
+        m_expect(end_of_line) ;
+        
+        return marshmallow_new_statement(defaultop, 0, NULL, NULL) ;
+    }
+    
+    m_advance ;
+    
+    m_expect(end_of_line) ;
+    
+    return NULL ;
 }
 
 m_processor(expression) {
@@ -1192,6 +1264,30 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                 
                 break;
                 
+            case mgk(switch):
+                
+                entity = m_process(switch) ;
+                
+                entity_type = entity->entity_type ;
+                
+                break;
+                
+            case mgk(case):
+                
+                entity = m_process(case) ;
+                
+                entity_type = entity->entity_type ;
+                
+                break;
+                
+            case mgk(default):
+                
+                entity = m_process(default) ;
+                
+                entity_type = entity->entity_type ;
+                
+                break;
+                
             case mgk(external):
                 
                 entity = m_process(variable) ;
@@ -1356,15 +1452,75 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                     exit(EXIT_FAILURE) ;
                 }
                 
-                if ( !(((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type == entity_function) &&
-                    !(((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type == entity_statement) &&
-                    !(((marshmallow_statement)RKStack_Peek(scope_stack))->op == ifop || ((marshmallow_statement)RKStack_Peek(scope_stack))->op == whileop
-                      || ((marshmallow_statement)RKStack_Peek(scope_stack))->op == slifop )) {
+                
+                if ( ((marshmallow_entity)entity)->entity_type == entity_statement &&
+                    ( ((marshmallow_statement)entity)->op == caseop || ((marshmallow_statement)entity)->op == defaultop ) ) {
+                    
+                    if ( ((marshmallow_statement)entity)->op == caseop ) {
+                        
+                        if ( ((marshmallow_statement)RKStack_Peek(scope_stack))->op == defaultop ) {
+                            
+                            printf("Case statements can not exist within a default statement.\n") ;
+                            
+                            exit(EXIT_FAILURE) ;
+                            
+                        }
+                    }
+                    
+                    if ( ((marshmallow_statement)entity)->op == defaultop ) {
+                        
+                        if ( ((marshmallow_statement)RKStack_Peek(scope_stack))->op == caseop ) {
+                            
+                            printf("Expected case statement. Default statements can not exist within a case statement.\n") ;
+                            
+                            exit(EXIT_FAILURE) ;
+                            
+                        }
+                    }
+                    marshmallow_statement s = RKStack_Peek(scope_stack) ;
+                    
+                    marshmallow_statement s2 = entity;
+                    if ( ((marshmallow_statement)RKStack_Peek(scope_stack))->op != switchop && ((marshmallow_statement)RKStack_Peek(scope_stack))->op != caseop ) {
+                        
+                        printf("Expected switch statement. Cases and default statements can only exist within a switch statement.\n") ;
+                        
+                        exit(EXIT_FAILURE) ;
+                        
+                    }
+                    
+                    goto valid_statement ;
+                }
+                
+                if ( ((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type == entity_statement &&
+                    ((marshmallow_statement)RKStack_Peek(scope_stack))->op == switchop ) {
+                    
+                    if ( !( ((marshmallow_statement)entity)->op == caseop || ((marshmallow_statement)entity)->op == defaultop ) )  {
+                        
+                        printf("Expected case or default statement. Only cases and default statements can exist within a switch statement.\n") ;
+                        
+                        exit(EXIT_FAILURE) ;
+                        
+                    }
+                    
+                    goto valid_statement ;
+                }
+                
+                if ( ((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type == entity_statement &&
+                    ( ((marshmallow_statement)RKStack_Peek(scope_stack))->op == ifop || ((marshmallow_statement)RKStack_Peek(scope_stack))->op == whileop
+                     || ((marshmallow_statement)RKStack_Peek(scope_stack))->op == slifop || ((marshmallow_statement)RKStack_Peek(scope_stack))->op == switchop
+                     || ((marshmallow_statement)RKStack_Peek(scope_stack))->op == caseop || ((marshmallow_statement)RKStack_Peek(scope_stack))->op == defaultop ) ) {
+                    
+                        goto valid_statement ;
+                    }
+                
+                if ( !(((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type == entity_function) ) {
                     
                     printf("Expected function. Statements must exist within a function.\n") ;
                     
                     exit(EXIT_FAILURE) ;
                 }
+                
+            valid_statement:
                 
                 marshmallow_add_statement_to_function(RKStack_Peek(scope_stack), (marshmallow_statement)entity) ;
                 
@@ -1392,12 +1548,11 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                             }
                             
                         }
-                        
                     }
-                    
                 }
                 
-                if ( ((marshmallow_statement)entity)->op == ifop || ((marshmallow_statement)entity)->op == whileop ) {
+                if ( ((marshmallow_statement)entity)->op == ifop || ((marshmallow_statement)entity)->op == whileop || ((marshmallow_statement)entity)->op == switchop ||
+                    ((marshmallow_statement)entity)->op == caseop || ((marshmallow_statement)entity)->op == defaultop) {
                     
                     RKStack_Push(scope_stack, entity) ;
                 }
@@ -1462,6 +1617,42 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                                 printf("End wrong scope, end mismatched. Ends are unbalanced.\n") ;
                                 
                                 printf("Expected while. Got: %s.\n",RKString_GetString(m_peek(1)->value)) ;
+                                
+                                exit(EXIT_FAILURE) ;
+                            }
+                        }
+                        
+                        if ( ((marshmallow_statement)RKStack_Peek(scope_stack))->op == switchop ) {
+                            
+                            if ( m_peek(1)->keyword != mgk(switch) ) {
+                                
+                                printf("End wrong scope, end mismatched. Ends are unbalanced.\n") ;
+                                
+                                printf("Expected switch. Got: %s.\n",RKString_GetString(m_peek(1)->value)) ;
+                                
+                                exit(EXIT_FAILURE) ;
+                            }
+                        }
+                        
+                        if ( ((marshmallow_statement)RKStack_Peek(scope_stack))->op == caseop ) {
+                            
+                            if ( m_peek(1)->keyword != mgk(case) ) {
+                                
+                                printf("End wrong scope, end mismatched. Ends are unbalanced.\n") ;
+                                
+                                printf("Expected case. Got: %s.\n",RKString_GetString(m_peek(1)->value)) ;
+                                
+                                exit(EXIT_FAILURE) ;
+                            }
+                        }
+                        
+                        if ( ((marshmallow_statement)RKStack_Peek(scope_stack))->op == defaultop ) {
+                            
+                            if ( m_peek(1)->keyword != mgk(default) ) {
+                                
+                                printf("End wrong scope, end mismatched. Ends are unbalanced.\n") ;
+                                
+                                printf("Expected default. Got: %s.\n",RKString_GetString(m_peek(1)->value)) ;
                                 
                                 exit(EXIT_FAILURE) ;
                             }

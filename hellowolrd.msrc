@@ -16,6 +16,30 @@ module mymod.
 
   section helloworld.
 
+  switch ( j ).
+
+   case (0).
+
+    puts("Hello").
+
+    case (1).
+
+    end case.
+
+   end case.
+
+   case (2).
+
+   puts("Hello").
+
+   end case.
+
+   default.
+
+   end default.
+
+  end switch.
+
   j--.
 
   i := 0.

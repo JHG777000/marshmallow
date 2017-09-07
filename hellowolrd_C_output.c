@@ -28,6 +28,14 @@ MULong i = 0 ;
 MULong j = 2 ;
 MULong myvar2 = 0xff ;
 helloworld:  ;
+switch (j) {
+case 0:
+puts("Hello");  ;
+case 1:
+break;  ;
+break;case 2:
+puts("Hello");  ;
+break;default:break;}  ;
 j--  ;
 i=0  ;
 puts("Hello");  ;
