@@ -18,7 +18,33 @@
 #include "marshmallow.h"
 
 
+static const char* myitoa( int val, char* string ) {
+    
+    snprintf(string, sizeof(string), "%d", val) ;
+    
+    return string ;
+    
+}
+
+static const char* myftoa( float val, char* string ) {
+    
+    snprintf(string, sizeof(string), "%f", val) ;
+    
+    return string ;
+    
+}
+
+static const char* mydtoa( double val, char* string ) {
+    
+    snprintf(string, sizeof(string), "%f", val) ;
+    
+    return string ;
+    
+}
+
 static void output_symbol( marshmallow_context context, FILE* file, RKString name, marshmallow_module module, int is_global, int is_definition ) {
+    
+    if ( name == NULL ) return ;
     
     if ( is_global ) {
     
@@ -49,7 +75,8 @@ static void output_symbol( marshmallow_context context, FILE* file, RKString nam
         
     } else {
         
-        fprintf(file, "%s", RKString_GetString(name)) ;
+     fprintf(file, "%s", RKString_GetString(name)) ;
+        
     }
 }
 
@@ -115,6 +142,18 @@ loop:
                 
                 break;
                 
+            case f32:
+                
+                fprintf(file, "MFloat ") ;
+                
+                break;
+                
+            case f64:
+                
+                fprintf(file, "MDouble ") ;
+                
+                break;
+                
             default:
                 break;
         }
@@ -164,7 +203,7 @@ static void output_variable( marshmallow_context context, FILE* file, marshmallo
     
     output_type(context, file, variable->type, module) ;
     
-     output_symbol(context, file, variable->name, module, is_global, 1) ;
+    output_symbol(context, file, variable->name, module, is_global, 1) ;
     
     output_array(context, file, variable->type, module) ;
     
@@ -185,6 +224,8 @@ static void output_statement( marshmallow_context context, FILE* file, marshmall
 static void output_value(marshmallow_context context, FILE* file, marshmallow_variable value, marshmallow_module module) {
     
     if ( value == NULL ) return ;
+    
+    if ( value->type->root_type == string ) fprintf(file, "\"") ;
     
     if ( value->type->root_type != unknown && value->type->root_type != array && value->type->root_type != arguments
         && value->type->root_type != expression && value->data != NULL ) {
@@ -208,6 +249,8 @@ static void output_value(marshmallow_context context, FILE* file, marshmallow_va
         
          fprintf(file, "%s", RKString_GetString(((marshmallow_value)value->data)->value)) ;
     }
+    
+    if ( value->type->root_type == string ) fprintf(file, "\"") ;
     
 }
 
@@ -448,11 +491,7 @@ static void output_statement( marshmallow_context context, FILE* file, marshmall
             
             fprintf(file, "(") ;
             
-            fprintf(file, "\"") ;
-            
             output_arguments(context, file, (marshmallow_variable)statement->var_b, module) ;
-            
-            fprintf(file, "\"") ;
             
             fprintf(file, ")") ;
             
@@ -544,7 +583,46 @@ static void output_statement( marshmallow_context context, FILE* file, marshmall
     if ( statement->is_expression ) fprintf(file, ")") ;
 }
 
+static void output_a_return( marshmallow_context context, FILE* file, marshmallow_variable variable, int n, marshmallow_function_signature signature, marshmallow_module module ) {
+    
+    char myintstring[100] ;
+    
+    RKString underscore = rkstr("_") ;
+    
+    output_type(context, file, variable->type, module) ;
+    
+    fprintf(file, "* " ) ;
+    
+    myitoa(n, myintstring) ;
+    
+    RKString str0 = RKString_NewStringFromCString(myintstring) ;
+    
+    RKString str1 = RKString_AppendString(rkstr("returns_marshmallow_"), module->name) ;
+    
+    RKString str2 = RKString_AppendString(str1, underscore) ;
+    
+    RKString str3 = RKString_AppendString(str2, signature->func_name) ;
+    
+    RKString str4 = RKString_AppendString(str3, underscore) ;
+    
+    RKString name = RKString_AppendString(str4, str0) ;
+    
+    RKStore_AddItem(context->symbols, name, RKString_GetString(name)) ;
+    
+    fprintf(file, "%s", RKString_GetString(name)) ;
+    
+    RKString_DestroyString(str0) ;
+    
+    RKString_DestroyString(name) ;
+    
+    RKString_DestroyString(underscore) ;
+}
+
 static void output_signature( marshmallow_context context, FILE* file, marshmallow_function_signature signature, marshmallow_module module ) {
+    
+    int n = 0 ;
+    
+    int has_parameters = 0 ;
     
     RKList list = NULL ;
     
@@ -574,6 +652,8 @@ static void output_signature( marshmallow_context context, FILE* file, marshmall
         
         while (node != NULL) {
             
+            has_parameters = 1 ;
+            
             output_variable(context, file, RKList_GetData(node), module, 0, 1) ;
             
             if ( RKList_GetNextNode(node) != NULL ) fprintf(file, ",") ;
@@ -582,7 +662,27 @@ static void output_signature( marshmallow_context context, FILE* file, marshmall
         }
         
     }
+
+    list = signature->returns ;
     
+    if ( list != NULL ) {
+        
+        node = RKList_GetFirstNode(list) ;
+        
+        if ( node != NULL  && has_parameters ) fprintf(file, ",") ;
+        
+        while (node != NULL) {
+            
+            output_a_return(context, file, RKList_GetData(node), n, signature, module) ;
+            
+            if ( RKList_GetNextNode(node) != NULL ) fprintf(file, ",") ;
+            
+            n++ ;
+            
+            node = RKList_GetNextNode(node) ;
+        }
+        
+    }
 }
 
 static void output_declarations( marshmallow_context context, FILE* file, RKStore declarations, marshmallow_module module, int is_module ) {
@@ -719,11 +819,31 @@ static void output_main( marshmallow_context context, FILE* file, marshmallow_mo
     
     fprintf(file, "int main(int argc, const char **argv) {\n") ;
     
+    RKString str0 = rkstr("returns_marshmallow_") ;
+    
+    RKString str1 = RKString_AppendString(str0, module->name) ;
+    
+    RKString str2 = RKString_AppendString(str1, rkstr("_main_0")) ;
+    
+    fprintf(file, "MInt ") ;
+    
+    fprintf(file, "%s", RKString_GetString(str2)) ;
+    
+    fprintf(file, " = 0 ;\n") ;
+    
     output_symbol(context, file, rkstr("main"), module, 1, 0) ;
     
-    fprintf(file, "() ;\n") ;
+    fprintf(file, "(&") ;
     
-    fprintf(file, "return 0 ; \n") ;
+    fprintf(file, "%s", RKString_GetString(str2)) ;
+    
+    fprintf(file, ") ;\n") ;
+    
+    fprintf(file, "return ") ;
+    
+    fprintf(file, "%s", RKString_GetString(str2)) ;
+    
+    fprintf(file, "; \n") ;
     
     fprintf(file, "} \n") ;
     

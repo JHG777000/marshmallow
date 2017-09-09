@@ -15,99 +15,11 @@
  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-token(notoken, "")
+#include "marshmallow.h"
 
-token(null, "null")
 
-token(class, "class")
 
-token(hex, "")
-
-token(string, "")
-
-token(u8type, "u8")
-
-token(i8type, "i8")
-
-token(u16type, "u16")
-
-token(i16type, "i16")
-
-token(u32type, "u32")
-
-token(i32type, "i32")
-
-token(u64type, "u64")
-
-token(i64type, "i64")
-
-token(floattype, "f32")
-
-token(doubletype, "f64")
-
-token(identifier, "")
-
-token(plus, "+")
-
-token(minus, "-")
-
-token(and,"&")
-
-token(star, "*")
-
-token(slash, "/")
-
-token(percent, "%")
-
-token(eql, "=")
-
-token(colon, ":")
-
-token(epoint, "!")
-
-token(greaterthan,">")
-
-token(lessthan,"<")
-
-token(pipe, "|")
-
-token(end_of_line, "")
-
-token(comma, ",")
-
-token(sqleft,"[")
-
-token(sqright,"]")
-
-token(module,"module")
-
-token(function,"function")
-
-token(returns,"returns")
-
-token(return,"return")
-
-token(pleft,"(")
-
-token(pright,")")
-
-token(end,"end")
-
-token(if,"if")
-
-token(while,"while")
-
-token(switch,"switch")
-
-token(case,"case")
-
-token(default,"default")
-
-token(section,"section")
-
-token(goto,"goto")
-
-token(declare,"declare")
-
-token(external,"external")
-
+void marshmallow_typecheck( marshmallow_context context ) {
+    
+    
+}

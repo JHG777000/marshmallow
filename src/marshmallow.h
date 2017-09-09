@@ -37,7 +37,7 @@ not, add, sub, negate, mult, mdiv, rem, deref, addrof, msizeof, itemsof, inc, de
     
 slifop, ifop, whileop, switchop, caseop, defaultop, section, gotoop, ret } marshmallow_op_type ;
 
-typedef enum { entity_module, entity_class, entity_function, entity_variable, entity_data_type, entity_statement, entity_space, entity_end } marshmallow_entity_type ;
+typedef enum { entity_module, entity_class, entity_function, entity_variable, entity_data_type, entity_statement, entity_nothing, entity_end } marshmallow_entity_type ;
 
 typedef struct marshmallow_entity_s { marshmallow_entity_type entity_type ; } *marshmallow_entity ;
 
@@ -83,7 +83,7 @@ RKStore parameters ; RKList returns ; } *marshmallow_function_signature ;
 
 typedef struct marshmallow_function_body_s { marshmallow_entity_type entity_type ; marshmallow_scope_protocol
     
-marshmallow_function_signature signature ; } *marshmallow_function_body ;
+marshmallow_function_signature signature ; RKStore calls ; } *marshmallow_function_body ;
 
 typedef struct marshmallow_statement_s { marshmallow_entity_type entity_type ; RKList statements ; int is_expression ; marshmallow_op_type op ;
     

@@ -223,6 +223,8 @@ static int is_assignment( RKList_node* startnode, int n ) {
     return 0 ;
 }
 
+m_processor(type) ;
+
 m_processor(variable) ;
 
 m_processor(expression) ;
@@ -242,7 +244,7 @@ m_processor(arguments) {
     args->type->root_type = arguments ;
     
     args->data = RKList_NewList() ;
-    
+   
     if ( m_peek(1)->keyword == mgk(pleft) ) {
         
         if ( m_peek(2)->keyword == mgk(pright) ) {
@@ -271,10 +273,6 @@ m_processor(arguments) {
                 
                 goto add_argument ;
             }
-            
-            //m_expect(pright) ;
-            
-            //m_advanceN(1) ;
             
             m_expect(end_of_line) ;
         }
@@ -323,6 +321,8 @@ m_processor(function) {
             
             m_advanceN(4) ;
             
+            if ( m_gettoken->keyword == mgk(returns) )  goto add_the_returns ;
+            
             m_expect(end_of_line) ;
             
         } else {
@@ -358,6 +358,8 @@ m_processor(function) {
             m_expect(pright) ;
             
             m_advanceN(1) ;
+           
+            if ( m_gettoken->keyword == mgk(returns) )  goto add_the_returns ;
             
             m_expect(end_of_line) ;
         }
@@ -366,8 +368,52 @@ m_processor(function) {
         
         m_advanceN(2) ;
         
+        if ( m_gettoken->keyword == mgk(returns) )  goto add_the_returns ;
+            
         m_expect(end_of_line) ;
     }
+    
+add_the_returns:
+    
+    if ( m_gettoken->keyword == mgk(returns) ) {
+        
+        n = 0 ;
+        
+        m_advanceN(1) ;
+        
+    add_return:
+        
+        if ( m_gettoken->keyword != mgk(identifier) && !marshmallow_is_token_root_type(m_gettoken) ) {
+            
+            printf("Error: expected type name in returns. Got: '%s'.\n",RKString_GetString(m_gettoken->value)) ;
+            
+            exit(EXIT_FAILURE) ;
+        }
+        
+        variable = m_process(type) ;
+        
+        if ( variable->entity_type != entity_variable ) {
+            
+            printf("Unknown entity in function or method definition. Not a retunrs in function or method: '%s'.\n", RKString_GetString(signature->func_name)) ;
+            
+            exit(EXIT_FAILURE) ;
+        }
+        
+        marshmallow_add_return_to_function_return_list(signature, variable) ;
+        
+        if ( m_peek(n+0)->keyword == mgk(comma) ) {
+            
+            n += 1 ;
+            
+            m_advanceN(n) ;
+            
+            n = 0 ;
+            
+            goto add_return ;
+        }
+    }
+    
+    m_expect(end_of_line) ;
     
     return function ;
 }
@@ -435,7 +481,11 @@ m_processor(section) {
             
             return marshmallow_new_statement(section, 0, (marshmallow_entity)a, NULL) ;
         }
+        
+        m_expect(identifier) ;
     }
+    
+    m_expect(section) ;
     
     return NULL ;
 }
@@ -458,7 +508,11 @@ m_processor(goto) {
             
             return marshmallow_new_statement(gotoop, 0, (marshmallow_entity)a, NULL) ;
         }
+        
+         m_expect(identifier) ;
     }
+    
+    m_expect(goto) ;
     
     return NULL ;
 }
@@ -691,8 +745,8 @@ m_processor(expression) {
         
         exit(EXIT_FAILURE) ;
     }
-    
-    if ( op != addrof && op != deref && op != negate && op != not ) {
+    //op != addrof && op != deref && op != negate && op != not
+    if ( op == noop ) {
         
         switch ( m_peek(n+1)->keyword ) {
                 
@@ -725,6 +779,14 @@ m_processor(expression) {
             case mgk(pright):
                 
                 m_advanceN(n+2) ;
+                
+                return a ;
+                
+                break;
+                
+            case mgk(comma):
+                
+                m_advanceN(n+1) ;
                 
                 return a ;
                 
@@ -1022,6 +1084,95 @@ m_processor(static_assignment) {
     return NULL ;
 }
 
+m_processor(type) {
+    
+    //RKList_IterateListWith(func, symbol_list) ;
+    
+    int n = 1 ;
+    
+    int pointers = 0 ;
+    
+    int* arrays = NULL ;
+    
+    int num_of_arrays = 0 ;
+    
+    marshmallow_variable variable = marshmallow_new_variable() ;
+    
+    variable->type = marshmallow_new_type() ;
+    
+    //type***[] varname = ().
+    
+    if ( (m_gettoken->keyword == mgk(identifier)) || (marshmallow_is_token_root_type(m_gettoken)) ) {
+        
+        if ( m_peek(1)->keyword == mgk(star) ) {
+            
+            while (m_peek(n)->keyword == mgk(star)) {
+                
+                pointers++ ;
+                
+                n++ ;
+            }
+        }
+        
+        if ( m_peek(n)->keyword == mgk(sqleft) ) {
+            
+            while ( m_peek(n)->keyword == mgk(sqleft) ) {
+                
+                n++ ;
+                
+                if ( (m_peek(n)->keyword == mgk(u32type)) || (m_peek(n)->keyword == mgk(u64type)) ) {
+                    
+                    num_of_arrays++ ;
+                    
+                    if ( arrays != NULL ) arrays = RKMem_Realloc(arrays, num_of_arrays, num_of_arrays-1, int, 1) ;
+                    
+                    if ( arrays == NULL ) arrays = RKMem_CArray(1, int) ;
+                    
+                    arrays[num_of_arrays-1] = atoi(RKString_GetString(m_peek(n)->value)) ;
+                    
+                    n++ ;
+                    
+                    m_expectN(n,sqright) ;
+                    
+                    n++ ;
+                    
+                } else if (m_peek(n)->keyword == mgk(sqright)) {
+                    
+                    num_of_arrays++ ;
+                    
+                    if ( arrays != NULL ) arrays = RKMem_Realloc(arrays, num_of_arrays, num_of_arrays-1, int, 1) ;
+                    
+                    if ( arrays == NULL ) arrays = RKMem_CArray(1, int) ;
+                    
+                    arrays[num_of_arrays-1] = 0 ;
+                    
+                    n++ ;
+                }
+            }
+            
+            
+        }
+        
+    }
+    
+    variable->type->type_name = RKString_CopyString(m_gettoken->value) ;
+    
+    marshmallow_parse_type(variable->type, m_gettoken, pointers, arrays, num_of_arrays) ;
+    
+    variable->name = RKString_CopyString(m_peek(n)->value) ;
+    
+    n++ ;
+    
+    if ( pointers > 0 ) {
+        
+        m_advanceN(pointers) ;
+    }
+    
+    m_advanceN(1) ;
+    
+    return variable ;
+}
+
 m_processor(variable) {
     
     //RKList_IterateListWith(func, symbol_list) ;
@@ -1132,12 +1283,6 @@ m_processor(variable) {
             
             variable = m_process(arguments) ;
             
-            //m_advanceN(n+2) ;
-            
-            // m_expect(pright) ;
-            
-            // m_advanceN(1) ;
-            
             return marshmallow_new_statement(call, 0, (marshmallow_entity)function, (marshmallow_entity)variable) ;
         }
         
@@ -1163,8 +1308,6 @@ m_processor(variable) {
     if ( pointers > 0 ) {
         
          m_advanceN(pointers) ;
-        
-        //n = 1 ;
     }
     
     if ( is_assignment(startnode, n) ) {
@@ -1227,7 +1370,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
     
     marshmallow_token symbol = NULL ;
     
-    marshmallow_entity_type entity_type = entity_space ;
+    marshmallow_entity_type entity_type = entity_nothing ;
     
     RKList_IterateListWith(func, symbol_list) ;
     
