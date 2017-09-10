@@ -224,7 +224,7 @@ void marshmallow_add_variable_to_scope( marshmallow_scope scope, marshmallow_var
     
     if ( RKStore_ItemExists(scope->variables, RKString_GetString(variable->name)) ) {
         
-        printf("Variable name already used in this scope.\n") ;
+        printf("Variable name: '%s', already used in this scope. \n",RKString_GetString(variable->name)) ;
         
         exit(EXIT_FAILURE) ;
     }

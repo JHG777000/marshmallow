@@ -1090,6 +1090,8 @@ m_processor(type) {
     
     int n = 1 ;
     
+    int array_n = 0 ;
+    
     int pointers = 0 ;
     
     int* arrays = NULL ;
@@ -1115,6 +1117,8 @@ m_processor(type) {
         }
         
         if ( m_peek(n)->keyword == mgk(sqleft) ) {
+            
+            array_n = -n ;
             
             while ( m_peek(n)->keyword == mgk(sqleft) ) {
                 
@@ -1150,7 +1154,7 @@ m_processor(type) {
                 }
             }
             
-            
+            array_n += n ;
         }
         
     }
@@ -1168,6 +1172,13 @@ m_processor(type) {
         m_advanceN(pointers) ;
     }
     
+    if ( arrays != NULL ) {
+        
+        m_advanceN(array_n) ;
+        
+        n = 2 ;
+    }
+    
     m_advanceN(1) ;
     
     return variable ;
@@ -1178,6 +1189,8 @@ m_processor(variable) {
     //RKList_IterateListWith(func, symbol_list) ;
     
     int n = 1 ;
+    
+    int array_n = 0 ;
     
     int pointers = 0 ;
     
@@ -1222,6 +1235,8 @@ m_processor(variable) {
         
         if ( m_peek(n)->keyword == mgk(sqleft) ) {
             
+            array_n = -n ;
+            
             while ( m_peek(n)->keyword == mgk(sqleft) ) {
                 
                 n++ ;
@@ -1256,6 +1271,7 @@ m_processor(variable) {
                 }
             }
             
+            array_n += n ;
             
         }
         
@@ -1303,11 +1319,19 @@ m_processor(variable) {
     
     variable->name = RKString_CopyString(m_peek(n)->value) ;
     
-    n++ ;
     
+    n++ ;
+
     if ( pointers > 0 ) {
         
-         m_advanceN(pointers) ;
+        m_advanceN(pointers) ;
+    }
+    
+    if ( arrays != NULL ) {
+        
+        m_advanceN(array_n) ;
+        
+        n = 2 ;
     }
     
     if ( is_assignment(startnode, n) ) {
