@@ -75,10 +75,6 @@ token(end_of_line, "")
 
 token(comma, ",")
 
-token(sqleft,"[")
-
-token(sqright,"]")
-
 token(module,"module")
 
 token(function,"function")
@@ -87,9 +83,17 @@ token(returns,"returns")
 
 token(return,"return")
 
+token(sqleft,"[")
+
+token(sqright,"]")
+
 token(pleft,"(")
 
 token(pright,")")
+
+token(bleft,"{")
+
+token(bright,"}")
 
 token(end,"end")
 

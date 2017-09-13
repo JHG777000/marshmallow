@@ -199,6 +199,8 @@ loop:
     }
 }
 
+static void output_value(marshmallow_context context, FILE* file, marshmallow_variable value, marshmallow_module module) ;
+
 static void output_variable( marshmallow_context context, FILE* file, marshmallow_variable variable, marshmallow_module module, int is_global, int no_default ) {
     
     output_type(context, file, variable->type, module) ;
@@ -214,12 +216,14 @@ static void output_variable( marshmallow_context context, FILE* file, marshmallo
         fprintf(file, "=") ;
         
         fprintf(file, " ") ;
-        
-        fprintf(file, "%s",RKString_GetString(((marshmallow_value)variable->static_assignment->data)->value)) ;
+    
+        output_value(context, file, variable->static_assignment, module) ;
     }
 }
 
 static void output_statement( marshmallow_context context, FILE* file, marshmallow_statement statement, marshmallow_module module ) ;
+
+static void output_collection( marshmallow_context context, FILE* file, marshmallow_variable the_collection, marshmallow_module module ) ;
 
 static void output_value(marshmallow_context context, FILE* file, marshmallow_variable value, marshmallow_module module) {
     
@@ -227,7 +231,7 @@ static void output_value(marshmallow_context context, FILE* file, marshmallow_va
     
     if ( value->type->root_type == string ) fprintf(file, "\"") ;
     
-    if ( value->type->root_type != unknown && value->type->root_type != array && value->type->root_type != arguments
+    if ( value->type->root_type != unknown && value->type->root_type != array && value->type->root_type != arguments && value->type->root_type != metacollection
         && value->type->root_type != expression && value->data != NULL ) {
         
         fprintf(file, "%s", RKString_GetString(((marshmallow_value)value->data)->value)) ;
@@ -237,7 +241,11 @@ static void output_value(marshmallow_context context, FILE* file, marshmallow_va
     if ( value->type->root_type == expression ) {
         
         output_statement(context, file, value->data, module) ;
+    }
+    
+    if ( value->type->root_type == metacollection ) {
         
+        output_collection(context, file, value->data, module) ;
     }
     
     if ( value->type->root_type == unknown && value->name != NULL ) {
@@ -251,6 +259,39 @@ static void output_value(marshmallow_context context, FILE* file, marshmallow_va
     }
     
     if ( value->type->root_type == string ) fprintf(file, "\"") ;
+    
+}
+
+static void output_collection( marshmallow_context context, FILE* file, marshmallow_variable the_collection, marshmallow_module module ) {
+    
+    RKList list = NULL ;
+    
+    RKList_node node = NULL ;
+    
+    if ( the_collection->type->root_type == collection ) {
+        
+        list = the_collection->data ;
+        
+        if ( list != NULL ) {
+            
+            fprintf(file, "{") ;
+            
+            node = RKList_GetFirstNode(list) ;
+            
+            while (node != NULL) {
+                
+                output_value(context, file, RKList_GetData(node), module) ;
+                
+                if ( RKList_GetNextNode(node) != NULL ) fprintf(file, ",") ;
+                
+                node = RKList_GetNextNode(node) ;
+            }
+            
+            fprintf(file, "}") ;
+            
+        }
+        
+    }
     
 }
 

@@ -60,6 +60,10 @@ static int marshmallow_is_symbol( char c, int balance ) {
     
     if ( c == ']' ) return 1 ;
     
+    if ( c == '{' ) return 1 ;
+    
+    if ( c == '}' ) return 1 ;
+    
     return 0 ;
 }
 
@@ -918,6 +922,98 @@ m_processor(expression) {
     return marshmallow_new_statement(op, 1, (marshmallow_entity)a, (marshmallow_entity)b) ;
 }
 
+
+m_processor(collection) {
+    
+    int n = 0 ;
+    
+    marshmallow_variable element = NULL ;
+    
+    marshmallow_variable the_collection = marshmallow_new_variable() ;
+    
+    the_collection->type = marshmallow_new_type() ;
+    
+    the_collection->type->root_type = collection ;
+    
+    the_collection->data = RKList_NewList() ;
+    
+    if ( m_peek(0)->keyword == mgk(bleft) ) {
+        
+        if ( m_peek(1)->keyword == mgk(bright) ) {
+            
+            m_advanceN(1) ;
+            
+            m_expect(bright) ;
+            
+            m_advanceN(1) ;
+            
+        } else {
+            
+            m_advanceN(1) ;
+            
+        add_element:
+            
+            if ( marshmallow_is_token_root_type(m_peek(n+0)) ) {
+               
+                element = marshmallow_new_variable() ;
+                
+                element->type = marshmallow_new_type() ;
+                
+                element->name = RKString_CopyString(m_peek(n+0)->value) ;
+                
+                marshmallow_parse_type(element->type, m_peek(n+0), 0, NULL, 0) ;
+                
+                marshmallow_parse_value(m_peek(n+0), element) ;
+                
+                m_advanceN(1) ;
+                
+            } else if ( m_peek(n+0)->keyword == mgk(identifier) ) {
+                
+                element = marshmallow_new_variable() ;
+                
+                element->type = marshmallow_new_type() ;
+                
+                element->type->root_type = unknown ;
+                
+                element->name = RKString_CopyString( m_peek(n+0)->value) ;
+                
+                m_advanceN(1) ;
+                
+            } else {
+                
+                element = m_process(assignment) ;
+            }
+            
+            RKList_AddToList(the_collection->data, element) ;
+            
+            if ( m_peek(n+0)->keyword == mgk(comma) ) {
+                
+                n += 1 ;
+                
+                m_advanceN(n) ;
+                
+                n = 0 ;
+                
+                goto add_element ;
+            }
+            
+            m_expect(bright) ;
+            
+            m_advanceN(1) ;
+        }
+        
+    } else {
+        
+        m_advanceN(1) ;
+        
+        m_expect(bright) ;
+        
+        m_advanceN(1) ;
+    }
+    
+    return the_collection ;
+}
+
 m_processor(assignment) {
     
     int n = 0 ;
@@ -952,6 +1048,17 @@ m_processor(assignment) {
         a->type->root_type = expression ;
         
         a->data = m_process(expression) ;
+        
+        n = n-1 ;
+        
+        flag_a++ ;
+    }
+    
+    if ( m_peek(n+0)->keyword == mgk(bleft) ) {
+        
+        a->type->root_type = metacollection ;
+        
+        a->data = m_process(collection) ;
         
         n = n-1 ;
         
@@ -1005,6 +1112,17 @@ m_processor(assignment) {
             flag_b++ ;
         }
         
+        if ( m_peek(n+0)->keyword == mgk(bleft) ) {
+            
+            b->type->root_type = metacollection ;
+            
+            b->data = m_process(collection) ;
+            
+            n = n-1 ;
+            
+            flag_b++ ;
+        }
+        
         if ( !flag_b ) {
             
             printf("Unknown assignment variable B in assignment. %s is not a value, variable, or expression.\n",RKString_GetString(m_peek(n+0)->value)) ;
@@ -1047,6 +1165,15 @@ m_processor(static_assignment) {
     marshmallow_variable variable = marshmallow_new_variable() ;
     
     variable->type = marshmallow_new_type() ;
+    
+    if ( m_peek(n+0)->keyword == mgk(bleft) ) {
+        
+        variable->type->root_type = metacollection ;
+        
+        variable->data = m_process(collection) ;
+        
+        return variable ;
+    }
     
     if ( m_peek(n+1)->keyword == mgk(end_of_line) || m_peek(n+1)->keyword == mgk(pright) || m_peek(n+1)->keyword == mgk(comma) ) {
         
@@ -1338,7 +1465,7 @@ m_processor(variable) {
         
         n+=2 ;
         
-        if ( marshmallow_is_token_root_type(m_peek(n)) ) {
+        if ( marshmallow_is_token_root_type(m_peek(n)) || m_peek(n)->keyword == mgk(bleft) ) {
             
             m_advanceN(n) ;
             
@@ -1405,7 +1532,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
         symbol = RKList_GetData(node) ;
         
         switch (symbol->keyword) {
-            
+                
             case mgk(section):
                 
                 entity = m_process(section) ;
@@ -1572,6 +1699,14 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                 
                 break;
                 
+            case mgk(bleft):
+                
+                entity = m_process(assignment) ;
+                
+                entity_type = entity->entity_type ;
+                
+                break;
+                
             case mgk(module):
                 
                 entity = m_process(module) ;
@@ -1596,7 +1731,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                 
             default:
                 
-                printf("Unknown keyword or symbol: %s.\n",RKString_GetString(symbol->value)) ;
+                printf("Unknown primary keyword or symbol: %s.\n",RKString_GetString(symbol->value)) ;
                 
                 exit(EXIT_FAILURE) ;
                 

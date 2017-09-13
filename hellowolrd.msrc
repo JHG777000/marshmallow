@@ -14,6 +14,8 @@ module mymod.
 
   u64 j := 2.
 
+  i32[] myarray := {7,7,7}.
+
   section helloworld.
 
   switch ( j ).
