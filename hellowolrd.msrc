@@ -50,7 +50,7 @@ module mymod.
 
   myvar := 52.
 
-   if (1) while ( i < 2 ).
+  if (myvar2 := myvar) while ( i < 2 ).
 
    u64 myvar2 := 0xff.
 
@@ -63,6 +63,8 @@ module mymod.
   end while.
 
   if (j) goto helloworld.
+
+  return 0.
 
  end function.
 

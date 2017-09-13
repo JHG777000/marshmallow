@@ -42,10 +42,11 @@ j--  ;
 i=0  ;
 puts("Hello");  ;
 myvar=52  ;
-if (1) while ((i<2)) {
+if ((myvar2=myvar)) while ((i<2)) {
 myvar=(2+2)  ;
 puts("World!!!!");  ;
 i++  ;
 }  ;
 if (j) goto helloworld;  ;
+(*returns_marshmallow_mymod_main_0)=0  ;
 }

@@ -221,6 +221,8 @@ static void output_variable( marshmallow_context context, FILE* file, marshmallo
     }
 }
 
+static void output_a_return( marshmallow_context context, FILE* file, marshmallow_variable variable, int n, marshmallow_function_signature signature, marshmallow_module module, int is_definition ) ;
+
 static void output_statement( marshmallow_context context, FILE* file, marshmallow_statement statement, marshmallow_module module ) ;
 
 static void output_collection( marshmallow_context context, FILE* file, marshmallow_variable the_collection, marshmallow_module module ) ;
@@ -540,6 +542,22 @@ static void output_statement( marshmallow_context context, FILE* file, marshmall
             
             break;
             
+        case ret:
+            
+            if ( ((marshmallow_variable)statement->var_a)->type->root_type == metacollection ) {
+                
+                
+            } else {
+                
+                output_a_return(context, file, RKList_GetData(RKList_GetFirstNode(statement->function->signature->returns)), 0, statement->function->signature, module, 0) ;
+                
+                fprintf(file, "=") ;
+                
+                output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+            }
+            
+            break;
+            
         case add:
             
             output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
@@ -555,6 +573,26 @@ static void output_statement( marshmallow_context context, FILE* file, marshmall
             output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
             
             fprintf(file, "=") ;
+            
+            output_value(context, file, (marshmallow_variable)statement->var_b, module) ;
+            
+            break;
+          
+        case is_equal:
+            
+            output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+            
+            fprintf(file, "==") ;
+            
+            output_value(context, file, (marshmallow_variable)statement->var_b, module) ;
+            
+            break;
+
+        case is_not_equal:
+            
+            output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+            
+            fprintf(file, "!=") ;
             
             output_value(context, file, (marshmallow_variable)statement->var_b, module) ;
             
@@ -624,15 +662,23 @@ static void output_statement( marshmallow_context context, FILE* file, marshmall
     if ( statement->is_expression ) fprintf(file, ")") ;
 }
 
-static void output_a_return( marshmallow_context context, FILE* file, marshmallow_variable variable, int n, marshmallow_function_signature signature, marshmallow_module module ) {
+static void output_a_return( marshmallow_context context, FILE* file, marshmallow_variable variable, int n, marshmallow_function_signature signature, marshmallow_module module, int is_definition ) {
     
     char myintstring[100] ;
     
     RKString underscore = rkstr("_") ;
-    
+   
+    if (is_definition) {
+        
     output_type(context, file, variable->type, module) ;
     
     fprintf(file, "* " ) ;
+        
+    } else {
+        
+    fprintf(file, "(*" ) ;
+        
+    }
     
     myitoa(n, myintstring) ;
     
@@ -648,9 +694,11 @@ static void output_a_return( marshmallow_context context, FILE* file, marshmallo
     
     RKString name = RKString_AppendString(str4, str0) ;
     
-    RKStore_AddItem(context->symbols, name, RKString_GetString(name)) ;
+    if (is_definition) RKStore_AddItem(context->symbols, name, RKString_GetString(name)) ;
     
     fprintf(file, "%s", RKString_GetString(name)) ;
+    
+    if (!is_definition) fprintf(file, ")" ) ;
     
     RKString_DestroyString(str0) ;
     
@@ -714,7 +762,7 @@ static void output_signature( marshmallow_context context, FILE* file, marshmall
         
         while (node != NULL) {
             
-            output_a_return(context, file, RKList_GetData(node), n, signature, module) ;
+            output_a_return(context, file, RKList_GetData(node), n, signature, module, 1) ;
             
             if ( RKList_GetNextNode(node) != NULL ) fprintf(file, ",") ;
             
