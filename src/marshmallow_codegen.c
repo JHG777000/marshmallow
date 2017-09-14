@@ -297,6 +297,53 @@ static void output_collection( marshmallow_context context, FILE* file, marshmal
     
 }
 
+static void output_multiple_returns( marshmallow_context context, FILE* file, marshmallow_variable the_collection, marshmallow_function_signature signature, marshmallow_module module ) {
+    
+    int n = 0 ;
+    
+    RKList list = NULL ;
+    
+    RKList list2 = NULL ;
+    
+    RKList_node node = NULL ;
+    
+    RKList_node node2 = NULL ;
+    
+    if ( the_collection->type->root_type == collection ) {
+        
+        list = the_collection->data ;
+        
+        list2 = signature->returns ;
+        
+        if ( list != NULL && list2 != NULL ) {
+            
+            node = RKList_GetFirstNode(list) ;
+            
+            node2 = RKList_GetFirstNode(list2) ;
+            
+            while (node != NULL && node2 != NULL) {
+                
+                output_a_return(context, file, NULL, n, signature, module, 0) ;
+                
+                fprintf(file, "=") ;
+                
+                output_value(context, file, RKList_GetData(node), module) ;
+                
+                if ( RKList_GetNextNode(node) != NULL ) fprintf(file, " ; \n") ;
+                
+                node = RKList_GetNextNode(node) ;
+                
+                node2 = RKList_GetNextNode(node2) ;
+                
+                n++ ;
+            }
+            
+        }
+        
+    }
+    
+}
+
 static void output_arguments( marshmallow_context context, FILE* file, marshmallow_variable args, marshmallow_module module ) {
     
     RKList list = NULL ;
@@ -546,6 +593,7 @@ static void output_statement( marshmallow_context context, FILE* file, marshmall
             
             if ( ((marshmallow_variable)statement->var_a)->type->root_type == metacollection ) {
                 
+                output_multiple_returns(context, file, ((marshmallow_variable)statement->var_a)->data, statement->function->signature, module) ;
                 
             } else {
                 
