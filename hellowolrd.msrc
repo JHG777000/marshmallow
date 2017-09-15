@@ -60,7 +60,15 @@ module mymod.
 
    myvar := (2+2).
 
-   puts("World!!!!").
+   if (0).
+
+    puts("World!!!!").
+
+   else.
+
+    puts("World.").
+
+   end if.
 
    i++.
 

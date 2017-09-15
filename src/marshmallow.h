@@ -35,7 +35,7 @@ typedef enum { noop, assignment, is_equal, is_not_equal, is_greaterthan, is_grea
     
 not, add, sub, negate, mult, mdiv, rem, deref, addrof, msizeof, itemsof, inc, dec, call,
     
-slifop, ifop, whileop, switchop, caseop, defaultop, section, gotoop, ret } marshmallow_op_type ;
+slifop, ifop, elseop, whileop, switchop, caseop, defaultop, section, gotoop, ret } marshmallow_op_type ;
 
 typedef enum { entity_module, entity_class, entity_function, entity_variable, entity_data_type, entity_statement, entity_collection,
     

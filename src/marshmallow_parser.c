@@ -426,6 +426,8 @@ m_processor(goto) ;
 
 m_processor(if) ;
 
+m_processor(else) ;
+
 m_processor(while) ;
 
 m_processor(statement) {
@@ -539,7 +541,7 @@ m_processor(if) {
             
         } else {
             
-            printf("Expected expression. '%s' is not an expression.\n",RKString_GetString(m_peek(0)->value)) ;
+            printf("Expected expression. '%s' is not an expression.\n",RKString_GetString(m_peek(1)->value)) ;
             
             exit(EXIT_FAILURE) ;
             
@@ -563,6 +565,68 @@ m_processor(if) {
     return marshmallow_new_statement(slifop, 0, (marshmallow_entity)a, (marshmallow_entity)b) ;
 }
 
+m_processor(else) {
+    
+    void* a = NULL ;
+    
+    marshmallow_variable ifvar = NULL ;
+    
+    marshmallow_variable ifvar_a = NULL ;
+    
+    marshmallow_token fakeif = NULL ;
+    
+    if ( m_peek(0)->keyword == mgk(else) ) {
+        
+        if ( m_peek(1)->keyword == mgk(if) ) {
+            
+            m_advance ;
+            
+            a = m_process(if) ;
+            
+            ((marshmallow_statement)a)->var_b = a ;
+            
+        } else {
+            
+            ifvar = marshmallow_new_variable() ;
+            
+            ifvar->type = marshmallow_new_type() ;
+            
+            ifvar->type->root_type = expression ;
+            
+            fakeif = RKMem_NewMemOfType(struct marshmallow_token_s) ;
+            
+            fakeif->keyword = mgk(u32type) ;
+            
+            fakeif->value = rkstr("1") ;
+            
+            ifvar_a = marshmallow_new_variable() ;
+            
+            ifvar_a->type = marshmallow_new_type() ;
+            
+             if ( marshmallow_is_token_root_type(fakeif) ) {
+             
+             ifvar_a->name = RKString_CopyString(fakeif->value) ;
+             
+             marshmallow_parse_type(ifvar_a->type, fakeif, 0, NULL, 0) ;
+             
+             marshmallow_parse_value(fakeif, ifvar_a) ;
+                 
+             }
+            
+            ifvar->data = ifvar_a ;
+            
+            a = marshmallow_new_statement(ifop, 0, (marshmallow_entity)ifvar, (marshmallow_entity)ifvar) ;
+            
+            m_advance ;
+        }
+        
+    }
+    
+    m_expect(end_of_line) ;
+    
+    return marshmallow_new_statement(elseop, 0, (marshmallow_entity)a, NULL) ;
+}
+
 m_processor(while) {
     
     marshmallow_variable a = marshmallow_new_variable() ;
@@ -581,7 +645,7 @@ m_processor(while) {
             
         } else {
             
-            printf("Expected expression. '%s' is not an expression.\n",RKString_GetString(m_peek(0)->value)) ;
+            printf("Expected expression. '%s' is not an expression.\n",RKString_GetString(m_peek(1)->value)) ;
             
             exit(EXIT_FAILURE) ;
             
@@ -612,7 +676,7 @@ m_processor(switch) {
             
         } else {
             
-            printf("Expected expression. '%s' is not an expression.\n",RKString_GetString(m_peek(0)->value)) ;
+            printf("Expected expression. '%s' is not an expression.\n",RKString_GetString(m_peek(1)->value)) ;
             
             exit(EXIT_FAILURE) ;
             
@@ -643,7 +707,7 @@ m_processor(case) {
             
         } else {
             
-            printf("Expected expression. '%s' is not an expression.\n",RKString_GetString(m_peek(0)->value)) ;
+            printf("Expected expression. '%s' is not an expression.\n",RKString_GetString(m_peek(1)->value)) ;
             
             exit(EXIT_FAILURE) ;
             
@@ -1606,6 +1670,8 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
     
     int index = 0 ;
     
+    int n = 0 ;
+    
     if ( node != NULL ) {
         
         symbol = RKList_GetData(node) ;
@@ -1639,6 +1705,14 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
             case mgk(if):
                 
                 entity = m_process(if) ;
+                
+                entity_type = entity->entity_type ;
+                
+                break;
+                
+            case mgk(else):
+                
+                entity = m_process(else) ;
                 
                 entity_type = entity->entity_type ;
                 
@@ -1911,6 +1985,8 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                 
             case entity_statement:
                 
+            add_statement:
+                
                 if ( RKStack_IsEmpty(scope_stack) ) {
                     
                     printf("No scope.\n") ;
@@ -1918,6 +1994,21 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                     exit(EXIT_FAILURE) ;
                 }
                 
+                if ( ((marshmallow_entity)entity)->entity_type == entity_statement && ((marshmallow_statement)entity)->op == elseop ) {
+                    
+                    if ( ((marshmallow_statement)RKStack_Peek(scope_stack))->op != ifop ) {
+                        
+                        printf("Else statements can only exist within a if statement.\n") ;
+                        
+                        exit(EXIT_FAILURE) ;
+                    }
+                    
+                    RKStack_Pop(scope_stack) ;
+                    
+                    entity = ((marshmallow_statement)entity)->var_a ;
+                    
+                    goto add_statement ;
+                }
                 
                 if ( ((marshmallow_entity)entity)->entity_type == entity_statement &&
                     ( ((marshmallow_statement)entity)->op == caseop || ((marshmallow_statement)entity)->op == defaultop ) ) {
@@ -1960,7 +2051,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                     
                     if ( !( ((marshmallow_statement)entity)->op == caseop || ((marshmallow_statement)entity)->op == defaultop ) )  {
                         
-                        printf("Expected case or default statement. Only cases and default statements can exist within a switch statement.\n") ;
+                        printf("Expected case or default statement. Only case and default statements can exist within a switch statement.\n") ;
                         
                         exit(EXIT_FAILURE) ;
                         

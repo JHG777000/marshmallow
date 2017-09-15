@@ -99,6 +99,8 @@ token(end,"end")
 
 token(if,"if")
 
+token(else,"else")
+
 token(while,"while")
 
 token(switch,"switch")

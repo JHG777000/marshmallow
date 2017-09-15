@@ -427,6 +427,11 @@ static void output_statement( marshmallow_context context, FILE* file, marshmall
             
         case ifop:
             
+            if ( statement->var_b != NULL ) {
+                
+                fprintf(file,"else ") ;
+            }
+            
             fprintf(file,"if (") ;
             
             output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
@@ -445,7 +450,7 @@ static void output_statement( marshmallow_context context, FILE* file, marshmall
                     
                     fprintf(file, " ") ;
                     
-                    fprintf(file, " ;\n") ;
+                    if (((marshmallow_statement)RKList_GetData(node))->op != ifop) fprintf(file, " ;\n") ;
                     
                     node = RKList_GetNextNode(node) ;
                 }
@@ -475,7 +480,7 @@ static void output_statement( marshmallow_context context, FILE* file, marshmall
                     
                     fprintf(file, " ") ;
                     
-                    fprintf(file, " ;\n") ;
+                    if (((marshmallow_statement)RKList_GetData(node))->op != ifop) fprintf(file, " ;\n") ;
                     
                     node = RKList_GetNextNode(node) ;
                 }
@@ -531,7 +536,7 @@ static void output_statement( marshmallow_context context, FILE* file, marshmall
                     
                     fprintf(file, " ") ;
                     
-                    fprintf(file, " ;\n") ;
+                    if (((marshmallow_statement)RKList_GetData(node))->op != ifop) fprintf(file, " ;\n") ;
                     
                     node = RKList_GetNextNode(node) ;
                 }
@@ -557,7 +562,7 @@ static void output_statement( marshmallow_context context, FILE* file, marshmall
                     
                     fprintf(file, " ") ;
                     
-                    fprintf(file, " ;\n") ;
+                    if (((marshmallow_statement)RKList_GetData(node))->op != ifop) fprintf(file, " ;\n") ;
                     
                     node = RKList_GetNextNode(node) ;
                 }
@@ -929,7 +934,7 @@ static void output_function( marshmallow_context context, FILE* file, marshmallo
             
             fprintf(file, " ") ;
             
-            fprintf(file, " ;\n") ;
+            if (((marshmallow_statement)RKList_GetData(node))->op != ifop) fprintf(file, " ;\n") ;
             
             node = RKList_GetNextNode(node) ;
         }

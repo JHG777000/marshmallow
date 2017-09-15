@@ -44,8 +44,11 @@ puts("Hello");  ;
 myvar=52  ;
 if ((myvar2=myvar)) while ((i<2)) {
 myvar=(2+2)  ;
+if (0) {
 puts("World!!!!");  ;
-i++  ;
+} else if (1) {
+puts("World.");  ;
+} i++  ;
 }  ;
 if (j) goto helloworld;  ;
 (*returns_marshmallow_mymod_main_0)=0  ;
