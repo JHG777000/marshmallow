@@ -103,6 +103,10 @@ token(else,"else")
 
 token(while,"while")
 
+token(break,"break")
+
+token(continue,"continue")
+
 token(switch,"switch")
 
 token(case,"case")

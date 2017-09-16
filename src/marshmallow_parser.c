@@ -227,6 +227,23 @@ static int is_assignment( RKList_node* startnode, int n ) {
     return 0 ;
 }
 
+static int does_scope_have_loop( RKStack scope_sctack ) {
+    
+    RKList list = RKStack_GetList(scope_sctack) ;
+    
+    RKList_node node = RKList_GetLastNode(list) ;
+    
+    while ( node != NULL ) {
+        
+        if ( ((marshmallow_entity)RKList_GetData(node))->entity_type == entity_statement &&
+            ((marshmallow_statement)RKList_GetData(node))->op == whileop ) return 1 ;
+        
+        node = RKList_GetPreviousNode(node) ;
+    }
+    
+    return 0 ;
+}
+
 m_processor(type) ;
 
 m_processor(variable) ;
@@ -430,6 +447,12 @@ m_processor(else) ;
 
 m_processor(while) ;
 
+m_processor(break) ;
+
+m_processor(continue) ;
+
+m_processor(return) ;
+
 m_processor(statement) {
     
     switch (m_peek(0)->keyword) {
@@ -455,6 +478,24 @@ m_processor(statement) {
         case mgk(while):
             
             return m_process(while) ;
+            
+            break;
+            
+        case mgk(return):
+            
+            return m_process(return) ;
+            
+            break;
+            
+        case mgk(break):
+            
+            return m_process(break) ;
+            
+            break;
+            
+        case mgk(continue):
+            
+            return m_process(continue) ;
             
             break;
             
@@ -519,6 +560,46 @@ m_processor(goto) {
     }
     
     m_expect(goto) ;
+    
+    return NULL ;
+}
+
+m_processor(break) {
+    
+    marshmallow_variable a = marshmallow_new_variable() ;
+    
+    a->type = marshmallow_new_type() ;
+    
+    if ( m_peek(0)->keyword == mgk(break) ) {
+        
+        m_advance ;
+        
+        m_expect(end_of_line) ;
+        
+        return marshmallow_new_statement(breakop, 0, NULL, NULL) ;
+    }
+    
+    m_expect(break) ;
+    
+    return NULL ;
+}
+
+m_processor(continue) {
+    
+    marshmallow_variable a = marshmallow_new_variable() ;
+    
+    a->type = marshmallow_new_type() ;
+    
+    if ( m_peek(0)->keyword == mgk(continue) ) {
+        
+        m_advance ;
+        
+        m_expect(end_of_line) ;
+        
+        return marshmallow_new_statement(continueop, 0, NULL, NULL) ;
+    }
+    
+    m_expect(continue) ;
     
     return NULL ;
 }
@@ -1670,8 +1751,6 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
     
     int index = 0 ;
     
-    int n = 0 ;
-    
     if ( node != NULL ) {
         
         symbol = RKList_GetData(node) ;
@@ -1721,6 +1800,22 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
             case mgk(while):
                 
                 entity = m_process(while) ;
+                
+                entity_type = entity->entity_type ;
+                
+                break;
+                
+            case mgk(break):
+                
+                entity = m_process(break) ;
+                
+                entity_type = entity->entity_type ;
+                
+                break;
+                
+            case mgk(continue):
+                
+                entity = m_process(continue) ;
                 
                 entity_type = entity->entity_type ;
                 
@@ -1890,6 +1985,12 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                 
                 break;
                 
+            case mgk(end_of_line):
+                
+                entity_type = entity_nothing ;
+                
+                break;
+                
             default:
                 
                 printf("Unknown primary keyword or symbol: %s.\n",RKString_GetString(symbol->value)) ;
@@ -1994,6 +2095,19 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                     exit(EXIT_FAILURE) ;
                 }
                 
+                if ( ((marshmallow_entity)entity)->entity_type == entity_statement && ( ((marshmallow_statement)entity)->op == breakop
+                                                                                       || ((marshmallow_statement)entity)->op == continueop  ) ) {
+                    
+                    if ( !does_scope_have_loop(scope_stack) ) {
+                        
+                        printf("Break or continue statements can only exist within a loop.\n") ;
+                        
+                        exit(EXIT_FAILURE) ;
+
+                    }
+                    
+                }
+                
                 if ( ((marshmallow_entity)entity)->entity_type == entity_statement && ((marshmallow_statement)entity)->op == elseop ) {
                     
                     if ( ((marshmallow_statement)RKStack_Peek(scope_stack))->op != ifop ) {
@@ -2095,11 +2209,12 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                                 goto loop ;
                             }
                             
-                            if ( ((marshmallow_statement)var->data)->op == ifop || ((marshmallow_statement)var->data)->op == whileop ) {
+                            if ( ((marshmallow_statement)var->data)->op == ifop || ((marshmallow_statement)var->data)->op == whileop
+                                || ((marshmallow_statement)var->data)->op == ret  ) {
                                 
                                 ((marshmallow_statement)var->data)->function = RKStack_Peek(scope_stack) ;
                                 
-                                RKStack_Push(scope_stack, var->data) ;
+                                if ( ((marshmallow_statement)var->data)->op != ret ) RKStack_Push(scope_stack, var->data) ;
                             }
                             
                         }

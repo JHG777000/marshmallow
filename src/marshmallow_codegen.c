@@ -611,6 +611,18 @@ static void output_statement( marshmallow_context context, FILE* file, marshmall
             
             break;
             
+        case breakop:
+            
+            fprintf(file, "break") ;
+            
+            break;
+            
+        case continueop:
+            
+            fprintf(file, "continue") ;
+            
+            break;
+            
         case add:
             
             output_value(context, file, (marshmallow_variable)statement->var_a, module) ;

@@ -54,6 +54,7 @@ module mymod.
  // using ":=" as assignment, helps aviod confusion with "=="
  // you can however use assignment in a conditional
  // also due to functions' unified scope a variable can be used before its defined
+
   if (myvar2 := myvar) while ( i < 2 ).
 
    u64 myvar2 := 0xff.
