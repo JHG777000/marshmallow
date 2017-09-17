@@ -233,6 +233,8 @@ static void output_value(marshmallow_context context, FILE* file, marshmallow_va
     
     if ( value->type->root_type == string ) fprintf(file, "\"") ;
     
+    if ( value->type->root_type == character ) fprintf(file, "\'") ;
+    
     if ( value->type->root_type != unknown && value->type->root_type != array && value->type->root_type != arguments && value->type->root_type != metacollection
         && value->type->root_type != expression && value->data != NULL ) {
         
@@ -261,6 +263,8 @@ static void output_value(marshmallow_context context, FILE* file, marshmallow_va
     }
     
     if ( value->type->root_type == string ) fprintf(file, "\"") ;
+    
+    if ( value->type->root_type == character ) fprintf(file, "\'") ;
     
 }
 

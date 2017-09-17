@@ -131,6 +131,12 @@ static int marshmallow_is_token_root_type( marshmallow_token token ) {
             
             break;
             
+        case mgk(character):
+            
+            return 1 ;
+            
+            break;
+            
         case mgk(floattype):
             
             return 1 ;
@@ -2371,6 +2377,8 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, FILE* file ) {
     
     int is_string = 0 ;
     
+    int is_character = 0 ;
+    
     marshmallow_token token = NULL ;
     
     marshmallow_token symtoken = NULL ;
@@ -2384,18 +2392,6 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, FILE* file ) {
     word[word_size-1] = '\0' ;
     
     while ( (c = getc(file)) != EOF ) {
-        
-        if ( c == '"' ) {
-            
-            if ( is_string == 0 ) {
-                
-                is_string = 1 ;
-                
-                continue ;
-            }
-            
-            if ( is_string == 1 ) is_string = 0 ;
-        }
         
         if ( noline < 2 ) if ( c == '/' ) {
             
@@ -2417,6 +2413,46 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, FILE* file ) {
             if ( c == '/' ) RKList_DeleteNode(symbol_list, RKList_GetLastNode(symbol_list)) ;
             
             continue ;
+        }
+        
+        if ( c == '"' ) {
+            
+            if ( is_string == 0 ) {
+                
+                is_string = 1 ;
+                
+                continue ;
+            }
+            
+            if ( is_string == 1 ) is_string = 0 ;
+        }
+        
+        if ( c == '\'' ) {
+            
+            if ( is_character == 0 ) {
+                
+                is_character = 1 ;
+                
+                continue ;
+            }
+        }
+        
+        if ( is_character == 2 && c != '\'' ) {
+            
+            printf("Single quotes must have only one character.\n") ;
+            
+            exit(EXIT_FAILURE) ;
+
+        }
+        
+        if ( is_character == 2 && c == '\'' ) {
+            
+            is_character = 0 ;
+        }
+       
+        if ( is_character == 1 ) {
+            
+            is_character = 2 ;
         }
         
         symbol = mgk(notoken) ;
@@ -2441,7 +2477,7 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, FILE* file ) {
             symtoken->value = rkstr("end_of_line") ;
         }
         
-        if (  marshmallow_is_symbol(c,balance) && c != '.' && c != '"' && !is_string) {
+        if (  marshmallow_is_symbol(c,balance) && c != '.' && c != '"' && !is_string && c != '\'' && !is_character) {
             
             char symword[2] ;
             
@@ -2466,7 +2502,7 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, FILE* file ) {
             symtoken->value = (symbol != mgk(notoken)) ? RKString_NewStringFromCString(symword) : rkstr("notoken") ;
         }
         
-        if ( ((!(isspace(c) || marshmallow_is_symbol(c,balance))) || is_string) && c != '"' ) {
+        if ( ((!(isspace(c) || marshmallow_is_symbol(c,balance))) || is_string || is_character) && c != '"' && c != '\'' ) {
             
             word = RKMem_Realloc(word, word_size+1, word_size, char, 1) ;
             
@@ -2477,7 +2513,7 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, FILE* file ) {
             word[word_size-1] = '\0' ;
         }
         
-        if ( (isspace(c) || marshmallow_is_symbol(c,balance)) && !is_string ) {
+        if ( (isspace(c) || marshmallow_is_symbol(c,balance)) && !is_string && !is_character ) {
             
             if ( RKStore_GetItem(context->words, word) == NULL ) {
                 
@@ -2486,9 +2522,11 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, FILE* file ) {
                 symbol = mgk(identifier) ;
                 
                 if ( c == '"' ) symbol = mgk(string) ;
+                
+                if ( c == '\'' ) symbol = mgk(character) ;
             }
             
-            if ( symbol != mgk(identifier) && symbol != mgk(string) ) symbol = rkget(int, RKStore_GetItem(context->words, word)) ;
+            if ( symbol != mgk(identifier) && symbol != mgk(string) && symbol != mgk(character) ) symbol = rkget(int, RKStore_GetItem(context->words, word)) ;
             
             if ( symbol == mgk(identifier) ) {
                 
@@ -2631,6 +2669,43 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, FILE* file ) {
                 printf("Module, not ended.\n") ;
                 
                 break;
+                
+            case entity_function:
+                
+                printf("Function, not ended.\n") ;
+                
+                break;
+                
+            case entity_statement:
+                
+                if ( ((marshmallow_statement)RKStack_Peek(scope_stack))->op == ifop ) {
+                
+                        printf("If, not ended.\n") ;
+                }
+                
+                if ( ((marshmallow_statement)RKStack_Peek(scope_stack))->op == whileop ) {
+                    
+                    printf("While, not ended.\n") ;
+                }
+                
+                if ( ((marshmallow_statement)RKStack_Peek(scope_stack))->op == switchop ) {
+                    
+                    printf("Switch, not ended.\n") ;
+                }
+                
+                if ( ((marshmallow_statement)RKStack_Peek(scope_stack))->op == caseop ) {
+                    
+                    printf("Case, not ended.\n") ;
+                }
+                
+                if ( ((marshmallow_statement)RKStack_Peek(scope_stack))->op == defaultop ) {
+                    
+                    printf("Default, not ended.\n") ;
+                }
+
+                
+                break;
+
                 
             default:
                 break;

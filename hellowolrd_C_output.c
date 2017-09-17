@@ -41,7 +41,7 @@ break;default:break;}  ;
 j--  ;
 i=0  ;
 puts("Hello");  ;
-myvar=52  ;
+myvar='5'  ;
 if ((myvar2=myvar)) while ((i<2)) {
 myvar=(2+2)  ;
 if (0) {

@@ -48,7 +48,7 @@ module mymod.
 
   puts("Hello").
 
-  myvar := 52.
+  myvar := '5'.
 
  // assignments return a value
  // using ":=" as assignment, helps aviod confusion with "=="

@@ -25,6 +25,8 @@ token(hex, "")
 
 token(string, "")
 
+token(character, "")
+
 token(u8type, "u8")
 
 token(i8type, "i8")
