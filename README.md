@@ -37,7 +37,7 @@ The following is an example of what marshmallow aims to be:
 
   	 int value3 := func().
 
-  	 { value2, value3 } := MyFunc() ;
+  	 { value2, value3 } := MyFunc().
 
   	 lambda() returns int func = lambda_start.
 
