@@ -41,13 +41,13 @@ break;default:break;}  ;
 j--  ;
 i=0  ;
 puts("Hello");  ;
-myvar='5'  ;
+myvar='\''  ;
 if ((myvar2=myvar)) while ((i<2)) {
 myvar=(2+2)  ;
 if (0) {
 puts("World!!!!");  ;
 } else if (1) {
-puts("World.");  ;
+puts("\"\"\"\'\"'");  ;
 } i++  ;
 }  ;
 if (j) goto helloworld;  ;

@@ -48,7 +48,7 @@ module mymod.
 
   puts("Hello").
 
-  myvar := '5'.
+  myvar := '\''.
 
  // assignments return a value
  // using ":=" as assignment, helps aviod confusion with "=="
@@ -67,7 +67,7 @@ module mymod.
 
    else.
 
-    puts("World.").
+    puts("\"\"\"\'\"'").
 
    end if.
 

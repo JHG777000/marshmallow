@@ -2377,6 +2377,8 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, FILE* file ) {
     
     int is_string = 0 ;
     
+    int is_escape = 0 ;
+    
     int is_character = 0 ;
     
     marshmallow_token token = NULL ;
@@ -2415,7 +2417,94 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, FILE* file ) {
             continue ;
         }
         
-        if ( c == '"' ) {
+        if ( is_escape == 2 ) is_escape = 0 ;
+        
+        if ( is_escape ) {
+            
+            switch (c) {
+                    
+                case '\\':
+                    
+                    is_escape = -1 ;
+                    
+                    break;
+                    
+                case '0':
+                    
+                    is_escape = -1 ;
+                    
+                    break;
+                    
+                case 'a':
+                    
+                    is_escape = -1 ;
+                    
+                    break;
+                    
+                case 'b':
+                    
+                    is_escape = -1 ;
+                    
+                    break;
+                    
+                case 'f':
+                    
+                    is_escape = -1 ;
+                    
+                    break;
+                    
+                case 'n':
+                    
+                    is_escape = -1 ;
+                    
+                    break;
+                    
+                case 'r':
+                    
+                    is_escape = -1 ;
+                    
+                    break;
+                    
+                case 't':
+                    
+                    is_escape = -1 ;
+                    
+                    break;
+                    
+                case 'v':
+                    
+                    is_escape = -1 ;
+                    
+                    break;
+                    
+                case '\'':
+                    
+                    is_escape = 2 ;
+                    
+                    break;
+                    
+                case '"':
+                    
+                    is_escape = 2 ;
+                    
+                    break;
+                    
+                default:
+                    
+                    printf("Not valid escape sequence.\n") ;
+                    
+                    exit(EXIT_FAILURE) ;
+                    
+                    break;
+            }
+        }
+        
+        if ( c == '\\' && is_escape == 0 ) {
+            
+            is_escape = 1 ;
+        }
+        
+        if ( c == '"' && (is_escape != 2) && !is_character ) {
             
             if ( is_string == 0 ) {
                 
@@ -2427,33 +2516,39 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, FILE* file ) {
             if ( is_string == 1 ) is_string = 0 ;
         }
         
-        if ( c == '\'' ) {
-            
-            if ( is_character == 0 ) {
-                
-                is_character = 1 ;
-                
-                continue ;
-            }
-        }
+        if (!is_string) {
         
-        if ( is_character == 2 && c != '\'' ) {
+         if ( c == '\'' && (is_escape != 2) && (is_escape != -1) ) {
             
-            printf("Single quotes must have only one character.\n") ;
+             if ( is_character == 0 ) {
+                
+                 is_character = 1 ;
+                
+                 continue ;
+             }
+         }
+        
+         if ( is_character == 2 && c != '\'' && (is_escape != 2) && (is_escape != -1) ) {
             
-            exit(EXIT_FAILURE) ;
+             printf("Single quotes must have only one character.\n") ;
+            
+             exit(EXIT_FAILURE) ;
 
+         }
+        
+         if ( is_character == 2 && c == '\'' && (is_escape != 2) && (is_escape != -1) ) {
+            
+             is_character = 0 ;
+         }
+       
+         if ( is_character == 1 && (is_escape != 2) && (is_escape != -1) ) {
+            
+             is_character = 2 ;
+         }
+            
         }
         
-        if ( is_character == 2 && c == '\'' ) {
-            
-            is_character = 0 ;
-        }
-       
-        if ( is_character == 1 ) {
-            
-            is_character = 2 ;
-        }
+        if ( is_escape == -1 ) is_escape = 0 ;
         
         symbol = mgk(notoken) ;
         
@@ -2477,7 +2572,8 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, FILE* file ) {
             symtoken->value = rkstr("end_of_line") ;
         }
         
-        if (  marshmallow_is_symbol(c,balance) && c != '.' && c != '"' && !is_string && c != '\'' && !is_character) {
+        if (  marshmallow_is_symbol(c,balance) && c != '.' && ( c != '"' || (is_escape == 2) || is_character ) && !is_string && ( c != '\'' || (is_escape == 2) || is_string )
+            && !is_character) {
             
             char symword[2] ;
             
@@ -2502,7 +2598,8 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, FILE* file ) {
             symtoken->value = (symbol != mgk(notoken)) ? RKString_NewStringFromCString(symword) : rkstr("notoken") ;
         }
         
-        if ( ((!(isspace(c) || marshmallow_is_symbol(c,balance))) || is_string || is_character) && c != '"' && c != '\'' ) {
+        if ( ((!(isspace(c) || marshmallow_is_symbol(c,balance))) || is_string || is_character) && ( c != '"' || (is_escape == 2) || is_character )
+            && ( c != '\'' || (is_escape == 2) || is_string ) ) {
             
             word = RKMem_Realloc(word, word_size+1, word_size, char, 1) ;
             
@@ -2713,4 +2810,5 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, FILE* file ) {
         
         exit(EXIT_FAILURE) ;
     }
+
 }
