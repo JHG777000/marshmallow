@@ -322,6 +322,8 @@ void marshmallow_add_statement_to_function( marshmallow_function_body function, 
     
     statement->function = function ;
     
+    if ( function->entity_type == entity_statement ) statement->function = ((marshmallow_statement)function)->function ;
+    
     RKList_AddToList(function->statements, statement) ;
 }
 

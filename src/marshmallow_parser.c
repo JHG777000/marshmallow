@@ -2097,7 +2097,6 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                 
                 if ( ((marshmallow_entity)entity)->entity_type == entity_statement && ( ((marshmallow_statement)entity)->op == breakop
                                                                                        || ((marshmallow_statement)entity)->op == continueop  ) ) {
-                    
                     if ( !does_scope_have_loop(scope_stack) ) {
                         
                         printf("Break or continue statements can only exist within a loop.\n") ;
@@ -2105,7 +2104,6 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                         exit(EXIT_FAILURE) ;
 
                     }
-                    
                 }
                 
                 if ( ((marshmallow_entity)entity)->entity_type == entity_statement && ((marshmallow_statement)entity)->op == elseop ) {
@@ -2213,6 +2211,11 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                                 || ((marshmallow_statement)var->data)->op == ret  ) {
                                 
                                 ((marshmallow_statement)var->data)->function = RKStack_Peek(scope_stack) ;
+                                
+                                if ( ((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type == entity_statement ) {
+                                    
+                                    ((marshmallow_statement)var->data)->function = ((marshmallow_statement)RKStack_Peek(scope_stack))->function ;
+                                }
                                 
                                 if ( ((marshmallow_statement)var->data)->op != ret ) RKStack_Push(scope_stack, var->data) ;
                             }
