@@ -2395,7 +2395,7 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, FILE* file ) {
     
     while ( (c = getc(file)) != EOF ) {
         
-        if ( noline < 2 ) if ( c == '/' ) {
+        if ( noline < 2 ) if ( !is_string ) if ( c == '/' ) {
             
             noline++ ;
         }
