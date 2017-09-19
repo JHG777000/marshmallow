@@ -2533,7 +2533,6 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, FILE* file ) {
              printf("Single quotes must have only one character.\n") ;
             
              exit(EXIT_FAILURE) ;
-
          }
         
          if ( is_character == 2 && c == '\'' && (is_escape != 2) && (is_escape != -1) ) {
@@ -2721,7 +2720,14 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, FILE* file ) {
                 
                 token->keyword = symbol ;
                 
-                token->value = (symbol != mgk(notoken)) ? RKString_NewStringFromCString(word) : rkstr("notoken") ;
+                if ( symbol == mgk(string) ) {
+                    
+                    token->value = RKString_SwapEscapeSequencesWithCharacters(RKString_NewStringFromCString(word)) ;
+                    
+                } else {
+                    
+                    token->value = (symbol != mgk(notoken)) ? RKString_NewStringFromCString(word) : rkstr("notoken") ;
+                }
                 
                 RKList_AddToList(symbol_list, token) ;
                 

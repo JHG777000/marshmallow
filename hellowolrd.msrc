@@ -32,7 +32,9 @@ module mymod.
 
    case (2).
 
-   puts("Hello").
+    puts("In marshmallow you can have string literals that
+          exist on more than one line,
+          and they will printed as such!!!!!").
 
    end case.
 
