@@ -67,7 +67,7 @@ static void output_symbol( marshmallow_context context, FILE* file, RKString nam
          }
      }
     
-     fprintf(file, "%s", RKString_GetString(str2)) ;
+     fprintf(file, "%s", RKString_GetString(RKString_GetStringForASCII(str2))) ;
      
      if ( is_definition ) RKStore_AddItem(context->symbols, name, RKString_GetString(str2)) ;
     
@@ -75,7 +75,7 @@ static void output_symbol( marshmallow_context context, FILE* file, RKString nam
         
     } else {
         
-     fprintf(file, "%s", RKString_GetString(name)) ;
+     fprintf(file, "%s", RKString_GetString(RKString_GetStringForASCII(name))) ;
         
     }
 }
@@ -231,9 +231,9 @@ static void output_value(marshmallow_context context, FILE* file, marshmallow_va
     
     if ( value == NULL ) return ;
     
-    if ( value->type->root_type == string ) fprintf(file, "\"") ;
+    if ( value->type->root_type == string ) fprintf(file, "u8\"") ;
     
-    if ( value->type->root_type == character ) fprintf(file, "\'") ;
+    if ( value->type->root_type == character ) fprintf(file, "L\'") ;
     
     if ( value->type->root_type != unknown && value->type->root_type != array && value->type->root_type != arguments && value->type->root_type != metacollection
         && value->type->root_type != expression && value->data != NULL ) {

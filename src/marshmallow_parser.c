@@ -2805,7 +2805,6 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, FILE* file ) {
                     
                     printf("Default, not ended.\n") ;
                 }
-
                 
                 break;
 

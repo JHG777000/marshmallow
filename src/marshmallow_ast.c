@@ -296,6 +296,10 @@ marshmallow_function_signature marshmallow_new_function_signature( RKString name
     
     signature->returns = RKList_NewList() ;
     
+    signature->is_declared = 0 ;
+    
+    signature->is_external = 0 ;
+    
     return signature ;
 }
 

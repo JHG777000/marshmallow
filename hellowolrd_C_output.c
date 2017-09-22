@@ -27,27 +27,28 @@ void marshmallow_mymod_main(MInt * returns_marshmallow_mymod_main_0) {
 MULong myvar = 0xff ;
 MULong i = 0 ;
 MULong j = 2 ;
+MULong UNICODE_11110000100111111001100010000000 = 42 ;
 MInt myarray[] = {7,7,7} ;
 MULong myvar2 = 0xff ;
 helloworld:  ;
 switch (j) {
 case 0:
-puts("Hello");  ;
+puts(u8"Hello");  ;
 case 1:
 break;  ;
 break;case 2:
-puts("In marshmallow you can have string literals that\n          exist on more than one line,\n          and they will printed as such!!!!!");  ;
+puts(u8"In marshmallow you can have string literals that\n          exist on more than one line,\n          and they will printed as such!!!!!");  ;
 break;default:break;}  ;
 j--  ;
 i=0  ;
-puts("Hello");  ;
-myvar='\''  ;
+puts(u8"Hello");  ;
+myvar=L'\''  ;
 if ((myvar2=myvar)) while ((i<2)) {
 myvar=(2+2)  ;
 if (0) {
-puts("World!!!!");  ;
+puts(u8"World!!!!");  ;
 } else if (1) {
-puts("\"\"\"\'\"'");  ;
+puts(u8"\"\"\"\'\"'");  ;
 } i++  ;
 }  ;
 if (j) goto helloworld;  ;
