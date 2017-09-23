@@ -75,7 +75,7 @@ static void output_symbol( marshmallow_context context, FILE* file, RKString nam
         
     } else {
         
-     fprintf(file, "%s", RKString_GetString(RKString_GetStringForASCII(name))) ;
+     fprintf(file, "%s", RKString_GetString(name)) ;
         
     }
 }

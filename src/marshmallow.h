@@ -24,6 +24,7 @@
 #include <string.h>
 
 #include <RKLib/RKMem.h>
+#include <RKLib/RKFile.h>
 
 typedef enum { public, private, protected, publish, inherit } marshmallow_access_control ;
 
@@ -161,7 +162,7 @@ void marshmallow_add_function_to_module_declarations( marshmallow_function_body 
 
 //parse
 
-void marshmallow_lex_and_parse_file( marshmallow_context context, FILE* file ) ;
+void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) ;
 
 //codegen
 

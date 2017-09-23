@@ -2355,7 +2355,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
     }
 }
 
-void marshmallow_lex_and_parse_file( marshmallow_context context, FILE* file ) {
+void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) {
     
     int c = 0 ;
     
@@ -2385,7 +2385,7 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, FILE* file ) {
     
     marshmallow_token symtoken = NULL ;
     
-    char* word = RKMem_CArray(1, char) ;
+    int* word = RKMem_CArray(1, int) ;
     
     RKList symbol_list = RKList_NewList() ;
     
@@ -2393,7 +2393,7 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, FILE* file ) {
     
     word[word_size-1] = '\0' ;
     
-    while ( (c = getc(file)) != EOF ) {
+    while ( (c = RKFile_GetUTF32Character(file)) != EOF ) {
         
         if ( noline < 2 ) if ( !is_string ) if ( c == '/' ) {
             
@@ -2600,7 +2600,7 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, FILE* file ) {
         if ( ((!(isspace(c) || marshmallow_is_symbol(c,balance))) || is_string || is_character) && ( c != '"' || (is_escape == 2) || is_character )
             && ( c != '\'' || (is_escape == 2) || is_string ) ) {
             
-            word = RKMem_Realloc(word, word_size+1, word_size, char, 1) ;
+            word = RKMem_Realloc(word, word_size+1, word_size, int, 1) ;
             
             word_size++ ;
             
@@ -2611,7 +2611,7 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, FILE* file ) {
         
         if ( (isspace(c) || marshmallow_is_symbol(c,balance)) && !is_string && !is_character ) {
             
-            if ( RKStore_GetItem(context->words, word) == NULL ) {
+            if ( RKStore_GetItem(context->words, RKString_GetString(RKString_NewStringFromUTF32(word,word_size-1)) ) == NULL ) {
                 
                 if ( (word_size == 1) && (!marshmallow_is_symbol(c,balance)) ) continue ;
                 
@@ -2622,7 +2622,8 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, FILE* file ) {
                 if ( c == '\'' ) symbol = mgk(character) ;
             }
             
-            if ( symbol != mgk(identifier) && symbol != mgk(string) && symbol != mgk(character) ) symbol = rkget(int, RKStore_GetItem(context->words, word)) ;
+            if ( symbol != mgk(identifier) && symbol != mgk(string) && symbol != mgk(character) ) symbol = rkget(int,
+                                                                                                                 RKStore_GetItem(context->words, RKString_GetString(RKString_NewStringFromUTF32(word,word_size-1)))) ;
             
             if ( symbol == mgk(identifier) ) {
                 
@@ -2643,7 +2644,7 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, FILE* file ) {
                                || (word[i] == 'c') || (word[i] == 'C') || (word[i] == 'd') || (word[i] == 'D') || (word[i] == 'e')
                                || (word[i] == 'e') || (word[i] == 'f') || (word[i] == 'F')) ) {
                             
-                            printf("Error: %s is not a hex. Hex can only contain 0-9,a-f,A-F.\n",word) ;
+                            printf("Error: %s is not a hex. Hex can only contain 0-9,a-f,A-F.\n",RKString_GetString(RKString_NewStringFromUTF32(word,word_size-1))) ;
                             
                             exit(EXIT_FAILURE) ;
                         }
@@ -2688,7 +2689,7 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, FILE* file ) {
                                 continue ;
                             }
                             
-                            printf("Error: %s is not a number or identifier. Identifiers can not start with a number, and hex must start with '0x'.\n",word) ;
+                            printf("Error: %s is not a number or identifier. Identifiers can not start with a number, and hex must start with '0x'.\n",RKString_GetString(RKString_NewStringFromUTF32(word,word_size-1))) ;
                             
                             exit(EXIT_FAILURE) ;
                         }
@@ -2698,7 +2699,7 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, FILE* file ) {
                     
                     if ( is_double > 1 ) {
                         
-                        printf("Error: Too many '.' in %s\n",word) ;
+                        printf("Error: Too many '.' in %s\n",RKString_GetString(RKString_NewStringFromUTF32(word,word_size-1))) ;
                         
                         exit(EXIT_FAILURE) ;
                     }
@@ -2722,11 +2723,11 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, FILE* file ) {
                 
                 if ( symbol == mgk(string) ) {
                     
-                    token->value = RKString_SwapEscapeSequencesWithCharacters(RKString_NewStringFromCString(word)) ;
+                    token->value = RKString_SwapEscapeSequencesWithCharacters(RKString_NewStringFromUTF32(word,word_size-1)) ;
                     
                 } else {
                     
-                    token->value = (symbol != mgk(notoken)) ? RKString_NewStringFromCString(word) : rkstr("notoken") ;
+                    token->value = (symbol != mgk(notoken)) ? RKString_NewStringFromUTF32(word,word_size-1) : rkstr("notoken") ;
                 }
                 
                 RKList_AddToList(symbol_list, token) ;
@@ -2742,7 +2743,7 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, FILE* file ) {
             
             free(word) ;
             
-            word = RKMem_CArray(1, char) ;
+            word = RKMem_CArray(1, int) ;
             
             word_size = 1 ;
             

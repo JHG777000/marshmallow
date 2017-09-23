@@ -27,7 +27,7 @@ void marshmallow_mymod_main(MInt * returns_marshmallow_mymod_main_0) {
 MULong myvar = 0xff ;
 MULong i = 0 ;
 MULong j = 2 ;
-MULong UNICODE_11110000100111111001100010000000 = 42 ;
+MULong 😀 = L'😀' ;
 MInt myarray[] = {7,7,7} ;
 MULong myvar2 = 0xff ;
 helloworld:  ;

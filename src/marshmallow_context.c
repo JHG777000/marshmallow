@@ -40,7 +40,7 @@ static void marshmallow_words( RKStore words ) {
 
 void marshmallow_compile_file( marshmallow_context context, const char* in_file, const char* out_file ) {
     
-    FILE* file = fopen(in_file, "r") ;
+    RKFile file = RKFile_OpenFile(in_file, rk_read_mode) ;
     
     FILE* output_file = fopen(out_file, "w") ;
     
@@ -48,7 +48,7 @@ void marshmallow_compile_file( marshmallow_context context, const char* in_file,
     
     marshmallow_codegen(context, output_file) ;
     
-    fclose(file) ;
+    RKFile_CloseFile(file) ;
     
     fclose(output_file) ;
 }

@@ -15,7 +15,7 @@ module mymod.
   u64 j := 2.
 
   //because all new languages need to support unicode identifiers
-  u64 😀 := 42.
+  u64 😀 := '😀'.
 
   i32[] myarray := {7,7,7}.
 
