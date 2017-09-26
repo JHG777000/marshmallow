@@ -6,6 +6,12 @@ module mymod.
 
  external function puts(u8* string).
 
+///************************************************************
+*   Block comments, in marshmallow are done with three forward
+*   slashes.
+*
+************************************************************///
+
  function main() returns i32.
 
   u64 myvar := 0xff.
@@ -35,7 +41,7 @@ module mymod.
 
    case (2).
 
-    puts("In marshmallow you can have string literals that
+    puts("In marshmallow y😀u can have string literals that
           exist on more than one line,
           and they will printed as such!!!!!").
 

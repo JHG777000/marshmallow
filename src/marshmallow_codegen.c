@@ -67,7 +67,7 @@ static void output_symbol( marshmallow_context context, FILE* file, RKString nam
          }
      }
     
-     fprintf(file, "%s", RKString_GetString(RKString_GetStringForASCII(str2))) ;
+     fprintf(file, "%s", RKString_GetString(str2)) ;
      
      if ( is_definition ) RKStore_AddItem(context->symbols, name, RKString_GetString(str2)) ;
     
@@ -1095,17 +1095,19 @@ static void output_app( marshmallow_context context, FILE* file ) {
     
     list = RKStore_GetList(context->modules) ;
     
-    if ( list == NULL ) return ;
+    if ( list != NULL ) {
     
-    node = RKList_GetFirstNode(list) ;
+     node = RKList_GetFirstNode(list) ;
     
-    output_runtime(context, file) ;
+     output_runtime(context, file) ;
     
-    while (node != NULL) {
+     while (node != NULL) {
         
-        output_module(context, file, RKList_GetData(node)) ;
+         output_module(context, file, RKList_GetData(node)) ;
         
-        node = RKList_GetNextNode(node) ;
+         node = RKList_GetNextNode(node) ;
+     }
+        
     }
 }
 

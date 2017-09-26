@@ -1666,8 +1666,6 @@ m_processor(variable) {
             
             return m_process(assignment) ;
         }
-        
-        m_expect(end_of_line) ;
     }
     
     variable->type->type_name = RKString_CopyString(m_gettoken->value) ;
@@ -2375,6 +2373,8 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
     
     int noline = 0 ;
     
+    int noline2 = 0 ;
+    
     int is_string = 0 ;
     
     int is_escape = 0 ;
@@ -2395,7 +2395,21 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
     
     while ( (c = RKFile_GetUTF32Character(file)) != EOF ) {
         
-        if ( noline < 2 ) if ( !is_string ) if ( c == '/' ) {
+        if ( noline == 3 && c == '/' && !noline2 ) {
+            
+            noline = 1 ;
+            
+            noline2 = 1 ;
+        }
+        
+        if ( noline == 3 && noline2 ) {
+            
+            noline = 1 ;
+            
+            noline2 = 0 ;
+        }
+        
+        if ( noline < 3 ) if ( !is_string ) if ( c == '/' ) {
             
             noline++ ;
         }
@@ -2405,12 +2419,12 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
             noline = 0 ;
         }
         
-        if ( c == '\n' ) {
+        if ( c == '\n' && noline != 3 ) {
             
             noline = 0 ;
         }
         
-        if ( noline == 2 ) {
+        if ( noline >= 2 ) {
             
             if ( c == '/' ) RKList_DeleteNode(symbol_list, RKList_GetLastNode(symbol_list)) ;
             

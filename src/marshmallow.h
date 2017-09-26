@@ -164,6 +164,10 @@ void marshmallow_add_function_to_module_declarations( marshmallow_function_body 
 
 void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) ;
 
+//typecheck
+
+void marshmallow_typecheck( marshmallow_context context ) ;
+
 //codegen
 
 void marshmallow_codegen( marshmallow_context context, FILE* out_file ) ;

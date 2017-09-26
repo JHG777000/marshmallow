@@ -37,7 +37,7 @@ puts(u8"Hello");  ;
 case 1:
 break;  ;
 break;case 2:
-puts(u8"In marshmallow you can have string literals that\n          exist on more than one line,\n          and they will printed as such!!!!!");  ;
+puts(u8"In marshmallow y😀u can have string literals that\n          exist on more than one line,\n          and they will printed as such!!!!!");  ;
 break;default:break;}  ;
 j--  ;
 i=0  ;

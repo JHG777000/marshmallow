@@ -46,6 +46,8 @@ void marshmallow_compile_file( marshmallow_context context, const char* in_file,
     
     marshmallow_lex_and_parse_file(context, file) ;
     
+    marshmallow_typecheck(context) ;
+    
     marshmallow_codegen(context, output_file) ;
     
     RKFile_CloseFile(file) ;
