@@ -74,13 +74,15 @@ marshmallow_root_type root_type ; void* base_type ; int num_of_elements ; } *mar
 
 typedef struct marshmallow_variable_s { marshmallow_entity_type entity_type ; marshmallow_type type ;
     
-RKString name ; void* data ; int is_hidden ; int is_overridable ; int is_override ; int is_readonly ;
+RKString name ; void* data ; int is_hidden ; int is_readonly ;
     
 int is_persistent ; int is_declared ; int is_external ; marshmallow_access_control access_control ; marshmallow_variable static_assignment ; } *marshmallow_variable ;
 
 typedef struct marshmallow_value_s { marshmallow_type type ; RKString value ; RKList array_value ; } *marshmallow_value ;
 
-typedef struct marshmallow_function_signature_s { int is_method ; int is_declared ; int is_external ; RKString func_name ; marshmallow_class class ;
+typedef struct marshmallow_function_signature_s { int is_method ; int is_overridable ; int is_override ;
+    
+int is_declared ; int is_external ; RKString func_name ; marshmallow_class class ;
     
 RKStore parameters ; RKList returns ; } *marshmallow_function_signature ;
 

@@ -211,10 +211,6 @@ marshmallow_variable marshmallow_new_variable( void ) {
     
     variable->is_hidden = 0 ;
     
-    variable->is_overridable = 0 ;
-    
-    variable->is_override =  0 ;
-    
     variable->is_persistent = 0 ;
     
     variable->is_readonly = 0 ;
@@ -295,6 +291,10 @@ marshmallow_function_signature marshmallow_new_function_signature( RKString name
     signature->is_method = is_method ;
     
     signature->returns = RKList_NewList() ;
+    
+    signature->is_overridable = 0 ;
+    
+    signature->is_override = 0 ;
     
     signature->is_declared = 0 ;
     
