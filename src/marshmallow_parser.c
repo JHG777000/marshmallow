@@ -1674,13 +1674,7 @@ m_processor(variable) {
     
     variable->name = RKString_CopyString(m_peek(n)->value) ;
     
-    
     n++ ;
-
-    if ( pointers > 0 ) {
-        
-        m_advanceN(pointers) ;
-    }
     
     if ( arrays != NULL ) {
         
@@ -1705,6 +1699,11 @@ m_processor(variable) {
             
             exit(EXIT_FAILURE) ;
         }
+    }
+    
+    if ( pointers > 0 ) {
+        
+       if ( variable->static_assignment == NULL ) m_advanceN(pointers) ;
     }
     
     m_advanceN(1) ;

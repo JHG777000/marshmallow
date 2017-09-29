@@ -160,6 +160,10 @@ static void typecheck_function_signature( marshmallow_function_signature signatu
 
 static void typecheck_declaration( marshmallow_entity declaration, marshmallow_module module ) {
     
+    RKList list = NULL ;
+    
+    RKList_node node = NULL ;
+    
     if ( declaration->entity_type == entity_function ) {
         
         if ( ((marshmallow_function_body)declaration)->signature->is_external ) {
@@ -171,6 +175,25 @@ static void typecheck_declaration( marshmallow_entity declaration, marshmallow_m
                 printf("External function or method: '%s', is marked as overridable, an external function or method can not be marked as overridable.\n",RKString_GetString(((marshmallow_function_body)declaration)->signature->func_name)) ;
                 
                 exit(EXIT_FAILURE) ;
+            }
+        }
+        
+        list = RKStore_GetList(((marshmallow_function_body)declaration)->signature->parameters) ;
+        
+        if ( list != NULL ) {
+            
+            node = RKList_GetFirstNode(list) ;
+            
+            while ( node != NULL ) {
+                
+                if ( ((marshmallow_variable)RKList_GetData(node))->static_assignment != NULL ) {
+                    
+                    printf("Declared or external function or method parameter: '%s', is being statically assigned, a declared or external function or method parameter can not be statically assigned.\n",RKString_GetString(((marshmallow_variable)RKList_GetData(node))->name)) ;
+                    
+                    exit(EXIT_FAILURE) ;
+                }
+                
+                node = RKList_GetNextNode(node) ;
             }
         }
         
