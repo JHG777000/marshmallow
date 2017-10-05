@@ -2016,8 +2016,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                 
                 if ( !(((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type == entity_module)
                     && !(((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type == entity_function) &&
-                    !(((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type == entity_statement) &&
-                    !(((marshmallow_statement)RKStack_Peek(scope_stack))->op == ifop || ((marshmallow_statement)RKStack_Peek(scope_stack))->op == whileop) ) {
+                    !(((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type == entity_statement) ) {
                     
                     printf("Expected module or function. Variables must exist within a module or function.\n") ;
                     
@@ -2030,7 +2029,9 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                 marshmallow_add_variable_to_scope(RKStack_Peek(scope_stack), (marshmallow_variable)entity) ;
                     
                 } else if ( (((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type == entity_statement) &&
-                           (((marshmallow_statement)RKStack_Peek(scope_stack))->op == ifop || ((marshmallow_statement)RKStack_Peek(scope_stack))->op == whileop) ) {
+                           (((marshmallow_statement)RKStack_Peek(scope_stack))->op == ifop || ((marshmallow_statement)RKStack_Peek(scope_stack))->op == whileop
+                            || ((marshmallow_statement)RKStack_Peek(scope_stack))->op == switchop || ((marshmallow_statement)RKStack_Peek(scope_stack))->op == caseop
+                            || ((marshmallow_statement)RKStack_Peek(scope_stack))->op == defaultop ) ) {
                     
                     if ( (marshmallow_scope)((marshmallow_statement)RKStack_Peek(scope_stack))->function == NULL ) {
                         

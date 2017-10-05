@@ -7,9 +7,9 @@ module mymod.
  external function puts(u8* string).
 
 ///************************************************************
-*   Block comments, in marshmallow are done with three forward
-*   slashes.
-*
+*  Block comments, in marshmallow are done with three forward *
+*  slashes.                                                   *
+*                                                             *
 ************************************************************///
 
  function main() returns i32.
