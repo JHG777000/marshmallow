@@ -853,13 +853,15 @@ m_processor(expression) {
     
     if ( m_peek(n+0)->keyword == mgk(and) ) op = addrof ;
     
-    if ( m_peek(n+0)->keyword == mgk(star) )  op = deref ;
+    if ( m_peek(n+0)->keyword == mgk(star) ) op = deref ;
     
-    if ( m_peek(n+0)->keyword == mgk(minus) )  op = negate ;
+    if ( m_peek(n+0)->keyword == mgk(minus) ) op = negate ;
     
-    if ( m_peek(n+0)->keyword == mgk(epoint) )  op = not ;
+    if ( m_peek(n+0)->keyword == mgk(epoint) ) op = not ;
     
-    if ( op == addrof || op == deref || op == negate || op == not ) n++ ;
+    if ( m_peek(n+0)->keyword == mgk(tilde) ) op = bnot ;
+    
+    if ( op == addrof || op == deref || op == negate || op == not || op == bnot ) n++ ;
     
     if ( marshmallow_is_token_root_type(m_peek(n+0)) ) {
         
@@ -931,6 +933,50 @@ m_processor(expression) {
                 
                 break;
                 
+            case mgk(star):
+                
+                op = mult ;
+                
+                break;
+                
+            case mgk(slash):
+                
+                op = mdiv ;
+                
+                break;
+                
+            case mgk(percent):
+                
+                op = rem ;
+                
+                break;
+                
+            case mgk(and):
+                
+                op = band ;
+                
+                if ( m_peek(n+2)->keyword == mgk(and) ) {
+                    
+                    op = and ;
+                    
+                    n++ ;
+                }
+                
+                break;
+                
+            case mgk(pipe):
+                
+                op = bor ;
+                
+                if ( m_peek(n+2)->keyword == mgk(pipe) ) {
+                    
+                    op = or ;
+                    
+                    n++ ;
+                }
+                
+                break;
+                
             case mgk(pright):
                 
                 m_advanceN(n+2) ;
@@ -949,16 +995,14 @@ m_processor(expression) {
                 
             case mgk(colon):
                 
-                if ( m_peek(n+2)->keyword == mgk(eql) ) op = assignment ;
+                op = xor ;
                 
-                if ( op != assignment ) {
+                if ( m_peek(n+2)->keyword == mgk(eql) ) {
                     
-                    printf("Unknown operator. %s is not a operator.\n",RKString_GetString(m_peek(n+2)->value)) ;
+                    op = assignment ;
                     
-                    exit(EXIT_FAILURE) ;
+                    n++ ;
                 }
-                
-                n++ ;
                 
                 break;
                 

@@ -67,6 +67,8 @@ token(colon, ":")
 
 token(epoint, "!")
 
+token(tilde, "~")
+
 token(greaterthan,">")
 
 token(lessthan,"<")

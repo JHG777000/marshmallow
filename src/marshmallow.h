@@ -34,7 +34,7 @@ unknown, arguments, collection, metacollection } marshmallow_root_type ;
 
 typedef enum { noop, assignment, is_equal, is_not_equal, is_greaterthan, is_greaterthan_or_equal, is_lessthan, is_lessthan_or_equal,
     
-not, add, sub, negate, mult, mdiv, rem, deref, addrof, msizeof, itemsof, inc, dec, call,
+ add, sub, negate, mult, mdiv, rem, not, and, or, bnot, band, bor, xor, lshift, rshift, deref, addrof, msizeof, itemsof, inc, dec, call,
     
 slifop, ifop, elseop, whileop, breakop, continueop,  switchop, caseop, defaultop, section, gotoop, ret } marshmallow_op_type ;
 
