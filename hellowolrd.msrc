@@ -18,7 +18,7 @@ module mymod.
 
   u64 i := 0.
 
-  u64 j := 2.
+  u64 j := 4.
 
   //because all new languages need to support unicode identifiers
   u64 😀 := '😀'.
@@ -29,17 +29,21 @@ module mymod.
 
   switch (j).
 
-   case (0).
+  case (1).
 
-    puts("Hello").
+    puts("Hi,").
 
-    case (1).
+    case (2).
 
-    end case.
+     puts("Bye.").
+
+    case (4).
+
+     puts("Not.").
 
    end case.
 
-   case (2).
+   case (3).
 
     puts("In marshmallow y😀u can have string literals that
           exist on more than one line,
@@ -57,7 +61,7 @@ module mymod.
 
   i := 0.
 
-  puts("Hello").
+  puts("Hello.").
 
   myvar := '\''.
 

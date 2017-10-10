@@ -454,6 +454,8 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
      switch ( statement->op ) {
            
         case add:
+             
+        case sub:
             
             if ( statement->var_a->entity_type == entity_variable ) {
                 

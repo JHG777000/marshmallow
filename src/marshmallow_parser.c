@@ -1040,9 +1040,16 @@ m_processor(expression) {
                 
                 op = is_greaterthan ;
                 
-                if ( m_peek(n+2)->keyword == mgk(eql) ){
+                if ( m_peek(n+2)->keyword == mgk(eql) ) {
                     
                     op = is_greaterthan_or_equal ;
+                    
+                    n++ ;
+                }
+                
+                if ( op == is_greaterthan ) if ( m_peek(n+2)->keyword == mgk(greaterthan) ) {
+                    
+                    op = rshift ;
                     
                     n++ ;
                 }
@@ -1053,9 +1060,16 @@ m_processor(expression) {
                 
                 op = is_lessthan ;
                 
-                if ( m_peek(n+2)->keyword == mgk(eql) ){
+                if ( m_peek(n+2)->keyword == mgk(eql) ) {
                     
                     op = is_lessthan_or_equal ;
+                    
+                    n++ ;
+                }
+                
+               if ( op == is_lessthan ) if ( m_peek(n+2)->keyword == mgk(lessthan) ) {
+                    
+                    op = lshift ;
                     
                     n++ ;
                 }
@@ -2275,7 +2289,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                 if ( ((marshmallow_statement)entity)->op == ifop || ((marshmallow_statement)entity)->op == whileop || ((marshmallow_statement)entity)->op == switchop ||
                     ((marshmallow_statement)entity)->op == caseop || ((marshmallow_statement)entity)->op == defaultop) {
                     
-                    RKStack_Push(scope_stack, entity) ;
+                    if (!(((marshmallow_statement)RKStack_Peek(scope_stack))->op == caseop && ((marshmallow_statement)entity)->op == caseop)) RKStack_Push(scope_stack, entity) ;
                 }
                 
                 break;
@@ -2356,6 +2370,8 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                         }
                         
                         if ( ((marshmallow_statement)RKStack_Peek(scope_stack))->op == caseop ) {
+                            
+                            ((marshmallow_statement)RKStack_Peek(scope_stack))->op = endcaseop ;
                             
                             if ( m_peek(1)->keyword != mgk(case) ) {
                                 

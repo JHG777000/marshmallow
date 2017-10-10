@@ -521,6 +521,7 @@ static void output_statement( marshmallow_context context, FILE* file, marshmall
             break;
             
         case caseop:
+        case endcaseop:
             
             fprintf(file,"case ") ;
             
@@ -546,7 +547,7 @@ static void output_statement( marshmallow_context context, FILE* file, marshmall
                 }
             }
             
-            fprintf(file,"break;") ;
+            if ( statement->op == endcaseop ) fprintf(file,"break;") ;
             
             break;
             
