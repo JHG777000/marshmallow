@@ -252,7 +252,7 @@ static void output_value(marshmallow_context context, FILE* file, marshmallow_va
         output_collection(context, file, value->data, module) ;
     }
     
-    if ( value->type->root_type == unknown && value->name != NULL ) {
+    if ( (value->type->root_type == unknown || ( m_is_type_number(value->type) && value->type->root_type != hex )) && value->name != NULL ) {
         
         output_symbol(context, file, value->name, module, 0, 0) ;
     }

@@ -17,11 +17,187 @@
 
 #include "marshmallow.h"
 
+static marshmallow_type typecheck_get_type_from_root_type( marshmallow_root_type root ) {
+    
+    static marshmallow_type unknown_t = NULL ;
+    
+    static marshmallow_type i8_t = NULL ;
+    
+    static marshmallow_type u8_t = NULL ;
+    
+    static marshmallow_type i16_t = NULL ;
+    
+    static marshmallow_type u16_t = NULL ;
+    
+    static marshmallow_type i32_t = NULL ;
+    
+    static marshmallow_type u32_t = NULL ;
+    
+    static marshmallow_type i64_t = NULL ;
+    
+    static marshmallow_type u64_t = NULL ;
+    
+    static marshmallow_type f32_t = NULL ;
+    
+    static marshmallow_type f64_t = NULL ;
+    
+#define get_type_from_root_type(type)\
+case type:\
+if ( type##_t == NULL ) type##_t = RKMem_NewMemOfType(struct marshmallow_type_s) ;\
+type##_t->root_type = type ;\
+return type##_t ;\
+break;
+    
+    switch (root) {
+            
+            get_type_from_root_type(i8)
+            
+            get_type_from_root_type(u8)
+            
+            get_type_from_root_type(i16)
+            
+            get_type_from_root_type(u16)
+            
+            get_type_from_root_type(i32)
+            
+            get_type_from_root_type(u32)
+            
+            get_type_from_root_type(i64)
+            
+            get_type_from_root_type(u64)
+            
+            get_type_from_root_type(f32)
+            
+            get_type_from_root_type(f64)
+            
+        default:
+            break;
+    }
+    
+    if ( unknown_t == NULL ) unknown_t = RKMem_NewMemOfType(struct marshmallow_type_s) ;
+    
+    unknown_t->root_type = unknown ;
+    
+    return unknown_t ;
+    
+}
+
+int m_is_type_float( marshmallow_type type ) {
+    
+    switch ( type->root_type ) {
+            
+        case f32:
+            
+            return 1 ;
+            
+            break;
+            
+        case f64:
+            
+            return 1 ;
+            
+            break;
+            
+        default:
+            break;
+    }
+    
+    return 0 ;
+}
+
+int m_is_type_number( marshmallow_type type ) {
+    
+    switch ( type->root_type ) {
+            
+        case i8:
+            
+            return 1 ;
+            
+            break;
+            
+        case u8:
+            
+            return 1 ;
+            
+            break;
+            
+        case i16:
+            
+            return 1 ;
+            
+            break;
+            
+        case u16:
+            
+            return 1 ;
+            
+            break;
+            
+        case i32:
+            
+            return 1 ;
+            
+            break;
+            
+        case u32:
+            
+            return 1 ;
+            
+            break;
+            
+            
+        case i64:
+            
+            return 1 ;
+            
+            break;
+            
+        case u64:
+            
+            return 1 ;
+            
+            break;
+            
+        case hex:
+            
+            return 1 ;
+            
+            break;
+            
+        case character:
+            
+            return 1 ;
+            
+            break;
+            
+        case f32:
+            
+            return 1 ;
+            
+            break;
+            
+        case f64:
+            
+            return 1 ;
+            
+            break;
+            
+        default:
+            break;
+    }
+    
+    return 0 ;
+}
+
 static int typecheck_are_types_equal( marshmallow_type t1, marshmallow_type t2 ) {
     
     marshmallow_type t = NULL ;
     
     marshmallow_type t0 = NULL ;
+    
+    if ( m_is_type_number(t1) && m_is_type_number(t2) ) return 1 ;
+    
+    if ( (t1->root_type == array && t2->root_type == metacollection) || (t2->root_type == array && t1->root_type == metacollection) ) return 1 ;//for now fake it
     
     if ( t1->root_type != t2->root_type ) return 0 ;
     
@@ -100,11 +276,6 @@ static void typecheck_variable( marshmallow_variable variable, marshmallow_modul
     typecheck_type(variable,module) ;
     
     if ( variable->static_assignment != NULL ) {
-    
-        if ( variable->static_assignment->type->root_type == hex ) {
-            
-            variable->static_assignment->type->root_type = u64 ;
-        }
         
       if ( !typecheck_are_types_equal(variable->type, variable->static_assignment->type) ) {
         
@@ -228,113 +399,11 @@ static void typecheck_declaration( marshmallow_entity declaration, marshmallow_m
     }
 }
 
-static int is_number( marshmallow_type type ) {
+static int is_assignable( marshmallow_variable variable ) {
     
-    switch ( type->root_type ) {
-            
-        case i8:
-            
-            return 1 ;
-            
-            break;
-            
-        case u8:
-            
-            return 1 ;
-            
-            break;
-            
-        case i16:
-            
-            return 1 ;
-            
-            break;
-            
-        case u16:
-            
-            return 1 ;
-            
-            break;
-            
-        case i32:
-            
-            return 1 ;
-            
-            break;
-            
-        case u32:
-            
-            return 1 ;
-            
-            break;
-            
-            
-        case i64:
-            
-            return 1 ;
-            
-            break;
-            
-        case u64:
-            
-            return 1 ;
-            
-            break;
-            
-        case hex:
-            
-            return 1 ;
-            
-            break;
-            
-        case f32:
-            
-            return 1 ;
-            
-            break;
-            
-        case f64:
-            
-            return 1 ;
-            
-            break;
-            
-        default:
-            break;
-    }
+    if ( (m_is_type_number(variable->type)) && variable->data == NULL ) return 1 ;
     
     return 0 ;
-}
-
-static marshmallow_type typecheck_get_type_from_root_type( marshmallow_root_type root ) {
-    
-    static marshmallow_type unknown_t = NULL ;
-    
-    static marshmallow_type i32_t = NULL ;
-    
-    switch (root) {
-            
-        case i32:
-            
-             if ( i32_t == NULL ) i32_t = RKMem_NewMemOfType(struct marshmallow_type_s) ;
-            
-            i32_t->root_type = i32 ;
-
-            return i32_t ;
-            
-            break;
-            
-        default:
-            break;
-    }
-    
-    
-    if ( unknown_t == NULL ) unknown_t = RKMem_NewMemOfType(struct marshmallow_type_s) ;
-    
-    unknown_t->root_type = unknown ;
-
-    return unknown_t ;
-
 }
 
 static marshmallow_type typecheck_get_type_promotion( marshmallow_type a, marshmallow_type b ) {
@@ -451,19 +520,37 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
     
     marshmallow_type rettype_b = NULL ;
     
+    marshmallow_variable var_a = NULL ;
+    
+    marshmallow_variable var_b = NULL ;
+
+    if ( statement->var_a != NULL && statement->var_a->entity_type == entity_variable && ((marshmallow_variable)statement->var_a)->name != NULL ) {
+
+        statement->var_a = (marshmallow_entity)marshmallow_get_variable_from_scope((marshmallow_scope)statement->function, (marshmallow_variable)statement->var_a) ;
+    }
+    
+    if (  statement->var_b != NULL && statement->var_b->entity_type == entity_variable && ((marshmallow_variable)statement->var_b)->name != NULL ) {
+        
+        statement->var_b = (marshmallow_entity)marshmallow_get_variable_from_scope((marshmallow_scope)statement->function, (marshmallow_variable)statement->var_b) ;
+    }
+    
      switch ( statement->op ) {
            
         case add:
-             
         case sub:
-            
+        case mult:
+        case mdiv:
+        case rem:
+             
             if ( statement->var_a->entity_type == entity_variable ) {
                 
                 rettype_a = ((marshmallow_variable)statement->var_a)->type ;
                 
-                if (!is_number(rettype_a)) {
+                if (!m_is_type_number(rettype_a) || (statement->op == rem && m_is_type_float(rettype_a)) ) {
                     
-                    printf("Variable: '%s', is wrong type for add.\n",RKString_GetString(((marshmallow_variable)statement->var_a)->name)) ;
+                    if ( ((marshmallow_variable)statement->var_a)->name != NULL ) printf("Variable: '%s', is wrong type for assignment.\n",RKString_GetString(((marshmallow_variable)statement->var_a)->name)) ;
+                    
+                    if ( ((marshmallow_variable)statement->var_a)->name == NULL ) printf("Variable is of the wrong type for assignment.\n") ;
                     
                     exit(EXIT_FAILURE) ;
                 }
@@ -473,9 +560,9 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
                 
                 rettype_a = typecheck_statment((marshmallow_statement)statement->var_a, has_assignment, module) ;
                 
-                if (!is_number(rettype_a)) {
+                if (!m_is_type_number(rettype_a) || (statement->op == rem && m_is_type_float(rettype_a)) ) {
                     
-                    printf("Statement is of wrong type for add.\n") ;
+                    printf("Statement is of wrong type for add,sub,mult,div, or modulus.\n") ;
                     
                     exit(EXIT_FAILURE) ;
                 }
@@ -486,9 +573,11 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
                 
                 rettype_b = ((marshmallow_variable)statement->var_b)->type ;
                 
-                if (!is_number(rettype_b)) {
+                if (!m_is_type_number(rettype_b) || (statement->op == rem && m_is_type_float(rettype_b)) ) {
                     
-                    printf("Variable: '%s', is wrong type for add.\n",RKString_GetString(((marshmallow_variable)statement->var_b)->name)) ;
+                    if ( ((marshmallow_variable)statement->var_b)->name != NULL ) printf("Variable: '%s', is wrong type for assignment.\n",RKString_GetString(((marshmallow_variable)statement->var_b)->name)) ;
+                    
+                    if ( ((marshmallow_variable)statement->var_b)->name == NULL ) printf("Variable is of the wrong type for assignment.\n") ;
                     
                     exit(EXIT_FAILURE) ;
                 }
@@ -498,9 +587,9 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
                 
                 rettype_b = typecheck_statment((marshmallow_statement)statement->var_b, has_assignment, module) ;
                 
-                if (!is_number(rettype_b)) {
+                if (!m_is_type_number(rettype_b) || (statement->op == rem && m_is_type_float(rettype_b)) ) {
                     
-                    printf("Statement is of wrong type for add.\n") ;
+                    printf("Statement is of wrong type for add,sub,mult,div, or modulus.\n") ;
                     
                     exit(EXIT_FAILURE) ;
                 }
@@ -510,12 +599,136 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
             return typecheck_get_type_from_root_type(typecheck_get_type_promotion(rettype_a, rettype_b)->root_type) ;
             
             break;
+             
+             case assignment:
+             
+             *has_assignment = 1 ;
+             
+             if ( statement->var_a->entity_type == entity_variable ) {
+                 
+                 var_a = ((marshmallow_variable)statement->var_a) ;
+                 
+                 if (!is_assignable(var_a) ) {
+                     
+                     if ( ((marshmallow_variable)statement->var_a)->name != NULL ) printf("Variable: '%s', is wrong type for assignment.\n",RKString_GetString(((marshmallow_variable)statement->var_a)->name)) ;
+                     
+                     if ( ((marshmallow_variable)statement->var_a)->name == NULL ) printf("Variable is of the wrong type for assignment.\n") ;
+                     
+                     exit(EXIT_FAILURE) ;
+                 }
+             }
+             
+             if ( statement->var_a->entity_type == entity_statement ) {
+                 
+                     printf("Statement is of wrong type for assignment.\n") ;
+                     
+                     exit(EXIT_FAILURE) ;
+             }
+             
+             if ( statement->var_b->entity_type == entity_variable  ) {
+                 
+                 rettype_b = ((marshmallow_variable)statement->var_b)->type ;
+                 
+                 if ( !typecheck_are_types_equal(var_a->type, rettype_b) ) {
+                     
+                     if ( ((marshmallow_variable)statement->var_b)->name != NULL ) printf("Variable: '%s', is wrong type for assignment.\n",RKString_GetString(((marshmallow_variable)statement->var_b)->name)) ;
+                     
+                     if ( ((marshmallow_variable)statement->var_b)->name == NULL ) printf("Variable is of the wrong type for assignment.\n") ;
+                     
+                     exit(EXIT_FAILURE) ;
+                 }
+             }
+             
+             if ( statement->var_b->entity_type == entity_statement ) {
+                 
+                 rettype_b = typecheck_statment((marshmallow_statement)statement->var_b, has_assignment, module) ;
+                 
+                 if ( !typecheck_are_types_equal(var_a->type, rettype_b) ) {
+                     
+                     printf("Statement is of wrong type for assignment.\n") ;
+                     
+                     exit(EXIT_FAILURE) ;
+                 }
+                 
+             }
+             
+             break;
+             
+             case inc:
+             case dec:
+             
+             *has_assignment = 1 ;
+             
+             break;
             
         default:
             break;
     }
     
     return typecheck_get_type_from_root_type(unknown) ;
+}
+
+static void typecheck_the_statment( marshmallow_statement statement, marshmallow_module module ) {
+    
+    int has_assignment = 0 ;
+    
+    typecheck_statment(statement, &has_assignment, module) ;
+    
+    if ( ( statement->op == ifop || statement->op == slifop || statement->op == whileop
+           || statement->op == switchop || statement->op == caseop || statement->op == endcaseop ||
+          statement->op == defaultop || statement->op == breakop || statement->op == continueop
+          || statement->op == section || statement->op == gotoop || statement->op == call || statement->op == ret ) ) {
+        
+        has_assignment = 1 ;
+    }
+    
+    if ( !has_assignment ) {
+        
+        printf("Expressions must have an assignment.\n") ;
+        
+        exit(EXIT_FAILURE) ;
+        
+    }
+    
+}
+
+static void typecheck_function( marshmallow_function_body function, marshmallow_module module ) {
+    
+    RKList list = NULL ;
+    
+    RKList_node node = NULL ;
+
+    typecheck_function_signature(function->signature, module) ;
+    
+    list = RKStore_GetList(function->variables) ;
+    
+    if ( list != NULL ) {
+        
+        node = RKList_GetFirstNode(list) ;
+        
+        while ( node != NULL ) {
+            
+            typecheck_variable(RKList_GetData(node), module) ;
+            
+            node = RKList_GetNextNode(node) ;
+        }
+    }
+    
+    list = function->statements ;
+    
+    if ( list != NULL ) {
+        
+        node = RKList_GetFirstNode(list) ;
+        
+        while ( node != NULL ) {
+            
+            typecheck_the_statment(RKList_GetData(node), module) ;
+            
+            node = RKList_GetNextNode(node) ;
+        }
+    }
+
+
 }
 
 static void typecheck_module( marshmallow_module module ) {
@@ -551,6 +764,21 @@ static void typecheck_module( marshmallow_module module ) {
             node = RKList_GetNextNode(node) ;
         }
     }
+    
+    list = RKStore_GetList(module->functions_and_methods) ;
+    
+    if ( list != NULL ) {
+        
+        node = RKList_GetFirstNode(list) ;
+        
+        while ( node != NULL ) {
+            
+            typecheck_function(RKList_GetData(node), module) ;
+            
+            node = RKList_GetNextNode(node) ;
+        }
+    }
+
 
 }
 

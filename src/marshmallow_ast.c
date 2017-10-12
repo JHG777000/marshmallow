@@ -234,6 +234,11 @@ void marshmallow_add_variable_to_scope( marshmallow_scope scope, marshmallow_var
     RKStore_AddItem(scope->variables, variable, RKString_GetString(variable->name)) ;
 }
 
+marshmallow_variable marshmallow_get_variable_from_scope( marshmallow_scope scope, marshmallow_variable variable ) {
+    
+    return RKStore_GetItem(scope->variables, RKString_GetString(variable->name)) ;
+}
+
 marshmallow_module marshmallow_new_module( RKString name ) {
     
     marshmallow_module module = RKMem_NewMemOfType(struct marshmallow_module_s) ;

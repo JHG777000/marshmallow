@@ -144,6 +144,8 @@ marshmallow_variable marshmallow_new_variable( void ) ;
 
 void marshmallow_add_variable_to_scope( marshmallow_scope scope, marshmallow_variable variable ) ;
 
+marshmallow_variable marshmallow_get_variable_from_scope( marshmallow_scope scope, marshmallow_variable variable ) ;
+
 marshmallow_module marshmallow_new_module( RKString name )  ;
 
 marshmallow_statement marshmallow_new_statement( marshmallow_op_type op_type, int is_expression, marshmallow_entity a, marshmallow_entity b ) ;
@@ -167,6 +169,10 @@ void marshmallow_add_function_to_module_declarations( marshmallow_function_body 
 void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) ;
 
 //typecheck
+
+int m_is_type_float( marshmallow_type type ) ;
+
+int m_is_type_number( marshmallow_type type ) ;
 
 void marshmallow_typecheck( marshmallow_context context ) ;
 
