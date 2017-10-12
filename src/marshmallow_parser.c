@@ -692,8 +692,6 @@ m_processor(else) {
             
              if ( marshmallow_is_token_root_type(fakeif) ) {
              
-             //ifvar_a->name = RKString_CopyString(fakeif->value) ;
-             
              marshmallow_parse_type(ifvar_a->type, fakeif, 0, NULL, 0) ;
              
              marshmallow_parse_value(fakeif, ifvar_a) ;
@@ -864,8 +862,6 @@ m_processor(expression) {
     if ( op == addrof || op == deref || op == negate || op == not || op == bnot ) n++ ;
     
     if ( marshmallow_is_token_root_type(m_peek(n+0)) ) {
-        
-        //a->name = RKString_CopyString(m_peek(n+0)->value) ;
         
         marshmallow_parse_type(a->type, m_peek(n+0), 0, NULL, 0) ;
         
@@ -1095,8 +1091,6 @@ m_processor(expression) {
             
             if ( marshmallow_is_token_root_type(m_peek(n+0)) ) {
                 
-                //b->name = RKString_CopyString(m_peek(n+0)->value) ;
-                
                 marshmallow_parse_type(b->type, m_peek(n+0), 0, NULL, 0) ;
                 
                 marshmallow_parse_value(m_peek(n+0), b) ;
@@ -1180,8 +1174,6 @@ m_processor(collection) {
                 element = marshmallow_new_variable() ;
                 
                 element->type = marshmallow_new_type() ;
-                
-                //element->name = RKString_CopyString(m_peek(n+0)->value) ;
                 
                 marshmallow_parse_type(element->type, m_peek(n+0), 0, NULL, 0) ;
                 
@@ -1303,8 +1295,6 @@ m_processor(assignment) {
         
         if ( marshmallow_is_token_root_type(m_peek(n+0)) ) {
             
-            //b->name = RKString_CopyString(m_peek(n+0)->value) ;
-            
             marshmallow_parse_type(b->type, m_peek(n+0), 0, NULL, 0) ;
             
             marshmallow_parse_value(m_peek(n+0), b) ;
@@ -1394,8 +1384,6 @@ m_processor(return) {
     
     if ( marshmallow_is_token_root_type(m_peek(n+0)) ) {
         
-        //variable->name = RKString_CopyString(m_peek(n+0)->value) ;
-        
         marshmallow_parse_type(variable->type, m_peek(n+0), 0, NULL, 0) ;
         
         marshmallow_parse_value(m_peek(n+0), variable) ;
@@ -1481,8 +1469,6 @@ m_processor(static_assignment) {
         }
         
         if ( marshmallow_is_token_root_type(m_peek(n+0)) ) {
-            
-            //variable->name = RKString_CopyString(m_peek(n+0)->value) ;
             
             marshmallow_parse_type(variable->type, m_peek(n+0), 0, NULL, 0) ;
             
