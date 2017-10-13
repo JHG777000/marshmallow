@@ -144,7 +144,7 @@ marshmallow_variable marshmallow_new_variable( void ) ;
 
 void marshmallow_add_variable_to_scope( marshmallow_scope scope, marshmallow_variable variable ) ;
 
-marshmallow_variable marshmallow_get_variable_from_scope( marshmallow_scope scope, marshmallow_variable variable ) ;
+marshmallow_entity marshmallow_lookup_identifier( marshmallow_function_body function, marshmallow_module module, marshmallow_entity identifier) ;
 
 marshmallow_module marshmallow_new_module( RKString name )  ;
 

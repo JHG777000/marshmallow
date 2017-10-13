@@ -1087,7 +1087,8 @@ m_processor(expression) {
             
             m_advanceN(n+2) ;
             
-            if ( op == assignment || op == is_equal || op == is_not_equal || op == is_greaterthan_or_equal || op == is_lessthan_or_equal ) n-- ;
+            if ( op == assignment || op == is_equal || op == is_not_equal || op == is_greaterthan_or_equal
+                || op == is_lessthan_or_equal || op == or || op == and) n-- ;
             
             if ( marshmallow_is_token_root_type(m_peek(n+0)) ) {
                 

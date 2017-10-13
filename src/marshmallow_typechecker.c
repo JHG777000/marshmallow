@@ -526,12 +526,12 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
 
     if ( statement->var_a != NULL && statement->var_a->entity_type == entity_variable && ((marshmallow_variable)statement->var_a)->name != NULL ) {
 
-        statement->var_a = (marshmallow_entity)marshmallow_get_variable_from_scope((marshmallow_scope)statement->function, (marshmallow_variable)statement->var_a) ;
+        statement->var_a = (marshmallow_entity)marshmallow_lookup_identifier(statement->function, module, statement->var_a) ;
     }
     
     if (  statement->var_b != NULL && statement->var_b->entity_type == entity_variable && ((marshmallow_variable)statement->var_b)->name != NULL ) {
         
-        statement->var_b = (marshmallow_entity)marshmallow_get_variable_from_scope((marshmallow_scope)statement->function, (marshmallow_variable)statement->var_b) ;
+        statement->var_b = (marshmallow_entity)marshmallow_lookup_identifier(statement->function, module, statement->var_b) ;
     }
     
      switch ( statement->op ) {
@@ -548,9 +548,9 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
                 
                 if (!m_is_type_number(rettype_a) || (statement->op == rem && m_is_type_float(rettype_a)) ) {
                     
-                    if ( ((marshmallow_variable)statement->var_a)->name != NULL ) printf("Variable: '%s', is wrong type for assignment.\n",RKString_GetString(((marshmallow_variable)statement->var_a)->name)) ;
+                    if ( ((marshmallow_variable)statement->var_a)->name != NULL ) printf("Variable: '%s', is wrong type for add,sub,mult,div, or modulus.\n",RKString_GetString(((marshmallow_variable)statement->var_a)->name)) ;
                     
-                    if ( ((marshmallow_variable)statement->var_a)->name == NULL ) printf("Variable is of the wrong type for assignment.\n") ;
+                    if ( ((marshmallow_variable)statement->var_a)->name == NULL ) printf("Variable is of the wrong type for add,sub,mult,div, or modulus.\n") ;
                     
                     exit(EXIT_FAILURE) ;
                 }
@@ -575,9 +575,9 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
                 
                 if (!m_is_type_number(rettype_b) || (statement->op == rem && m_is_type_float(rettype_b)) ) {
                     
-                    if ( ((marshmallow_variable)statement->var_b)->name != NULL ) printf("Variable: '%s', is wrong type for assignment.\n",RKString_GetString(((marshmallow_variable)statement->var_b)->name)) ;
+                    if ( ((marshmallow_variable)statement->var_b)->name != NULL ) printf("Variable: '%s', is wrong type for add,sub,mult,div, or modulus.\n",RKString_GetString(((marshmallow_variable)statement->var_b)->name)) ;
                     
-                    if ( ((marshmallow_variable)statement->var_b)->name == NULL ) printf("Variable is of the wrong type for assignment.\n") ;
+                    if ( ((marshmallow_variable)statement->var_b)->name == NULL ) printf("Variable is of the wrong type for add,sub,mult,div, or modulus.\n") ;
                     
                     exit(EXIT_FAILURE) ;
                 }

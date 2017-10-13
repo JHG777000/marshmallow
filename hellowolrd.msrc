@@ -19,7 +19,7 @@ module mymod.
   u64 i := 0.
 
   u64 j := 4.
-
+  
   //because all new languages need to support unicode identifiers
   u64 😀 := '😀'.
 

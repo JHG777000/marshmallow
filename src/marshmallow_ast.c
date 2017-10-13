@@ -234,9 +234,42 @@ void marshmallow_add_variable_to_scope( marshmallow_scope scope, marshmallow_var
     RKStore_AddItem(scope->variables, variable, RKString_GetString(variable->name)) ;
 }
 
-marshmallow_variable marshmallow_get_variable_from_scope( marshmallow_scope scope, marshmallow_variable variable ) {
+marshmallow_entity marshmallow_lookup_identifier( marshmallow_function_body function, marshmallow_module module, marshmallow_entity identifier) {
     
-    return RKStore_GetItem(scope->variables, RKString_GetString(variable->name)) ;
+    marshmallow_entity entity = NULL ;
+    
+    RKString identifier_name = NULL ;
+    
+    if ( identifier->entity_type == entity_function ) {
+        
+        identifier_name = ((marshmallow_function_body)identifier)->signature->func_name ;
+        
+        entity = RKStore_GetItem(module->functions_and_methods, RKString_GetString(identifier_name)) ;
+        
+        if ( entity == NULL ) {
+            
+            entity = RKStore_GetItem(module->declarations, RKString_GetString(identifier_name)) ;
+            
+            if ( entity->entity_type != entity_function ) entity = NULL ;
+        }
+         
+    } else if (identifier->entity_type == entity_variable) {
+        
+        identifier_name = ((marshmallow_variable)identifier)->name ;
+        
+        if ( function != NULL ) entity = RKStore_GetItem(function->variables, RKString_GetString(identifier_name)) ;
+        
+        if ( entity == NULL || function == NULL ) entity = RKStore_GetItem(module->variables, RKString_GetString(identifier_name)) ;
+    }
+    
+    if ( entity == NULL ) {
+        
+        printf("identifier: '%s', does not exist. \n",RKString_GetString(identifier_name)) ;
+        
+        exit(EXIT_FAILURE) ;
+    }
+    
+    return entity ;
 }
 
 marshmallow_module marshmallow_new_module( RKString name ) {
