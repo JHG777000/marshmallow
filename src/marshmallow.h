@@ -68,15 +68,15 @@ typedef struct marshmallow_context_s* marshmallow_context ;
 
 typedef struct marshmallow_class_s { marshmallow_entity_type entity_type ; RKStore variables ; marshmallow_function_body init_function ; } *marshmallow_class ;
 
-typedef struct marshmallow_type_s { marshmallow_entity_type entity_type ; RKString type_name ;
+typedef struct marshmallow_type_s { marshmallow_entity_type entity_type ; RKString type_name ; int is_readonly ;
     
 marshmallow_root_type root_type ; void* base_type ; int num_of_elements ; } *marshmallow_type ;
 
 typedef struct marshmallow_variable_s { marshmallow_entity_type entity_type ; marshmallow_type type ;
     
-RKString name ; void* data ; int is_hidden ; int is_readonly ;
+RKString name ; void* data ; int is_hidden ; int is_persistent ; int is_declared ; int is_external ;
     
-int is_persistent ; int is_declared ; int is_external ; marshmallow_access_control access_control ; marshmallow_variable static_assignment ; } *marshmallow_variable ;
+marshmallow_access_control access_control ; marshmallow_variable static_assignment ; } *marshmallow_variable ;
 
 typedef struct marshmallow_value_s { marshmallow_type type ; RKString value ; RKList array_value ; } *marshmallow_value ;
 

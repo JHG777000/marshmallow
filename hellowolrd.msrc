@@ -29,15 +29,15 @@ module mymod.
 
   switch (j).
 
-  case (1).
+   case (1).
 
     puts("Hi,").
 
-    case (2).
+   case (2).
 
      puts("Bye.").
 
-    case (4).
+   case (4).
 
      puts("Not.").
 

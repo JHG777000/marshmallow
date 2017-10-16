@@ -188,6 +188,8 @@ marshmallow_type marshmallow_new_type( void ) {
     
     type->type_name = rkstr("unknown") ;
     
+    type->is_readonly = 0 ;
+    
     type->num_of_elements = -1 ;
     
     return type ;
@@ -212,8 +214,6 @@ marshmallow_variable marshmallow_new_variable( void ) {
     variable->is_hidden = 0 ;
     
     variable->is_persistent = 0 ;
-    
-    variable->is_readonly = 0 ;
     
     variable->type = NULL ;
     
