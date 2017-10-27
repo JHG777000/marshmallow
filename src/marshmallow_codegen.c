@@ -374,6 +374,12 @@ static void output_arguments( marshmallow_context context, FILE* file, marshmall
     }
 }
 
+
+static void output_array_assignment( marshmallow_context context, FILE* file, marshmallow_statement statement, marshmallow_module module ) {
+    
+    
+}
+
 static void output_statement( marshmallow_context context, FILE* file, marshmallow_statement statement, marshmallow_module module ) {
     
     RKList list = NULL ;
@@ -645,6 +651,12 @@ static void output_statement( marshmallow_context context, FILE* file, marshmall
             fprintf(file, "=") ;
             
             output_value(context, file, (marshmallow_variable)statement->var_b, module) ;
+            
+            break;
+            
+        case array_assignment:
+            
+            output_array_assignment(context, file, statement, module) ;
             
             break;
           
