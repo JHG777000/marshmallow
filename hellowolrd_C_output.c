@@ -41,7 +41,7 @@ case 4:
   ;
 puts(u8"Not.");  ;
 break;case 3:
-puts(u8"In marshmallow y😀u can have string literals that\n          exist on more than one line,\n          and they will printed as such!!!!!");  ;
+puts(u8"In marshmallow y😀u can have string literals that\n          exist on more than one line,\n          and they will be printed as such!!!!!");  ;
 break;default:break;}  ;
 j--  ;
 i=0  ;

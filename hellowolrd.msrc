@@ -47,7 +47,7 @@ module mymod.
 
     puts("In marshmallow y😀u can have string literals that
           exist on more than one line,
-          and they will printed as such!!!!!").
+          and they will be printed as such!!!!!").
 
    end case.
 

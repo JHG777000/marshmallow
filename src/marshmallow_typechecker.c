@@ -189,7 +189,7 @@ int m_is_type_number( marshmallow_type type ) {
     return 0 ;
 }
 
-int m_is_size_of_root_type_in_bytes( marshmallow_type type ) {
+int m_get_size_of_root_type_in_bytes( marshmallow_type type ) {
     
     switch ( type->root_type ) {
             
@@ -266,6 +266,12 @@ int m_is_size_of_root_type_in_bytes( marshmallow_type type ) {
             
             break;
             
+        case ptr:
+            
+            return 8 ;
+            
+            break;
+            
         default:
             break;
     }
@@ -273,7 +279,32 @@ int m_is_size_of_root_type_in_bytes( marshmallow_type type ) {
     return 0 ;
 }
 
-int m_is_size_of_type_in_bytes( marshmallow_type type ) {
+int m_get_size_of_type_in_bytes( marshmallow_type type ) {
+    
+    int size = 0 ;
+    
+    int num_of_elements = 1 ;
+    
+    marshmallow_type t = NULL ;
+    
+    size = m_get_size_of_root_type_in_bytes(type) ;
+    
+    if ( type->root_type == array ) {
+        
+        t = type ;
+        
+    loop:
+        
+        size += m_get_size_of_type_in_bytes(t->base_type) ;
+        
+        num_of_elements *= t->num_of_elements ;
+        
+        t = t->base_type ;
+        
+        if ( t->root_type == array ) goto loop ;
+        
+        size = size * num_of_elements ;
+    }
     
     return 0 ;
 }
