@@ -315,22 +315,23 @@ static int typecheck_are_types_equivalent( marshmallow_type t1, marshmallow_type
     
     marshmallow_type t0 = NULL ;
     
-    if ( m_is_type_number(t1) && m_is_type_number(t2) ) return 1 ;
-    
-    if ( (t1->root_type == array && t2->root_type == metacollection) || (t2->root_type == array && t1->root_type == metacollection) ) return 1 ;//for now fake it
-    
-    if ( t1->root_type != t2->root_type ) return 0 ;
-    
     if ( t1->type_name != NULL && t2->type_name == NULL ) return 0 ;
     
     if ( t1->type_name == NULL && t2->type_name != NULL ) return 0 ;
     
-    if ( t1->type_name == NULL && t2->type_name == NULL ) {
+    if ( t1->type_name != NULL && t2->type_name != NULL ) {
         
         if ( !RKString_AreStringsEqual(t1->type_name, t2->type_name) ) return 0 ;
     }
     
-    if ( t1->root_type != ptr && t1->root_type != array ) return 1 ;
+    if ( m_is_type_number(t1) && m_is_type_number(t2) ) {
+        
+        if ( m_get_size_of_type_in_bytes(t1) >= m_get_size_of_type_in_bytes(t2) ) return 1 ;
+        
+        return 0 ;
+    }
+    
+    if ( (t1->root_type == array && t2->root_type == metacollection) || (t2->root_type == array && t1->root_type == metacollection) ) return 1 ;//for now fake it
     
     if ( t1->root_type == array ) {
         
@@ -348,7 +349,16 @@ static int typecheck_are_types_equivalent( marshmallow_type t1, marshmallow_type
         
         if ( t->root_type == array && t0->root_type == array ) goto loop ;
         
-        if ( t->root_type != t0->root_type ) return 0 ;
+        if ( t->root_type != t0->root_type ) {
+            
+            return 0 ;
+            
+        } else {
+            
+            t1 = t ;
+            
+            t2 = t0 ;
+        }
     }
     
     if ( t1->root_type == ptr ) {
