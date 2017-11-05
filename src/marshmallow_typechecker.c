@@ -306,7 +306,7 @@ int m_get_size_of_type_in_bytes( marshmallow_type type ) {
         size = size * num_of_elements ;
     }
     
-    return 0 ;
+    return size ;
 }
 
 static int typecheck_are_types_equivalent( marshmallow_type t1, marshmallow_type t2 ) {
@@ -385,6 +385,13 @@ static void typecheck_type( marshmallow_variable variable, marshmallow_module mo
     
     marshmallow_type t = variable->type ;
     
+    if ( variable->type->type_name != NULL && (m_is_type_number(variable->type) || variable->type->root_type == metacollection ) ) {
+        
+        free(variable->type->type_name) ;
+        
+        variable->type->type_name = NULL ;
+    }
+    
     if ( variable->type->root_type == unknown && variable->type->type_name != NULL ) {
         
         variable->type = RKStore_GetItem(module->types, RKString_GetString(variable->type->type_name)) ;
@@ -406,6 +413,8 @@ static void typecheck_variable( marshmallow_variable variable, marshmallow_modul
     typecheck_type(variable,module) ;
     
     if ( variable->static_assignment != NULL ) {
+        
+        typecheck_type(variable->static_assignment,module) ;
         
       if ( !typecheck_are_types_equivalent(variable->type, variable->static_assignment->type) ) {
         
@@ -759,12 +768,18 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
 
 static marshmallow_type typecheck_get_type_from_variable( marshmallow_variable variable, int* has_assignment, marshmallow_module module ) {
     
+    marshmallow_type t = NULL ;
+    
     if ( variable->type->root_type == expression ) {
         
-        return typecheck_statment((marshmallow_statement)variable->data, has_assignment, module) ;
+        t = typecheck_statment((marshmallow_statement)variable->data, has_assignment, module) ;
     }
     
-    return variable->type ;
+    t = variable->type ;
+    
+    typecheck_type(variable, module) ;
+    
+    return t ;
 }
 
 
