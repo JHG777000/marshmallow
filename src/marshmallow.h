@@ -176,7 +176,7 @@ int m_is_type_number( marshmallow_type type ) ;
 
 int m_get_size_of_root_type_in_bytes( marshmallow_type type ) ;
 
-int m_get_size_of_type_in_bytes( marshmallow_type type ) ;
+int m_get_size_of_type_in_bytes( marshmallow_type type, marshmallow_root_type* root_type ) ;
 
 void marshmallow_typecheck( marshmallow_context context ) ;
 

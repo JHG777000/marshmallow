@@ -23,7 +23,7 @@ module mymod.
   //because all new languages need to support unicode identifiers
   u64 😀 := '😀'.
 
-  i32[] myarray := {7,7,7}.
+  i32[3][3] myarray := {{7,7,7},{7,7,7},{7,7,7}}.
 
   section helloworld.
 

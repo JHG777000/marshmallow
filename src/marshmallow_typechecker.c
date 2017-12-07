@@ -279,13 +279,21 @@ int m_get_size_of_root_type_in_bytes( marshmallow_type type ) {
     return 0 ;
 }
 
-int m_get_size_of_type_in_bytes( marshmallow_type type ) {
+int m_get_size_of_type_in_bytes( marshmallow_type type, marshmallow_root_type* root_type ) {
     
     int size = 0 ;
     
     int num_of_elements = 1 ;
     
+    RKList list = NULL ;
+    
+    RKList_node node = NULL ;
+    
     marshmallow_type t = NULL ;
+    
+    marshmallow_variable var = NULL ;
+    
+    if ( root_type != NULL ) *root_type = type->root_type ;
     
     size = m_get_size_of_root_type_in_bytes(type) ;
     
@@ -295,15 +303,41 @@ int m_get_size_of_type_in_bytes( marshmallow_type type ) {
         
     loop:
         
-        size += m_get_size_of_type_in_bytes(t->base_type) ;
+        size += m_get_size_of_root_type_in_bytes(t->base_type) ;
         
         num_of_elements *= t->num_of_elements ;
         
         t = t->base_type ;
         
-        if ( t->root_type == array ) goto loop ;
+        if ( t->root_type == array ) {
+            
+            goto loop ;
+            
+        } else {
+            
+            if ( root_type != NULL ) *root_type = t->root_type ;
+        }
         
         size = size * num_of_elements ;
+    }
+    
+    if ( type->root_type == metacollection ) {
+        
+        list = (RKList)((marshmallow_variable)((marshmallow_variable)type->base_type)->data)->data ;
+        
+        node = RKList_GetFirstNode(list) ;
+        
+        while ( node != NULL ) {
+            
+            var = RKList_GetData(node) ;
+            
+            size += m_get_size_of_root_type_in_bytes(var->type) ;
+            
+            if ( var->type->root_type == array || var->type->root_type == metacollection ) size += m_get_size_of_type_in_bytes(var->type, NULL) ;
+            
+            node = RKList_GetNextNode(node) ;
+        }
+        
     }
     
     return size ;
@@ -311,9 +345,23 @@ int m_get_size_of_type_in_bytes( marshmallow_type type ) {
 
 static int typecheck_are_types_equivalent( marshmallow_type t1, marshmallow_type t2 ) {
     
+    int size = 0 ;
+    
+    int size2 = 0 ;
+    
+    RKList list = NULL ;
+    
+    RKList_node node = NULL ;
+    
     marshmallow_type t = NULL ;
     
     marshmallow_type t0 = NULL ;
+    
+    marshmallow_variable var = NULL ;
+    
+    marshmallow_root_type root_type ;
+    
+    marshmallow_root_type root_type2 ;
     
     if ( t1->type_name != NULL && t2->type_name == NULL ) return 0 ;
     
@@ -326,14 +374,62 @@ static int typecheck_are_types_equivalent( marshmallow_type t1, marshmallow_type
     
     if ( m_is_type_number(t1) && m_is_type_number(t2) ) {
         
-        if ( m_get_size_of_type_in_bytes(t1) >= m_get_size_of_type_in_bytes(t2) ) return 1 ;
+        if ( m_get_size_of_type_in_bytes(t1,&root_type) >= m_get_size_of_type_in_bytes(t2,&root_type2) ) return 1 ;
         
         return 0 ;
     }
     
-    if ( (t1->root_type == array && t2->root_type == metacollection) || (t2->root_type == array && t1->root_type == metacollection) ) return 1 ;//for now fake it
+    if ( (t1->root_type == array && t2->root_type == metacollection) ) {
+        
+        size = m_get_size_of_type_in_bytes(t1, &root_type) ;
+        
+        list = (RKList)((marshmallow_variable)((marshmallow_variable)t2->base_type)->data)->data ;
     
-    if ( t1->root_type == array ) {
+        node = RKList_GetFirstNode(list) ;
+        
+        while ( node != NULL ) {
+            
+            var = RKList_GetData(node) ;
+            
+            size2 += m_get_size_of_type_in_bytes(var->type, &root_type2) ;
+            
+            if ( ((marshmallow_type)t1->base_type)->root_type != array ) {
+                
+                if ( var->type->root_type == metacollection ) {
+                    
+                    return 0 ;
+                }
+                    
+                if ( !typecheck_are_types_equivalent(typecheck_get_type_from_root_type(root_type), typecheck_get_type_from_root_type(root_type2)) ) {
+                    
+                    return 0 ;
+                }
+            }
+            
+            if ( ((marshmallow_type)t1->base_type)->root_type == array ) {
+                
+                if ( var->type->root_type != metacollection ) {
+                    
+                    return 0 ;
+                }
+                
+                if ( !typecheck_are_types_equivalent(t1->base_type, var->type) ) {
+                    
+                    return 0 ;
+                }
+            }
+            
+            node = RKList_GetNextNode(node) ;
+        }
+        
+        if ( size == 0 ) return 1 ;
+        
+        if ( size != size2 ) return 0 ;
+        
+        return 1 ;
+    }
+    
+    if ( t1->root_type == array && t2->root_type == array ) {
         
         t = t1 ;
         

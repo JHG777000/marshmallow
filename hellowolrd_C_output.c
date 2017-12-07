@@ -28,7 +28,7 @@ MULong myvar = 0xff ;
 MULong i = 0 ;
 MULong j = 4 ;
 MULong 😀 = L'😀' ;
-MInt myarray[] = {7,7,7} ;
+MInt myarray[3][3] = {{7,7,7},{7,7,7},{7,7,7}} ;
 MULong myvar2 = 0xff ;
 helloworld:  ;
 switch (j) {

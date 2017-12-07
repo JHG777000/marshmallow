@@ -1193,6 +1193,22 @@ m_processor(collection) {
                 element->name = RKString_CopyString( m_peek(n+0)->value) ;
                 
                 m_advanceN(1) ;
+               
+            } else if ( m_peek(n+0)->keyword == mgk(bleft) ) {
+                
+                element = marshmallow_new_variable() ;
+                
+                element->type = marshmallow_new_type() ;
+                
+                element->type->base_type = element ;
+                
+                element->type->root_type = metacollection ;
+                
+                free(element->type->type_name) ;
+                
+                element->type->type_name = NULL ;
+                
+                element->data = m_process(collection) ;
                 
             } else {
                 
@@ -1271,7 +1287,13 @@ m_processor(assignment) {
     
     if ( m_peek(n+0)->keyword == mgk(bleft) ) {
         
+        a->type->base_type = a ;
+        
         a->type->root_type = metacollection ;
+        
+        free(a->type->type_name) ;
+        
+        a->type->type_name = NULL ;
         
         a->data = m_process(collection) ;
         
@@ -1327,7 +1349,13 @@ m_processor(assignment) {
         
         if ( m_peek(n+0)->keyword == mgk(bleft) ) {
             
+            b->type->base_type = b ;
+            
             b->type->root_type = metacollection ;
+            
+            free(b->type->type_name) ;
+            
+            b->type->type_name = NULL ;
             
             b->data = m_process(collection) ;
             
@@ -1416,12 +1444,17 @@ m_processor(return) {
     
     if ( m_peek(n+0)->keyword == mgk(bleft) ) {
         
+        variable->type->base_type = variable ;
+        
         variable->type->root_type = metacollection ;
+        
+        free(variable->type->type_name) ;
+        
+        variable->type->type_name = NULL ;
         
         variable->data = m_process(collection) ;
         
         flag++ ;
-        
     }
     
     if ( !flag ) {
@@ -1445,7 +1478,13 @@ m_processor(static_assignment) {
     
     if ( m_peek(n+0)->keyword == mgk(bleft) ) {
         
+        variable->type->base_type = variable ;
+        
         variable->type->root_type = metacollection ;
+        
+        free(variable->type->type_name) ;
+        
+        variable->type->type_name = NULL ;
         
         variable->data = m_process(collection) ;
         
