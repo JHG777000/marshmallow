@@ -439,9 +439,9 @@ static int typecheck_are_types_equivalent( marshmallow_type t1, marshmallow_type
         
         if ( t->num_of_elements != t0->num_of_elements ) return 0 ;
         
-        t = t1->base_type ;
+        t = t->base_type ;
         
-        t0 = t2->base_type ;
+        t0 = t0->base_type ;
         
         if ( t->root_type == array && t0->root_type == array ) goto loop ;
         
@@ -474,7 +474,7 @@ static int typecheck_are_types_equivalent( marshmallow_type t1, marshmallow_type
         if ( t->root_type == t0->root_type ) return 1 ;
     }
     
-    return 0 ;
+    return 1 ;
 }
 
 static void typecheck_type( marshmallow_variable variable, marshmallow_module module ) {
@@ -776,7 +776,7 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
     }
     
      switch ( statement->op ) {
-           
+             
         case add:
         case sub:
         case mult:
@@ -826,8 +826,8 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
                  }
              
 
-                 rettype_b = typecheck_get_type_from_variable((marshmallow_variable)statement->var_b, has_assignment, module) ; ;
-                 
+                 rettype_b = typecheck_get_type_from_variable((marshmallow_variable)statement->var_b, has_assignment, module) ;
+             
                  if ( !typecheck_are_types_equivalent(var_a->type, rettype_b) ) {
                      
                      if ( ((marshmallow_variable)statement->var_b)->name != NULL )

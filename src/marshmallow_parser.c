@@ -18,6 +18,14 @@
 #include "marshmallow.h"
 
 
+static void marshmallow_swap_var_if_exp_is_var( marshmallow_variable* var ) {
+    
+    if ( ((marshmallow_entity)(*var)->data)->entity_type == entity_variable ) {
+        
+        (*var) = (*var)->data ;
+    }
+}
+
 static int marshmallow_is_symbol( char c, int balance ) {
     
     if ( balance == 0 ) if ( c == '.' ) return 1 ;
@@ -626,6 +634,8 @@ m_processor(if) {
             
             a->data = m_process(expression) ;
             
+            marshmallow_swap_var_if_exp_is_var(&a) ;
+            
         } else {
             
             printf("Expected expression. '%s' is not an expression.\n",RKString_GetString(m_peek(1)->value)) ;
@@ -728,6 +738,8 @@ m_processor(while) {
             
             a->data = m_process(expression) ;
             
+            marshmallow_swap_var_if_exp_is_var(&a) ;
+            
         } else {
             
             printf("Expected expression. '%s' is not an expression.\n",RKString_GetString(m_peek(1)->value)) ;
@@ -759,6 +771,8 @@ m_processor(switch) {
             
             a->data = m_process(expression) ;
             
+            marshmallow_swap_var_if_exp_is_var(&a) ;
+            
         } else {
             
             printf("Expected expression. '%s' is not an expression.\n",RKString_GetString(m_peek(1)->value)) ;
@@ -789,6 +803,8 @@ m_processor(case) {
             a->type->root_type = expression ;
             
             a->data = m_process(expression) ;
+            
+            marshmallow_swap_var_if_exp_is_var(&a) ;
             
         } else {
             
@@ -886,6 +902,8 @@ m_processor(expression) {
         a->type->root_type = expression ;
         
         a->data = m_process(expression) ;
+        
+        marshmallow_swap_var_if_exp_is_var(&a) ;
         
         n = n-1 ;
         
@@ -1116,6 +1134,8 @@ m_processor(expression) {
                 
                 b->data = m_process(expression) ;
                 
+                marshmallow_swap_var_if_exp_is_var(&b) ;
+                
                 n = n-1 ;
                 
                 flag_b++ ;
@@ -1280,6 +1300,8 @@ m_processor(assignment) {
         
         a->data = m_process(expression) ;
         
+        marshmallow_swap_var_if_exp_is_var(&a) ;
+        
         n = n-1 ;
         
         flag_a++ ;
@@ -1341,6 +1363,8 @@ m_processor(assignment) {
             b->type->root_type = expression ;
             
             b->data = m_process(expression) ;
+            
+            marshmallow_swap_var_if_exp_is_var(&b) ;
             
             n = n-1 ;
             
@@ -1437,6 +1461,8 @@ m_processor(return) {
         
         variable->data = m_process(expression) ;
         
+        marshmallow_swap_var_if_exp_is_var(&variable) ;
+        
         n = n-1 ;
         
         flag++ ;
@@ -1489,6 +1515,23 @@ m_processor(static_assignment) {
         variable->data = m_process(collection) ;
         
         return variable ;
+    }
+    
+    if ( m_peek(n+0)->keyword == mgk(pleft) ){
+        
+        n++ ;
+        marshmallow_token t = m_peek(n+0) ;
+        if ( marshmallow_is_token_root_type(m_peek(n+0)) ) {
+            
+            marshmallow_parse_type(variable->type, m_peek(n+0), 0, NULL, 0) ;
+            
+            marshmallow_parse_value(m_peek(n+0), variable) ;
+            
+            m_advanceN(2) ;
+            
+            return variable ;
+        }
+        
     }
     
     if ( m_peek(n+1)->keyword == mgk(end_of_line) || m_peek(n+1)->keyword == mgk(pright) || m_peek(n+1)->keyword == mgk(comma) ) {
@@ -1771,7 +1814,7 @@ m_processor(variable) {
         
         n+=2 ;
         
-        if ( marshmallow_is_token_root_type(m_peek(n)) || m_peek(n)->keyword == mgk(bleft) ) {
+        if ( marshmallow_is_token_root_type(m_peek(n)) || m_peek(n)->keyword == mgk(bleft) || m_peek(n)->keyword == mgk(pleft) ) {
             
             m_advanceN(n) ;
             
@@ -2755,7 +2798,7 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
                     symbol = mgk(hex) ;
                 }
                 
-                if ( (isdigit(word[0])) && (symbol != mgk(hex)) ) {
+                if ( (isdigit(word[0]) || (word[0]) == '.' ) && (symbol != mgk(hex)) ) {
                     
                     i = 0 ;
                     
@@ -2772,6 +2815,14 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
                         if ( (!isdigit(word[i])) && !(word[i] == '.') ) {
                             
                             if ( (word[i] == 'f') && (i == word_size-2) ) {
+                                
+                                if ( !is_double ) {
+                                    
+                                    printf("Error: %s is not a floating-point number, 'f' can only be used with floating-point numbers.\n",RKString_GetString(RKString_NewStringFromUTF32(word,word_size-1))) ;
+                                    
+                                    exit(EXIT_FAILURE) ;
+
+                                }
                                 
                                 is_float++ ;
                                 
