@@ -96,61 +96,61 @@ loop:
              
             case u8:
                 
-                fprintf(file, "MByte ") ;
+                fprintf(file, "mu8 ") ;
                 
                 break;
                 
             case i8:
                 
-                fprintf(file, "MSByte ") ;
+                fprintf(file, "mi8 ") ;
                 
                 break;
                 
             case u16:
                 
-                fprintf(file, "MUShort ") ;
+                fprintf(file, "mu16 ") ;
                 
                 break;
                 
             case i16:
                 
-                fprintf(file, "MShort ") ;
+                fprintf(file, "mi16 ") ;
                 
                 break;
                 
             case u32:
                 
-                fprintf(file, "MUInt ") ;
+                fprintf(file, "mu32 ") ;
                 
                 break;
                 
             case i32:
                 
-                fprintf(file, "MInt ") ;
+                fprintf(file, "mi32 ") ;
                 
                 break;
 
             case u64:
                 
-                fprintf(file, "MULong ") ;
+                fprintf(file, "mu64 ") ;
                 
                 break;
                 
             case i64:
                 
-                fprintf(file, "MLong ") ;
+                fprintf(file, "mi64 ") ;
                 
                 break;
                 
             case f32:
                 
-                fprintf(file, "MFloat ") ;
+                fprintf(file, "mf32 ") ;
                 
                 break;
                 
             case f64:
                 
-                fprintf(file, "MDouble ") ;
+                fprintf(file, "mf64 ") ;
                 
                 break;
                 
@@ -377,7 +377,7 @@ static void output_arguments( marshmallow_context context, FILE* file, marshmall
 
 static void output_array_assignment( marshmallow_context context, FILE* file, marshmallow_statement statement, marshmallow_module module ) {
     
-    
+    fprintf(file,"memcpy(,,)") ;
 }
 
 static void output_statement( marshmallow_context context, FILE* file, marshmallow_statement statement, marshmallow_module module ) {
@@ -880,9 +880,12 @@ static void output_declarations( marshmallow_context context, FILE* file, RKStor
                 
             } else if ( entity->entity_type == entity_function ) {
                 
+                if ( !RKString_AreStringsEqual(((marshmallow_function_body)entity)->signature->func_name, rkstr("memcpy")) ) {
                 output_signature(context, file, ((marshmallow_function_body)entity)->signature, module) ;
                 
                 fprintf(file, ")") ;
+                    
+                }
             }
             
             fprintf(file, " ;\n") ;
@@ -996,7 +999,7 @@ static void output_main( marshmallow_context context, FILE* file, marshmallow_mo
     
     RKString str2 = RKString_AppendString(str1, rkstr("_main_0")) ;
     
-    fprintf(file, "MInt ") ;
+    fprintf(file, "mi32 ") ;
     
     fprintf(file, "%s", RKString_GetString(str2)) ;
     
@@ -1067,35 +1070,37 @@ static void output_module( marshmallow_context context, FILE* file, marshmallow_
 
 static void output_runtime( marshmallow_context context, FILE* file ) {
     
-    fprintf(file, "typedef float MFloat ;\n") ;
+    fprintf(file, "typedef float mf32 ;\n") ;
     
-    fprintf(file, "typedef double MDouble ;\n") ;
+    fprintf(file, "typedef double mf64 ;\n") ;
     
-    fprintf(file, "typedef unsigned char MByte ;\n") ;
+    fprintf(file, "typedef unsigned char mu8 ;\n") ;
     
-    fprintf(file, "typedef signed char MSByte ;\n") ;
+    fprintf(file, "typedef signed char mi8 ;\n") ;
     
-    fprintf(file, "typedef signed short MShort ;\n") ;
+    fprintf(file, "typedef signed short mi16 ;\n") ;
     
-    fprintf(file, "typedef unsigned short MUShort ;\n") ;
+    fprintf(file, "typedef unsigned short mu16 ;\n") ;
     
-    fprintf(file, "typedef signed int MInt ;\n") ;
+    fprintf(file, "typedef signed int mi32 ;\n") ;
     
-    fprintf(file, "typedef unsigned int MUInt ;\n") ;
+    fprintf(file, "typedef unsigned int mu32 ;\n") ;
     
     fprintf(file, "#ifdef _WIN32\n") ;
     
-    fprintf(file, "typedef signed long long MLong ;\n") ;
+    fprintf(file, "typedef signed long long mi64 ;\n") ;
     
-    fprintf(file, "typedef unsigned long long MULong ;\n") ;
+    fprintf(file, "typedef unsigned long long mu64 ;\n") ;
     
     fprintf(file, "#else\n") ;
     
-    fprintf(file, "typedef signed long MLong ;\n") ;
+    fprintf(file, "typedef signed long mi64 ;\n") ;
     
-    fprintf(file, "typedef unsigned long MULong ;\n") ;
+    fprintf(file, "typedef unsigned long mu64 ;\n") ;
     
     fprintf(file, "#endif\n") ;
+    
+    fprintf(file, "void* memcpy(void* dest, const void* src, mu64 n) ;") ;
     
     fprintf(file, "\n") ;
 }

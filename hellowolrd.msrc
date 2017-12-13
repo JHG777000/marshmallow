@@ -19,7 +19,9 @@ module mymod.
   u64 i := 0.
 
   u64 j := 4.
-  
+
+  j := (j + (i + (2 + 2)) ). //marshmallow forces grouping to avoid order of operations ambiguity
+
   //because all new languages need to support unicode identifiers
   u64 😀 := '😀'.
 
@@ -72,7 +74,7 @@ module mymod.
 
   if (myvar2 := myvar) while ( i < 2 ).
 
-   u64 myvar2 := 0xff.
+   u64 myvar2 := 52.
 
    myvar := (2+2).
 

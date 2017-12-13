@@ -1520,7 +1520,7 @@ m_processor(static_assignment) {
     if ( m_peek(n+0)->keyword == mgk(pleft) ){
         
         n++ ;
-        marshmallow_token t = m_peek(n+0) ;
+        
         if ( marshmallow_is_token_root_type(m_peek(n+0)) ) {
             
             marshmallow_parse_type(variable->type, m_peek(n+0), 0, NULL, 0) ;
@@ -1534,36 +1534,16 @@ m_processor(static_assignment) {
         
     }
     
-    if ( m_peek(n+1)->keyword == mgk(end_of_line) || m_peek(n+1)->keyword == mgk(pright) || m_peek(n+1)->keyword == mgk(comma) ) {
+    if ( marshmallow_is_token_root_type(m_peek(n+0)) ) {
         
-        if (  m_peek(n+1)->keyword == mgk(comma) ) {
-            
-            while (m_peek(n+1)->keyword != mgk(pright)) {
-                
-                if ( m_peek(n+1)->keyword == mgk(end_of_line) ) {
-                    
-                    m_expectN(n, pright) ;
-                }
-                
-                n++ ;
-            }
-            
-            n = 0 ;
-        }
+        marshmallow_parse_type(variable->type, m_peek(n+0), 0, NULL, 0) ;
         
-        if ( marshmallow_is_token_root_type(m_peek(n+0)) ) {
-            
-            marshmallow_parse_type(variable->type, m_peek(n+0), 0, NULL, 0) ;
-            
-            marshmallow_parse_value(m_peek(n+0), variable) ;
-            
-            return variable ;
-        }
+        marshmallow_parse_value(m_peek(n+0), variable) ;
         
-    } else {
-        
-        m_expectN(n+1,end_of_line) ;
+        return variable ;
     }
+
+    m_expectN(n+1,end_of_line) ;
     
     return NULL ;
 }
@@ -1805,11 +1785,11 @@ m_processor(variable) {
     
     if ( arrays != NULL ) {
         
-        m_advanceN(array_n) ;
+        m_advanceN(array_n + pointers) ;
         
         n = 2 ;
     }
-    
+   
     if ( is_assignment(startnode, n) ) {
         
         n+=2 ;
@@ -1830,7 +1810,7 @@ m_processor(variable) {
     
     if ( pointers > 0 ) {
         
-       if ( variable->static_assignment == NULL ) m_advanceN(pointers) ;
+       if ( variable->static_assignment == NULL && arrays == NULL ) m_advanceN(pointers) ;
     }
     
     m_advanceN(1) ;
@@ -2832,6 +2812,14 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
                             }
                             
                             if ( (word[i] == 'l') && (i == word_size-2) ) {
+                                
+                                if ( is_double ) {
+                                    
+                                    printf("Error: %s is a floating-point number, 'l' can not be used with floating-point numbers.\n",RKString_GetString(RKString_NewStringFromUTF32(word,word_size-1))) ;
+                                    
+                                    exit(EXIT_FAILURE) ;
+                                    
+                                }
                                 
                                 is_long++ ;
                                 

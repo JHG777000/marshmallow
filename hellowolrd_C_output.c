@@ -1,35 +1,36 @@
-typedef float MFloat ;
-typedef double MDouble ;
-typedef unsigned char MByte ;
-typedef signed char MSByte ;
-typedef signed short MShort ;
-typedef unsigned short MUShort ;
-typedef signed int MInt ;
-typedef unsigned int MUInt ;
+typedef float mf32 ;
+typedef double mf64 ;
+typedef unsigned char mu8 ;
+typedef signed char mi8 ;
+typedef signed short mi16 ;
+typedef unsigned short mu16 ;
+typedef signed int mi32 ;
+typedef unsigned int mu32 ;
 #ifdef _WIN32
-typedef signed long long MLong ;
-typedef unsigned long long MULong ;
+typedef signed long long mi64 ;
+typedef unsigned long long mu64 ;
 #else
-typedef signed long MLong ;
-typedef unsigned long MULong ;
+typedef signed long mi64 ;
+typedef unsigned long mu64 ;
 #endif
-
-void puts(MByte *string) ;
-void marshmallow_mymod_main(MInt * returns_marshmallow_mymod_main_0)  ;
+void* memcpy(void* dest, const void* src, mu64 n) ;
+void puts(mu8 *string) ;
+void marshmallow_mymod_main(mi32 * returns_marshmallow_mymod_main_0)  ;
 int main(int argc, const char **argv) {
-MInt returns_marshmallow_mymod_main_0 = 0 ;
+mi32 returns_marshmallow_mymod_main_0 = 0 ;
 marshmallow_mymod_main(&returns_marshmallow_mymod_main_0) ;
 return returns_marshmallow_mymod_main_0; 
 } 
-MULong marshmallow_mymod_myvar = 0xff ;
-MULong marshmallow_mymod_myvar0 ;
-void marshmallow_mymod_main(MInt * returns_marshmallow_mymod_main_0) {
-MULong myvar = 0xff ;
-MULong i = 0 ;
-MULong j = 4 ;
-MULong 😀 = L'😀' ;
-MInt myarray[3][3] = {{7,7,7},{7,7,7},{7,7,7}} ;
-MULong myvar2 = 0xff ;
+mu64 marshmallow_mymod_myvar = 0xff ;
+mu64 marshmallow_mymod_myvar0 ;
+void marshmallow_mymod_main(mi32 * returns_marshmallow_mymod_main_0) {
+mu64 myvar = 0xff ;
+mu64 i = 0 ;
+mu64 j = 4 ;
+mu64 😀 = L'😀' ;
+mi32 myarray[3][3] = {{7,7,7},{7,7,7},{7,7,7}} ;
+mu64 myvar2 = 52 ;
+j=(j+(i+(2+2)))  ;
 helloworld:  ;
 switch (j) {
 case 1:

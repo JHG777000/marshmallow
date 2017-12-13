@@ -259,7 +259,7 @@ marshmallow_entity marshmallow_lookup_identifier( marshmallow_function_body func
         
         if ( function != NULL ) entity = RKStore_GetItem(function->variables, RKString_GetString(identifier_name)) ;
         
-        if ( entity == NULL || function == NULL ) entity = RKStore_GetItem(module->variables, RKString_GetString(identifier_name)) ;
+        if ( entity == NULL  ) entity = RKStore_GetItem(module->variables, RKString_GetString(identifier_name)) ;
     }
     
     if ( entity == NULL ) {
@@ -366,11 +366,50 @@ marshmallow_function_body marshmallow_new_function_body( marshmallow_function_si
     return function ;
 }
 
-void marshmallow_add_statement_to_function( marshmallow_function_body function, marshmallow_statement statement ) {
+static void marshmallow_attach_function_to_all_statements( marshmallow_function_body function, marshmallow_variable a, marshmallow_variable b ) {
+    
+    marshmallow_statement statement = NULL ;
+    
+    if ( a != NULL ) if (a->entity_type == entity_variable) if ( a->type->root_type == expression ) {
+        
+        statement = a->data ;
+        
+        statement->function = function ;
+        
+        marshmallow_attach_function_to_all_statements(function, (marshmallow_variable)statement->var_a, (marshmallow_variable)statement->var_b) ;
+    }
+    
+    if ( b != NULL ) if (b->entity_type == entity_variable) if ( b->type->root_type == expression ) {
+        
+        statement = b->data ;
+        
+        statement->function = function ;
+        
+        marshmallow_attach_function_to_all_statements(function, (marshmallow_variable)statement->var_a, (marshmallow_variable)statement->var_b) ;
+    }
+}
+
+static void marshmallow_attach_function_to_statement( marshmallow_function_body function, marshmallow_statement statement ) {
     
     statement->function = function ;
     
-    if ( function->entity_type == entity_statement ) statement->function = ((marshmallow_statement)function)->function ;
+    marshmallow_attach_function_to_all_statements(function, (marshmallow_variable)statement->var_a, (marshmallow_variable)statement->var_b) ;
+}
+
+void marshmallow_add_statement_to_function( marshmallow_function_body function, marshmallow_statement statement ) {
+    
+    marshmallow_function_body f = function ;
+    
+loop:
+    
+    if ( f->entity_type == entity_statement ) {
+        
+        f = ((marshmallow_statement)f)->function ;
+        
+        goto loop ;
+    }
+    
+    marshmallow_attach_function_to_statement(f, statement) ;
     
     RKList_AddToList(function->statements, statement) ;
 }

@@ -379,6 +379,10 @@ static int typecheck_are_types_equivalent( marshmallow_type t1, marshmallow_type
         return 0 ;
     }
     
+    if ( t1->root_type == array && t2->root_type != metacollection ) return 0 ;
+    
+    if ( t1->root_type != array && t2->root_type == metacollection ) return 0 ;
+        
     if ( (t1->root_type == array && t2->root_type == metacollection) ) {
         
         size = m_get_size_of_type_in_bytes(t1, &root_type) ;
@@ -869,9 +873,11 @@ static marshmallow_type typecheck_get_type_from_variable( marshmallow_variable v
     if ( variable->type->root_type == expression ) {
         
         t = typecheck_statment((marshmallow_statement)variable->data, has_assignment, module) ;
+        
+    } else {
+        
+        t = variable->type ;
     }
-    
-    t = variable->type ;
     
     typecheck_type(variable, module) ;
     
