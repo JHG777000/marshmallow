@@ -235,6 +235,11 @@ static void output_value(marshmallow_context context, FILE* file, marshmallow_va
     
     if ( value->type->root_type == character ) fprintf(file, "L\'") ;
     
+    if ( value->type->root_type == array ) {
+        
+        if ( value->name != NULL ) output_symbol(context, file, value->name, module, 0, 0) ;
+    }
+    
     if ( value->type->root_type != unknown && value->type->root_type != array && value->type->root_type != arguments && value->type->root_type != metacollection
         && value->type->root_type != expression && value->data != NULL ) {
         
@@ -377,7 +382,19 @@ static void output_arguments( marshmallow_context context, FILE* file, marshmall
 
 static void output_array_assignment( marshmallow_context context, FILE* file, marshmallow_statement statement, marshmallow_module module ) {
     
-    fprintf(file,"memcpy(,,)") ;
+    fprintf(file,"memcpy(") ;
+    
+    output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+    
+    fprintf(file,",") ;
+    
+    output_value(context, file, (marshmallow_variable)statement->var_b, module) ;
+    
+    fprintf(file,", sizeof(") ;
+    
+    output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+    
+    fprintf(file,"))") ;
 }
 
 static void output_statement( marshmallow_context context, FILE* file, marshmallow_statement statement, marshmallow_module module ) {

@@ -378,10 +378,6 @@ static int typecheck_are_types_equivalent( marshmallow_type t1, marshmallow_type
         
         return 0 ;
     }
-    
-    if ( t1->root_type == array && t2->root_type != metacollection ) return 0 ;
-    
-    if ( t1->root_type != array && t2->root_type == metacollection ) return 0 ;
         
     if ( (t1->root_type == array && t2->root_type == metacollection) ) {
         
@@ -477,6 +473,10 @@ static int typecheck_are_types_equivalent( marshmallow_type t1, marshmallow_type
         
         if ( t->root_type == t0->root_type ) return 1 ;
     }
+    
+    if ( t1->root_type == array && t2->root_type != metacollection ) return 0 ;
+    
+    if ( t1->root_type != array && t2->root_type == metacollection ) return 0 ;
     
     return 1 ;
 }
@@ -818,6 +818,8 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
              *has_assignment = 1 ;
                  
                  var_a = ((marshmallow_variable)statement->var_a) ;
+             
+                 var_b = ((marshmallow_variable)statement->var_b) ;
                  
                  if ( !is_assignable(var_a,has_assignment,module) ) {
                      
@@ -841,6 +843,9 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
                      
                      exit(EXIT_FAILURE) ;
                  }
+             
+             
+             if ( var_a->type->root_type == array && var_b->type->root_type == array ) statement->op = array_assignment ;
              
              break;
              

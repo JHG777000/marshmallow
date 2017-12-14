@@ -29,8 +29,10 @@ mu64 i = 0 ;
 mu64 j = 4 ;
 mu64 😀 = L'😀' ;
 mi32 myarray[3][3] = {{7,7,7},{7,7,7},{7,7,7}} ;
+mi32 myarray2[3][3] ;
 mu64 myvar2 = 52 ;
 j=(j+(i+(2+2)))  ;
+memcpy(myarray2,myarray, sizeof(myarray2))  ;
 helloworld:  ;
 switch (j) {
 case 1:
