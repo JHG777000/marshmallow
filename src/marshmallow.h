@@ -70,7 +70,7 @@ typedef struct marshmallow_class_s { marshmallow_entity_type entity_type ; RKSto
 
 typedef struct marshmallow_type_s { marshmallow_entity_type entity_type ; RKString type_name ; int is_readonly ;
     
-marshmallow_root_type root_type ; void* base_type ; int num_of_elements ; } *marshmallow_type ;
+marshmallow_root_type root_type ; void* base_type ; RKULong num_of_elements ; } *marshmallow_type ;
 
 typedef struct marshmallow_variable_s { marshmallow_entity_type entity_type ; marshmallow_type type ;
     
@@ -176,7 +176,9 @@ int m_is_type_number( marshmallow_type type ) ;
 
 int m_get_size_of_root_type_in_bytes( marshmallow_type type ) ;
 
-int m_get_size_of_type_in_bytes( marshmallow_type type, marshmallow_root_type* root_type ) ;
+RKULong m_get_size_of_type_in_bytes( marshmallow_type type, marshmallow_root_type* root_type ) ;
+
+RKULong m_get_size_of_type_or_array_in_bytes( marshmallow_type type_or_array, marshmallow_root_type* root_type ) ;
 
 void marshmallow_typecheck( marshmallow_context context ) ;
 

@@ -30,7 +30,7 @@ module mymod.
   i32[3][3] myarray2.
 
   myarray2 := myarray.
-
+  
   section helloworld.
 
   switch (j).

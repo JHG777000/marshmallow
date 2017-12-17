@@ -250,7 +250,7 @@ marshmallow_entity marshmallow_lookup_identifier( marshmallow_function_body func
             
             entity = RKStore_GetItem(module->declarations, RKString_GetString(identifier_name)) ;
             
-            if ( entity->entity_type != entity_function ) entity = NULL ;
+            if ( entity != NULL ) if ( entity->entity_type != entity_function ) entity = NULL ;
         }
          
     } else if (identifier->entity_type == entity_variable) {

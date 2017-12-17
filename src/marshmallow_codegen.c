@@ -17,6 +17,19 @@
 
 #include "marshmallow.h"
 
+static const char* myltoa( RKULong val, char* string ) {
+#ifdef _WIN32
+    
+    snprintf(string, sizeof(string), "%llu", val) ;
+    
+#else
+    snprintf(string, sizeof(string), "%lu", val) ;
+    
+#endif
+    
+    return string ;
+    
+}
 
 static const char* myitoa( int val, char* string ) {
     
@@ -55,18 +68,18 @@ static void output_symbol( marshmallow_context context, FILE* file, RKString nam
      RKString str1  = RKString_AppendString(str0, underscore) ;
     
      RKString str2 = RKString_AppendString(str1, name) ;
-    
+        
      if ( RKStore_ItemExists(context->symbols, RKString_GetString(str2)) && is_definition ) {
         
          if ( name != RKStore_GetItem(context->symbols, RKString_GetString(str2)) ) {
             
              printf("Error: symbol '%s', already exists.\n",RKString_GetString(str2)) ;
             
-            exit(EXIT_FAILURE) ;
+             exit(EXIT_FAILURE) ;
             
          }
      }
-    
+        
      fprintf(file, "%s", RKString_GetString(str2)) ;
      
      if ( is_definition ) RKStore_AddItem(context->symbols, name, RKString_GetString(str2)) ;
@@ -74,13 +87,13 @@ static void output_symbol( marshmallow_context context, FILE* file, RKString nam
      RKString_DestroyString(underscore) ;
         
     } else {
-        
+
      fprintf(file, "%s", RKString_GetString(name)) ;
         
     }
 }
 
-static void output_type( marshmallow_context context, FILE* file, marshmallow_type type, marshmallow_module module ) {
+static void output_type( marshmallow_context context, FILE* file, marshmallow_type type, marshmallow_variable static_assignment, marshmallow_module module ) {
     
     marshmallow_type t = type ;
     
@@ -174,6 +187,8 @@ loop:
             
             if (t->root_type == ptr) fprintf(file,"*") ;
             
+            if (t->root_type == array && t->num_of_elements == 0 && static_assignment == NULL ) fprintf(file,"*") ;
+            
             t = t->base_type ;
             
             goto loop2 ;
@@ -181,19 +196,58 @@ loop:
     }
 }
 
-static void output_array( marshmallow_context context, FILE* file, marshmallow_type type, marshmallow_module module ) {
+static void output_array( marshmallow_context context, FILE* file, marshmallow_type type, marshmallow_variable static_assignment, marshmallow_module module ) {
+    
+    int is_not_zero = 0 ;
+    
+    int is_first = 1 ;
+    
+    int is_zero = 0 ;
     
     marshmallow_type t = type ;
+    
 loop:
     if ( t->root_type == array ) {
         
-        fprintf(file,"[") ;
+        if ( t->num_of_elements == 0 ) is_zero++ ;
         
-        if ( t->num_of_elements > 0 ) fprintf(file, "%d", t->num_of_elements) ;
+        if ( t->num_of_elements != 0 ) is_not_zero++ ;
         
-        fprintf(file,"]") ;
+        if ( t->num_of_elements == 0 && !is_first && static_assignment != NULL ) {
+            
+            printf("Error: Only the first array is allowed to be zero, when statically assigned.\n") ;
+            
+            exit(EXIT_FAILURE) ;
+        }
+        
+        if ( ((t->num_of_elements != 0 && is_zero) || (t->num_of_elements == 0 && is_not_zero)) && static_assignment == NULL ) {
+            
+            printf("Error: When not statically assigned zero and non-zero arrays can not be mixed.\n") ;
+            
+            exit(EXIT_FAILURE) ;
+        }
+        
+        if ( static_assignment == NULL && t->num_of_elements != 0 ) fprintf(file,"[") ;
+        
+        if ( static_assignment != NULL ) fprintf(file,"[") ;
+        
+#ifdef _WIN32
+        
+        if ( t->num_of_elements > 0 ) fprintf(file, "%llu", t->num_of_elements) ;
+
+#else
+        
+        if ( t->num_of_elements > 0 ) fprintf(file, "%lu", t->num_of_elements) ;
+        
+#endif
+        
+        if ( static_assignment == NULL && t->num_of_elements != 0 ) fprintf(file,"]") ;
+        
+        if ( static_assignment != NULL ) fprintf(file,"]") ;
         
         t = t->base_type ;
+        
+        is_first = 0 ;
         
         goto loop ;
     }
@@ -203,11 +257,22 @@ static void output_value(marshmallow_context context, FILE* file, marshmallow_va
 
 static void output_variable( marshmallow_context context, FILE* file, marshmallow_variable variable, marshmallow_module module, int is_global, int no_default ) {
     
-    output_type(context, file, variable->type, module) ;
+    if ( RKStore_ItemExists(context->symbols, RKString_GetString(variable->name)) ) {
+        
+        if ( variable->name != RKStore_GetItem(context->symbols, RKString_GetString(variable->name)) ) {
+            
+            printf("Error: symbol '%s', already exists.\n",RKString_GetString(variable->name)) ;
+            
+            exit(EXIT_FAILURE) ;
+            
+        }
+    }
+    
+    output_type(context, file, variable->type, variable->static_assignment, module) ;
     
     output_symbol(context, file, variable->name, module, is_global, 1) ;
     
-    output_array(context, file, variable->type, module) ;
+    output_array(context, file, variable->type, variable->static_assignment, module) ;
     
     if ( variable->static_assignment != NULL && !no_default) {
         
@@ -769,7 +834,7 @@ static void output_a_return( marshmallow_context context, FILE* file, marshmallo
    
     if (is_definition) {
         
-    output_type(context, file, variable->type, module) ;
+    output_type(context, file, variable->type, variable->static_assignment, module) ;
     
     fprintf(file, "* " ) ;
         
@@ -898,6 +963,7 @@ static void output_declarations( marshmallow_context context, FILE* file, RKStor
             } else if ( entity->entity_type == entity_function ) {
                 
                 if ( !RKString_AreStringsEqual(((marshmallow_function_body)entity)->signature->func_name, rkstr("memcpy")) ) {
+                    
                 output_signature(context, file, ((marshmallow_function_body)entity)->signature, module) ;
                 
                 fprintf(file, ")") ;
@@ -1147,6 +1213,8 @@ static void output_app( marshmallow_context context, FILE* file ) {
 }
 
 void marshmallow_codegen( marshmallow_context context, FILE* out_file ) {
+    
+    RKStore_AddItem(context->symbols, rkstr("item"), "memcpy") ;
     
     output_app(context, out_file) ;
 }

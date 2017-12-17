@@ -279,9 +279,9 @@ int m_get_size_of_root_type_in_bytes( marshmallow_type type ) {
     return 0 ;
 }
 
-int m_get_size_of_type_in_bytes( marshmallow_type type, marshmallow_root_type* root_type ) {
+RKULong m_get_size_of_type_in_bytes( marshmallow_type type, marshmallow_root_type* root_type ) {
     
-    int size = 0 ;
+    RKULong size = 0 ;
     
     int num_of_elements = 1 ;
     
@@ -343,11 +343,20 @@ int m_get_size_of_type_in_bytes( marshmallow_type type, marshmallow_root_type* r
     return size ;
 }
 
+RKULong m_get_size_of_type_or_array_in_bytes( marshmallow_type type_or_array, marshmallow_root_type* root_type ) {
+    
+    RKULong size = m_get_size_of_type_in_bytes(type_or_array, root_type) ;
+    
+    if ( size == 0 ) return 8 ;
+    
+    return size ;
+}
+
 static int typecheck_are_types_equivalent( marshmallow_type t1, marshmallow_type t2 ) {
     
-    int size = 0 ;
+    RKULong size = 0 ;
     
-    int size2 = 0 ;
+    RKULong size2 = 0 ;
     
     RKList list = NULL ;
     
