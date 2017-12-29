@@ -578,6 +578,89 @@ m_processor(goto) {
     return NULL ;
 }
 
+m_processor(typedef) {
+    
+    marshmallow_variable a = marshmallow_new_variable() ;
+    
+    a->type = marshmallow_new_type() ;
+    
+    marshmallow_variable b = marshmallow_new_variable() ;
+    
+    b->type = marshmallow_new_type() ;
+    
+    marshmallow_type t1 = NULL ;
+    
+    marshmallow_type t2 = NULL ;
+    
+    if ( m_peek(0)->keyword == mgk(typedef) ) {
+        
+        if ( (m_peek(1)->keyword == mgk(identifier)) || marshmallow_is_token_root_type(m_peek(1))  ) {
+            
+            marshmallow_parse_value(m_peek(1), a) ;
+            
+            if ( (m_peek(2)->keyword == mgk(identifier)) || marshmallow_is_token_root_type(m_peek(2)) ) {
+                
+                if ( marshmallow_is_token_root_type(m_peek(2)) ) {
+                    
+                    m_expectN(2,identifier) ;
+                }
+                
+                marshmallow_parse_value(m_peek(2), b) ;
+                
+            } else {
+                
+                m_expect(identifier) ;
+            }
+            
+            m_advanceN(3) ;
+            
+            m_expect(end_of_line) ;
+            
+            t1 = ((marshmallow_value)a->data)->type ;
+            
+            t2 = ((marshmallow_value)b->data)->type ;
+            
+            t1->is_literal = 0 ;
+            
+            t2->is_literal = 0 ;
+            
+            RKString_DestroyString(t1->type_name) ;
+            
+            t1->type_name = RKString_CopyString(((marshmallow_value)a->data)->value) ;
+            
+            RKString_DestroyString(t2->type_name) ;
+            
+            t2->type_name = RKString_CopyString(((marshmallow_value)b->data)->value) ;
+
+            RKString_DestroyString(((marshmallow_value)a->data)->value) ;
+            
+            free(a->data) ;
+            
+            free(a) ;
+            
+            RKString_DestroyString(((marshmallow_value)b->data)->value) ;
+            
+            free(b->data) ;
+            
+            free(b) ;
+            
+            t1->is_typedef++ ;
+            
+            t2->is_typedef++ ;
+            
+            t2->base_type = t1 ;
+            
+            return t2 ;
+        }
+        
+        m_expect(identifier) ;
+    }
+    
+    m_expect(typedef) ;
+    
+    return NULL ;
+}
+
 m_processor(break) {
     
     marshmallow_variable a = marshmallow_new_variable() ;
@@ -1224,7 +1307,7 @@ m_processor(collection) {
                 
                 element->type->root_type = metacollection ;
                 
-                free(element->type->type_name) ;
+                RKString_DestroyString(element->type->type_name) ;
                 
                 element->type->type_name = NULL ;
                 
@@ -1313,7 +1396,7 @@ m_processor(assignment) {
         
         a->type->root_type = metacollection ;
         
-        free(a->type->type_name) ;
+        RKString_DestroyString(a->type->type_name) ;
         
         a->type->type_name = NULL ;
         
@@ -1377,7 +1460,7 @@ m_processor(assignment) {
             
             b->type->root_type = metacollection ;
             
-            free(b->type->type_name) ;
+            RKString_DestroyString(b->type->type_name) ;
             
             b->type->type_name = NULL ;
             
@@ -1474,7 +1557,7 @@ m_processor(return) {
         
         variable->type->root_type = metacollection ;
         
-        free(variable->type->type_name) ;
+        RKString_DestroyString(variable->type->type_name) ;
         
         variable->type->type_name = NULL ;
         
@@ -1508,7 +1591,7 @@ m_processor(static_assignment) {
         
         variable->type->root_type = metacollection ;
         
-        free(variable->type->type_name) ;
+        RKString_DestroyString(variable->type->type_name) ;
         
         variable->type->type_name = NULL ;
         
@@ -1875,6 +1958,14 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                 
                 break;
                 
+            case mgk(typedef):
+                
+                entity = m_process(typedef) ;
+                
+                entity_type = entity->entity_type ;
+                
+                break;
+                
             case mgk(section):
                 
                 entity = m_process(section) ;
@@ -2055,6 +2146,26 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                 
                 break;
                 
+            case mgk(floattype):
+                
+                entity = m_process(variable) ;
+                
+                m_expect(end_of_line) ;
+                
+                entity_type = entity->entity_type ;
+                
+                break;
+                
+            case mgk(doubletype):
+                
+                entity = m_process(variable) ;
+                
+                m_expect(end_of_line) ;
+                
+                entity_type = entity->entity_type ;
+                
+                break;
+                
             case mgk(pleft):
                 
                 entity = m_process(assignment) ;
@@ -2112,6 +2223,26 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
         
         switch (entity_type) {
                 
+            case entity_data_type:
+                
+                if ( RKStack_IsEmpty(scope_stack) ) {
+                    
+                    printf("No scope.\n") ;
+                    
+                    exit(EXIT_FAILURE) ;
+                }
+                
+                if ( ((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type != entity_module ) {
+                    
+                    printf("Expected module. typedefs must exist within a module, not a function or method.\n") ;
+                    
+                    exit(EXIT_FAILURE) ;
+                }
+                
+                marshmallow_add_typedef_to_module((marshmallow_type)entity, RKStack_Peek(scope_stack)) ;
+                
+            break;
+                
             case entity_variable:
                 
                 if ( RKStack_IsEmpty(scope_stack) ) {
@@ -2125,7 +2256,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                     && !(((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type == entity_function) &&
                     !(((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type == entity_statement) ) {
                     
-                    printf("Expected module or function. Variables must exist within a module or function.\n") ;
+                    printf("Expected module or function or method. Variables must exist within a module or function or method.\n") ;
                     
                     exit(EXIT_FAILURE) ;
                 }
@@ -2142,7 +2273,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                     
                     if ( (marshmallow_scope)((marshmallow_statement)RKStack_Peek(scope_stack))->function == NULL ) {
                         
-                        printf("If or while statement without a function.\n") ;
+                        printf("If or while statement without a function or method.\n") ;
                         
                         exit(EXIT_FAILURE) ;
                     }

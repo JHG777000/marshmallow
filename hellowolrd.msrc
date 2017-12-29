@@ -12,6 +12,12 @@ module mymod.
 *                                                             *
 ************************************************************///
 
+ typedef int myint.
+
+ typedef i32 int.
+
+ myint myvar1 := 0.
+
  function main() returns i32.
 
   u64 myvar := 0xff.
@@ -20,7 +26,9 @@ module mymod.
 
   u64 j := 4.
 
-  j := ( j + (i + (2 + 2)) ). //marshmallow forces grouping to avoid order of operations ambiguity
+  j := ( j + (i + (2 / 2)) ). //marshmallow forces grouping to avoid order of operations ambiguity
+
+  j := 4.
 
   //because all new languages need to support unicode identifiers
   u64 😀 := '😀'.

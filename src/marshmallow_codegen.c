@@ -103,6 +103,11 @@ loop:
     
     if ( (t->root_type == ptr) || (t->root_type == array) ) goto loop ;
     
+    if ( t->root_type == unknown && t->is_typedef ) {
+        
+        fprintf(file, "%s ", RKString_GetString(t->output_name)) ;
+    }
+    
     if ( t->root_type != unknown ) {
         
         switch (t->root_type) {
@@ -172,7 +177,7 @@ loop:
         }
         
         
-    } else {
+    } else if (!t->is_typedef ) {
         
         output_symbol(context, file, t->type_name, module, 1, 0) ;
         
@@ -721,6 +726,36 @@ static void output_statement( marshmallow_context context, FILE* file, marshmall
             output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
             
             fprintf(file, "+") ;
+            
+            output_value(context, file, (marshmallow_variable)statement->var_b, module) ;
+            
+            break;
+            
+        case sub:
+            
+            output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+            
+            fprintf(file, "-") ;
+            
+            output_value(context, file, (marshmallow_variable)statement->var_b, module) ;
+            
+            break;
+            
+        case mult:
+            
+            output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+            
+            fprintf(file, "*") ;
+            
+            output_value(context, file, (marshmallow_variable)statement->var_b, module) ;
+            
+            break;
+            
+        case mdiv:
+            
+            output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+            
+            fprintf(file, "/") ;
             
             output_value(context, file, (marshmallow_variable)statement->var_b, module) ;
             

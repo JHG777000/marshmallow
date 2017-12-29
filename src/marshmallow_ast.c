@@ -174,6 +174,8 @@ void marshmallow_parse_value( marshmallow_token token, marshmallow_variable vari
     value->value = RKString_CopyString(token->value) ;
     
     variable->data = value ;
+    
+    variable->type->is_literal = 1 ;
 }
 
 marshmallow_type marshmallow_new_type( void ) {
@@ -187,6 +189,12 @@ marshmallow_type marshmallow_new_type( void ) {
     type->root_type = unknown ;
     
     type->type_name = rkstr("unknown") ;
+    
+    type->output_name = NULL ;
+    
+    type->is_literal = 0 ;
+    
+    type->is_typedef = 0 ;
     
     type->is_readonly = 0 ;
     
@@ -287,6 +295,8 @@ marshmallow_module marshmallow_new_module( RKString name ) {
     module->modules = RKStore_NewStore() ;
     
     module->types = RKStore_NewStore() ;
+    
+    module->unprocessed_types = RKStore_NewStore() ;
     
     module->variables = RKStore_NewStore() ;
     
@@ -436,4 +446,16 @@ void marshmallow_add_function_to_module_declarations( marshmallow_function_body 
     }
 
     RKStore_AddItem(module->declarations, function, RKString_GetString(function->signature->func_name)) ;
+}
+
+void marshmallow_add_typedef_to_module( marshmallow_type type, marshmallow_module module ) {
+    
+    if ( RKStore_ItemExists(module->types, RKString_GetString(type->type_name) ) ) {
+        
+        printf("Type name already used in this module. Can not redefine types.\n") ;
+        
+        exit(EXIT_FAILURE) ;
+    }
+    
+    RKStore_AddItem(module->types, type, RKString_GetString(type->type_name)) ;
 }

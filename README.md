@@ -118,7 +118,7 @@ helloworld.msrc provides a working example of marshmallow, while hellowolrd\_C_o
 
 ## Building marshmallow
 
-Any standard C11 compliant C compiler should be able to compile marshmallow, and the code it generates.
+Any standard C11 compliant C compiler(64-bit) should be able to compile marshmallow, and the code it generates.
 
 #### Dependencies for building marshmallow: 
 

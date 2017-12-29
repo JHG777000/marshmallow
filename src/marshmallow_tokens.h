@@ -69,6 +69,10 @@ token(epoint, "!")
 
 token(tilde, "~")
 
+token(caret, "^")
+
+token(dollar, "$")
+
 token(greaterthan,">")
 
 token(lessthan,"<")
@@ -124,4 +128,6 @@ token(goto,"goto")
 token(declare,"declare")
 
 token(external,"external")
+
+token(typedef,"typedef")
 

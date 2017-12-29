@@ -36,7 +36,7 @@ typedef enum { noop, assignment, array_assignment, is_equal, is_not_equal, is_gr
     
  add, sub, negate, mult, mdiv, rem, not, and, or, bnot, band, bor, xor, lshift, rshift, deref, addrof, msizeof, itemsof, inc, dec, call,
     
-slifop, ifop, elseop, whileop, breakop, continueop,  switchop, caseop, endcaseop, defaultop, section, gotoop, ret } marshmallow_op_type ;
+slifop, ifop, elseop, whileop, breakop, continueop, switchop, caseop, endcaseop, defaultop, section, gotoop, ret } marshmallow_op_type ;
 
 typedef enum { entity_module, entity_class, entity_function, entity_variable, entity_data_type, entity_statement, entity_collection,
     
@@ -68,7 +68,7 @@ typedef struct marshmallow_context_s* marshmallow_context ;
 
 typedef struct marshmallow_class_s { marshmallow_entity_type entity_type ; RKStore variables ; marshmallow_function_body init_function ; } *marshmallow_class ;
 
-typedef struct marshmallow_type_s { marshmallow_entity_type entity_type ; RKString type_name ; int is_readonly ;
+typedef struct marshmallow_type_s { marshmallow_entity_type entity_type ; RKString type_name ; RKString output_name ;  int is_literal ; int is_typedef ; int is_readonly ;
     
 marshmallow_root_type root_type ; void* base_type ; RKULong num_of_elements ; } *marshmallow_type ;
 
@@ -94,7 +94,7 @@ typedef struct marshmallow_statement_s { marshmallow_entity_type entity_type ; R
     
 marshmallow_entity var_a ; marshmallow_entity var_b ; marshmallow_function_body function ; } *marshmallow_statement ;
 
-typedef struct marshmallow_module_s { marshmallow_entity_type entity_type ; marshmallow_scope_protocol RKStore declarations ; RKStore types ;
+typedef struct marshmallow_module_s { marshmallow_entity_type entity_type ; marshmallow_scope_protocol RKStore declarations ; RKStore types ; RKStore unprocessed_types ;
     
 RKStore macros ; RKStore modules ;
     
@@ -164,6 +164,8 @@ void marshmallow_add_function_to_module( marshmallow_function_body function, mar
 
 void marshmallow_add_function_to_module_declarations( marshmallow_function_body function, marshmallow_module module ) ;
 
+void marshmallow_add_typedef_to_module( marshmallow_type type, marshmallow_module module ) ;
+
 //parse
 
 void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) ;
@@ -173,6 +175,8 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
 int m_is_type_float( marshmallow_type type ) ;
 
 int m_is_type_number( marshmallow_type type ) ;
+
+int m_is_root_type( marshmallow_type type ) ;
 
 int m_get_size_of_root_type_in_bytes( marshmallow_type type ) ;
 

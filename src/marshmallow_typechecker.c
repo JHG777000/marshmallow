@@ -45,6 +45,11 @@ static marshmallow_type typecheck_get_type_from_root_type( marshmallow_root_type
 case type:\
 if ( type##_t == NULL ) type##_t = RKMem_NewMemOfType(struct marshmallow_type_s) ;\
 type##_t->root_type = type ;\
+type##_t->type_name = NULL ;\
+type##_t->is_typedef = 0 ;\
+type##_t->is_readonly = 0 ;\
+type##_t->base_type = NULL ;\
+type##_t->num_of_elements = -1 ;\
 return type##_t ;\
 break;
     
@@ -77,6 +82,16 @@ break;
     if ( unknown_t == NULL ) unknown_t = RKMem_NewMemOfType(struct marshmallow_type_s) ;
     
     unknown_t->root_type = unknown ;
+    
+    unknown_t->type_name = NULL ;
+    
+    unknown_t->is_typedef = 0 ;
+    
+    unknown_t->is_readonly = 0 ;
+    
+    unknown_t->base_type = NULL ;
+    
+    unknown_t->num_of_elements = -1 ;
     
     return unknown_t ;
     
@@ -177,6 +192,95 @@ int m_is_type_number( marshmallow_type type ) {
             break;
             
         case f64:
+            
+            return 1 ;
+            
+            break;
+            
+        default:
+            break;
+    }
+    
+    return 0 ;
+}
+
+int m_is_root_type( marshmallow_type type ) {
+    
+    switch (type->root_type) {
+            
+        case mgk(i8type):
+            
+            return 1 ;
+            
+            break;
+            
+        case mgk(u8type):
+            
+            return 1 ;
+            
+            break;
+            
+        case mgk(i16type):
+            
+            return 1 ;
+            
+            break;
+            
+        case mgk(u16type):
+            
+            return 1 ;
+            
+            break;
+            
+        case mgk(i32type):
+            
+            return 1 ;
+            
+            break;
+            
+        case mgk(u32type):
+            
+            return 1 ;
+            
+            break;
+            
+        case mgk(i64type):
+            
+            return 1 ;
+            
+            break;
+            
+        case mgk(u64type):
+            
+            return 1 ;
+            
+            break;
+            
+        case mgk(hex):
+            
+            return 1 ;
+            
+            break;
+            
+        case mgk(string):
+            
+            return 1 ;
+            
+            break;
+            
+        case mgk(character):
+            
+            return 1 ;
+            
+            break;
+            
+        case mgk(floattype):
+            
+            return 1 ;
+            
+            break;
+            
+        case mgk(doubletype):
             
             return 1 ;
             
@@ -372,13 +476,13 @@ static int typecheck_are_types_equivalent( marshmallow_type t1, marshmallow_type
     
     marshmallow_root_type root_type2 ;
     
-    if ( t1->type_name != NULL && t2->type_name == NULL ) return 0 ;
+    if ( t1->type_name != NULL && (t2->type_name == NULL && !t2->is_literal) ) return 0 ;
     
-    if ( t1->type_name == NULL && t2->type_name != NULL ) return 0 ;
+    if ( t1->type_name == NULL && (t2->type_name != NULL && !t2->is_literal) ) return 0 ;
     
-    if ( t1->type_name != NULL && t2->type_name != NULL ) {
+    if ( t1->type_name != NULL && (t2->type_name != NULL && !t2->is_literal) ) {
         
-        if ( !RKString_AreStringsEqual(t1->type_name, t2->type_name) ) return 0 ;
+         if ( !RKString_AreStringsEqual(t1->type_name, t2->type_name) ) return 0 ;
     }
     
     if ( m_is_type_number(t1) && m_is_type_number(t2) ) {
@@ -494,7 +598,7 @@ static void typecheck_type( marshmallow_variable variable, marshmallow_module mo
     
     marshmallow_type t = variable->type ;
     
-    if ( variable->type->type_name != NULL && (m_is_type_number(variable->type) || variable->type->root_type == metacollection ) ) {
+    if ( variable->type->type_name != NULL && ((m_is_type_number(variable->type) && !variable->type->is_typedef) || variable->type->root_type == metacollection ) ) {
         
         free(variable->type->type_name) ;
         
@@ -600,7 +704,7 @@ static void typecheck_declaration( marshmallow_entity declaration, marshmallow_m
             
             if ( ((marshmallow_function_body)declaration)->signature->is_overridable ) {
              
-                printf("External function or method: '%s', is marked as overridable, an external function or method can not be marked as overridable.\n",RKString_GetString(((marshmallow_function_body)declaration)->signature->func_name)) ;
+                printf("External function or method: '%s', is marked as overridable, an external function can not be marked as overridable.\n",RKString_GetString(((marshmallow_function_body)declaration)->signature->func_name)) ;
                 
                 exit(EXIT_FAILURE) ;
             }
@@ -683,7 +787,7 @@ loop:
         
         case i8:
             
-            j = 1 ;
+            j = 2 ;
             
             break;
             
@@ -695,56 +799,55 @@ loop:
             
         case i16:
             
-            j = 2 ;
+            j = 4 ;
             
             break;
             
         case u16:
             
-            j = 2 ;
+            j = 3 ;
             
             break;
             
         case i32:
             
-            j = 3 ;
+            j = 6 ;
             
             break;
             
         case u32:
             
-            j = 3 ;
+            j = 5 ;
             
             break;
             
-            
         case i64:
             
-            j = 4 ;
+            j = 8 ;
             
             break;
             
         case u64:
             
-            j = 4 ;
+            j = 7 ;
             
             break;
             
         case hex:
             
-            j = 4 ;
+            j = 7 ;
             
             break;
             
         case f32:
             
-            j = 5 ;
+            j = 9 ;
             
             break;
             
         case f64:
             
-            j = 6 ;
+            j = 10 ;
             
             break;
             
@@ -854,7 +957,7 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
                  }
              
              
-             if ( var_a->type->root_type == array && var_b->type->root_type == array ) statement->op = array_assignment ;
+             if ( var_a->type->root_type == array && var_b->type->root_type == array && var_a->type->num_of_elements > 0 ) statement->op = array_assignment ;
              
              break;
              
@@ -962,11 +1065,112 @@ static void typecheck_function( marshmallow_function_body function, marshmallow_
 
 }
 
+static void typecheck_process_type( marshmallow_type type, marshmallow_module module ) {
+    
+    RKList list = NULL ;
+    
+    RKList_node node = NULL ;
+    
+    marshmallow_type t = NULL ;
+    
+    marshmallow_type t0 = NULL ;
+    
+    if ( type->is_typedef ) {
+        
+        t = type ;
+        
+    loop:
+        
+        if ( t->root_type == unknown && t->is_typedef && t->base_type != NULL ) {
+            
+            t = t->base_type ;
+            
+            goto loop ;
+            
+        } else  if ( t->is_typedef && t->base_type == NULL ) {
+            
+            if ( t->is_typedef && t->root_type != unknown ) goto process ;
+            
+            t0 = RKStore_GetItem(module->types, RKString_GetString(t->type_name)) ;
+            
+            if ( t0 != NULL ) t = t0 ;
+            
+            if ( ( t->base_type != NULL && ((marshmallow_type)t->base_type)->root_type != unknown) || m_is_root_type(t) ) {
+                
+                goto process ;
+            }
+            
+            list = RKStore_GetItem(module->unprocessed_types, RKString_GetString(t->type_name)) ;
+            
+            if ( list == NULL ) {
+                
+                list = RKList_NewList() ;
+                
+                RKStore_AddItem(module->unprocessed_types, list, RKString_GetString(t->type_name)) ;
+            }
+            
+            RKList_AddToList(list, type) ;
+            
+            return ;
+        }
+    }
+    
+process:
+    
+        if ( t->base_type != NULL ) t = t->base_type ;
+    
+        type->root_type = t->root_type ;
+    
+        type->output_name = RKString_CopyString(t->type_name) ;
+    
+        type->is_readonly = t->is_readonly ;
+        
+        type->num_of_elements = t->num_of_elements ;
+        
+        t0 = ( type->root_type == unknown ) ? type->base_type : NULL ;
+    
+        type->base_type = t->base_type ;
+        
+        free(t0) ;
+    
+        list = RKStore_GetItem(module->unprocessed_types, RKString_GetString(type->type_name)) ;
+    
+        if ( list != NULL ) {
+    
+         node = RKList_GetFirstNode(list) ;
+    
+         while ( node != NULL ) {
+        
+          t0 = RKList_GetData(node) ;
+          
+          typecheck_process_type(t0, module) ;
+        
+          node = RKList_GetNextNode(node) ;
+             
+        }
+            
+      }
+}
+
 static void typecheck_module( marshmallow_module module ) {
     
     RKList list = NULL ;
     
     RKList_node node = NULL ;
+    
+    list = RKStore_GetList(module->types) ;
+    
+    if ( list != NULL ) {
+        
+        node = RKList_GetFirstNode(list) ;
+        
+        while ( node != NULL ) {
+            
+            typecheck_process_type(RKList_GetData(node), module) ;
+            
+            node = RKList_GetNextNode(node) ;
+        }
+    }
     
     list = RKStore_GetList(module->variables) ;
     

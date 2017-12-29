@@ -31,7 +31,7 @@ static void marshmallow_words( RKStore words ) {
   
     marshmallow_keyword a ;
     
-    #define token(word,string) keyword(word,string) ;
+    #define token(word,string) keyword(word,string)
     
     #include "marshmallow_tokens.h"
     
