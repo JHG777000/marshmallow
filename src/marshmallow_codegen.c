@@ -1251,5 +1251,31 @@ void marshmallow_codegen( marshmallow_context context, FILE* out_file ) {
     
     RKStore_AddItem(context->symbols, rkstr("item"), "memcpy") ;
     
+    RKStore_AddItem(context->symbols, rkstr("item"), "mi8") ;
+    
+    RKStore_AddItem(context->symbols, rkstr("item"), "mu8") ;
+    
+    RKStore_AddItem(context->symbols, rkstr("item"), "mi16") ;
+    
+    RKStore_AddItem(context->symbols, rkstr("item"), "mu16") ;
+    
+    RKStore_AddItem(context->symbols, rkstr("item"), "mi32") ;
+    
+    RKStore_AddItem(context->symbols, rkstr("item"), "mu32") ;
+    
+    RKStore_AddItem(context->symbols, rkstr("item"), "mi64") ;
+    
+    RKStore_AddItem(context->symbols, rkstr("item"), "mu64") ;
+    
+    RKStore_AddItem(context->symbols, rkstr("item"), "mf32") ;
+    
+    RKStore_AddItem(context->symbols, rkstr("item"), "mf64") ;
+    
+    #define token(word,string) RKStore_AddItem(context->symbols, rkstr("item"), string) ;
+    
+    #include "marshmallow_tokens.h"
+    
+    #undef token
+    
     output_app(context, out_file) ;
 }
