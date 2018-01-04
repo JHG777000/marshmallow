@@ -106,6 +106,9 @@ void marshmallow_parse_type( marshmallow_type type, marshmallow_token token, int
             break;
             
         default:
+            
+            type->root_type = unknown ;
+            
             break;
     }
     
@@ -219,6 +222,8 @@ marshmallow_variable marshmallow_new_variable( void ) {
     
     variable->is_external = 0 ;
     
+    variable->is_global = 0 ;
+    
     variable->is_hidden = 0 ;
     
     variable->is_persistent = 0 ;
@@ -248,9 +253,25 @@ marshmallow_entity marshmallow_lookup_identifier( marshmallow_function_body func
     
     RKString identifier_name = NULL ;
     
+    marshmallow_variable a = NULL ;
+    
     if ( identifier->entity_type == entity_function ) {
         
         identifier_name = ((marshmallow_function_body)identifier)->signature->func_name ;
+        
+        if ( RKStore_ItemExists(module->enums, RKString_GetString(identifier_name)) ) {
+        
+            if ( RKStore_ItemExists(module->functions_and_methods, RKString_GetString(identifier_name)) ) {
+                
+                printf("Identifier error: '%s', Identifier can not be used for a function or method and an enum.\n",RKString_GetString(identifier_name)) ;
+                
+                exit(EXIT_FAILURE) ;
+            }
+            
+            printf("Identifier error: '%s', using an enum as a function or method is not allowed.\n",RKString_GetString(identifier_name)) ;
+            
+            exit(EXIT_FAILURE) ;
+        }
         
         entity = RKStore_GetItem(module->functions_and_methods, RKString_GetString(identifier_name)) ;
         
@@ -267,12 +288,47 @@ marshmallow_entity marshmallow_lookup_identifier( marshmallow_function_body func
         
         if ( function != NULL ) entity = RKStore_GetItem(function->variables, RKString_GetString(identifier_name)) ;
         
-        if ( entity == NULL  ) entity = RKStore_GetItem(module->variables, RKString_GetString(identifier_name)) ;
+        if ( entity == NULL  ) {
+            
+            entity = RKStore_GetItem(module->variables, RKString_GetString(identifier_name)) ;
+            
+            if ( entity != NULL ) ((marshmallow_variable)entity)->is_global = 1 ;
+        }
+        
+        if ( RKStore_ItemExists(module->enums, RKString_GetString(identifier_name)) ) {
+            
+            a = marshmallow_new_variable() ;
+            
+            a->name = RKString_CopyString(identifier_name) ;
+            
+            a->type = RKStore_GetItem(module->enums, RKString_GetString(identifier_name)) ;
+            
+            if ( function != NULL ) {
+                
+                if ( RKStore_ItemExists(function->variables, RKString_GetString(identifier_name)) ) {
+                    
+                    printf("Identifier error: '%s', Identifier can not be used for a global or local  variable and an enum.\n",RKString_GetString(identifier_name)) ;
+                    
+                    exit(EXIT_FAILURE) ;
+                }
+
+            }
+            
+            if ( RKStore_ItemExists(module->variables, RKString_GetString(identifier_name)) ) {
+                
+                printf("Identifier error: '%s', Identifier can not be used for a global or local  variable and an enum.\n",RKString_GetString(identifier_name)) ;
+                
+                exit(EXIT_FAILURE) ;
+            }
+            
+            entity = (marshmallow_entity)a ;
+        }
+
     }
     
     if ( entity == NULL ) {
         
-        printf("identifier: '%s', does not exist. \n",RKString_GetString(identifier_name)) ;
+        printf("Identifier: '%s', does not exist.\n",RKString_GetString(identifier_name)) ;
         
         exit(EXIT_FAILURE) ;
     }
@@ -297,6 +353,8 @@ marshmallow_module marshmallow_new_module( RKString name ) {
     module->types = RKStore_NewStore() ;
     
     module->unprocessed_types = RKStore_NewStore() ;
+    
+    module->enums = RKStore_NewStore() ;
     
     module->variables = RKStore_NewStore() ;
     
@@ -448,11 +506,41 @@ void marshmallow_add_function_to_module_declarations( marshmallow_function_body 
     RKStore_AddItem(module->declarations, function, RKString_GetString(function->signature->func_name)) ;
 }
 
+void marshmallow_add_enums_to_module( marshmallow_type type, marshmallow_module module ) {
+    
+    RKList list = NULL ;
+    
+    RKList_node node = NULL ;
+    
+    if ( type->root_type != enum_type ) return ;
+    
+    list = ((marshmallow_enum)type->base_type)->enum_names ;
+    
+    if ( list != NULL ) {
+        
+        node = RKList_GetFirstNode(list) ;
+        
+        while (node != NULL) {
+            
+            if ( RKStore_ItemExists(module->enums, RKString_GetString(RKList_GetData(node))) ) {
+                
+                printf("Enum: %s, already used in this module.\n", RKString_GetString(RKList_GetData(node))) ;
+                
+                exit(EXIT_FAILURE) ;
+            }
+            
+            RKStore_AddItem(module->enums, type, RKString_GetString(RKList_GetData(node))) ;
+            
+            node = RKList_GetNextNode(node) ;
+        }
+    }
+}
+
 void marshmallow_add_typedef_to_module( marshmallow_type type, marshmallow_module module ) {
     
     if ( RKStore_ItemExists(module->types, RKString_GetString(type->type_name) ) ) {
         
-        printf("Type name already used in this module. Can not redefine types.\n") ;
+        printf("Type name: %s, already used in this module. Can not redefine types.\n", RKString_GetString(type->type_name)) ;
         
         exit(EXIT_FAILURE) ;
     }

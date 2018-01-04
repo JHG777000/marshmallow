@@ -120,6 +120,53 @@ int m_is_type_float( marshmallow_type type ) {
     return 0 ;
 }
 
+int m_is_type_signed( marshmallow_type type ) {
+    
+    switch ( type->root_type ) {
+        
+    case i8:
+        
+        return 1 ;
+        
+        break;
+        
+    case i16:
+        
+        return 1 ;
+        
+        break;
+        
+    case i32:
+        
+        return 1 ;
+        
+        break;
+        
+    case i64:
+        
+        return 1 ;
+        
+        break;
+        
+    case f32:
+        
+        return 1 ;
+        
+        break;
+        
+    case f64:
+        
+        return 1 ;
+        
+        break;
+        
+    default:
+        break;
+    }
+    
+    return 0 ;
+}
+
 int m_is_type_number( marshmallow_type type ) {
     
     switch ( type->root_type ) {
@@ -487,6 +534,10 @@ static int typecheck_are_types_equivalent( marshmallow_type t1, marshmallow_type
     
     if ( m_is_type_number(t1) && m_is_type_number(t2) ) {
         
+        if ( m_is_type_signed(t1) && !m_is_type_signed(t2) ) return 0 ;
+        
+        if ( !m_is_type_signed(t1) && m_is_type_signed(t2) ) return 0 ;
+        
         if ( m_get_size_of_type_in_bytes(t1,&root_type) >= m_get_size_of_type_in_bytes(t2,&root_type2) ) return 1 ;
         
         return 0 ;
@@ -591,6 +642,13 @@ static int typecheck_are_types_equivalent( marshmallow_type t1, marshmallow_type
     
     if ( t1->root_type != array && t2->root_type == metacollection ) return 0 ;
     
+    if ( t1->root_type == enum_type && t2->root_type == enum_type ) {
+        
+        if ( !RKString_AreStringsEqual(t1->type_name, t2->type_name) ) return 0 ;
+    }
+    
+    if ( t1->root_type != t2->root_type ) return 0 ;
+    
     return 1 ;
 }
 
@@ -600,12 +658,19 @@ static void typecheck_type( marshmallow_variable variable, marshmallow_module mo
     
     if ( variable->type->type_name != NULL && ((m_is_type_number(variable->type) && !variable->type->is_typedef) || variable->type->root_type == metacollection ) ) {
         
+    free_type_name:
+        
         free(variable->type->type_name) ;
         
         variable->type->type_name = NULL ;
     }
     
     if ( variable->type->root_type == unknown && variable->type->type_name != NULL ) {
+        
+        if ( RKString_AreStringsEqual(rkstr("unknown"), variable->type->type_name) ) {
+            
+            goto free_type_name ;
+        }
         
         variable->type = RKStore_GetItem(module->types, RKString_GetString(variable->type->type_name)) ;
         
@@ -623,14 +688,33 @@ static void typecheck_type( marshmallow_variable variable, marshmallow_module mo
 
 static void typecheck_variable( marshmallow_variable variable, marshmallow_module module ) {
     
+    int has_rechecked = 0 ;
+    
     typecheck_type(variable,module) ;
     
     if ( variable->static_assignment != NULL ) {
         
         typecheck_type(variable->static_assignment,module) ;
         
+    recheck:
+        
       if ( !typecheck_are_types_equivalent(variable->type, variable->static_assignment->type) ) {
         
+          if ( variable->static_assignment->type->root_type == unknown && !has_rechecked ) {
+              
+              
+              variable->static_assignment = (marshmallow_variable)marshmallow_lookup_identifier(NULL,
+                                                                                                module, (marshmallow_entity)variable->static_assignment) ;
+              
+              if ( variable->static_assignment != NULL && variable->static_assignment->type->root_type != unknown ) {
+                  
+                  has_rechecked++ ;
+                  
+                  goto recheck ;
+              }
+              
+          }
+          
           printf("variable: '%s', is being statically assigned with a value that is not of its type.\n",RKString_GetString(variable->name)) ;
           
           exit(EXIT_FAILURE) ;
@@ -1075,6 +1159,8 @@ static void typecheck_process_type( marshmallow_type type, marshmallow_module mo
     
     marshmallow_type t0 = NULL ;
     
+    if ( !type->is_typedef ) return ;
+    
     if ( type->is_typedef ) {
         
         t = type ;
@@ -1094,6 +1180,11 @@ static void typecheck_process_type( marshmallow_type type, marshmallow_module mo
             t0 = RKStore_GetItem(module->types, RKString_GetString(t->type_name)) ;
             
             if ( t0 != NULL ) t = t0 ;
+            
+            if ( t->base_type != NULL && t->root_type == enum_type ) {
+                
+                goto process ;
+            }
             
             if ( ( t->base_type != NULL && ((marshmallow_type)t->base_type)->root_type != unknown) || m_is_root_type(t) ) {
                 
@@ -1117,7 +1208,7 @@ static void typecheck_process_type( marshmallow_type type, marshmallow_module mo
     
 process:
     
-        if ( t->base_type != NULL ) t = t->base_type ;
+        if ( t->base_type != NULL && t->root_type != enum_type ) t = t->base_type ;
     
         type->root_type = t->root_type ;
     

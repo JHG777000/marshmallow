@@ -28,7 +28,7 @@
 
 typedef enum { public, private, protected, publish, inherit } marshmallow_access_control ;
 
-typedef enum { i8, u8, i16, u16, i32, u32, i64, u64, f32, f64, hex, string, character, class, array, ptr, module, function, method, lambda, expression,
+typedef enum { i8, u8, i16, u16, i32, u32, i64, u64, f32, f64, hex, string, character, class, enum_type, array, ptr, module, function, method, lambda, expression,
     
 unknown, arguments, collection, metacollection } marshmallow_root_type ;
 
@@ -45,6 +45,8 @@ entity_nothing, entity_end } marshmallow_entity_type ;
 typedef struct marshmallow_entity_s { marshmallow_entity_type entity_type ; } *marshmallow_entity ;
 
 typedef struct marshmallow_class_s* marshmallow_class ;
+
+typedef struct marshmallow_enum_s* marshmallow_wnum ;
 
 typedef struct marshmallow_type_s* marshmallow_type ;
 
@@ -68,13 +70,15 @@ typedef struct marshmallow_context_s* marshmallow_context ;
 
 typedef struct marshmallow_class_s { marshmallow_entity_type entity_type ; RKStore variables ; marshmallow_function_body init_function ; } *marshmallow_class ;
 
+typedef struct marshmallow_enum_s { RKList  enum_names ; RKStore enums ; } *marshmallow_enum ;
+
 typedef struct marshmallow_type_s { marshmallow_entity_type entity_type ; RKString type_name ; RKString output_name ;  int is_literal ; int is_typedef ; int is_readonly ;
     
 marshmallow_root_type root_type ; void* base_type ; RKULong num_of_elements ; } *marshmallow_type ;
 
 typedef struct marshmallow_variable_s { marshmallow_entity_type entity_type ; marshmallow_type type ;
     
-RKString name ; void* data ; int is_hidden ; int is_persistent ; int is_declared ; int is_external ;
+RKString name ; void* data ; int is_hidden ; int is_persistent ; int is_declared ; int is_external ; int is_global ;
     
 marshmallow_access_control access_control ; marshmallow_variable static_assignment ; } *marshmallow_variable ;
 
@@ -96,7 +100,7 @@ marshmallow_entity var_a ; marshmallow_entity var_b ; marshmallow_function_body 
 
 typedef struct marshmallow_module_s { marshmallow_entity_type entity_type ; marshmallow_scope_protocol RKStore declarations ; RKStore types ; RKStore unprocessed_types ;
     
-RKStore macros ; RKStore modules ;
+RKStore enums ; RKStore macros ; RKStore modules ;
     
 RKStore functions_and_methods ; RKString name ; } *marshmallow_module ;
 
@@ -164,6 +168,8 @@ void marshmallow_add_function_to_module( marshmallow_function_body function, mar
 
 void marshmallow_add_function_to_module_declarations( marshmallow_function_body function, marshmallow_module module ) ;
 
+void marshmallow_add_enums_to_module( marshmallow_type type, marshmallow_module module ) ;
+
 void marshmallow_add_typedef_to_module( marshmallow_type type, marshmallow_module module ) ;
 
 //parse
@@ -173,6 +179,8 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
 //typecheck
 
 int m_is_type_float( marshmallow_type type ) ;
+
+int m_is_type_signed( marshmallow_type type ) ;
 
 int m_is_type_number( marshmallow_type type ) ;
 

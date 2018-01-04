@@ -578,6 +578,129 @@ m_processor(goto) {
     return NULL ;
 }
 
+m_processor(enum) {
+    
+    int n = 0 ;
+    
+    int flag = 0 ;
+    
+    int numval = 0 ;
+    
+    marshmallow_variable a = marshmallow_new_variable() ;
+    
+    a->type = marshmallow_new_type() ;
+    
+    marshmallow_variable b = marshmallow_new_variable() ;
+    
+    b->type = marshmallow_new_type() ;
+    
+    marshmallow_type t1 = marshmallow_new_type() ;
+    
+    marshmallow_enum new_enum = RKMem_NewMemOfType(struct marshmallow_enum_s) ;
+    
+    new_enum->enum_names = RKList_NewList() ;
+    
+    new_enum->enums = RKStore_NewStore() ;
+    
+    if ( m_peek(0)->keyword == mgk(enum) ) {
+        
+        if ( m_peek(1)->keyword == mgk(pleft) ) {
+         
+            n = 1 ;
+            
+        loop:
+            
+            if ( m_peek(n+1)->keyword == mgk(identifier) ) {
+                
+                if ( is_assignment(startnode, n+2) ) {
+                    
+                    if ( marshmallow_is_token_root_type(m_peek(n+4)) ) {
+                        
+                        marshmallow_parse_type(b->type, m_peek(n+4), 0, NULL, 0) ;
+                        
+                        marshmallow_parse_value(m_peek(n+4), b) ;
+                        
+                        if ( m_is_type_float(b->type) ) goto error ;
+                        
+                    } else {
+                        
+                      error:
+                        
+                        printf("Expected an integer got:%s\n",RKString_GetString(((marshmallow_value)b->data)->value)) ;
+                        
+                        exit(EXIT_FAILURE) ;
+                    }
+                    
+                    if ( !flag ) {
+                        
+                        flag++ ;
+                    }
+                    
+                    numval = atoi(RKString_GetString(((marshmallow_value)b->data)->value)) ;
+                }
+                
+                marshmallow_parse_value(m_peek(n+1), a) ;
+                
+                RKList_AddToList(new_enum->enum_names, RKString_CopyString(((marshmallow_value)a->data)->value)) ;
+                
+                RKStore_AddItem(new_enum->enums, rkany(numval), RKString_GetString(((marshmallow_value)a->data)->value)) ;
+                
+                if ( flag ) n+=3 ;
+                
+                if ( m_peek(n+2)->keyword == mgk(comma) ) {
+                    
+                    if ( m_peek(n+3)->keyword == mgk(identifier) ) {
+                        
+                        n+=2 ;
+                        
+                        numval++ ;
+                        
+                        if ( flag ) flag = 0 ;
+                        
+                        goto loop ;
+                    }
+                    
+                    m_expectN(n+3,identifier) ;
+                }
+            }
+            
+            if ( n == 1 ) m_expectN(n+1,identifier) ;
+            
+            if ( m_peek(n+2)->keyword == mgk(pright) ) {
+                
+                if ( m_peek(n+3)->keyword == mgk(identifier) ) {
+                    
+                    marshmallow_parse_value(m_peek(n+3), a) ;
+                    
+                    RKString_DestroyString(t1->type_name) ;
+                    
+                    t1->type_name = RKString_CopyString(((marshmallow_value)a->data)->value) ;
+                    
+                    t1->root_type = enum_type ;
+                    
+                    t1->base_type = new_enum ;
+                    
+                    m_expectN(n+4, end_of_line) ;
+                    
+                    return t1 ;
+                }
+                
+                m_expectN(n+3,identifier) ;
+                
+            }
+            
+            m_expectN(n+2,pright) ;
+            
+        }
+        
+        m_expectN(1,pleft) ;
+    }
+    
+    m_expect(enum) ;
+    
+    return NULL ;
+}
+
 m_processor(typedef) {
     
     marshmallow_variable a = marshmallow_new_variable() ;
@@ -594,7 +717,7 @@ m_processor(typedef) {
     
     if ( m_peek(0)->keyword == mgk(typedef) ) {
         
-        if ( (m_peek(1)->keyword == mgk(identifier)) || marshmallow_is_token_root_type(m_peek(1))  ) {
+        if ( (m_peek(1)->keyword == mgk(identifier)) || marshmallow_is_token_root_type(m_peek(1)) ) {
             
             marshmallow_parse_value(m_peek(1), a) ;
             
@@ -636,11 +759,15 @@ m_processor(typedef) {
             
             free(a->data) ;
             
+            free(a->type) ;
+            
             free(a) ;
             
             RKString_DestroyString(((marshmallow_value)b->data)->value) ;
             
             free(b->data) ;
+            
+            free(b->type) ;
             
             free(b) ;
             
@@ -1626,6 +1753,17 @@ m_processor(static_assignment) {
         return variable ;
     }
 
+    if ( m_peek(n+0)->keyword == mgk(identifier) ) {
+        
+        marshmallow_parse_type(variable->type, m_peek(n+0), 0, NULL, 0) ;
+        
+        marshmallow_parse_value(m_peek(n+0), variable) ;
+        
+        variable->name = RKString_CopyString(((marshmallow_value)variable->data)->value) ;
+        
+        return variable ;
+    }
+    
     m_expectN(n+1,end_of_line) ;
     
     return NULL ;
@@ -1822,7 +1960,6 @@ m_processor(variable) {
             
         }
         
-        
         if ( m_peek(n)->keyword != mgk(identifier) ) {
             
             if ( (arrays != NULL) || (pointers > 0) || (marshmallow_is_token_root_type(m_gettoken)) ) {
@@ -1858,6 +1995,13 @@ m_processor(variable) {
         }
     }
     
+    if ( m_peek(n)->keyword == mgk(end_of_line) ) {
+        
+        printf("%s is not a identifier.\n",RKString_GetString(m_peek(n)->value)) ;
+        
+        exit(EXIT_FAILURE) ;
+    }
+    
     variable->type->type_name = RKString_CopyString(m_gettoken->value) ;
     
     marshmallow_parse_type(variable->type, m_gettoken, pointers, arrays, num_of_arrays) ;
@@ -1877,7 +2021,7 @@ m_processor(variable) {
         
         n+=2 ;
         
-        if ( marshmallow_is_token_root_type(m_peek(n)) || m_peek(n)->keyword == mgk(bleft) || m_peek(n)->keyword == mgk(pleft) ) {
+        if ( marshmallow_is_token_root_type(m_peek(n)) || m_peek(n)->keyword == mgk(bleft) || m_peek(n)->keyword == mgk(pleft) || m_peek(n)->keyword == mgk(identifier) ) {
             
             m_advanceN(n) ;
             
@@ -1953,6 +2097,14 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
             case mgk(return):
                 
                 entity = m_process(return) ;
+                
+                entity_type = entity->entity_type ;
+                
+                break;
+                
+            case mgk(enum):
+                
+                entity = m_process(enum) ;
                 
                 entity_type = entity->entity_type ;
                 
@@ -2180,6 +2332,8 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                 
                 entity = m_process(assignment) ;
                 
+                m_expect(end_of_line) ;
+                
                 entity_type = entity->entity_type ;
                 
                 break;
@@ -2237,6 +2391,13 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                     printf("Expected module. typedefs must exist within a module, not a function or method.\n") ;
                     
                     exit(EXIT_FAILURE) ;
+                }
+                
+                if ( ((marshmallow_type)entity)->root_type == enum_type ) {
+                    
+                    
+                    marshmallow_add_enums_to_module((marshmallow_type)entity, RKStack_Peek(scope_stack)) ;
+                    
                 }
                 
                 marshmallow_add_typedef_to_module((marshmallow_type)entity, RKStack_Peek(scope_stack)) ;

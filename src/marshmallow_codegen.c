@@ -39,6 +39,14 @@ static const char* myitoa( int val, char* string ) {
     
 }
 
+static const char* myuitoa( unsigned int val, char* string ) {
+    
+    snprintf(string, sizeof(string), "%u", val) ;
+    
+    return string ;
+    
+}
+
 static const char* myftoa( float val, char* string ) {
     
     snprintf(string, sizeof(string), "%f", val) ;
@@ -137,6 +145,12 @@ loop:
                 break;
                 
             case u32:
+                
+                fprintf(file, "mu32 ") ;
+                
+                break;
+                
+            case enum_type:
                 
                 fprintf(file, "mu32 ") ;
                 
@@ -297,13 +311,32 @@ static void output_statement( marshmallow_context context, FILE* file, marshmall
 
 static void output_collection( marshmallow_context context, FILE* file, marshmallow_variable the_collection, marshmallow_module module ) ;
 
-static void output_value(marshmallow_context context, FILE* file, marshmallow_variable value, marshmallow_module module) {
+static void output_enum( marshmallow_context context, FILE* file, marshmallow_variable value, marshmallow_module module ) {
+    
+    char string[100] ;
+    
+    if ( !RKStore_ItemExists(((marshmallow_enum)(value->type->base_type))->enums, RKString_GetString(value->name)) ) {
+        
+        output_symbol(context, file, value->name, module, value->is_global, 0) ;
+        
+        return ;
+    }
+    
+    fprintf(file, "%s",myuitoa(*((int*)(RKStore_GetItem(((marshmallow_enum)(value->type->base_type))->enums, RKString_GetString(value->name)))), string)) ;
+}
+
+static void output_value( marshmallow_context context, FILE* file, marshmallow_variable value, marshmallow_module module ) {
     
     if ( value == NULL ) return ;
     
     if ( value->type->root_type == string ) fprintf(file, "u8\"") ;
     
     if ( value->type->root_type == character ) fprintf(file, "L\'") ;
+    
+    if ( value->type->root_type == enum_type ) {
+        
+        output_enum(context, file, value, module) ;
+    }
     
     if ( value->type->root_type == array ) {
         
@@ -329,7 +362,7 @@ static void output_value(marshmallow_context context, FILE* file, marshmallow_va
     
     if ( (value->type->root_type == unknown || ( m_is_type_number(value->type) && value->type->root_type != hex )) && value->name != NULL ) {
         
-        output_symbol(context, file, value->name, module, 0, 0) ;
+        output_symbol(context, file, value->name, module, value->is_global, 0) ;
     }
     
     if ( value->type->root_type == unknown && value->name == NULL ) {

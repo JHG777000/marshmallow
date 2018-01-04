@@ -14,17 +14,31 @@ module mymod.
 
  typedef int myint.
 
- typedef i32 int.
+ typedef u32 int.
+
+ enum ( enum1 := 5223, enum2, enum3 := 42, enum4 ) myenum.
+
+ myenum var := enum1.
+
+ myenum var2 := enum2.
+
+ myenum var3 := enum3.
 
  myint myvar1 := 0.
 
  function main() returns i32.
+
+  myenum var4 := enum2.
 
   u64 myvar := 0xff.
 
   u64 i := 0.
 
   u64 j := 4.
+
+  var3 := enum3.
+
+  var4 := enum4.
 
   j := ( j + (i + (2 / 2)) ). //marshmallow forces grouping to avoid order of operations ambiguity
 
@@ -33,9 +47,9 @@ module mymod.
   //because all new languages need to support unicode identifiers
   u64 😀 := '😀'.
 
-  i32[3][3] myarray := {{7,7,7},{7,7,7},{7,7,7}}.
+  u32[3][3] myarray := {{7,7,7},{7,7,7},{7,7,7}}.
 
-  i32[3][3] myarray2.
+  u32[3][3] myarray2.
 
   myarray2 := myarray.
   

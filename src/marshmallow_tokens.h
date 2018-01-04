@@ -21,6 +21,8 @@ token(null, "null")
 
 token(class, "class")
 
+token(enum,"enum")
+
 token(hex, "")
 
 token(string, "")
