@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2017 Jacob Gordon. All rights reserved.
+ Copyright (c) 2018 Jacob Gordon. All rights reserved.
  
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  
@@ -195,6 +195,16 @@ RKULong m_get_size_of_type_or_array_in_bytes( marshmallow_type type_or_array, ma
 void marshmallow_typecheck( marshmallow_context context ) ;
 
 //codegen
+
+const char* marshmallow_ltoa( RKULong val, char* string ) ;
+
+const char* marshmallow_itoa( int val, char* string ) ;
+
+const char* marshmallow_uitoa( unsigned int val, char* string ) ;
+
+const char* marshmallow_ftoa( float val, char* string ) ;
+
+const char* marshmallow_dtoa( double val, char* string ) ;
 
 void marshmallow_codegen( marshmallow_context context, FILE* out_file ) ;
 

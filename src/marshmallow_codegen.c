@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2017 Jacob Gordon. All rights reserved.
+ Copyright (c) 2018 Jacob Gordon. All rights reserved.
  
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  
@@ -17,12 +17,14 @@
 
 #include "marshmallow.h"
 
-static const char* myltoa( RKULong val, char* string ) {
+ const char* marshmallow_ltoa( RKULong val, char* string ) {
+    
 #ifdef _WIN32
     
     snprintf(string, sizeof(string), "%llu", val) ;
     
 #else
+    
     snprintf(string, sizeof(string), "%lu", val) ;
     
 #endif
@@ -31,15 +33,14 @@ static const char* myltoa( RKULong val, char* string ) {
     
 }
 
-static const char* myitoa( int val, char* string ) {
+ const char* marshmallow_itoa( int val, char* string ) {
     
     snprintf(string, sizeof(string), "%d", val) ;
     
     return string ;
-    
 }
 
-static const char* myuitoa( unsigned int val, char* string ) {
+ const char* marshmallow_uitoa( unsigned int val, char* string ) {
     
     snprintf(string, sizeof(string), "%u", val) ;
     
@@ -47,7 +48,7 @@ static const char* myuitoa( unsigned int val, char* string ) {
     
 }
 
-static const char* myftoa( float val, char* string ) {
+ const char* marshmallow_ftoa( float val, char* string ) {
     
     snprintf(string, sizeof(string), "%f", val) ;
     
@@ -55,7 +56,7 @@ static const char* myftoa( float val, char* string ) {
     
 }
 
-static const char* mydtoa( double val, char* string ) {
+ const char* marshmallow_dtoa( double val, char* string ) {
     
     snprintf(string, sizeof(string), "%f", val) ;
     
@@ -322,7 +323,7 @@ static void output_enum( marshmallow_context context, FILE* file, marshmallow_va
         return ;
     }
     
-    fprintf(file, "%s",myuitoa(*((int*)(RKStore_GetItem(((marshmallow_enum)(value->type->base_type))->enums, RKString_GetString(value->name)))), string)) ;
+    fprintf(file, "%s",marshmallow_uitoa(*((int*)(RKStore_GetItem(((marshmallow_enum)(value->type->base_type))->enums, RKString_GetString(value->name)))), string)) ;
 }
 
 static void output_value( marshmallow_context context, FILE* file, marshmallow_variable value, marshmallow_module module ) {
@@ -912,7 +913,7 @@ static void output_a_return( marshmallow_context context, FILE* file, marshmallo
         
     }
     
-    myitoa(n, myintstring) ;
+    marshmallow_itoa(n, myintstring) ;
     
     RKString str0 = RKString_NewStringFromCString(myintstring) ;
     

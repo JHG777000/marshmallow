@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2017 Jacob Gordon. All rights reserved.
+ Copyright (c) 2018 Jacob Gordon. All rights reserved.
  
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  
@@ -584,7 +584,7 @@ m_processor(enum) {
     
     int flag = 0 ;
     
-    int numval = 0 ;
+    unsigned int numval = 0 ;
     
     marshmallow_variable a = marshmallow_new_variable() ;
     
@@ -1995,7 +1995,7 @@ m_processor(variable) {
         }
     }
     
-    if ( m_peek(n)->keyword == mgk(end_of_line) ) {
+    if ( m_peek(n)->keyword != mgk(identifier) ) {
         
         printf("%s is not a identifier.\n",RKString_GetString(m_peek(n)->value)) ;
         

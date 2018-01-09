@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2017 Jacob Gordon. All rights reserved.
+ Copyright (c) 2018 Jacob Gordon. All rights reserved.
  
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  
@@ -953,6 +953,103 @@ loop:
     return b ;
 }
 
+static marshmallow_variable typecheck_integer_evalulator( marshmallow_statement statement, marshmallow_module module ) {
+    
+    marshmallow_variable var = marshmallow_new_variable() ;
+    
+    var->type = marshmallow_new_type() ;
+    
+    marshmallow_value value = RKMem_NewMemOfType(struct marshmallow_value_s) ;
+    
+    value->type = marshmallow_new_type() ;
+    
+    char string[100] ;
+    
+    int a = 0 ;
+    
+    int b = 0 ;
+    
+    int c = 0 ;
+    
+    var->type->root_type = i32 ;
+    
+    value->type->root_type = i32 ;
+    
+    var->data = value ;
+    
+    if ( m_is_type_float(((marshmallow_variable)statement->var_a)->type) || m_is_type_float(((marshmallow_variable)statement->var_b)->type)
+        || !m_is_type_number(((marshmallow_variable)statement->var_a)->type) || !m_is_type_number(((marshmallow_variable)statement->var_b)->type) ) return NULL ;
+    
+     a = ( ((marshmallow_variable)statement->var_a)->entity_type == entity_variable  ) ?
+    atoi(RKString_GetString(((marshmallow_value)((marshmallow_variable)statement->var_a)->data)->value)) : atoi(RKString_GetString(((marshmallow_value)(typecheck_integer_evalulator((marshmallow_statement)statement->var_a,module))->data)->value)) ;
+    
+     b = ( ((marshmallow_variable)statement->var_b)->entity_type == entity_variable  ) ?
+    atoi(RKString_GetString(((marshmallow_value)((marshmallow_variable)statement->var_b)->data)->value)) : atoi(RKString_GetString(((marshmallow_value)(typecheck_integer_evalulator((marshmallow_statement)statement->var_b,module))->data)->value)) ;
+    
+    switch ( statement->op ) {
+            
+        case add:
+            
+            c = a + b ;
+            
+            break;
+            
+        case sub:
+            
+            c = a - b ;
+            
+            break;
+            
+        case mult:
+            
+            c = a * b ;
+            
+            break;
+            
+        case mdiv:
+            
+            c = a / b ;
+            
+            break;
+            
+        case rem:
+            
+            c = a % b ;
+            
+            break;
+            
+        case bor:
+            
+            c = a | b ;
+            
+            break;
+            
+        case xor:
+            
+            c = a ^ b ;
+            
+            break;
+            
+        case band:
+            
+            c = a & b ;
+            
+            break;
+            
+        default:
+            
+            return NULL ;
+            
+            break;
+    }
+    
+    marshmallow_itoa(c, string) ;
+    
+    value->value = RKString_NewStringFromCString(string) ;
+    
+    return var ;
+}
+
 static marshmallow_type typecheck_statment( marshmallow_statement statement, int* has_assignment, marshmallow_module module ) {
     
     marshmallow_type rettype_a = NULL ;
@@ -1240,6 +1337,9 @@ process:
              
         }
             
+          RKList_DeleteList(list) ;
+            
+          RKStore_AddItem(module->unprocessed_types, NULL, RKString_GetString(type->type_name)) ;
       }
 }
 
@@ -1258,6 +1358,25 @@ static void typecheck_module( marshmallow_module module ) {
         while ( node != NULL ) {
             
             typecheck_process_type(RKList_GetData(node), module) ;
+            
+            node = RKList_GetNextNode(node) ;
+        }
+    }
+    
+    list = RKStore_GetList(module->unprocessed_types) ;
+    
+    if ( list != NULL ) {
+        
+        node = RKList_GetFirstNode(list) ;
+        
+        while ( node != NULL ) {
+            
+            if ( RKList_GetData(node) != NULL ) {
+                
+                printf("Undefined type: %s.\n", RKString_GetString(RKStore_GetStoreLabelFromListNode(node))) ;
+                
+                exit(EXIT_FAILURE) ;
+            }
             
             node = RKList_GetNextNode(node) ;
         }
