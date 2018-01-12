@@ -953,6 +953,27 @@ loop:
     return b ;
 }
 
+static double* typecheck_get_value_for_evalulator( marshmallow_entity entity, marshmallow_module module ) {
+    
+    double* retptr = RKMem_NewMemOfType(double) ;
+    
+    if ( entity->entity_type == entity_variable ) {
+        
+        if ( ((marshmallow_variable)entity)->type->root_type == enum_type ) {
+            
+            
+        }
+        
+        if ( m_is_type_number(((marshmallow_variable)entity)->type) ) {
+            
+           if ( ((marshmallow_variable)entity)->data != NULL )
+               *retptr = atof(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value)) ;
+        }
+    }
+    
+    return retptr ;
+}
+
 static marshmallow_variable typecheck_integer_evalulator( marshmallow_statement statement, marshmallow_module module ) {
     
     marshmallow_variable var = marshmallow_new_variable() ;
