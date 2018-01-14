@@ -850,19 +850,26 @@ static marshmallow_type typecheck_get_type_promotion( marshmallow_type a, marshm
     
     marshmallow_type array[2] ;
     
-    array[0] = a ;
-    
-    array[1] = b ;
-    
     int array2[2] ;
-    
-    array2[0] = 0 ;
-    
-    array2[1] = 0 ;
     
     int i = 0 ;
     
     int j = 0 ;
+    
+    if ( a == NULL && b != NULL ) return b ;
+    
+    if ( b == NULL && a != NULL ) return a ;
+    
+    if ( a == NULL && b == NULL ) return typecheck_get_type_from_root_type(unknown) ;
+    
+    array[0] = a ;
+    
+    array[1] = b ;
+    
+    array2[0] = 0 ;
+    
+    array2[1] = 0 ;
+
 loop:
     
     j = 0 ;
@@ -1161,6 +1168,8 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
              
              if ( var_a->type->root_type == array && var_b->type->root_type == array && var_a->type->num_of_elements > 0 ) statement->op = array_assignment ;
              
+             return typecheck_get_type_from_root_type(typecheck_get_type_promotion(var_a->type, var_b->type)->root_type) ;
+             
              break;
              
              case inc:
@@ -1175,6 +1184,8 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
              }
              
              *has_assignment = 1 ;
+             
+             return typecheck_get_type_from_root_type(typecheck_get_type_promotion(((marshmallow_variable)statement->var_a)->type, NULL)->root_type) ;
              
              break;
             
