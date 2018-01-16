@@ -1166,7 +1166,8 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
                  }
              
              
-             if ( var_a->type->root_type == array && var_b->type->root_type == array && var_a->type->num_of_elements > 0 ) statement->op = array_assignment ;
+             if ( var_a->type->root_type == array && var_b->type->root_type == array && var_a->type->num_of_elements > 0
+                 && var_b->type->num_of_elements > 0 ) statement->op = array_assignment ;
              
              return typecheck_get_type_from_root_type(typecheck_get_type_promotion(var_a->type, var_b->type)->root_type) ;
              
