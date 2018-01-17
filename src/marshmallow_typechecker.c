@@ -960,9 +960,14 @@ loop:
     return b ;
 }
 
-static double* typecheck_get_value_for_evalulator( marshmallow_entity entity, marshmallow_module module ) {
+
+typedef struct eval_val_s { marshmallow_root_type root_type ; union { RKByte byteval ; RKShort shortval ;
     
-    double* retptr = RKMem_NewMemOfType(double) ;
+RKInt intval ; RKLong longval ; RKFloat floatval ; RKDouble doubleeval ; } ; }* eval_val ;
+
+static eval_val typecheck_get_value_for_evalulator( marshmallow_entity entity, marshmallow_module module ) {
+    
+    eval_val retptr = RKMem_NewMemOfType( struct eval_val_s ) ;
     
     if ( entity->entity_type == entity_variable ) {
         
@@ -974,7 +979,103 @@ static double* typecheck_get_value_for_evalulator( marshmallow_entity entity, ma
         if ( m_is_type_number(((marshmallow_variable)entity)->type) ) {
             
            if ( ((marshmallow_variable)entity)->data != NULL )
-               *retptr = atof(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value)) ;
+               
+               switch ( ((marshmallow_variable)entity)->type->root_type ) {
+                       
+                   case i8:
+                       
+                       retptr->byteval = atoi(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value)) ;
+                       
+                       retptr->root_type = i8 ;
+                       
+                       break;
+                       
+                   case u8:
+                       
+                       retptr->byteval = atoi(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value)) ;
+                       
+                       retptr->root_type = u8 ;
+                       
+                       break;
+                       
+                   case i16:
+                       
+                       retptr->shortval = atoi(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value)) ;
+                       
+                       retptr->root_type = i16 ;
+                       
+                       break;
+                       
+                   case u16:
+                       
+                       retptr->shortval = atoi(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value)) ;
+                       
+                       retptr->root_type = u16 ;
+                       
+                       break;
+                       
+                   case i32:
+                       
+                       retptr->intval = atoi(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value)) ;
+                       
+                       retptr->root_type = i32 ;
+                       
+                       break;
+                       
+                   case u32:
+                       
+                       retptr->intval = atoi(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value)) ;
+                       
+                       retptr->root_type = i64 ;
+                       
+                       break;
+                       
+                   case i64:
+                       
+                       retptr->longval = atol(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value)) ;
+                       
+                       retptr->root_type = i64 ;
+                       
+                       break;
+                       
+                   case u64:
+                       
+                       retptr->longval = atol(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value)) ;
+                       
+                       retptr->root_type = u64 ;
+                       
+                       break;
+                       
+                   case hex:
+                       
+                       //strtol
+                       
+                       retptr->longval = atof(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value)) ;
+                       
+                       retptr->root_type = u64 ;
+                       
+                       break;
+                       
+                   case f32:
+                       
+                       retptr->floatval = atof(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value)) ;
+                       
+                       retptr->root_type = f32 ;
+                       
+                       break;
+                       
+                   case f64:
+                       
+                       retptr->doubleeval = atof(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value)) ;
+                      
+                       retptr->root_type = f64 ;
+                       
+                       break;
+                       
+                   default:
+                       break;
+               }
+        
         }
     }
     

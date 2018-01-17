@@ -46,7 +46,7 @@ typedef struct marshmallow_entity_s { marshmallow_entity_type entity_type ; } *m
 
 typedef struct marshmallow_class_s* marshmallow_class ;
 
-typedef struct marshmallow_enum_s* marshmallow_wnum ;
+typedef struct marshmallow_enum_s* marshmallow_enum ;
 
 typedef struct marshmallow_type_s* marshmallow_type ;
 
