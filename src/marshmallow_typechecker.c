@@ -961,13 +961,15 @@ loop:
 }
 
 
-typedef struct eval_val_s { marshmallow_root_type root_type ; union { RKByte byteval ; RKShort shortval ;
+typedef struct eval_val_s { marshmallow_root_type root_type ; union { int error ; RKByte byteval ; RKShort shortval ;
     
 RKInt intval ; RKLong longval ; RKFloat floatval ; RKDouble doubleeval ; } ; }* eval_val ;
 
 static eval_val typecheck_get_value_for_evalulator( marshmallow_entity entity, marshmallow_module module ) {
     
     eval_val retptr = RKMem_NewMemOfType( struct eval_val_s ) ;
+    
+    retptr->error = 1 ;
     
     if ( entity->entity_type == entity_variable ) {
         
@@ -976,10 +978,8 @@ static eval_val typecheck_get_value_for_evalulator( marshmallow_entity entity, m
             
         }
         
-        if ( m_is_type_number(((marshmallow_variable)entity)->type) ) {
+        if ( m_is_type_number(((marshmallow_variable)entity)->type) && ((marshmallow_variable)entity)->data != NULL ) {
             
-           if ( ((marshmallow_variable)entity)->data != NULL )
-               
                switch ( ((marshmallow_variable)entity)->type->root_type ) {
                        
                    case i8:
@@ -987,6 +987,8 @@ static eval_val typecheck_get_value_for_evalulator( marshmallow_entity entity, m
                        retptr->byteval = atoi(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value)) ;
                        
                        retptr->root_type = i8 ;
+                       
+                       retptr->error = 0 ;
                        
                        break;
                        
@@ -996,6 +998,8 @@ static eval_val typecheck_get_value_for_evalulator( marshmallow_entity entity, m
                        
                        retptr->root_type = u8 ;
                        
+                       retptr->error = 0 ;
+                       
                        break;
                        
                    case i16:
@@ -1003,6 +1007,8 @@ static eval_val typecheck_get_value_for_evalulator( marshmallow_entity entity, m
                        retptr->shortval = atoi(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value)) ;
                        
                        retptr->root_type = i16 ;
+                       
+                       retptr->error = 0 ;
                        
                        break;
                        
@@ -1012,6 +1018,8 @@ static eval_val typecheck_get_value_for_evalulator( marshmallow_entity entity, m
                        
                        retptr->root_type = u16 ;
                        
+                       retptr->error = 0 ;
+                       
                        break;
                        
                    case i32:
@@ -1020,13 +1028,17 @@ static eval_val typecheck_get_value_for_evalulator( marshmallow_entity entity, m
                        
                        retptr->root_type = i32 ;
                        
+                       retptr->error = 0 ;
+                       
                        break;
                        
                    case u32:
                        
                        retptr->intval = atoi(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value)) ;
                        
-                       retptr->root_type = i64 ;
+                       retptr->root_type = u32 ;
+                       
+                       retptr->error = 0 ;
                        
                        break;
                        
@@ -1036,6 +1048,8 @@ static eval_val typecheck_get_value_for_evalulator( marshmallow_entity entity, m
                        
                        retptr->root_type = i64 ;
                        
+                       retptr->error = 0 ;
+                       
                        break;
                        
                    case u64:
@@ -1044,15 +1058,25 @@ static eval_val typecheck_get_value_for_evalulator( marshmallow_entity entity, m
                        
                        retptr->root_type = u64 ;
                        
+                       retptr->error = 0 ;
+                       
                        break;
                        
                    case hex:
                        
-                       //strtol
+                     #ifdef WIN32_
                        
-                       retptr->longval = atof(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value)) ;
+                       strtoll(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value), NULL, 0) ;
+                       
+                     #else
+                       
+                       strtol(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value), NULL, 0) ;
+                       
+                     #endif
                        
                        retptr->root_type = u64 ;
+                       
+                       retptr->error = 0 ;
                        
                        break;
                        
@@ -1062,6 +1086,8 @@ static eval_val typecheck_get_value_for_evalulator( marshmallow_entity entity, m
                        
                        retptr->root_type = f32 ;
                        
+                       retptr->error = 0 ;
+                       
                        break;
                        
                    case f64:
@@ -1070,14 +1096,147 @@ static eval_val typecheck_get_value_for_evalulator( marshmallow_entity entity, m
                       
                        retptr->root_type = f64 ;
                        
+                       retptr->error = 0 ;
+                       
                        break;
                        
                    default:
                        break;
                }
+       }
         
+        if ( m_is_type_number(((marshmallow_variable)entity)->type) && ((marshmallow_variable)entity)->static_assignment != NULL &&
+            ((marshmallow_variable)entity)->type->is_readonly) {
+            
+            switch ( ((marshmallow_variable)entity)->type->root_type ) {
+                    
+                case i8:
+                    
+                    retptr->byteval = atoi(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->static_assignment->data)->value)) ;
+                    
+                    retptr->root_type = i8 ;
+                    
+                    retptr->error = 0 ;
+                    
+                    break;
+                    
+                case u8:
+                    
+                    retptr->byteval = atoi(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->static_assignment->data)->value)) ;
+                    
+                    retptr->root_type = u8 ;
+                    
+                    retptr->error = 0 ;
+                    
+                    break;
+                    
+                case i16:
+                    
+                    retptr->shortval = atoi(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->static_assignment->data)->value)) ;
+                    
+                    retptr->root_type = i16 ;
+                    
+                    retptr->error = 0 ;
+                    
+                    break;
+                    
+                case u16:
+                    
+                    retptr->shortval = atoi(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->static_assignment->data)->value)) ;
+                    
+                    retptr->root_type = u16 ;
+                    
+                    retptr->error = 0 ;
+                    
+                    break;
+                    
+                case i32:
+                    
+                    retptr->intval = atoi(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->static_assignment->data)->value)) ;
+                    
+                    retptr->root_type = i32 ;
+                    
+                    retptr->error = 0 ;
+                    
+                    break;
+                    
+                case u32:
+                    
+                    retptr->intval = atoi(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->static_assignment->data)->value)) ;
+                    
+                    retptr->root_type = u32 ;
+                    
+                    retptr->error = 0 ;
+                    
+                    break;
+                    
+                case i64:
+                    
+                    retptr->longval = atol(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->static_assignment->data)->value)) ;
+                    
+                    retptr->root_type = i64 ;
+                    
+                    retptr->error = 0 ;
+                    
+                    break;
+                    
+                case u64:
+                    
+                    retptr->longval = atol(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->static_assignment->data)->value)) ;
+                    
+                    retptr->root_type = u64 ;
+                    
+                    retptr->error = 0 ;
+                    
+                    break;
+                    
+                case hex:
+                    
+                #ifdef WIN32_
+                    
+                    strtoll(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->static_assignment->data)->value), NULL, 0) ;
+                    
+                #else
+                    
+                    strtol(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->static_assignment->data)->value), NULL, 0) ;
+                    
+                #endif
+                    
+                    retptr->root_type = u64 ;
+                    
+                    retptr->error = 0 ;
+                    
+                    break;
+                    
+                case f32:
+                    
+                    retptr->floatval = atof(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->static_assignment->data)->value)) ;
+                    
+                    retptr->root_type = f32 ;
+                    
+                    retptr->error = 0 ;
+                    
+                    break;
+                    
+                case f64:
+                    
+                    retptr->doubleeval = atof(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->static_assignment->data)->value)) ;
+                    
+                    retptr->root_type = f64 ;
+                    
+                    retptr->error = 0 ;
+                    
+                    break;
+                    
+                default:
+                    break;
+            }
         }
+
+    
     }
+    
+    if ( retptr->error ) return NULL ;
     
     return retptr ;
 }
