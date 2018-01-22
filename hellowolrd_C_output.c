@@ -26,7 +26,7 @@ mu64 marshmallow_mymod_myvar0 ;
 mu32 marshmallow_mymod_var = 5223 ;
 mu32 marshmallow_mymod_var2 = 5224 ;
 mu32 marshmallow_mymod_var3 = 42 ;
-mu32 marshmallow_mymod_myvar1 = 0 ;
+mu32 marshmallow_mymod_myvar1 = 07 ;
 void marshmallow_mymod_main(mi32 * returns_marshmallow_mymod_main_0) {
 mu32 var4 = 5224 ;
 mu64 myvar = 0xff ;

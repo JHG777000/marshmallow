@@ -24,7 +24,7 @@ module mymod.
 
  myenum var3 := enum3.
 
- myint myvar1 := 0.
+ myint myvar1 := 07.
 
  function main() returns i32.
 
