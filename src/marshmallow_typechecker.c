@@ -967,6 +967,8 @@ RKInt intval ; RKLong longval ; RKFloat floatval ; RKDouble doubleeval ; } ; }* 
 
 static eval_val typecheck_get_value_for_evalulator( marshmallow_entity entity, marshmallow_module module ) {
     
+    marshmallow_variable variable = NULL ;
+    
     eval_val retptr = RKMem_NewMemOfType( struct eval_val_s ) ;
     
     retptr->error = 1 ;
@@ -975,7 +977,17 @@ static eval_val typecheck_get_value_for_evalulator( marshmallow_entity entity, m
         
         if ( ((marshmallow_variable)entity)->type->root_type == enum_type ) {
             
+            variable = (marshmallow_variable)entity ;
             
+            if ( RKStore_ItemExists(((marshmallow_enum)(variable->type->base_type))->enums, RKString_GetString(variable->name)) ) {
+                
+                retptr->intval = *((unsigned int*)(RKStore_GetItem(((marshmallow_enum)(variable->type->base_type))->enums, RKString_GetString(variable->name)))) ;
+                
+                retptr->root_type = u32 ;
+                
+                retptr->error = 0 ;
+            }
+        
         }
         
         if ( m_is_type_number(((marshmallow_variable)entity)->type) && ((marshmallow_variable)entity)->data != NULL ) {

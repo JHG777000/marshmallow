@@ -323,7 +323,7 @@ static void output_enum( marshmallow_context context, FILE* file, marshmallow_va
         return ;
     }
     
-    fprintf(file, "%s",marshmallow_uitoa(*((int*)(RKStore_GetItem(((marshmallow_enum)(value->type->base_type))->enums, RKString_GetString(value->name)))), string)) ;
+    fprintf(file, "%s",marshmallow_uitoa(*((unsigned int*)(RKStore_GetItem(((marshmallow_enum)(value->type->base_type))->enums, RKString_GetString(value->name)))), string)) ;
 }
 
 static void output_value( marshmallow_context context, FILE* file, marshmallow_variable value, marshmallow_module module ) {
