@@ -25,7 +25,7 @@ The following is an example of what marshmallow aims to be:
 
       @output(app,MyAppSource). // app or pck or mod or lib or obj
 
-    //end build properties
+     //end build properties
 
  	function main( args main_args ).
 
