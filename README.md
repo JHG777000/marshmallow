@@ -15,17 +15,17 @@ The following is an example of what marshmallow aims to be:
 
  	 use module marshmallow.
 
- 	 @build MyApp.
+ 	 //build properties for this module
 
-  	  @public os(macOs | Windows | Linux).
+      @public os(macOs | Windows | Linux).
 
-  	  @files MyAppSourceFiles(MyApp, MyOtherFile, Folder::SourceFile).
+      @files MyAppSourceFiles(MyApp, MyOtherFile, Folder::SourceFile).
 
-  	  @sources MyAppSource(MyAppSourceFiles).
+      @sources MyAppSource(MyAppSourceFiles).
 
-  	  @output(app,MyAppSource). // app or pck or mod or lib or obj
+      @output(app,MyAppSource). // app or pck or mod or lib or obj
 
- 	 @end.
+    //end build properties
 
  	function main( args main_args ).
 
@@ -33,7 +33,7 @@ The following is an example of what marshmallow aims to be:
 
   	 float value := (1.0).
 
-  	 int value2 := ((int)(3+value)).
+  	 int value2 := ($int(3+value)).
 
   	 int value3 := func().
 
@@ -45,11 +45,9 @@ The following is an example of what marshmallow aims to be:
 
   	 end lambda.
 
-  	 on_null ( exit(-1) ).
-
  	end function.
 	
- 	template alloc(type type_to_alloc) returns blank*.
+ 	template alloc(@type type_to_alloc) returns blank*.
 
   	   if ( _is_ptr(type_to_alloc) ) return _init(malloc(_sizeof(_typeofptr(type_to_alloc)))).
 
