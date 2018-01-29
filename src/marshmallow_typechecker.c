@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2018 Jacob Gordon. All rights reserved.
+ Copyright (c) 2017-2018 Jacob Gordon. All rights reserved.
  
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  
@@ -963,7 +963,7 @@ loop:
 
 typedef struct eval_val_s { marshmallow_root_type root_type ; union { int error ; RKByte byteval ; RKShort shortval ;
     
-RKInt intval ; RKLong longval ; RKFloat floatval ; RKDouble doubleeval ; } ; }* eval_val ;
+RKInt intval ; RKLong longval ; RKFloat floatval ; RKDouble doubleval ; } ; }* eval_val ;
 
 static eval_val typecheck_get_value_for_evalulator( marshmallow_entity entity, marshmallow_module module ) {
     
@@ -1104,7 +1104,7 @@ static eval_val typecheck_get_value_for_evalulator( marshmallow_entity entity, m
                        
                    case f64:
                        
-                       retptr->doubleeval = atof(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value)) ;
+                       retptr->doubleval = atof(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value)) ;
                       
                        retptr->root_type = f64 ;
                        
@@ -1232,7 +1232,7 @@ static eval_val typecheck_get_value_for_evalulator( marshmallow_entity entity, m
                     
                 case f64:
                     
-                    retptr->doubleeval = atof(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->static_assignment->data)->value)) ;
+                    retptr->doubleval = atof(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->static_assignment->data)->value)) ;
                     
                     retptr->root_type = f64 ;
                     
@@ -1271,20 +1271,90 @@ static marshmallow_variable typecheck_integer_evalulator( marshmallow_statement 
     
     int c = 0 ;
     
+    eval_val eval_a = NULL ;
+    
+    eval_val eval_b = NULL ;
+    
     var->type->root_type = i32 ;
     
     value->type->root_type = i32 ;
     
     var->data = value ;
     
-    if ( m_is_type_float(((marshmallow_variable)statement->var_a)->type) || m_is_type_float(((marshmallow_variable)statement->var_b)->type)
-        || !m_is_type_number(((marshmallow_variable)statement->var_a)->type) || !m_is_type_number(((marshmallow_variable)statement->var_b)->type) ) return NULL ;
+    eval_a = typecheck_get_value_for_evalulator((marshmallow_entity)statement, module) ;
     
-     a = ( ((marshmallow_variable)statement->var_a)->entity_type == entity_variable  ) ?
-    atoi(RKString_GetString(((marshmallow_value)((marshmallow_variable)statement->var_a)->data)->value)) : atoi(RKString_GetString(((marshmallow_value)(typecheck_integer_evalulator((marshmallow_statement)statement->var_a,module))->data)->value)) ;
+    eval_b = typecheck_get_value_for_evalulator((marshmallow_entity)statement, module) ;
     
-     b = ( ((marshmallow_variable)statement->var_b)->entity_type == entity_variable  ) ?
-    atoi(RKString_GetString(((marshmallow_value)((marshmallow_variable)statement->var_b)->data)->value)) : atoi(RKString_GetString(((marshmallow_value)(typecheck_integer_evalulator((marshmallow_statement)statement->var_b,module))->data)->value)) ;
+    if ( eval_a == NULL || eval_b == NULL ) return NULL ;
+    
+    switch (eval_a->root_type) {
+         
+        case i8:
+            
+            a = eval_a->byteval ;
+            
+            break;
+            
+        case u8:
+            
+            a = eval_a->byteval ;
+            
+            break;
+
+            
+        case i16:
+            
+            a = eval_a->shortval ;
+            
+            break;
+            
+        case u16:
+            
+            a = eval_a->shortval ;
+            
+            break;
+    
+            
+        case i32:
+            
+            a = eval_a->intval ;
+            
+            break;
+            
+        case u32:
+            
+            a = eval_a->intval ;
+            
+            break;
+            
+        case i64:
+            
+            a = (RKInt)eval_a->longval ;
+            
+            break;
+            
+        case u64:
+            
+            a = (RKInt)eval_a->longval ;
+            
+            break;
+            
+        case f32:
+            
+            a = eval_a->floatval ;
+            
+            break;
+            
+        case f64:
+            
+            a = eval_a->doubleval ;
+            
+            break;
+
+            
+        default:
+            break;
+    }
     
     switch ( statement->op ) {
             
