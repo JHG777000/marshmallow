@@ -255,79 +255,79 @@ int m_is_root_type( marshmallow_type type ) {
     
     switch (type->root_type) {
             
-        case mgk(i8type):
+        case i8:
             
             return 1 ;
             
             break;
             
-        case mgk(u8type):
+        case u8:
             
             return 1 ;
             
             break;
             
-        case mgk(i16type):
+        case i16:
             
             return 1 ;
             
             break;
             
-        case mgk(u16type):
+        case u16:
             
             return 1 ;
             
             break;
             
-        case mgk(i32type):
+        case i32:
             
             return 1 ;
             
             break;
             
-        case mgk(u32type):
+        case u32:
             
             return 1 ;
             
             break;
             
-        case mgk(i64type):
+        case i64:
             
             return 1 ;
             
             break;
             
-        case mgk(u64type):
+        case u64:
             
             return 1 ;
             
             break;
             
-        case mgk(hex):
+        case hex:
             
             return 1 ;
             
             break;
             
-        case mgk(string):
+        case string:
             
             return 1 ;
             
             break;
             
-        case mgk(character):
+        case character:
             
             return 1 ;
             
             break;
             
-        case mgk(floattype):
+        case f32:
             
             return 1 ;
             
             break;
             
-        case mgk(doubletype):
+        case f64:
             
             return 1 ;
             
@@ -960,6 +960,11 @@ loop:
     return b ;
 }
 
+static marshmallow_type typecheck_statment( marshmallow_statement statement, int* has_assignment, marshmallow_module module ) ;
+
+static marshmallow_variable typecheck_integer_evalulator( marshmallow_statement statement, marshmallow_module module ) ;
+
+static marshmallow_variable typecheck_float_evalulator( marshmallow_statement statement, marshmallow_module module ) ;
 
 typedef struct eval_val_s { marshmallow_root_type root_type ; union { int error ; RKByte byteval ; RKShort shortval ;
     
@@ -967,11 +972,41 @@ RKInt intval ; RKLong longval ; RKFloat floatval ; RKDouble doubleval ; } ; }* e
 
 static eval_val typecheck_get_value_for_evalulator( marshmallow_entity entity, marshmallow_module module ) {
     
+    int has_assignment = 0 ;
+    
+    marshmallow_type type = NULL ;
+    
     marshmallow_variable variable = NULL ;
     
     eval_val retptr = RKMem_NewMemOfType( struct eval_val_s ) ;
     
     retptr->error = 1 ;
+    
+    if ( entity->entity_type == entity_statement ) {
+        
+        type = typecheck_statment((marshmallow_statement)entity, &has_assignment, module) ;
+        
+        if ( m_is_type_number(type) && !m_is_type_float(type) ) {
+            
+            variable = typecheck_integer_evalulator((marshmallow_statement)entity, module) ;
+            
+            retptr->intval = atoi(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value)) ;
+            
+            retptr->root_type = i32 ;
+            
+            retptr->error = 0 ;
+            
+        } else if ( m_is_type_float(type) ) {
+            
+            variable = typecheck_float_evalulator((marshmallow_statement)entity, module) ;
+            
+            retptr->floatval = atof(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value)) ;
+            
+            retptr->root_type = f64 ;
+            
+            retptr->error = 0 ;
+        }
+    }
     
     if ( entity->entity_type == entity_variable ) {
         
@@ -1356,6 +1391,76 @@ static marshmallow_variable typecheck_integer_evalulator( marshmallow_statement 
             break;
     }
     
+    switch (eval_b->root_type) {
+            
+        case i8:
+            
+            b = eval_a->byteval ;
+            
+            break;
+            
+        case u8:
+            
+            b = eval_a->byteval ;
+            
+            break;
+            
+            
+        case i16:
+            
+            b = eval_a->shortval ;
+            
+            break;
+            
+        case u16:
+            
+            b = eval_a->shortval ;
+            
+            break;
+            
+            
+        case i32:
+            
+            b = eval_a->intval ;
+            
+            break;
+            
+        case u32:
+            
+            b = eval_a->intval ;
+            
+            break;
+            
+        case i64:
+            
+            b = (RKInt)eval_a->longval ;
+            
+            break;
+            
+        case u64:
+            
+            b = (RKInt)eval_a->longval ;
+            
+            break;
+            
+        case f32:
+            
+            b = eval_a->floatval ;
+            
+            break;
+            
+        case f64:
+            
+            b = eval_a->doubleval ;
+            
+            break;
+            
+            
+        default:
+            break;
+    }
+
+    
     switch ( statement->op ) {
             
         case add:
@@ -1420,6 +1525,219 @@ static marshmallow_variable typecheck_integer_evalulator( marshmallow_statement 
     return var ;
 }
 
+static marshmallow_variable typecheck_float_evalulator( marshmallow_statement statement, marshmallow_module module ) {
+    
+    marshmallow_variable var = marshmallow_new_variable() ;
+    
+    var->type = marshmallow_new_type() ;
+    
+    marshmallow_value value = RKMem_NewMemOfType(struct marshmallow_value_s) ;
+    
+    value->type = marshmallow_new_type() ;
+    
+    char string[100] ;
+    
+    double a = 0 ;
+    
+    double b = 0 ;
+    
+    double c = 0 ;
+    
+    eval_val eval_a = NULL ;
+    
+    eval_val eval_b = NULL ;
+    
+    var->type->root_type = f64 ;
+    
+    value->type->root_type = f64 ;
+    
+    var->data = value ;
+    
+    eval_a = typecheck_get_value_for_evalulator((marshmallow_entity)statement, module) ;
+    
+    eval_b = typecheck_get_value_for_evalulator((marshmallow_entity)statement, module) ;
+    
+    if ( eval_a == NULL || eval_b == NULL ) return NULL ;
+    
+    switch (eval_a->root_type) {
+            
+        case i8:
+            
+            a = eval_a->byteval ;
+            
+            break;
+            
+        case u8:
+            
+            a = eval_a->byteval ;
+            
+            break;
+            
+            
+        case i16:
+            
+            a = eval_a->shortval ;
+            
+            break;
+            
+        case u16:
+            
+            a = eval_a->shortval ;
+            
+            break;
+            
+            
+        case i32:
+            
+            a = eval_a->intval ;
+            
+            break;
+            
+        case u32:
+            
+            a = eval_a->intval ;
+            
+            break;
+            
+        case i64:
+            
+            a = (RKInt)eval_a->longval ;
+            
+            break;
+            
+        case u64:
+            
+            a = (RKInt)eval_a->longval ;
+            
+            break;
+            
+        case f32:
+            
+            a = eval_a->floatval ;
+            
+            break;
+            
+        case f64:
+            
+            a = eval_a->doubleval ;
+            
+            break;
+            
+            
+        default:
+            break;
+    }
+    
+    switch (eval_b->root_type) {
+            
+        case i8:
+            
+            b = eval_a->byteval ;
+            
+            break;
+            
+        case u8:
+            
+            b = eval_a->byteval ;
+            
+            break;
+            
+            
+        case i16:
+            
+            b = eval_a->shortval ;
+            
+            break;
+            
+        case u16:
+            
+            b = eval_a->shortval ;
+            
+            break;
+            
+            
+        case i32:
+            
+            b = eval_a->intval ;
+            
+            break;
+            
+        case u32:
+            
+            b = eval_a->intval ;
+            
+            break;
+            
+        case i64:
+            
+            b = eval_a->longval ;
+            
+            break;
+            
+        case u64:
+            
+            b = eval_a->longval ;
+            
+            break;
+            
+        case f32:
+            
+            b = eval_a->floatval ;
+            
+            break;
+            
+        case f64:
+            
+            b = eval_a->doubleval ;
+            
+            break;
+            
+            
+        default:
+            break;
+    }
+    
+    
+    switch ( statement->op ) {
+            
+        case add:
+            
+            c = a + b ;
+            
+            break;
+            
+        case sub:
+            
+            c = a - b ;
+            
+            break;
+            
+        case mult:
+            
+            c = a * b ;
+            
+            break;
+            
+        case mdiv:
+            
+            c = a / b ;
+            
+            break;
+            
+        default:
+            
+            return NULL ;
+            
+            break;
+    }
+    
+    marshmallow_dtoa(c, string) ;
+    
+    value->value = RKString_NewStringFromCString(string) ;
+    
+    return var ;
+}
+
 static marshmallow_type typecheck_statment( marshmallow_statement statement, int* has_assignment, marshmallow_module module ) {
     
     marshmallow_type rettype_a = NULL ;
@@ -1430,6 +1748,12 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
     
     marshmallow_variable var_b = NULL ;
 
+    if ( statement->entity_type == entity_variable ) {
+        
+        return typecheck_get_type_from_variable((marshmallow_variable)statement, has_assignment, module) ;
+    }
+    
+    
     if ( statement->var_a != NULL && (statement->var_a->entity_type == entity_function
                                        || (statement->var_a->entity_type == entity_variable && ((marshmallow_variable)statement->var_a)->name != NULL)) ) {
 
@@ -1452,7 +1776,7 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
                 
                 rettype_a = typecheck_get_type_from_variable((marshmallow_variable)statement->var_a, has_assignment, module) ;
                 
-                if (!m_is_type_number(rettype_a) || (statement->op == rem && m_is_type_float(rettype_a)) ) {
+                if (!(m_is_type_number(rettype_a) || rettype_a->root_type == enum_type) || (statement->op == rem && m_is_type_float(rettype_a)) ) {
                     
                     if ( ((marshmallow_variable)statement->var_a)->name != NULL ) printf("Variable: '%s', is wrong type for add,sub,mult,div, or modulus.\n",RKString_GetString(((marshmallow_variable)statement->var_a)->name)) ;
                     
@@ -1463,7 +1787,7 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
                 
                 rettype_b = typecheck_get_type_from_variable((marshmallow_variable)statement->var_b, has_assignment, module) ;
                 
-                if (!m_is_type_number(rettype_b) || (statement->op == rem && m_is_type_float(rettype_b)) ) {
+                if (!(m_is_type_number(rettype_b) || rettype_b->root_type == enum_type) || (statement->op == rem && m_is_type_float(rettype_b)) ) {
                     
                     if ( ((marshmallow_variable)statement->var_b)->name != NULL ) printf("Variable: '%s', is wrong type for add,sub,mult,div, or modulus.\n",RKString_GetString(((marshmallow_variable)statement->var_b)->name)) ;
                     
@@ -1529,6 +1853,19 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
              *has_assignment = 1 ;
              
              return typecheck_get_type_from_root_type(typecheck_get_type_promotion(((marshmallow_variable)statement->var_a)->type, NULL)->root_type) ;
+             
+             break;
+             
+             case switchop:
+             
+             rettype_a = typecheck_statment((marshmallow_statement)statement->var_a, has_assignment, module) ;
+             
+             if ( !m_is_type_number(rettype_a) || m_is_type_float(rettype_a) ) {
+                 
+                 printf("Statement is a non-integer expression, switch needs a integer expression.\n") ;
+                 
+                 exit(EXIT_FAILURE) ;
+             }
              
              break;
             

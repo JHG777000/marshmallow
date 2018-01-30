@@ -42,7 +42,7 @@ j=(j+(i+(2/2)))  ;
 j=4  ;
 memcpy(myarray2,myarray, sizeof(myarray2))  ;
 helloworld:  ;
-switch (j) {
+switch ((j+0)) {
 case 1:
 puts(u8"Hi,");  ;
 case 2:
