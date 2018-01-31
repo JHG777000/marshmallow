@@ -966,7 +966,7 @@ static marshmallow_variable typecheck_integer_evalulator( marshmallow_statement 
 
 static marshmallow_variable typecheck_float_evalulator( marshmallow_statement statement, marshmallow_module module ) ;
 
-typedef struct eval_val_s { marshmallow_root_type root_type ; union { int error ; RKByte byteval ; RKShort shortval ;
+typedef struct eval_val_s { marshmallow_root_type root_type ; int error ; union { RKByte byteval ; RKShort shortval ;
     
 RKInt intval ; RKLong longval ; RKFloat floatval ; RKDouble doubleval ; } ; }* eval_val ;
 
@@ -1013,7 +1013,7 @@ statment_evalulator:
             
             variable = typecheck_integer_evalulator((marshmallow_statement)entity, module) ;
             
-            retptr->intval = atoi(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value)) ;
+            retptr->intval = atoi(RKString_GetString(((marshmallow_value)variable->data)->value)) ;
             
             retptr->root_type = i32 ;
             
@@ -1023,7 +1023,7 @@ statment_evalulator:
             
             variable = typecheck_float_evalulator((marshmallow_statement)entity, module) ;
             
-            retptr->floatval = atof(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value)) ;
+            retptr->doubleval = atof(RKString_GetString(((marshmallow_value)variable->data)->value)) ;
             
             retptr->root_type = f64 ;
             
@@ -1054,7 +1054,7 @@ statment_evalulator:
             }
         
         }
-        
+       
         if ( m_is_type_number(((marshmallow_variable)entity)->type) && ((marshmallow_variable)entity)->data != NULL ) {
             
                switch ( ((marshmallow_variable)entity)->type->root_type ) {
@@ -1438,63 +1438,63 @@ static marshmallow_variable typecheck_integer_evalulator( marshmallow_statement 
             
         case i8:
             
-            b = eval_a->byteval ;
+            b = eval_b->byteval ;
             
             break;
             
         case u8:
             
-            b = eval_a->byteval ;
+            b = eval_b->byteval ;
             
             break;
             
             
         case i16:
             
-            b = eval_a->shortval ;
+            b = eval_b->shortval ;
             
             break;
             
         case u16:
             
-            b = eval_a->shortval ;
+            b = eval_b->shortval ;
             
             break;
             
             
         case i32:
             
-            b = eval_a->intval ;
+            b = eval_b->intval ;
             
             break;
             
         case u32:
             
-            b = eval_a->intval ;
+            b = eval_b->intval ;
             
             break;
             
         case i64:
             
-            b = (RKInt)eval_a->longval ;
+            b = (RKInt)eval_b->longval ;
             
             break;
             
         case u64:
             
-            b = (RKInt)eval_a->longval ;
+            b = (RKInt)eval_b->longval ;
             
             break;
             
         case f32:
             
-            b = eval_a->floatval ;
+            b = eval_b->floatval ;
             
             break;
             
         case f64:
             
-            b = eval_a->doubleval ;
+            b = eval_b->doubleval ;
             
             break;
             
@@ -1690,63 +1690,63 @@ static marshmallow_variable typecheck_float_evalulator( marshmallow_statement st
             
         case i8:
             
-            b = eval_a->byteval ;
+            b = eval_b->byteval ;
             
             break;
             
         case u8:
             
-            b = eval_a->byteval ;
+            b = eval_b->byteval ;
             
             break;
             
             
         case i16:
             
-            b = eval_a->shortval ;
+            b = eval_b->shortval ;
             
             break;
             
         case u16:
             
-            b = eval_a->shortval ;
+            b = eval_b->shortval ;
             
             break;
             
             
         case i32:
             
-            b = eval_a->intval ;
+            b = eval_b->intval ;
             
             break;
             
         case u32:
             
-            b = eval_a->intval ;
+            b = eval_b->intval ;
             
             break;
             
         case i64:
             
-            b = eval_a->longval ;
+            b = eval_b->longval ;
             
             break;
             
         case u64:
             
-            b = eval_a->longval ;
+            b = eval_b->longval ;
             
             break;
             
         case f32:
             
-            b = eval_a->floatval ;
+            b = eval_b->floatval ;
             
             break;
             
         case f64:
             
-            b = eval_a->doubleval ;
+            b = eval_b->doubleval ;
             
             break;
             
@@ -1950,17 +1950,17 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
              case caseop:
              case endcaseop:
 
-             //var_a = typecheck_integer_evalulator((marshmallow_statement)statement->var_a, module) ;
+             var_a = typecheck_integer_evalulator((marshmallow_statement)statement->var_a, module) ;
              
              if ( var_a == NULL ) {
                  
-                 //printf("Expression is a non-constant expression, case needs a constant expression.\n") ;
+                 printf("Expression is a non-constant expression, case needs a constant expression.\n") ;
                  
-                 //exit(EXIT_FAILURE) ;
+                 exit(EXIT_FAILURE) ;
                  
              }
              
-             //statement->var_a =(marshmallow_entity)var_a ;
+             statement->var_a =(marshmallow_entity)var_a ;
              
              list = statement->statements ;
              

@@ -74,7 +74,7 @@ module mymod.
 
   switch (j+enum5).
 
-   case (1).
+   case ( 3 - (1+(1.0)) ).
 
     puts("Hi,").
 
