@@ -2395,9 +2395,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                 
                 if ( ((marshmallow_type)entity)->root_type == enum_type ) {
                     
-                    
                     marshmallow_add_enums_to_module((marshmallow_type)entity, RKStack_Peek(scope_stack)) ;
-                    
                 }
                 
                 marshmallow_add_typedef_to_module((marshmallow_type)entity, RKStack_Peek(scope_stack)) ;
