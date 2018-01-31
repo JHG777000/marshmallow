@@ -970,6 +970,25 @@ typedef struct eval_val_s { marshmallow_root_type root_type ; union { int error 
     
 RKInt intval ; RKLong longval ; RKFloat floatval ; RKDouble doubleval ; } ; }* eval_val ;
 
+static void typecheck_get_variables_for_evalulator( marshmallow_entity entity, marshmallow_entity* a, marshmallow_entity* b, marshmallow_module module ) {
+    
+    
+    if ( entity->entity_type == entity_statement ) {
+        
+        *a = ((marshmallow_statement)entity)->var_a ;
+        
+        *b = ((marshmallow_statement)entity)->var_b ;
+    }
+    
+    if ( entity->entity_type == entity_variable ) {
+        
+        *a = entity ;
+        
+        *b = NULL ;
+    }
+    
+}
+
 static eval_val typecheck_get_value_for_evalulator( marshmallow_entity entity, marshmallow_module module ) {
     
     int has_assignment = 0 ;
@@ -981,6 +1000,10 @@ static eval_val typecheck_get_value_for_evalulator( marshmallow_entity entity, m
     eval_val retptr = RKMem_NewMemOfType( struct eval_val_s ) ;
     
     retptr->error = 1 ;
+    
+    if ( entity == NULL ) return NULL ;
+    
+statment_evalulator:
     
     if ( entity->entity_type == entity_statement ) {
         
@@ -1009,6 +1032,13 @@ static eval_val typecheck_get_value_for_evalulator( marshmallow_entity entity, m
     }
     
     if ( entity->entity_type == entity_variable ) {
+        
+        if ( ((marshmallow_variable)entity)->type->root_type == expression ) {
+            
+            entity = ((marshmallow_variable)entity)->data ;
+            
+            goto statment_evalulator ;
+        }
         
         if ( ((marshmallow_variable)entity)->type->root_type == enum_type ) {
             
@@ -1310,17 +1340,23 @@ static marshmallow_variable typecheck_integer_evalulator( marshmallow_statement 
     
     eval_val eval_b = NULL ;
     
+    marshmallow_entity entity_a = NULL ;
+    
+    marshmallow_entity entity_b = NULL ;
+    
     var->type->root_type = i32 ;
     
     value->type->root_type = i32 ;
     
     var->data = value ;
     
-    eval_a = typecheck_get_value_for_evalulator((marshmallow_entity)statement, module) ;
+    typecheck_get_variables_for_evalulator((marshmallow_entity)statement, &entity_a, &entity_b, module) ;
     
-    eval_b = typecheck_get_value_for_evalulator((marshmallow_entity)statement, module) ;
+    eval_a = typecheck_get_value_for_evalulator(entity_a, module) ;
     
-    if ( eval_a == NULL || eval_b == NULL ) return NULL ;
+    eval_b = typecheck_get_value_for_evalulator(entity_b, module) ;
+    
+    if ( eval_a == NULL ) return NULL ;
     
     switch (eval_a->root_type) {
          
@@ -1389,6 +1425,13 @@ static marshmallow_variable typecheck_integer_evalulator( marshmallow_statement 
             
         default:
             break;
+    }
+    
+    if ( eval_b == NULL ) {
+        
+        c = a ;
+        
+        goto end ;
     }
     
     switch (eval_b->root_type) {
@@ -1518,6 +1561,8 @@ static marshmallow_variable typecheck_integer_evalulator( marshmallow_statement 
             break;
     }
     
+end:
+    
     marshmallow_itoa(c, string) ;
     
     value->value = RKString_NewStringFromCString(string) ;
@@ -1547,17 +1592,23 @@ static marshmallow_variable typecheck_float_evalulator( marshmallow_statement st
     
     eval_val eval_b = NULL ;
     
+    marshmallow_entity entity_a = NULL ;
+    
+    marshmallow_entity entity_b = NULL ;
+    
     var->type->root_type = f64 ;
     
     value->type->root_type = f64 ;
     
     var->data = value ;
     
-    eval_a = typecheck_get_value_for_evalulator((marshmallow_entity)statement, module) ;
+    typecheck_get_variables_for_evalulator((marshmallow_entity)statement, &entity_a, &entity_b, module) ;
     
-    eval_b = typecheck_get_value_for_evalulator((marshmallow_entity)statement, module) ;
+    eval_a = typecheck_get_value_for_evalulator(entity_a, module) ;
     
-    if ( eval_a == NULL || eval_b == NULL ) return NULL ;
+    eval_b = typecheck_get_value_for_evalulator(entity_b, module) ;
+    
+    if ( eval_a == NULL ) return NULL ;
     
     switch (eval_a->root_type) {
             
@@ -1626,6 +1677,13 @@ static marshmallow_variable typecheck_float_evalulator( marshmallow_statement st
             
         default:
             break;
+    }
+    
+    if ( eval_b == NULL ) {
+        
+        c = a ;
+        
+        goto end ;
     }
     
     switch (eval_b->root_type) {
@@ -1731,6 +1789,8 @@ static marshmallow_variable typecheck_float_evalulator( marshmallow_statement st
             break;
     }
     
+end:
+    
     marshmallow_dtoa(c, string) ;
     
     value->value = RKString_NewStringFromCString(string) ;
@@ -1747,6 +1807,10 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
     marshmallow_variable var_a = NULL ;
     
     marshmallow_variable var_b = NULL ;
+    
+    RKList list = NULL ;
+    
+    RKList_node node = NULL ;
 
     if ( statement->entity_type == entity_variable ) {
         
@@ -1865,6 +1929,51 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
                  printf("Statement is a non-integer expression, switch needs a integer expression.\n") ;
                  
                  exit(EXIT_FAILURE) ;
+             }
+             
+             list = statement->statements ;
+             
+             if ( list != NULL ) {
+                 
+                 node = RKList_GetFirstNode(list) ;
+                 
+                 while (node != NULL) {
+                     
+                     typecheck_statment(RKList_GetData(node), has_assignment, module) ;
+                     
+                     node = RKList_GetNextNode(node) ;
+                 }
+             }
+             
+             break;
+             
+             case caseop:
+             case endcaseop:
+
+             //var_a = typecheck_integer_evalulator((marshmallow_statement)statement->var_a, module) ;
+             
+             if ( var_a == NULL ) {
+                 
+                 //printf("Expression is a non-constant expression, case needs a constant expression.\n") ;
+                 
+                 //exit(EXIT_FAILURE) ;
+                 
+             }
+             
+             //statement->var_a =(marshmallow_entity)var_a ;
+             
+             list = statement->statements ;
+             
+             if ( list != NULL ) {
+                 
+                 node = RKList_GetFirstNode(list) ;
+                 
+                 while (node != NULL) {
+                     
+                     typecheck_statment(RKList_GetData(node), has_assignment, module) ;
+                     
+                     node = RKList_GetNextNode(node) ;
+                 }
              }
              
              break;
