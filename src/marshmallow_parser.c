@@ -1363,6 +1363,14 @@ m_processor(expression) {
     
     m_advanceN(n+1) ;
     
+    if ( m_peek(n+1)->keyword != mgk(pright) ) {
+        
+        if ( m_peek(n+2)->keyword == mgk(pright) ) {
+            
+            m_advance ;
+        }
+    }
+    
     m_expect(pright) ;
     
     m_advanceN(1) ;
@@ -3075,26 +3083,7 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
                     symbol = mgk(hex) ;
                 }
                 
-                if ( word_size > 1 ) if (  (word[0] == '0') && (symbol != mgk(hex))  ) {
-                    
-                    i = 1 ;
-                    
-                    while (i < word_size-1) {
-                        
-                        if ( !(isdigit(word[i])) || (word[i] == '8') || (word[i] == '9') ) {
-                            
-                            printf("Error: %s is not an octal. Octal can only contain 0-7.\n",RKString_GetString(RKString_NewStringFromUTF32(word,word_size-1))) ;
-                            
-                            exit(EXIT_FAILURE) ;
-                        }
-                        
-                        i++ ;
-                    }
-                    
-                    symbol = mgk(u32type) ;
-                }
-                
-                if ( (isdigit(word[0]) || (word[0]) == '.' ) && (symbol != mgk(hex)) && (symbol != mgk(u32type)) ) {
+                if ( (isdigit(word[0]) || (word[0]) == '.' ) && (symbol != mgk(hex))  ) {
                     
                     i = 0 ;
                     
@@ -3167,6 +3156,27 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
                     
                     if ( is_float ) symbol = mgk(floattype) ;
                 }
+                
+                
+                if ( word_size > 1 ) if (  (word[0] == '0') && (symbol != mgk(hex)) && (symbol != mgk(floattype) && (symbol != mgk(doubletype))) ) {
+                    
+                    i = 1 ;
+                    
+                    while (i < word_size-1) {
+                        
+                        if ( !(isdigit(word[i])) || (word[i] == '8') || (word[i] == '9') ) {
+                            
+                            printf("Error: %s is not an octal. Octal can only contain 0-7.\n",RKString_GetString(RKString_NewStringFromUTF32(word,word_size-1))) ;
+                            
+                            exit(EXIT_FAILURE) ;
+                        }
+                        
+                        i++ ;
+                    }
+                    
+                    symbol = mgk(u32type) ;
+                }
+
                 
             }
             

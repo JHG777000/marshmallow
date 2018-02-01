@@ -53,6 +53,8 @@ module mymod.
 
   u64 j := 4.
 
+  f64 x := (0.23).
+
   var3 := enum3.
 
   var4 := enum4.
@@ -74,7 +76,7 @@ module mymod.
 
   switch (j+enum5).
 
-   case ( 3 - (1+(1.0)) ).
+   case ( (1+(1.0)) - 1 ).
 
     puts("Hi,").
 
