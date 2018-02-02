@@ -960,7 +960,7 @@ loop:
     return b ;
 }
 
-static marshmallow_type typecheck_statment( marshmallow_statement statement, int* has_assignment, marshmallow_module module ) ;
+static marshmallow_type typecheck_statment( marshmallow_statement statement, int* has_assignment, marshmallow_module module, RKStore store ) ;
 
 static marshmallow_variable typecheck_integer_evalulator( marshmallow_statement statement, marshmallow_module module ) ;
 
@@ -1007,7 +1007,7 @@ statment_evalulator:
     
     if ( entity->entity_type == entity_statement ) {
         
-        type = typecheck_statment((marshmallow_statement)entity, &has_assignment, module) ;
+        type = typecheck_statment((marshmallow_statement)entity, &has_assignment, module, NULL) ;
         
         if ( m_is_type_number(type) && !m_is_type_float(type) ) {
             
@@ -1798,7 +1798,7 @@ end:
     return var ;
 }
 
-static marshmallow_type typecheck_statment( marshmallow_statement statement, int* has_assignment, marshmallow_module module ) {
+static marshmallow_type typecheck_statment( marshmallow_statement statement, int* has_assignment, marshmallow_module module, RKStore store ) {
     
     marshmallow_type rettype_a = NULL ;
     
@@ -1811,6 +1811,8 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
     RKList list = NULL ;
     
     RKList_node node = NULL ;
+    
+    RKStore switch_store = NULL ;
 
     if ( statement->entity_type == entity_variable ) {
         
@@ -1922,7 +1924,7 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
              
              case switchop:
              
-             rettype_a = typecheck_statment((marshmallow_statement)statement->var_a, has_assignment, module) ;
+             rettype_a = typecheck_statment((marshmallow_statement)statement->var_a, has_assignment, module, NULL) ;
              
              if ( !m_is_type_number(rettype_a) || m_is_type_float(rettype_a) ) {
                  
@@ -1930,6 +1932,8 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
                  
                  exit(EXIT_FAILURE) ;
              }
+             
+             switch_store = RKStore_NewStore() ;
              
              list = statement->statements ;
              
@@ -1939,11 +1943,13 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
                  
                  while (node != NULL) {
                      
-                     typecheck_statment(RKList_GetData(node), has_assignment, module) ;
+                     typecheck_statment(RKList_GetData(node), has_assignment, module, switch_store) ;
                      
                      node = RKList_GetNextNode(node) ;
                  }
              }
+             
+             RKStore_DestroyStore(switch_store) ;
              
              break;
              
@@ -1960,6 +1966,15 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
                  
              }
              
+             if ( RKStore_ItemExists(store, RKString_GetString(((marshmallow_value)var_a->data)->value)) ) {
+                 
+                 printf("Expression value: %s, is already used by another case.\n",RKString_GetString(((marshmallow_value)var_a->data)->value)) ;
+                 
+                 exit(EXIT_FAILURE) ;
+             }
+             
+             RKStore_AddItem(store, rkstr("item"), RKString_GetString(((marshmallow_value)var_a->data)->value)) ;
+             
              statement->var_a =(marshmallow_entity)var_a ;
              
              list = statement->statements ;
@@ -1970,7 +1985,7 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
                  
                  while (node != NULL) {
                      
-                     typecheck_statment(RKList_GetData(node), has_assignment, module) ;
+                     typecheck_statment(RKList_GetData(node), has_assignment, module, store) ;
                      
                      node = RKList_GetNextNode(node) ;
                  }
@@ -1991,7 +2006,7 @@ static marshmallow_type typecheck_get_type_from_variable( marshmallow_variable v
     
     if ( variable->type->root_type == expression ) {
         
-        t = typecheck_statment((marshmallow_statement)variable->data, has_assignment, module) ;
+        t = typecheck_statment((marshmallow_statement)variable->data, has_assignment, module, NULL) ;
         
     } else {
         
@@ -2008,7 +2023,7 @@ static void typecheck_the_statment( marshmallow_statement statement, marshmallow
     
     int has_assignment = 0 ;
     
-    typecheck_statment(statement, &has_assignment, module) ;
+    typecheck_statment(statement, &has_assignment, module, NULL) ;
     
     if ( ( statement->op == ifop || statement->op == slifop || statement->op == whileop
            || statement->op == switchop || statement->op == caseop || statement->op == endcaseop ||
