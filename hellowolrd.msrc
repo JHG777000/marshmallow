@@ -59,6 +59,8 @@ module mymod.
 
   var4 := enum4.
 
+  u64* ptr.
+
   j := ( j + (i + (2 / 2)) ). //marshmallow forces grouping to avoid order of operations ambiguity
 
   j := 4.

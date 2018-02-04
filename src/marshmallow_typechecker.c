@@ -621,7 +621,7 @@ static int typecheck_are_types_equivalent( marshmallow_type t1, marshmallow_type
         }
     }
     
-    if ( t1->root_type == ptr ) {
+    if ( t1->root_type == ptr && t2->root_type == ptr ) {
        
         t = t1 ;
         
@@ -1992,6 +1992,36 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
              }
              
              break;
+             
+         case addrof:
+             
+             rettype_a = typecheck_get_type_from_variable((marshmallow_variable)statement->var_a, has_assignment, module) ;
+             
+             if ( rettype_a->is_literal ) {
+                 
+                 printf("Can not take the address of a literal.") ;
+                 
+                 exit(EXIT_FAILURE) ;
+             }
+             
+             return rettype_a ;
+             
+             break;
+             
+         case deref:
+             
+             rettype_a = typecheck_get_type_from_variable((marshmallow_variable)statement->var_a, has_assignment, module) ;
+             
+             if ( rettype_a->root_type != ptr ) {
+                 
+                 printf("Can not deref a non-pointer.") ;
+                 
+                 exit(EXIT_FAILURE) ;
+             }
+             
+             return rettype_a ;
+             
+             break;
             
         default:
             break;
@@ -2018,7 +2048,6 @@ static marshmallow_type typecheck_get_type_from_variable( marshmallow_variable v
     return t ;
 }
 
-
 static void typecheck_the_statment( marshmallow_statement statement, marshmallow_module module ) {
     
     int has_assignment = 0 ;
@@ -2040,7 +2069,6 @@ static void typecheck_the_statment( marshmallow_statement statement, marshmallow
         exit(EXIT_FAILURE) ;
         
     }
-    
 }
 
 static void typecheck_function( marshmallow_function_body function, marshmallow_module module ) {

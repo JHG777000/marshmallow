@@ -33,6 +33,7 @@ mu64 myvar = 0xff ;
 mu64 i = 0 ;
 mu64 j = 4 ;
 mf64 x = 0.23 ;
+mu64 *ptr ;
 mu64 😀 = L'😀' ;
 mu32 myarray[3][3] = {{7,7,7},{7,7,7},{7,7,7}} ;
 mu32 myarray2[3][3] ;

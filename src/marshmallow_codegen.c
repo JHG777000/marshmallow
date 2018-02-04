@@ -886,6 +886,23 @@ static void output_statement( marshmallow_context context, FILE* file, marshmall
             fprintf(file, "--") ;
             
             break;
+            
+            
+        case addrof:
+            
+            fprintf(file, "&") ;
+            
+            output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+            
+            break;
+            
+        case deref:
+            
+            fprintf(file, "*") ;
+            
+            output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+            
+            break;
 
             
         default:
