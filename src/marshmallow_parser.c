@@ -157,6 +157,12 @@ static int marshmallow_is_token_root_type( marshmallow_token token ) {
             
             break;
             
+        case mgk(nullptr):
+            
+            return 1 ;
+            
+            break;
+            
         default:
             break;
     }

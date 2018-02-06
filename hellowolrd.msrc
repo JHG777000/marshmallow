@@ -59,7 +59,7 @@ module mymod.
 
   var4 := enum4.
 
-  u64* ptr.
+  u64* ptr := null.
 
   j := ( j + (i + (2 / 2)) ). //marshmallow forces grouping to avoid order of operations ambiguity
 
@@ -75,6 +75,12 @@ module mymod.
   myarray2 := myarray.
   
   section helloworld.
+
+  if ( ptr == null ).
+
+   puts("This is null!").
+
+  end if.
 
   switch (j+enum5).
 

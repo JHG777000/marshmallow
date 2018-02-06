@@ -17,7 +17,7 @@
 
 token(notoken, "")
 
-token(null, "null")
+token(nullptr, "null")
 
 token(class, "class")
 

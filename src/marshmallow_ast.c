@@ -105,6 +105,14 @@ void marshmallow_parse_type( marshmallow_type type, marshmallow_token token, int
             
             break;
             
+        case mgk(nullptr):
+            
+            type->root_type = nulltype ;
+            
+            pointers++ ;
+            
+            break;
+            
         default:
             
             type->root_type = unknown ;

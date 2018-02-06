@@ -344,6 +344,19 @@ static void output_value( marshmallow_context context, FILE* file, marshmallow_v
         if ( value->name != NULL ) output_symbol(context, file, value->name, module, 0, 0) ;
     }
     
+    if ( value->type->root_type == ptr ) {
+        
+        if ( ((marshmallow_type)(value->type->base_type))->root_type == nulltype ) {
+            
+            fprintf(file, "%s", "((void*)0)") ;
+            
+            return ;
+        }
+        
+        if ( value->name != NULL ) output_symbol(context, file, value->name, module, 0, 0) ;
+    }
+
+    
     if ( value->type->root_type != unknown && value->type->root_type != array && value->type->root_type != arguments && value->type->root_type != metacollection
         && value->type->root_type != expression && value->data != NULL ) {
         

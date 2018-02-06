@@ -33,7 +33,7 @@ mu64 myvar = 0xff ;
 mu64 i = 0 ;
 mu64 j = 4 ;
 mf64 x = 0.23 ;
-mu64 *ptr ;
+mu64 *ptr = ((void*)0) ;
 mu64 😀 = L'😀' ;
 mu32 myarray[3][3] = {{7,7,7},{7,7,7},{7,7,7}} ;
 mu32 myarray2[3][3] ;
@@ -44,7 +44,9 @@ j=(j+(i+(2/2)))  ;
 j=4  ;
 memcpy(myarray2,myarray, sizeof(myarray2))  ;
 helloworld:  ;
-switch ((j+0)) {
+if ((ptr==((void*)0))) {
+puts(u8"This is null!");  ;
+} switch ((j+0)) {
 case 1:
 puts(u8"Hi,");  ;
 case 2:

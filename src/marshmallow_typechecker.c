@@ -635,6 +635,8 @@ static int typecheck_are_types_equivalent( marshmallow_type t1, marshmallow_type
         
         if ( t->root_type == ptr && t0->root_type == ptr ) goto loop2 ;
         
+        if ( t->root_type == nulltype || t0->root_type == nulltype ) return 1 ;
+        
         if ( t->root_type == t0->root_type ) return 1 ;
     }
     
@@ -1897,9 +1899,7 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
                      exit(EXIT_FAILURE) ;
                  }
              
-             
-             if ( var_a->type->root_type == array && var_b->type->root_type == array && var_a->type->num_of_elements > 0
-                 && var_b->type->num_of_elements > 0 ) statement->op = array_assignment ;
+             if ( var_a->type->root_type == array && var_b->type->root_type == array && var_a->type->num_of_elements > 0 ) statement->op = array_assignment ;
              
              return typecheck_get_type_from_root_type(typecheck_get_type_promotion(var_a->type, var_b->type)->root_type) ;
              
