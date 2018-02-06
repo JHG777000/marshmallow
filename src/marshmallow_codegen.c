@@ -352,8 +352,6 @@ static void output_value( marshmallow_context context, FILE* file, marshmallow_v
             
             return ;
         }
-        
-        if ( value->name != NULL ) output_symbol(context, file, value->name, module, 0, 0) ;
     }
 
     
