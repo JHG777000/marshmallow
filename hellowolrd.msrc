@@ -82,6 +82,16 @@ module mymod.
 
   end if.
 
+  ptr := (&j).
+
+  i := (*ptr).
+
+  if ( i == j ).
+
+   puts("i is j!").
+
+  end if.
+
   switch (j+enum5).
 
    case ( (1+(1.0)) - 1 ).

@@ -46,6 +46,10 @@ memcpy(myarray2,myarray, sizeof(myarray2))  ;
 helloworld:  ;
 if ((ptr==((void*)0))) {
 puts(u8"This is null!");  ;
+} ptr=(&j)  ;
+i=(*ptr)  ;
+if ((i==j)) {
+puts(u8"i is j!");  ;
 } switch ((j+0)) {
 case 1:
 puts(u8"Hi,");  ;

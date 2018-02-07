@@ -662,7 +662,7 @@ static void typecheck_type( marshmallow_variable variable, marshmallow_module mo
         
     free_type_name:
         
-        free(variable->type->type_name) ;
+        RKString_DestroyString(variable->type->type_name) ;
         
         variable->type->type_name = NULL ;
     }
@@ -843,7 +843,10 @@ static int is_assignable( marshmallow_variable variable, int* has_assignment, ma
     
     marshmallow_type type = typecheck_get_type_from_variable(variable, has_assignment, module) ;
     
-    if ( (m_is_type_number(type) && variable->data != NULL) ) return 0 ;
+    if ( (m_is_type_number(type) && variable->data != NULL) ) {
+        
+        return 0 ;
+    }
     
     return 1 ;
 }
@@ -1800,6 +1803,21 @@ end:
     return var ;
 }
 
+static marshmallow_type typecheck_make_ptr_type_from_type( marshmallow_type type ) {
+    
+    marshmallow_type ptrtype = marshmallow_new_type() ;
+    
+    ptrtype->base_type = type ;
+    
+    ptrtype->root_type = ptr ;
+    
+    RKString_DestroyString(ptrtype->type_name) ;
+    
+    ptrtype->type_name = NULL ;
+    
+    return ptrtype ;
+}
+
 static marshmallow_type typecheck_statment( marshmallow_statement statement, int* has_assignment, marshmallow_module module, RKStore store ) {
     
     marshmallow_type rettype_a = NULL ;
@@ -2004,7 +2022,7 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
                  exit(EXIT_FAILURE) ;
              }
              
-             return rettype_a ;
+             return typecheck_make_ptr_type_from_type(rettype_a) ;
              
              break;
              
@@ -2018,8 +2036,16 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
                  
                  exit(EXIT_FAILURE) ;
              }
+            
+             var_a = marshmallow_new_variable() ;
              
-             return rettype_a ;
+             var_a->type = rettype_a->base_type ;
+             
+             typecheck_type(var_a, module) ;
+             
+             free(var_a) ;
+             
+             return rettype_a->base_type ;
              
              break;
             
