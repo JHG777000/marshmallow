@@ -44,27 +44,9 @@ entity_nothing, entity_end } marshmallow_entity_type ;
 
 typedef struct marshmallow_entity_s { marshmallow_entity_type entity_type ; } *marshmallow_entity ;
 
-typedef struct marshmallow_class_s* marshmallow_class ;
-
-typedef struct marshmallow_enum_s* marshmallow_enum ;
-
-typedef struct marshmallow_type_s* marshmallow_type ;
-
 typedef struct marshmallow_variable_s* marshmallow_variable ;
 
-typedef struct marshmallow_value_s* marshmallow_value ;
-
-typedef struct marshmallow_function_signature_s* marshmallow_function_signature ;
-
 typedef struct marshmallow_function_body_s* marshmallow_function_body ;
-
-typedef struct marshmallow_statement_s* marshmallow_statement ;
-
-typedef struct marshmallow_module_s* marshmallow_module ;
-
-typedef struct marshmallow_scope_s* marshmallow_scope ;
-
-typedef struct marshmallow_context_s* marshmallow_context ;
 
 #define marshmallow_scope_protocol /*for alignment*/RKList statements ; RKStore variables ;
 

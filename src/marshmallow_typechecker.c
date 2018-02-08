@@ -1917,6 +1917,7 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
                      exit(EXIT_FAILURE) ;
                  }
              
+             //no need to check var_b->type->num_of_elements since sizes must be equal by this point
              if ( var_a->type->root_type == array && var_b->type->root_type == array && var_a->type->num_of_elements > 0 ) statement->op = array_assignment ;
              
              return typecheck_get_type_from_root_type(typecheck_get_type_promotion(var_a->type, var_b->type)->root_type) ;
