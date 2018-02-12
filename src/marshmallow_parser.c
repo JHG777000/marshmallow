@@ -75,6 +75,95 @@ static int marshmallow_is_symbol( char c, int balance ) {
     return 0 ;
 }
 
+static int marshmallow_is_token_operator( marshmallow_token token ) {
+    
+    switch (token->keyword) {
+            
+        case mgk(plus):
+            
+            return 1 ;
+            
+            break;
+            
+        case mgk(minus):
+            
+            return 1 ;
+            
+            break;
+            
+        case mgk(star):
+            
+            return 1 ;
+            
+            break;
+            
+        case mgk(slash):
+            
+            return 1 ;
+            
+            break;
+            
+        case mgk(percent):
+            
+            return 1 ;
+            
+            break;
+            
+        case mgk(pipe):
+            
+            return 1 ;
+            
+            break;
+            
+        case mgk(colon):
+            
+            return 1 ;
+            
+            break;
+            
+        case mgk(and):
+            
+            return 1 ;
+            
+            break;
+            
+        case mgk(dollar):
+            
+            return 1 ;
+            
+            break;
+            
+        case mgk(eql):
+            
+            return 1 ;
+            
+            break;
+            
+        case mgk(epoint):
+            
+            return 1 ;
+            
+            break;
+            
+        case mgk(greaterthan):
+            
+            return 1 ;
+            
+            break;
+            
+        case mgk(lessthan):
+            
+            return 1 ;
+            
+            break;
+            
+        default:
+            break;
+    }
+    
+    return 0 ;
+}
+
 static int marshmallow_is_token_root_type( marshmallow_token token ) {
     
     switch (token->keyword) {
@@ -1371,7 +1460,7 @@ m_processor(expression) {
     
     if ( m_peek(n+1)->keyword != mgk(pright) ) {
         
-        if ( m_peek(n+2)->keyword == mgk(pright) ) {
+        if ( m_peek(n+2)->keyword == mgk(pright) && !marshmallow_is_token_operator(m_peek(1)) ) {
             
             m_advance ;
         }
