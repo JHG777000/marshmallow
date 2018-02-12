@@ -1743,25 +1743,15 @@ m_processor(static_assignment) {
     
     if ( m_peek(n+0)->keyword == mgk(pleft) ){
         
-        n++ ;
-        
-        if ( marshmallow_is_token_root_type(m_peek(n+0)) ) {
+            m_advanceN(1) ;
             
-            //variable->type->root_type = expression ;
+            variable->type->root_type = expression ;
             
-            //variable->data = m_process(expression) ;
+            variable->data = m_process(expression) ;
             
-            //marshmallow_swap_var_if_exp_is_var(&variable) ;
-            
-            marshmallow_parse_type(variable->type, m_peek(n+0), 0, NULL, 0) ;
-            
-            marshmallow_parse_value(m_peek(n+0), variable) ;
-        
-            m_advanceN(2) ;
+            marshmallow_swap_var_if_exp_is_var(&variable) ;
             
             return variable ;
-        }
-        
     }
     
     if ( marshmallow_is_token_root_type(m_peek(n+0)) ) {

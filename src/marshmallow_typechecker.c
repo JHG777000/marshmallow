@@ -764,9 +764,29 @@ static void typecheck_variable( marshmallow_variable variable, marshmallow_modul
     
     int has_rechecked = 0 ;
     
+    marshmallow_variable v = NULL ;
+    
     typecheck_type(variable,module) ;
     
     if ( variable->static_assignment != NULL ) {
+        
+        if ( variable->static_assignment->type->root_type == expression ) {
+            
+            if ( m_is_type_float( variable->type ) ) {
+                
+                v = typecheck_float_evalulator(variable->static_assignment->data, module) ;
+                
+            } else {
+                
+                v = typecheck_integer_evalulator(variable->static_assignment->data, module) ;
+            }
+            
+            if ( v != NULL ) {
+                
+                variable->static_assignment = v ;
+            }
+            
+        }
         
         typecheck_type(variable->static_assignment,module) ;
         
@@ -1503,6 +1523,8 @@ statment_evalulator:
         
         c = a ;
         
+        if ( statement->op != noop ) goto proc ;
+        
         goto end ;
     }
     
@@ -1575,6 +1597,7 @@ statment_evalulator:
             break;
     }
 
+ proc:
     
     switch ( statement->op ) {
             
@@ -1769,12 +1792,14 @@ end:
             break;
     }
     
-    if ( eval_b == NULL ) {
-        
-        c = a ;
-        
-        goto end ;
-    }
+     if ( eval_b == NULL ) {
+         
+         c = a ;
+         
+         if ( statement->op != noop ) goto proc ;
+         
+         goto end ;
+     }
     
     switch (eval_b->root_type) {
             
@@ -1845,7 +1870,8 @@ end:
             break;
     }
     
-    
+ proc:
+     
     switch ( statement->op ) {
             
         case add:
