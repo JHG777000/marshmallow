@@ -81,6 +81,12 @@ void marshmallow_parse_type( marshmallow_type type, marshmallow_token token, int
             
             break;
             
+        case mgk(oct):
+            
+            type->root_type = oct ;
+            
+            break;
+            
         case mgk(string):
             
             type->root_type = string ;
@@ -293,7 +299,7 @@ marshmallow_entity marshmallow_lookup_identifier( marshmallow_function_body func
     } else if (identifier->entity_type == entity_variable) {
         
         identifier_name = ((marshmallow_variable)identifier)->name ;
-        
+        marshmallow_variable v = (marshmallow_variable)identifier ;
         if ( function != NULL ) entity = RKStore_GetItem(function->variables, RKString_GetString(identifier_name)) ;
         
         if ( entity == NULL  ) {

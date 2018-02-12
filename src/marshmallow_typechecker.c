@@ -228,6 +228,12 @@ int m_is_type_number( marshmallow_type type ) {
             
             break;
             
+        case oct:
+            
+            return 1 ;
+            
+            break;
+            
         case character:
             
             return 1 ;
@@ -311,6 +317,12 @@ int m_is_root_type( marshmallow_type type ) {
             
             break;
             
+        case oct:
+            
+            return 1 ;
+            
+            break;
+            
         case string:
             
             return 1 ;
@@ -382,6 +394,17 @@ marshmallow_type m_get_negate_type( marshmallow_type type ) {
             
             break;
             
+        case hex:
+            
+            return typecheck_get_type_from_root_type(i64) ;
+            
+            break;
+            
+        case oct:
+            
+            return typecheck_get_type_from_root_type(i32) ;
+            
+            break;
             
         case i64:
             
@@ -411,7 +434,7 @@ marshmallow_type m_get_negate_type( marshmallow_type type ) {
             break;
     }
     
-    return 0 ;
+    return NULL ;
 }
 
 int m_get_size_of_root_type_in_bytes( marshmallow_type type ) {
@@ -470,6 +493,12 @@ int m_get_size_of_root_type_in_bytes( marshmallow_type type ) {
         case hex:
             
             return 8 ;
+            
+            break;
+            
+        case oct:
+            
+            return 4 ;
             
             break;
             
@@ -776,11 +805,11 @@ static void typecheck_variable( marshmallow_variable variable, marshmallow_modul
             
             if ( m_is_type_float( variable->type ) ) {
                 
-                v = typecheck_float_evalulator(variable->static_assignment->data, module) ;
+                v = typecheck_float_evaluator(variable->static_assignment->data, module) ;
                 
             } else {
                 
-                v = typecheck_integer_evalulator(variable->static_assignment->data, module) ;
+                v = typecheck_integer_evaluator(variable->static_assignment->data, module) ;
             }
             
             if ( v != NULL ) {
@@ -1029,6 +1058,12 @@ loop:
             
             break;
             
+        case oct:
+            
+            j = 5 ;
+            
+            break;
+            
         case f32:
             
             j = 9 ;
@@ -1065,7 +1100,7 @@ typedef struct eval_val_s { marshmallow_root_type root_type ; int error ; union 
     
 RKInt intval ; RKLong longval ; RKFloat floatval ; RKDouble doubleval ; } ; }* eval_val ;
 
-static void typecheck_get_variables_for_evalulator( marshmallow_entity entity, marshmallow_entity* a, marshmallow_entity* b, marshmallow_module module ) {
+static void typecheck_get_variables_for_evaluator( marshmallow_entity entity, marshmallow_entity* a, marshmallow_entity* b, marshmallow_module module ) {
     
     if ( entity->entity_type == entity_statement ) {
         
@@ -1083,7 +1118,7 @@ static void typecheck_get_variables_for_evalulator( marshmallow_entity entity, m
     
 }
 
-static eval_val typecheck_get_value_for_evalulator( marshmallow_entity entity, marshmallow_module module ) {
+static eval_val typecheck_get_value_for_evaluator( marshmallow_entity entity, marshmallow_module module ) {
     
     int has_assignment = 0 ;
     
@@ -1097,7 +1132,7 @@ static eval_val typecheck_get_value_for_evalulator( marshmallow_entity entity, m
     
     if ( entity == NULL ) return NULL ;
     
-statment_evalulator:
+statment_evaluator:
     
     if ( entity->entity_type == entity_statement ) {
         
@@ -1105,7 +1140,7 @@ statment_evalulator:
         
         if ( m_is_type_number(type) && !m_is_type_float(type) ) {
             
-            variable = typecheck_integer_evalulator((marshmallow_statement)entity, module) ;
+            variable = typecheck_integer_evaluator((marshmallow_statement)entity, module) ;
             
             retptr->intval = atoi(RKString_GetString(((marshmallow_value)variable->data)->value)) ;
             
@@ -1115,7 +1150,7 @@ statment_evalulator:
             
         } else if ( m_is_type_float(type) ) {
             
-            variable = typecheck_float_evalulator((marshmallow_statement)entity, module) ;
+            variable = typecheck_float_evaluator((marshmallow_statement)entity, module) ;
             
             retptr->doubleval = atof(RKString_GetString(((marshmallow_value)variable->data)->value)) ;
             
@@ -1131,7 +1166,7 @@ statment_evalulator:
             
             entity = ((marshmallow_variable)entity)->data ;
             
-            goto statment_evalulator ;
+            goto statment_evaluator ;
         }
         
         if ( ((marshmallow_variable)entity)->type->root_type == enum_type ) {
@@ -1237,15 +1272,25 @@ statment_evalulator:
                        
                      #ifdef WIN32_
                        
-                       strtoll(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value), NULL, 0) ;
+                       retptr->longval = strtoll(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value), NULL, 0) ;
                        
                      #else
                        
-                       strtol(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value), NULL, 0) ;
+                       retptr->longval = strtol(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value), NULL, 0) ;
                        
                      #endif
                        
                        retptr->root_type = u64 ;
+                       
+                       retptr->error = 0 ;
+                       
+                       break;
+                       
+                   case oct:
+                       
+                       retptr->intval = (RKInt)strtol(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value), NULL, 0) ;
+                       
+                       retptr->root_type = u32 ;
                        
                        retptr->error = 0 ;
                        
@@ -1365,15 +1410,25 @@ statment_evalulator:
                     
                 #ifdef WIN32_
                     
-                    strtoll(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->static_assignment->data)->value), NULL, 0) ;
+                    retptr->longval = strtoll(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->static_assignment->data)->value), NULL, 0) ;
                     
                 #else
                     
-                    strtol(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->static_assignment->data)->value), NULL, 0) ;
+                    retptr->longval = strtol(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->static_assignment->data)->value), NULL, 0) ;
                     
                 #endif
                     
                     retptr->root_type = u64 ;
+                    
+                    retptr->error = 0 ;
+                    
+                    break;
+                    
+                case oct:
+                    
+                    retptr->intval = (RKInt)strtol(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value), NULL, 0) ;
+                    
+                    retptr->root_type = u32 ;
                     
                     retptr->error = 0 ;
                     
@@ -1412,7 +1467,7 @@ statment_evalulator:
     return retptr ;
 }
 
- marshmallow_variable typecheck_integer_evalulator( marshmallow_statement statement, marshmallow_module module ) {
+ marshmallow_variable typecheck_integer_evaluator( marshmallow_statement statement, marshmallow_module module ) {
     
     marshmallow_variable var = marshmallow_new_variable() ;
     
@@ -1444,11 +1499,11 @@ statment_evalulator:
     
     var->data = value ;
     
-    typecheck_get_variables_for_evalulator((marshmallow_entity)statement, &entity_a, &entity_b, module) ;
+    typecheck_get_variables_for_evaluator((marshmallow_entity)statement, &entity_a, &entity_b, module) ;
     
-    eval_a = typecheck_get_value_for_evalulator(entity_a, module) ;
+    eval_a = typecheck_get_value_for_evaluator(entity_a, module) ;
     
-    eval_b = typecheck_get_value_for_evalulator(entity_b, module) ;
+    eval_b = typecheck_get_value_for_evaluator(entity_b, module) ;
     
     if ( eval_a == NULL ) return NULL ;
     
@@ -1679,7 +1734,7 @@ end:
     return var ;
 }
 
- marshmallow_variable typecheck_float_evalulator( marshmallow_statement statement, marshmallow_module module ) {
+ marshmallow_variable typecheck_float_evaluator( marshmallow_statement statement, marshmallow_module module ) {
     
     marshmallow_variable var = marshmallow_new_variable() ;
     
@@ -1711,11 +1766,11 @@ end:
     
     var->data = value ;
     
-    typecheck_get_variables_for_evalulator((marshmallow_entity)statement, &entity_a, &entity_b, module) ;
+    typecheck_get_variables_for_evaluator((marshmallow_entity)statement, &entity_a, &entity_b, module) ;
     
-    eval_a = typecheck_get_value_for_evalulator(entity_a, module) ;
+    eval_a = typecheck_get_value_for_evaluator(entity_a, module) ;
     
-    eval_b = typecheck_get_value_for_evalulator(entity_b, module) ;
+    eval_b = typecheck_get_value_for_evaluator(entity_b, module) ;
     
     if ( eval_a == NULL ) return NULL ;
     
@@ -2088,7 +2143,7 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
              case caseop:
              case endcaseop:
 
-             var_a = typecheck_integer_evalulator((marshmallow_statement)statement->var_a, module) ;
+             var_a = typecheck_integer_evaluator((marshmallow_statement)statement->var_a, module) ;
              
              if ( var_a == NULL ) {
                  

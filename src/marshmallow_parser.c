@@ -222,6 +222,12 @@ static int marshmallow_is_token_root_type( marshmallow_token token ) {
             
             break;
             
+        case mgk(oct):
+            
+            return 1 ;
+            
+            break;
+            
         case mgk(string):
             
             return 1 ;
@@ -3265,7 +3271,7 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
                         i++ ;
                     }
                     
-                    symbol = mgk(u32type) ;
+                    symbol = mgk(oct) ;
                 }
 
                 

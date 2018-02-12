@@ -43,7 +43,7 @@ module mymod.
 
  myint myvar1 := 07.
 
- i32 myvar3 := ((-07)+9).
+ i32 myvar3 := ((-0107)+9).
 
  function main() returns i32.
 

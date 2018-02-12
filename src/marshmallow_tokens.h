@@ -25,6 +25,8 @@ token(enum,"enum")
 
 token(hex, "")
 
+token(oct, "")
+
 token(string, "")
 
 token(character, "")

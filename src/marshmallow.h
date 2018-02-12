@@ -28,7 +28,7 @@
 
 typedef enum { public, private, protected, publish, inherit } marshmallow_access_control ;
 
-typedef enum { i8, u8, i16, u16, i32, u32, i64, u64, f32, f64, hex, string, character, class, enum_type, array, ptr, module, function, method, lambda, expression,
+typedef enum { i8, u8, i16, u16, i32, u32, i64, u64, f32, f64, hex, oct, string, character, class, enum_type, array, ptr, module, function, method, lambda, expression,
     
 unknown, arguments, collection, metacollection, nulltype } marshmallow_root_type ;
 
@@ -176,9 +176,9 @@ RKULong m_get_size_of_type_in_bytes( marshmallow_type type, marshmallow_root_typ
 
 RKULong m_get_size_of_type_or_array_in_bytes( marshmallow_type type_or_array, marshmallow_root_type* root_type ) ;
 
-marshmallow_variable typecheck_integer_evalulator( marshmallow_statement statement, marshmallow_module module ) ;
+marshmallow_variable typecheck_integer_evaluator( marshmallow_statement statement, marshmallow_module module ) ;
 
-marshmallow_variable typecheck_float_evalulator( marshmallow_statement statement, marshmallow_module module ) ;
+marshmallow_variable typecheck_float_evaluator( marshmallow_statement statement, marshmallow_module module ) ;
 
 void marshmallow_typecheck( marshmallow_context context ) ;
 
