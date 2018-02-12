@@ -102,7 +102,7 @@ module mymod.
 
     puts("Hi,").
 
-   case (2).
+   case (2.4).
 
      puts("Bye.").
 

@@ -15,6 +15,8 @@
  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <math.h>
+
 #include "marshmallow.h"
 
 static marshmallow_type typecheck_get_type_from_root_type( marshmallow_root_type root ) {
@@ -1422,11 +1424,11 @@ statment_evalulator:
     
     char string[100] ;
     
-    int a = 0 ;
+    RKInt a = 0 ;
     
-    int b = 0 ;
+    RKInt b = 0 ;
     
-    int c = 0 ;
+    RKInt c = 0 ;
     
     eval_val eval_a = NULL ;
     
@@ -1463,7 +1465,6 @@ statment_evalulator:
             a = eval_a->byteval ;
             
             break;
-
             
         case i16:
             
@@ -1476,7 +1477,6 @@ statment_evalulator:
             a = eval_a->shortval ;
             
             break;
-    
             
         case i32:
             
@@ -1504,16 +1504,15 @@ statment_evalulator:
             
         case f32:
             
-            a = eval_a->floatval ;
+            a = roundf(eval_a->floatval) ;
             
             break;
             
         case f64:
             
-            a = eval_a->doubleval ;
+            a = round(eval_a->doubleval) ;
             
             break;
-
             
         default:
             break;
@@ -1542,7 +1541,6 @@ statment_evalulator:
             
             break;
             
-            
         case i16:
             
             b = eval_b->shortval ;
@@ -1554,7 +1552,6 @@ statment_evalulator:
             b = eval_b->shortval ;
             
             break;
-            
             
         case i32:
             
@@ -1582,16 +1579,15 @@ statment_evalulator:
             
         case f32:
             
-            b = eval_b->floatval ;
+            b = roundf(eval_b->floatval) ;
             
             break;
             
         case f64:
             
-            b = eval_b->doubleval ;
+            b = round(eval_b->doubleval) ;
             
             break;
-            
             
         default:
             break;
@@ -1737,7 +1733,6 @@ end:
             
             break;
             
-            
         case i16:
             
             a = eval_a->shortval ;
@@ -1749,7 +1744,6 @@ end:
             a = eval_a->shortval ;
             
             break;
-            
             
         case i32:
             
@@ -1787,7 +1781,6 @@ end:
             
             break;
             
-            
         default:
             break;
     }
@@ -1815,7 +1808,6 @@ end:
             
             break;
             
-            
         case i16:
             
             b = eval_b->shortval ;
@@ -1827,7 +1819,6 @@ end:
             b = eval_b->shortval ;
             
             break;
-            
             
         case i32:
             
@@ -1864,7 +1855,6 @@ end:
             b = eval_b->doubleval ;
             
             break;
-            
             
         default:
             break;
