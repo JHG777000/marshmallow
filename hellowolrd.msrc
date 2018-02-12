@@ -43,6 +43,8 @@ module mymod.
 
  myint myvar1 := 07.
 
+ i32 myvar3.
+
  function main() returns i32.
 
   myenum var4 := enum2.
@@ -54,6 +56,8 @@ module mymod.
   u64 j := 4.
 
   f64 x := (0.23).
+
+  myvar3 := (-07).
 
   var3 := enum3.
 

@@ -914,7 +914,24 @@ static void output_statement( marshmallow_context context, FILE* file, marshmall
             output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
             
             break;
-
+            
+        case not:
+            
+            fprintf(file, "!") ;
+            
+            output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+            
+        case bnot:
+            
+            fprintf(file, "~") ;
+            
+            output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+            
+        case negate:
+            
+            fprintf(file, "-") ;
+            
+            output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
             
         default:
             break;

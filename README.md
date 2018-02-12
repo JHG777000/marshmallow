@@ -13,80 +13,105 @@ The following is an example of what marshmallow aims to be:
 
 	module mymod.
 
- 	 use module marshmallow.
+    use module marshmallow.
 
- 	 //build properties for this module
+    @build.
 
-      @public os(macOs | Windows | Linux).
+      @public os(macOS | Windows | Linux).
 
-      @files MyAppSourceFiles(MyApp, MyOtherFile, Folder::SourceFile).
+      @files MyAppSourceFiles(MyOtherFile.msrc, Folder::SourceFile.msrc).
 
-      @sources MyAppSource(MyAppSourceFiles).
+      @files MyAppLibraryFiles(libs::libm.a, libs::OtherModule.mmod, libs::SomeMarshmallowLibrary.mpck).
 
-      @output(app,MyAppSource). // app or pck or mod or lib or obj
+      @sources MyAppSource(MyAppSourceFiles,MyAppLibraryFiles).
 
-     //end build properties
+      @if ( os == macOS ).
 
- 	function main( args main_args ).
+        @output(app::macOS::x86_64,MyAppSource). // app or pck or mod or lib or obj
 
- 	 List list := new().
+      @elseif( os == Windows ).
 
-  	 float value := (1.0).
+       @output(app::Windows::x86_64,MyAppSource).
 
-  	 int value2 := ($int(3+value)).
+      @elseif( os == Linux ).
 
-  	 int value3 := func().
+       @output(app::Linux::x86_64,MyAppSource).
 
-  	 { value2, value3 } := MyFunc().
+      @endif.
 
-  	 lambda() returns int func = lambda_start.
+     @end.
 
-  	   return 1.
+     function main( args main_args ).
 
-  	 end lambda.
+      int[64] array.
 
- 	end function.
-	
- 	template alloc(@type type_to_alloc) returns blank*.
+      int i := 0.
 
-  	   if ( _is_ptr(type_to_alloc) ) return _init(malloc(_sizeof(_typeofptr(type_to_alloc)))).
+      float y.
 
-   	   return _init(malloc(_sizeof(type_to_alloc))).
+      byte x := ($i8($$$u64($$$int*($int[](array))))).
 
-	 end template.
+      y := (*($float*(&i))).
 
- 	 _free function free(blank* ptr).
+      y := ($$float(i)).
  
- 	   mfree(ptr).
+      List list := new().
 
- 	 end function.
+      float value := (1.0).
 
- 	 class ( int num_of_nodes, list_node first, list_node last ) *List.
+      int value2 := ($int(3+value)).
 
- 	 function List_NewList returns List.
+      int value3 := func().
 
-  	  List newlist := alloc(List).
+      { value2, value3 } := MyFunc().
 
-  	  return newlist.
+      lambda() returns int func = lambda_start.
 
- 	 end function.
+       return 1.
 
- 	 declare function overridable new.
- 
- 	 function override new returns List.
+      end lambda.
 
-  	  return List_NewList().
- 
- 	 end function.
- 
- 	 function MyFunc returns int, int.
+     end function.
 
-  	  return { 1,1 }.
+     template alloc(@type type_to_alloc) returns blank*.
 
- 	 end function.
+       if ( _is_ptr(type_to_alloc) ) return _init(malloc(_sizeof(_typeofptr(type_to_alloc)))).
 
-	end module.
+       return _init(malloc(_sizeof(type_to_alloc))).
 
+     end template.
+
+      _free function free(blank* ptr).
+
+      mfree(ptr).
+
+     end function.
+
+    class ( int num_of_nodes, list_node first, list_node last ) *List.
+
+     function List_NewList returns List.
+
+       List newlist := alloc(List).
+
+       return newlist.
+
+     end function.
+
+     declare function overridable new.
+
+     function override new returns List.
+
+      return List_NewList().
+
+     end function.
+
+     function MyFunc returns int, int.
+
+      return { 1,1 }.
+
+     end function.
+
+    end module.
 
 ### Module System:
 

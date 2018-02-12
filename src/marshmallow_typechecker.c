@@ -340,6 +340,78 @@ int m_is_root_type( marshmallow_type type ) {
     return 0 ;
 }
 
+marshmallow_type m_get_negate_type( marshmallow_type type ) {
+    
+    switch ( type->root_type ) {
+            
+        case i8:
+            
+            return typecheck_get_type_from_root_type(u8) ;
+            
+            break;
+            
+        case u8:
+            
+            return typecheck_get_type_from_root_type(i8) ;
+            
+            break;
+            
+        case i16:
+            
+            return typecheck_get_type_from_root_type(u16) ;
+            
+            break;
+            
+        case u16:
+            
+            return typecheck_get_type_from_root_type(i16) ;
+            
+            break;
+            
+        case i32:
+            
+            return typecheck_get_type_from_root_type(u32) ;
+            
+            break;
+            
+        case u32:
+            
+            return typecheck_get_type_from_root_type(i32) ;
+            
+            break;
+            
+            
+        case i64:
+            
+            return typecheck_get_type_from_root_type(u64) ;
+            
+            break;
+            
+        case u64:
+            
+            return typecheck_get_type_from_root_type(i64) ;
+            
+            break;
+            
+        case f32:
+            
+            return type ;
+            
+            break;
+            
+        case f64:
+            
+            return type ;
+            
+            break;
+            
+        default:
+            break;
+    }
+    
+    return 0 ;
+}
+
 int m_get_size_of_root_type_in_bytes( marshmallow_type type ) {
     
     switch ( type->root_type ) {
@@ -967,16 +1039,11 @@ loop:
 
 static marshmallow_type typecheck_statment( marshmallow_statement statement, int* has_assignment, marshmallow_module module, RKStore store ) ;
 
-static marshmallow_variable typecheck_integer_evalulator( marshmallow_statement statement, marshmallow_module module ) ;
-
-static marshmallow_variable typecheck_float_evalulator( marshmallow_statement statement, marshmallow_module module ) ;
-
 typedef struct eval_val_s { marshmallow_root_type root_type ; int error ; union { RKByte byteval ; RKShort shortval ;
     
 RKInt intval ; RKLong longval ; RKFloat floatval ; RKDouble doubleval ; } ; }* eval_val ;
 
 static void typecheck_get_variables_for_evalulator( marshmallow_entity entity, marshmallow_entity* a, marshmallow_entity* b, marshmallow_module module ) {
-    
     
     if ( entity->entity_type == entity_statement ) {
         
@@ -1323,7 +1390,7 @@ statment_evalulator:
     return retptr ;
 }
 
-static marshmallow_variable typecheck_integer_evalulator( marshmallow_statement statement, marshmallow_module module ) {
+ marshmallow_variable typecheck_integer_evalulator( marshmallow_statement statement, marshmallow_module module ) {
     
     marshmallow_variable var = marshmallow_new_variable() ;
     
@@ -1559,6 +1626,24 @@ static marshmallow_variable typecheck_integer_evalulator( marshmallow_statement 
             
             break;
             
+        case negate:
+            
+            c = -a ;
+            
+            break;
+            
+        case not:
+            
+            c = !a ;
+            
+            break;
+            
+        case bnot:
+            
+            c = ~a ;
+            
+            break;
+            
         default:
             
             return NULL ;
@@ -1575,7 +1660,7 @@ end:
     return var ;
 }
 
-static marshmallow_variable typecheck_float_evalulator( marshmallow_statement statement, marshmallow_module module ) {
+ marshmallow_variable typecheck_float_evalulator( marshmallow_statement statement, marshmallow_module module ) {
     
     marshmallow_variable var = marshmallow_new_variable() ;
     
@@ -1787,6 +1872,18 @@ static marshmallow_variable typecheck_float_evalulator( marshmallow_statement st
             
             break;
             
+        case negate:
+            
+            c = -a ;
+            
+            break;
+            
+        case not:
+            
+            c = !a ;
+            
+            break;
+            
         default:
             
             return NULL ;
@@ -1842,7 +1939,7 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
     
     if ( statement->var_a != NULL && (statement->var_a->entity_type == entity_function
                                        || (statement->var_a->entity_type == entity_variable && ((marshmallow_variable)statement->var_a)->name != NULL)) ) {
-
+        
         statement->var_a = (marshmallow_entity)marshmallow_lookup_identifier(statement->function, module, statement->var_a) ;
     }
     
@@ -2047,6 +2144,12 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
              free(var_a) ;
              
              return rettype_a->base_type ;
+             
+             break;
+             
+         case negate:
+             
+             return m_get_negate_type(typecheck_get_type_from_variable((marshmallow_variable)statement->var_a, has_assignment, module)) ;
              
              break;
             

@@ -168,11 +168,17 @@ int m_is_type_number( marshmallow_type type ) ;
 
 int m_is_root_type( marshmallow_type type ) ;
 
+marshmallow_type m_get_negate_type( marshmallow_type type ) ;
+
 int m_get_size_of_root_type_in_bytes( marshmallow_type type ) ;
 
 RKULong m_get_size_of_type_in_bytes( marshmallow_type type, marshmallow_root_type* root_type ) ;
 
 RKULong m_get_size_of_type_or_array_in_bytes( marshmallow_type type_or_array, marshmallow_root_type* root_type ) ;
+
+marshmallow_variable typecheck_integer_evalulator( marshmallow_statement statement, marshmallow_module module ) ;
+
+marshmallow_variable typecheck_float_evalulator( marshmallow_statement statement, marshmallow_module module ) ;
 
 void marshmallow_typecheck( marshmallow_context context ) ;
 
