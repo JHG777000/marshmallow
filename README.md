@@ -49,7 +49,7 @@ The following is an example of what marshmallow aims to be:
 
       float y.
 
-      byte x := ($i8($$$u64($$$int*($int[](array))))).
+      sbyte x := ($i8($$$u64($$$int*($int[](array))))).
 
       y := (*($float*(&i))).
 
