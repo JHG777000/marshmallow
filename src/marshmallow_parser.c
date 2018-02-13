@@ -1532,7 +1532,7 @@ m_processor(expression) {
         }
     }
     
-    if ( m_peek(0)->keyword == mgk(pleft) && ( op == castop ) ) {
+    if ( m_peek(0)->keyword == mgk(pleft) && (( op == castop ) || ( op == reinterpretop ) || ( op == convertop )) ) {
         
         m_advanceN(2) ;
     }
@@ -3318,7 +3318,6 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
                     
                     if ( is_float ) symbol = mgk(floattype) ;
                 }
-                
                 
                 if ( word_size > 1 ) if (  (word[0] == '0') && (symbol != mgk(hex)) && (symbol != mgk(floattype) && (symbol != mgk(doubletype))) ) {
                     

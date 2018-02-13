@@ -67,7 +67,9 @@ module mymod.
 
   j := ( j + (i + (2 / 2)) ). //marshmallow forces grouping to avoid order of operations ambiguity
 
-  j := ($u64(4)).
+  j := ($u64(myvar3)).
+
+  j := 4.
 
   //because all new languages need to support unicode identifiers
   u64 😀 := '😀'.

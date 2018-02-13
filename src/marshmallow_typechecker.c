@@ -1971,6 +1971,25 @@ end:
     return var ;
 }
 
+static marshmallow_type typecheck_get_type_from_variable( marshmallow_variable variable, int* has_assignment, marshmallow_module module ) {
+    
+    marshmallow_type t = NULL ;
+    
+    if ( variable->type->root_type == expression ) {
+        
+        t = typecheck_statment((marshmallow_statement)variable->data, has_assignment, module, NULL) ;
+        
+    } else {
+        
+        t = variable->type ;
+    }
+    
+    typecheck_type(variable, module) ;
+    
+    return t ;
+}
+
+
 static marshmallow_type typecheck_make_ptr_type_from_type( marshmallow_type type ) {
     
     marshmallow_type ptrtype = marshmallow_new_type() ;
@@ -2179,6 +2198,49 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
              
              break;
              
+         case ifop:
+             
+             list = statement->statements ;
+             
+             if ( list != NULL ) {
+                 
+                 node = RKList_GetFirstNode(list) ;
+                 
+                 while (node != NULL) {
+                     
+                     typecheck_statment(RKList_GetData(node), has_assignment, module, store) ;
+                     
+                     node = RKList_GetNextNode(node) ;
+                 }
+             }
+             
+             break;
+             
+             case slifop:
+             
+             typecheck_statment((marshmallow_statement)statement->var_b, has_assignment, module, store) ;
+             
+             break;
+             
+         case whileop:
+             
+             list = statement->statements ;
+             
+             if ( list != NULL ) {
+                 
+                 node = RKList_GetFirstNode(list) ;
+                 
+                 while (node != NULL) {
+                     
+                     typecheck_statment(RKList_GetData(node), has_assignment, module, store) ;
+                     
+                     node = RKList_GetNextNode(node) ;
+                 }
+             }
+             
+             break;
+
+             
          case addrof:
              
              rettype_a = typecheck_get_type_from_variable((marshmallow_variable)statement->var_a, has_assignment, module) ;
@@ -2227,6 +2289,8 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
              
              var_a = (marshmallow_variable)statement->var_a ;
              
+             var_b = (marshmallow_variable)statement->var_b ;
+             
              if ( var_a->type == NULL ) {
                  
                  printf("Can not use cast with a non-type.\n") ;
@@ -2243,24 +2307,6 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
     }
     
     return typecheck_get_type_from_root_type(unknown) ;
-}
-
-static marshmallow_type typecheck_get_type_from_variable( marshmallow_variable variable, int* has_assignment, marshmallow_module module ) {
-    
-    marshmallow_type t = NULL ;
-    
-    if ( variable->type->root_type == expression ) {
-        
-        t = typecheck_statment((marshmallow_statement)variable->data, has_assignment, module, NULL) ;
-        
-    } else {
-        
-        t = variable->type ;
-    }
-    
-    typecheck_type(variable, module) ;
-    
-    return t ;
 }
 
 static void typecheck_the_statment( marshmallow_statement statement, marshmallow_module module ) {
