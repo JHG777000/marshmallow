@@ -2007,7 +2007,6 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
         return typecheck_get_type_from_variable((marshmallow_variable)statement, has_assignment, module) ;
     }
     
-    
     if ( statement->var_a != NULL && (statement->var_a->entity_type == entity_function
                                        || (statement->var_a->entity_type == entity_variable && ((marshmallow_variable)statement->var_a)->name != NULL)) ) {
         
@@ -2221,6 +2220,21 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
          case negate:
              
              return m_get_negate_type(typecheck_get_type_from_variable((marshmallow_variable)statement->var_a, has_assignment, module)) ;
+             
+             break;
+             
+             case castop:
+             
+             var_a = (marshmallow_variable)statement->var_a ;
+             
+             if ( var_a->type == NULL ) {
+                 
+                 printf("Can not use cast with a non-type.\n") ;
+                 
+                 exit(EXIT_FAILURE) ;
+             }
+             
+             return var_a->type ;
              
              break;
             

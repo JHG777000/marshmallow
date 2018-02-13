@@ -1176,6 +1176,25 @@ m_processor(expression) {
     
     //x--
     
+    if ( m_peek(n+0)->keyword == mgk(dollar) ) {
+        
+        op = castop ;
+        
+        if ( m_peek(n+1)->keyword == mgk(dollar) ) {
+            
+            op = reinterpretop ;
+            
+            if ( m_peek(n+2)->keyword == mgk(dollar) ) {
+                
+                op = convertop ;
+                
+                n++ ;
+            }
+            
+            n++ ;
+        }
+    }
+    
     if ( m_peek(n+0)->keyword == mgk(and) ) op = addrof ;
     
     if ( m_peek(n+0)->keyword == mgk(star) ) op = deref ;
@@ -1186,7 +1205,9 @@ m_processor(expression) {
     
     if ( m_peek(n+0)->keyword == mgk(tilde) ) op = bnot ;
     
-    if ( op == addrof || op == deref || op == negate || op == not || op == bnot ) n++ ;
+    if ( op == addrof || op == deref || op == negate || op == not || op == bnot || op == castop
+        
+        || op == reinterpretop || op == convertop) n++ ;
     
     if ( marshmallow_is_token_root_type(m_peek(n+0)) ) {
         
@@ -1227,7 +1248,46 @@ m_processor(expression) {
         
         exit(EXIT_FAILURE) ;
     }
-    //op != addrof && op != deref && op != negate && op != not
+    
+    if ( op == castop || op == reinterpretop || op == convertop ) {
+        
+        m_advanceN(n+1) ;
+        
+        if ( marshmallow_is_token_root_type(m_peek(n+0)) ) {
+            
+            marshmallow_parse_type(b->type, m_peek(n+0), 0, NULL, 0) ;
+            
+            marshmallow_parse_value(m_peek(n+0), b) ;
+            
+            flag_b++ ;
+        }
+        
+        if ( m_peek(n+0)->keyword == mgk(identifier) ) {
+            
+            b->type->root_type = unknown ;
+            
+            b->name = RKString_CopyString( m_peek(n+0)->value) ;
+            
+            flag_b++ ;
+        }
+        
+        if ( m_peek(n+0)->keyword == mgk(pleft) ) {
+            
+            m_advanceN(1) ;
+            
+            b->type->root_type = expression ;
+            
+            b->data = m_process(expression) ;
+            
+            marshmallow_swap_var_if_exp_is_var(&b) ;
+            
+            n = n-1 ;
+            
+            flag_b++ ;
+        }
+    }
+    
+    //op != addrof && op != deref && op != negate && op != not, etc.
     if ( op == noop ) {
         
         switch ( m_peek(n+1)->keyword ) {
@@ -1470,6 +1530,11 @@ m_processor(expression) {
             
             m_advance ;
         }
+    }
+    
+    if ( m_peek(0)->keyword == mgk(pleft) && ( op == castop ) ) {
+        
+        m_advanceN(2) ;
     }
     
     m_expect(pright) ;

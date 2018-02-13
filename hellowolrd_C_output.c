@@ -43,7 +43,7 @@ marshmallow_mymod_myvar3=(-07)  ;
 marshmallow_mymod_var3=42  ;
 var4=43  ;
 j=(j+(i+(2/2)))  ;
-j=4  ;
+j=((mu64 )4)  ;
 memcpy(myarray2,myarray, sizeof(myarray2))  ;
 helloworld:  ;
 if ((ptr==((void*)0))) {

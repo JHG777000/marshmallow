@@ -28,15 +28,17 @@
 
 typedef enum { public, private, protected, publish, inherit } marshmallow_access_control ;
 
-typedef enum { i8, u8, i16, u16, i32, u32, i64, u64, f32, f64, hex, oct, string, character, class, enum_type, array, ptr, module, function, method, lambda, expression,
+typedef enum { i8, u8, i16, u16, i32, u32, i64, u64, f32, f64, hex, oct, string, character, class, enum_type, array, ptr, module,
     
-unknown, arguments, collection, metacollection, nulltype } marshmallow_root_type ;
+function, method, lambda, expression, unknown, arguments, collection, metacollection, nulltype } marshmallow_root_type ;
 
 typedef enum { noop, assignment, array_assignment, is_equal, is_not_equal, is_greaterthan, is_greaterthan_or_equal, is_lessthan, is_lessthan_or_equal,
     
  add, sub, negate, mult, mdiv, rem, not, and, or, bnot, band, bor, xor, lshift, rshift, deref, addrof, msizeof, itemsof, inc, dec, call,
     
-slifop, ifop, elseop, whileop, breakop, continueop, switchop, caseop, endcaseop, defaultop, section, gotoop, ret } marshmallow_op_type ;
+slifop, ifop, elseop, whileop, breakop, continueop, switchop, caseop, endcaseop, defaultop, section, gotoop, ret,
+    
+castop, reinterpretop, convertop } marshmallow_op_type ;
 
 typedef enum { entity_module, entity_class, entity_function, entity_variable, entity_data_type, entity_statement, entity_collection,
     
