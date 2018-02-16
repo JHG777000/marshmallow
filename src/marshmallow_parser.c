@@ -1158,6 +1158,8 @@ m_processor(expression) {
     
     int flag_b = 0 ;
     
+    RKList_node node = NULL ;
+    
     marshmallow_op_type op = noop ;
     
     marshmallow_variable a = marshmallow_new_variable() ;
@@ -1209,6 +1211,8 @@ m_processor(expression) {
         
         || op == reinterpretop || op == convertop) n++ ;
     
+    if ( op == castop || op == reinterpretop || op == convertop ) goto parse_cast ;
+    
     if ( marshmallow_is_token_root_type(m_peek(n+0)) ) {
         
         marshmallow_parse_type(a->type, m_peek(n+0), 0, NULL, 0) ;
@@ -1247,6 +1251,26 @@ m_processor(expression) {
         printf("Unknown expression variable A in expression. %s is not a value, variable, or expression.\n",RKString_GetString(m_peek(n+0)->value)) ;
         
         exit(EXIT_FAILURE) ;
+    }
+    
+parse_cast:
+    
+    if ( op == castop || op == reinterpretop || op == convertop ) {
+        
+        node = *startnode ;
+        
+        m_advanceN(1) ;
+        
+        free(a->type) ;
+        
+        a->type = ((marshmallow_variable)m_process(type))->type ;
+        
+        flag_a++ ;
+        
+        *startnode = node ;
+        
+        if ( a->type->root_type == ptr || a->type->root_type == array ) m_advanceN(a->type->pointers) ;
+
     }
     
     if ( op == castop || op == reinterpretop || op == convertop ) {
@@ -2035,6 +2059,8 @@ m_processor(type) {
     }
     
     m_advanceN(1) ;
+    
+    variable->type->pointers = pointers + array_n ;
     
     return variable ;
 }

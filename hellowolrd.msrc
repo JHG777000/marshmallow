@@ -33,6 +33,8 @@ module mymod.
 
  typedef u32 int.
 
+ typedef u64 int64.
+
  enum ( enum1 := 5223, enum2, enum3 := 42, enum4, enum5 := 0 ) myenum.
 
  myenum var := enum1.

@@ -58,9 +58,11 @@ typedef struct marshmallow_class_s { marshmallow_entity_type entity_type ; RKSto
 
 typedef struct marshmallow_enum_s { RKList  enum_names ; RKStore enums ; } *marshmallow_enum ;
 
-typedef struct marshmallow_type_s { marshmallow_entity_type entity_type ; RKString type_name ; RKString output_name ;
+typedef struct marshmallow_type_s { marshmallow_entity_type entity_type ; RKString type_name ; RKString output_name ; int is_literal ;
     
-int is_literal ; int is_typedef ; int is_readonly ; marshmallow_root_type root_type ; void* base_type ; RKULong num_of_elements ; } *marshmallow_type ;
+int is_typedef ; int is_readonly ; marshmallow_root_type root_type ; void* base_type ; RKULong num_of_elements ;
+    
+int no_alias ; int pointers ; } *marshmallow_type ;
 
 typedef struct marshmallow_variable_s { marshmallow_entity_type entity_type ; marshmallow_type type ;
     

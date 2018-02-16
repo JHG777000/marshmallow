@@ -626,13 +626,17 @@ static int typecheck_are_types_equivalent( marshmallow_type t1, marshmallow_type
     
     marshmallow_root_type root_type2 ;
     
-    if ( t1->type_name != NULL && (t2->type_name == NULL && !t2->is_literal) ) return 0 ;
+    if ( !t1->no_alias && !t2->no_alias ) {
     
-    if ( t1->type_name == NULL && (t2->type_name != NULL && !t2->is_literal) ) return 0 ;
+      if ( t1->type_name != NULL && (t2->type_name == NULL && !t2->is_literal) ) return 0 ;
     
-    if ( t1->type_name != NULL && (t2->type_name != NULL && !t2->is_literal) ) {
+      if ( t1->type_name == NULL && (t2->type_name != NULL && !t2->is_literal) ) return 0 ;
+    
+      if ( t1->type_name != NULL && (t2->type_name != NULL && !t2->is_literal) ) {
         
-         if ( !RKString_AreStringsEqual(t1->type_name, t2->type_name) ) return 0 ;
+           if ( !RKString_AreStringsEqual(t1->type_name, t2->type_name) ) return 0 ;
+      }
+        
     }
     
     if ( m_is_type_number(t1) && m_is_type_number(t2) ) {
@@ -2005,6 +2009,41 @@ static marshmallow_type typecheck_make_ptr_type_from_type( marshmallow_type type
     return ptrtype ;
 }
 
+typedef enum { arithmetic, arrays, pointers, classes, lambdas, unknowns } type_category ;
+
+
+static type_category typecheck_get_type_category( marshmallow_type type ) {
+   
+    
+    if ( m_is_type_number(type) || type->root_type == enum_type ) {
+        
+        return arithmetic ;
+    }
+    
+    if ( type->root_type == array ) {
+        
+        return arrays ;
+    }
+    
+    if ( type->root_type == ptr ) {
+        
+        return pointers ;
+    }
+    
+    if ( type->root_type == class ) {
+        
+        return classes ;
+    }
+    
+    if ( type->root_type == lambda ) {
+        
+        return lambdas ;
+    }
+    
+    return unknowns ;
+
+}
+
 static marshmallow_type typecheck_statment( marshmallow_statement statement, int* has_assignment, marshmallow_module module, RKStore store ) {
     
     marshmallow_type rettype_a = NULL ;
@@ -2085,7 +2124,7 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
                      if ( ((marshmallow_variable)statement->var_a)->name != NULL )
                          printf("Variable: '%s', is wrong type for assignment.\n",RKString_GetString(((marshmallow_variable)statement->var_a)->name)) ;
                      
-                     if ( ((marshmallow_variable)statement->var_a)->name == NULL ) printf("Variable is of the wrong type for assignment.\n") ;
+                     if ( ((marshmallow_variable)statement->var_a)->name == NULL ) printf("Variable lhs is of the wrong type for assignment.\n") ;
                      
                      exit(EXIT_FAILURE) ;
                  }
@@ -2098,7 +2137,7 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
                      if ( ((marshmallow_variable)statement->var_b)->name != NULL )
                          printf("Variable: '%s', is wrong type for assignment.\n",RKString_GetString(((marshmallow_variable)statement->var_b)->name)) ;
                      
-                     if ( ((marshmallow_variable)statement->var_b)->name == NULL ) printf("Variable is of the wrong type for assignment.\n") ;
+                     if ( ((marshmallow_variable)statement->var_b)->name == NULL ) printf("Variable rhs is of the wrong type for assignment.\n") ;
                      
                      exit(EXIT_FAILURE) ;
                  }
@@ -2285,11 +2324,15 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
              
              break;
              
-             case castop:
+        case castop:
              
              var_a = (marshmallow_variable)statement->var_a ;
              
              var_b = (marshmallow_variable)statement->var_b ;
+             
+             typecheck_type(var_a, module) ;
+             
+             typecheck_type(var_b, module) ;
              
              if ( var_a->type == NULL ) {
                  
@@ -2297,6 +2340,15 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
                  
                  exit(EXIT_FAILURE) ;
              }
+             
+             if ( typecheck_get_type_category(var_a->type) != typecheck_get_type_category(var_b->type) ) {
+                 
+                 printf("Can not cast types of different categories.\n") ;
+                 
+                 exit(EXIT_FAILURE) ;
+             }
+             
+             var_a->type->no_alias = 1 ;
              
              return var_a->type ;
              
