@@ -626,17 +626,13 @@ static int typecheck_are_types_equivalent( marshmallow_type t1, marshmallow_type
     
     marshmallow_root_type root_type2 ;
     
-    if ( !t1->no_alias && !t2->no_alias ) {
+    if ( t1->type_name != NULL && (t2->type_name == NULL && !t2->is_literal) ) return 0 ;
     
-      if ( t1->type_name != NULL && (t2->type_name == NULL && !t2->is_literal) ) return 0 ;
+    if ( t1->type_name == NULL && (t2->type_name != NULL && !t2->is_literal) ) return 0 ;
     
-      if ( t1->type_name == NULL && (t2->type_name != NULL && !t2->is_literal) ) return 0 ;
-    
-      if ( t1->type_name != NULL && (t2->type_name != NULL && !t2->is_literal) ) {
+    if ( t1->type_name != NULL && (t2->type_name != NULL && !t2->is_literal) ) {
         
-           if ( !RKString_AreStringsEqual(t1->type_name, t2->type_name) ) return 0 ;
-      }
-        
+        if ( !RKString_AreStringsEqual(t1->type_name, t2->type_name) ) return 0 ;
     }
     
     if ( m_is_type_number(t1) && m_is_type_number(t2) ) {
@@ -2347,8 +2343,6 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
                  
                  exit(EXIT_FAILURE) ;
              }
-             
-             var_a->type->no_alias = 1 ;
              
              return var_a->type ;
              

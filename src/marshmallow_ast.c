@@ -217,8 +217,6 @@ marshmallow_type marshmallow_new_type( void ) {
     
     type->num_of_elements = -1 ;
     
-    type->no_alias = 0 ;
-    
     type->pointers = 0 ;
     
     return type ;
