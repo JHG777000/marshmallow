@@ -49,6 +49,8 @@ module mymod.
 
  i32 myvar3 := ((-0107)+9).
 
+ string32 test := "Hello World\n".
+
  function main() returns i32.
 
   myenum var4 := enum2.

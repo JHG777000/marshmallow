@@ -28,7 +28,7 @@
 
 typedef enum { public, private, protected, publish, inherit } marshmallow_access_control ;
 
-typedef enum { i8, u8, i16, u16, i32, u32, i64, u64, f32, f64, hex, oct, string, character, class, enum_type, array, ptr, module,
+typedef enum { i8, u8, i16, u16, i32, u32, i64, u64, f32, f64, hex, oct, string, string8, string16, string32, character, class, enum_type, array, ptr, module,
     
 function, method, lambda, expression, unknown, arguments, collection, metacollection, nulltype } marshmallow_root_type ;
 

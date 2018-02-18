@@ -29,6 +29,12 @@ token(oct, "")
 
 token(string, "")
 
+token(string8, "string8")
+
+token(string16, "string16")
+
+token(string32, "string32")
+
 token(character, "")
 
 token(u8type, "u8")

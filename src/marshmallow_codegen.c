@@ -157,6 +157,26 @@ loop:
                 
                 break;
                 
+            case string8:
+                
+                fprintf(file, "mu8* ") ;
+                
+                break;
+                
+            case string16:
+                
+                fprintf(file, "mu16* ") ;
+                
+                break;
+
+                
+            case string32:
+                
+                fprintf(file, "mu32* ") ;
+                
+                break;
+
+                
             case i32:
                 
                 fprintf(file, "mi32 ") ;
@@ -332,6 +352,12 @@ static void output_value( marshmallow_context context, FILE* file, marshmallow_v
     
     if ( value->type->root_type == string ) fprintf(file, "u8\"") ;
     
+    if ( value->type->root_type == string8 && value->type->is_literal ) fprintf(file, "u8\"") ;
+    
+    if ( value->type->root_type == string16 && value->type->is_literal ) fprintf(file, "u\"") ;
+    
+    if ( value->type->root_type == string32 && value->type->is_literal ) fprintf(file, "U\"") ;
+    
     if ( value->type->root_type == character ) fprintf(file, "L\'") ;
     
     if ( value->type->root_type == enum_type ) {
@@ -383,6 +409,12 @@ static void output_value( marshmallow_context context, FILE* file, marshmallow_v
     }
     
     if ( value->type->root_type == string ) fprintf(file, "\"") ;
+    
+    if ( value->type->root_type == string8 && value->type->is_literal ) fprintf(file, "\"") ;
+    
+    if ( value->type->root_type == string16 && value->type->is_literal ) fprintf(file, "\"") ;
+    
+    if ( value->type->root_type == string32 && value->type->is_literal ) fprintf(file, "\"") ;
     
     if ( value->type->root_type == character ) fprintf(file, "\'") ;
     

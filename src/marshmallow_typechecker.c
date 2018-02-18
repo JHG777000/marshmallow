@@ -329,6 +329,24 @@ int m_is_root_type( marshmallow_type type ) {
             
             break;
             
+        case string8:
+            
+            return 1 ;
+            
+            break;
+            
+        case string16:
+            
+            return 1 ;
+            
+            break;
+            
+        case string32:
+            
+            return 1 ;
+            
+            break;
+            
         case character:
             
             return 1 ;
@@ -606,6 +624,10 @@ RKULong m_get_size_of_type_or_array_in_bytes( marshmallow_type type_or_array, ma
     return size ;
 }
 
+typedef enum { arithmetic, arrays, pointers, classes, lambdas, strings, unknowns } type_category ;
+
+static type_category typecheck_get_type_category( marshmallow_type type ) ;
+
 static int typecheck_are_types_equivalent( marshmallow_type t1, marshmallow_type t2 ) {
     
     RKULong size = 0 ;
@@ -750,6 +772,16 @@ static int typecheck_are_types_equivalent( marshmallow_type t1, marshmallow_type
     if ( t1->root_type == enum_type && t2->root_type == enum_type ) {
         
         if ( !RKString_AreStringsEqual(t1->type_name, t2->type_name) ) return 0 ;
+    }
+    
+    if ( typecheck_get_type_category(t1) == strings ) {
+        
+        if ( typecheck_get_type_category(t2) == strings ) {
+            
+            t2->root_type = t1->root_type ;
+            
+            return 1 ;
+        }
     }
     
     if ( t1->root_type != t2->root_type ) return 0 ;
@@ -2005,9 +2037,6 @@ static marshmallow_type typecheck_make_ptr_type_from_type( marshmallow_type type
     return ptrtype ;
 }
 
-typedef enum { arithmetic, arrays, pointers, classes, lambdas, unknowns } type_category ;
-
-
 static type_category typecheck_get_type_category( marshmallow_type type ) {
    
     
@@ -2034,6 +2063,12 @@ static type_category typecheck_get_type_category( marshmallow_type type ) {
     if ( type->root_type == lambda ) {
         
         return lambdas ;
+    }
+    
+    
+    if ( type->root_type == string || type->root_type == string8 || type->root_type == string16 || type->root_type == string32 ) {
+        
+         return strings ;
     }
     
     return unknowns ;

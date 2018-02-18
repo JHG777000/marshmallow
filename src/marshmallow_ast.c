@@ -93,6 +93,24 @@ void marshmallow_parse_type( marshmallow_type type, marshmallow_token token, int
             
             break;
             
+        case mgk(string8):
+            
+            type->root_type = string8 ;
+            
+            break;
+            
+        case mgk(string16):
+            
+            type->root_type = string16 ;
+            
+            break;
+            
+        case mgk(string32):
+            
+            type->root_type = string32 ;
+            
+            break;
+            
         case mgk(character):
             
             type->root_type = character ;

@@ -234,6 +234,24 @@ static int marshmallow_is_token_root_type( marshmallow_token token ) {
             
             break;
             
+        case mgk(string8):
+            
+            return 1 ;
+            
+            break;
+            
+        case mgk(string16):
+            
+            return 1 ;
+            
+            break;
+            
+        case mgk(string32):
+            
+            return 1 ;
+            
+            break;
+            
         case mgk(character):
             
             return 1 ;
@@ -2414,6 +2432,36 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                 
                 break;
              
+            case mgk(string8):
+                
+                entity = m_process(variable) ;
+                
+                m_expect(end_of_line) ;
+                
+                entity_type = entity->entity_type ;
+                
+                break;
+                
+            case mgk(string16):
+                
+                entity = m_process(variable) ;
+                
+                m_expect(end_of_line) ;
+                
+                entity_type = entity->entity_type ;
+                
+                break;
+                
+            case mgk(string32):
+                
+                entity = m_process(variable) ;
+                
+                m_expect(end_of_line) ;
+                
+                entity_type = entity->entity_type ;
+                
+                break;
+                
             case mgk(u8type):
                 
                 entity = m_process(variable) ;
