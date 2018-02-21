@@ -776,7 +776,7 @@ static int typecheck_are_types_equivalent( marshmallow_type t1, marshmallow_type
     
     if ( typecheck_get_type_category(t1) == strings ) {
         
-        if ( typecheck_get_type_category(t2) == strings ) {
+        if ( t2->root_type == string ) {
             
             t2->root_type = t1->root_type ;
             
@@ -793,7 +793,10 @@ static void typecheck_type( marshmallow_variable variable, marshmallow_module mo
     
     marshmallow_type t = variable->type ;
     
-    if ( variable->type->type_name != NULL && ((m_is_type_number(variable->type) && !variable->type->is_typedef) || variable->type->root_type == metacollection ) ) {
+    marshmallow_type t0 = NULL ;
+    
+    if ( variable->type->type_name != NULL && ((m_is_type_number(variable->type) && !variable->type->is_typedef)
+                                               || variable->type->root_type == metacollection ) ) {
         
     free_type_name:
         
@@ -811,7 +814,16 @@ static void typecheck_type( marshmallow_variable variable, marshmallow_module mo
         
         variable->type = RKStore_GetItem(module->types, RKString_GetString(variable->type->type_name)) ;
         
-         free(t) ;
+        if ( t->is_readonly ) {
+            
+            t0 = marshmallow_copy_type(variable->type) ;
+            
+            t0->is_readonly = t->is_readonly ;
+            
+            variable->type = t0 ;
+        }
+        
+        free(t) ;
         
         if ( variable->type == NULL ) {
             
@@ -998,7 +1010,7 @@ static int is_assignable( marshmallow_variable variable, int* has_assignment, ma
     
     marshmallow_type type = typecheck_get_type_from_variable(variable, has_assignment, module) ;
     
-    if ( (m_is_type_number(type) && variable->data != NULL) ) {
+    if ( (m_is_type_number(type) && variable->data != NULL) || type->is_readonly ) {
         
         return 0 ;
     }
@@ -2005,18 +2017,30 @@ end:
 
 static marshmallow_type typecheck_get_type_from_variable( marshmallow_variable variable, int* has_assignment, marshmallow_module module ) {
     
+    marshmallow_variable v = marshmallow_new_variable() ;
+    
     marshmallow_type t = NULL ;
     
     if ( variable->type->root_type == expression ) {
         
         t = typecheck_statment((marshmallow_statement)variable->data, has_assignment, module, NULL) ;
         
+        v->name = variable->name ;
+        
+        v->type = t ;
+        
+        typecheck_type(v, module) ;
+        
+        t = v->type ;
+        
     } else {
+        
+        typecheck_type(variable, module) ;
         
         t = variable->type ;
     }
     
-    typecheck_type(variable, module) ;
+    free(v) ;
     
     return t ;
 }
@@ -2039,7 +2063,6 @@ static marshmallow_type typecheck_make_ptr_type_from_type( marshmallow_type type
 
 static type_category typecheck_get_type_category( marshmallow_type type ) {
    
-    
     if ( m_is_type_number(type) || type->root_type == enum_type ) {
         
         return arithmetic ;

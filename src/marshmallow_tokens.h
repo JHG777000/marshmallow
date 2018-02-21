@@ -141,3 +141,4 @@ token(external,"external")
 
 token(typedef,"typedef")
 
+token(readonly,"readonly")

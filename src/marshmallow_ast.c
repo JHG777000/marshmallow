@@ -240,6 +240,34 @@ marshmallow_type marshmallow_new_type( void ) {
     return type ;
 }
 
+marshmallow_type marshmallow_copy_type( marshmallow_type t ) {
+    
+    marshmallow_type type = RKMem_NewMemOfType(struct marshmallow_type_s) ;
+    
+    type->entity_type = entity_data_type ;
+    
+    type->base_type = t->base_type ;
+    
+    type->root_type = t->root_type ;
+    
+    type->type_name = RKString_CopyString(t->type_name) ;
+    
+    type->output_name = RKString_CopyString(t->output_name) ;
+    
+    type->is_literal = t->is_literal ;
+    
+    type->is_typedef = t->is_typedef ;
+    
+    type->is_readonly = t->is_readonly ;
+    
+    type->num_of_elements = t->num_of_elements ;
+    
+    type->pointers = t->pointers ;
+    
+    return type ;
+}
+
+
 marshmallow_variable marshmallow_new_variable( void ) {
     
     marshmallow_variable variable = RKMem_NewMemOfType(struct marshmallow_variable_s) ;
@@ -325,7 +353,7 @@ marshmallow_entity marshmallow_lookup_identifier( marshmallow_function_body func
         if ( entity == NULL  ) {
             
             entity = RKStore_GetItem(module->variables, RKString_GetString(identifier_name)) ;
-            
+            marshmallow_variable v = entity ;
             if ( entity != NULL ) ((marshmallow_variable)entity)->is_global = 1 ;
         }
         

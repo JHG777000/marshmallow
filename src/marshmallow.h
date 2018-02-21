@@ -130,6 +130,8 @@ void marshmallow_parse_value( marshmallow_token token, marshmallow_variable vari
 
 marshmallow_type marshmallow_new_type( void ) ;
 
+marshmallow_type marshmallow_copy_type( marshmallow_type t ) ;
+
 marshmallow_variable marshmallow_new_variable( void ) ;
 
 void marshmallow_add_variable_to_scope( marshmallow_scope scope, marshmallow_variable variable ) ;

@@ -45,6 +45,8 @@ module mymod.
 
  myenum var3 := enum3.
 
+ readonly myenum var300 := enum1.
+
  myint myvar1 := 07.
 
  i32 myvar3 := ((-0107)+9).
@@ -52,6 +54,8 @@ module mymod.
  string32 test := "Hello World\n".
 
  function main() returns i32.
+
+  var4 := var300.
 
   myenum var4 := enum2.
 

@@ -2001,6 +2001,13 @@ m_processor(type) {
     
     //type***[] varname = ().
     
+    if ( m_gettoken->keyword == mgk(readonly) ) {
+        
+        variable->type->is_readonly = 1 ;
+        
+        m_advanceN(1) ;
+    }
+    
     if ( (m_gettoken->keyword == mgk(identifier)) || (marshmallow_is_token_root_type(m_gettoken)) ) {
         
         if ( m_peek(1)->keyword == mgk(star) ) {
@@ -2118,6 +2125,13 @@ m_processor(variable) {
             
             m_advanceN(1) ;
         }
+    }
+    
+    if ( m_gettoken->keyword == mgk(readonly) ) {
+        
+        variable->type->is_readonly = 1 ;
+        
+        m_advanceN(1) ;
     }
     
     if ( (m_gettoken->keyword == mgk(identifier)) || (marshmallow_is_token_root_type(m_gettoken)) ) {
@@ -2407,6 +2421,16 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
             case mgk(default):
                 
                 entity = m_process(default) ;
+                
+                entity_type = entity->entity_type ;
+                
+                break;
+                
+            case mgk(readonly):
+                
+                entity = m_process(variable) ;
+                
+                m_expect(end_of_line) ;
                 
                 entity_type = entity->entity_type ;
                 
