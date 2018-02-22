@@ -1422,8 +1422,6 @@ parse_cast:
                 
             case mgk(colon):
                 
-                op = xor ;
-                
                 if ( m_peek(n+2)->keyword == mgk(eql) ) {
                     
                     op = assignment ;
@@ -1433,6 +1431,12 @@ parse_cast:
                 
                 break;
                 
+            case mgk(caret):
+                
+                op = xor ;
+                
+                break;
+
             case mgk(eql):
                 
                 if ( m_peek(n+2)->keyword == mgk(eql) ) op = is_equal ;

@@ -378,7 +378,7 @@ marshmallow_type m_get_negate_type( marshmallow_type type ) {
             
         case i8:
             
-            return typecheck_get_type_from_root_type(u8) ;
+            return typecheck_get_type_from_root_type(i8) ;
             
             break;
             
@@ -390,7 +390,7 @@ marshmallow_type m_get_negate_type( marshmallow_type type ) {
             
         case i16:
             
-            return typecheck_get_type_from_root_type(u16) ;
+            return typecheck_get_type_from_root_type(i16) ;
             
             break;
             
@@ -402,7 +402,7 @@ marshmallow_type m_get_negate_type( marshmallow_type type ) {
             
         case i32:
             
-            return typecheck_get_type_from_root_type(u32) ;
+            return typecheck_get_type_from_root_type(i32) ;
             
             break;
             
@@ -426,7 +426,7 @@ marshmallow_type m_get_negate_type( marshmallow_type type ) {
             
         case i64:
             
-            return typecheck_get_type_from_root_type(u64) ;
+            return typecheck_get_type_from_root_type(i64) ;
             
             break;
             
@@ -795,9 +795,28 @@ static void typecheck_type( marshmallow_variable variable, marshmallow_module mo
     
     marshmallow_type t0 = NULL ;
     
+    marshmallow_type t1 = NULL ;
+    
+    marshmallow_type t2 = NULL ;
+    
+     t1 = t ;
+    
+loop:
+        
+    if ( t1->root_type == ptr || t1->root_type == array ) {
+        
+        t2 = t1 ;
+        
+        t1 = t1->base_type ;
+        
+        goto loop ;
+            
+    }
+    
+    variable->type = t1 ;
+    
     if ( variable->type->type_name != NULL && ((m_is_type_number(variable->type) && !variable->type->is_typedef)
                                                || variable->type->root_type == metacollection ) ) {
-        
     free_type_name:
         
         RKString_DestroyString(variable->type->type_name) ;
@@ -814,16 +833,20 @@ static void typecheck_type( marshmallow_variable variable, marshmallow_module mo
         
         variable->type = RKStore_GetItem(module->types, RKString_GetString(variable->type->type_name)) ;
         
-        if ( t->is_readonly ) {
-            
-            t0 = marshmallow_copy_type(variable->type) ;
-            
-            t0->is_readonly = t->is_readonly ;
-            
-            variable->type = t0 ;
-        }
+        if ( t2 == NULL ) {
         
-        free(t) ;
+         if ( t->is_readonly ) {
+            
+             t0 = marshmallow_copy_type(variable->type) ;
+            
+             t0->is_readonly = t->is_readonly ;
+            
+             variable->type = t0 ;
+         }
+        
+         free(t) ;
+            
+        }
         
         if ( variable->type == NULL ) {
             
@@ -832,6 +855,13 @@ static void typecheck_type( marshmallow_variable variable, marshmallow_module mo
             exit(EXIT_FAILURE) ;
             
         }
+    }
+    
+    if ( t2 != NULL ) {
+        
+        t2->base_type = variable->type ;
+        
+        variable->type = t ;
     }
 }
 
@@ -860,7 +890,7 @@ static void typecheck_variable( marshmallow_variable variable, marshmallow_modul
                 
                 variable->static_assignment = v ;
             }
-            
+
         }
         
         typecheck_type(variable->static_assignment,module) ;
@@ -1010,7 +1040,7 @@ static int is_assignable( marshmallow_variable variable, int* has_assignment, ma
     
     marshmallow_type type = typecheck_get_type_from_variable(variable, has_assignment, module) ;
     
-    if ( (m_is_type_number(type) && variable->data != NULL) || type->is_readonly ) {
+    if ( ((m_is_type_number(type) && variable->data != NULL) && variable->type->root_type != expression) || type->is_readonly ) {
         
         return 0 ;
     }
@@ -2114,6 +2144,11 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
     
     RKStore switch_store = NULL ;
 
+    if ( statement->entity_type != entity_variable && statement->op == noop && statement->var_a->entity_type == entity_variable ) {
+        
+        statement = ((marshmallow_variable)statement->var_a)->data ;
+    }
+    
     if ( statement->entity_type == entity_variable ) {
         
         return typecheck_get_type_from_variable((marshmallow_variable)statement, has_assignment, module) ;
@@ -2183,10 +2218,11 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
                      exit(EXIT_FAILURE) ;
                  }
              
-
+                 rettype_a = typecheck_get_type_from_variable((marshmallow_variable)statement->var_a, has_assignment, module) ;
+             
                  rettype_b = typecheck_get_type_from_variable((marshmallow_variable)statement->var_b, has_assignment, module) ;
              
-                 if ( !typecheck_are_types_equivalent(var_a->type, rettype_b) ) {
+                 if ( !typecheck_are_types_equivalent(rettype_a, rettype_b) ) {
                      
                      if ( ((marshmallow_variable)statement->var_b)->name != NULL )
                          printf("Variable: '%s', is wrong type for assignment.\n",RKString_GetString(((marshmallow_variable)statement->var_b)->name)) ;
@@ -2362,13 +2398,15 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
             
              var_a = marshmallow_new_variable() ;
              
-             var_a->type = rettype_a->base_type ;
+             var_a->type = marshmallow_copy_type(rettype_a->base_type) ;
+             
+             if ( rettype_a->is_readonly ) var_a->type->is_readonly = 1 ;
              
              typecheck_type(var_a, module) ;
              
              free(var_a) ;
              
-             return rettype_a->base_type ;
+             return var_a->type ;
              
              break;
              

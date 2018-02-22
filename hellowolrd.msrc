@@ -47,6 +47,10 @@ module mymod.
 
  readonly myenum var300 := enum1.
 
+ int var303 := 0.
+
+ int* var301 := null.
+
  myint myvar1 := 07.
 
  i32 myvar3 := ((-0107)+9).
@@ -56,6 +60,10 @@ module mymod.
  function main() returns i32.
 
   var4 := var300.
+
+  var301 := (&var303).
+
+  ((*var301) := 0).
 
   myenum var4 := enum2.
 

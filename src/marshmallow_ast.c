@@ -353,7 +353,7 @@ marshmallow_entity marshmallow_lookup_identifier( marshmallow_function_body func
         if ( entity == NULL  ) {
             
             entity = RKStore_GetItem(module->variables, RKString_GetString(identifier_name)) ;
-            marshmallow_variable v = entity ;
+            
             if ( entity != NULL ) ((marshmallow_variable)entity)->is_global = 1 ;
         }
         

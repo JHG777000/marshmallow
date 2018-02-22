@@ -526,7 +526,6 @@ static void output_arguments( marshmallow_context context, FILE* file, marshmall
     }
 }
 
-
 static void output_array_assignment( marshmallow_context context, FILE* file, marshmallow_statement statement, marshmallow_module module ) {
     
     fprintf(file,"memcpy(") ;
