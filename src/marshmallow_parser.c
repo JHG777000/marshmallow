@@ -121,6 +121,12 @@ static int marshmallow_is_token_operator( marshmallow_token token ) {
             
             break;
             
+        case mgk(caret):
+            
+            return 1 ;
+            
+            break;
+            
         case mgk(and):
             
             return 1 ;
@@ -3046,6 +3052,8 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
     
     int noline2 = 0 ;
     
+    int noline3 = 0 ;
+    
     int is_string = 0 ;
     
     int is_escape = 0 ;
@@ -3085,6 +3093,8 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
             noline = 1 ;
             
             noline2 = 0 ;
+            
+            noline3 = 1 ;
         }
         
         if ( noline < 3 ) if ( !is_string ) if ( c == '/' ) {
@@ -3092,9 +3102,11 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
             noline++ ;
         }
         
-        if ( c != '/' && (noline == 1) ) {
+        if ( c != '/' && ((noline == 1) || (noline3 == 2 )) ) {
             
             noline = 0 ;
+            
+            if ( noline3 == 2 ) noline3 = 0 ;
         }
         
         if ( c == '\n' && noline != 3 ) {
@@ -3105,6 +3117,8 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
         if ( noline >= 2 ) {
             
             if ( c == '/' ) RKList_DeleteNode(symbol_list, RKList_GetLastNode(symbol_list)) ;
+            
+            if ( noline3 ) noline3++ ;
             
             continue ;
         }
