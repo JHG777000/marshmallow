@@ -924,7 +924,7 @@ static void typecheck_variable( marshmallow_variable variable, marshmallow_funct
                 
                 marshmallow_attach_function_to_statement(function, statement) ;
                 
-                typecheck_type(variable->static_assignment,module) ;
+                typecheck_type(variable->static_assignment, module) ;
                 
                 var_a = variable ;
                 
@@ -932,11 +932,11 @@ static void typecheck_variable( marshmallow_variable variable, marshmallow_funct
                 
                 if ( !is_assignable(var_a,&has_assignment,module) ) {
                     
-                    if ( ((marshmallow_variable)statement->var_a)->name != NULL )
+                    if ( ((marshmallow_variable)var_a)->name != NULL )
                         printf("Variable: '%s', is wrong type for static assignment for Variable: %s.\n",
-                               RKString_GetString(((marshmallow_variable)statement->var_a)->name),RKString_GetString(variable->name)) ;
+                               RKString_GetString(((marshmallow_variable)var_a)->name),RKString_GetString(variable->name)) ;
                     
-                    if ( ((marshmallow_variable)statement->var_a)->name == NULL ) printf("Variable lhs is of the wrong type for static assignment for Variable: %s.\n",RKString_GetString(variable->name)) ;
+                    if ( ((marshmallow_variable)var_a)->name == NULL ) printf("Variable lhs is of the wrong type for static assignment for Variable: %s.\n",RKString_GetString(variable->name)) ;
                     
                     exit(EXIT_FAILURE) ;
                 }

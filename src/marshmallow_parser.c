@@ -3054,6 +3054,8 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
     
     int noline3 = 0 ;
     
+    int noline4 = 0 ;
+    
     int is_string = 0 ;
     
     int is_escape = 0 ;
@@ -3073,6 +3075,16 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
     word[word_size-1] = '\0' ;
     
     while ( (c = RKFile_GetUTF32Character(file)) != EOF ) {
+        
+        if ( noline == 2 && c != '/' && !noline2 ) {
+            
+            noline4 = 1 ;
+        }
+        
+        if ( noline == 3 && c != '/' && noline4 ) {
+            
+            noline = 2 ;
+        }
         
         if ( noline == 3 && c == '/' && !noline2 ) {
             
@@ -3112,6 +3124,8 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
         if ( c == '\n' && noline != 3 ) {
             
             noline = 0 ;
+            
+            noline4 = 0 ;
         }
         
         if ( noline >= 2 ) {
