@@ -763,6 +763,8 @@ static int typecheck_are_types_equivalent( marshmallow_type t1, marshmallow_type
         if ( t->root_type == nulltype || t0->root_type == nulltype ) return 1 ;
         
         if ( t->root_type == t0->root_type ) return 1 ;
+        
+        if ( t->root_type != t0->root_type ) return 0 ;
     }
     
     if ( t1->root_type == array && t2->root_type != metacollection ) return 0 ;
@@ -789,6 +791,8 @@ static int typecheck_are_types_equivalent( marshmallow_type t1, marshmallow_type
     return 1 ;
 }
 
+static marshmallow_type typecheck_statment( marshmallow_statement statement, int* has_assignment, marshmallow_module module, RKStore store ) ;
+
 static void typecheck_type( marshmallow_variable variable, marshmallow_module module ) {
     
     marshmallow_type t = variable->type ;
@@ -798,6 +802,15 @@ static void typecheck_type( marshmallow_variable variable, marshmallow_module mo
     marshmallow_type t1 = NULL ;
     
     marshmallow_type t2 = NULL ;
+    
+    int a = 0 ;
+    
+    if ( variable->type->root_type == expression ) {
+        
+        typecheck_statment(variable->data, &a, module, NULL) ;
+        
+        return ;
+    }
     
      t1 = t ;
     
@@ -865,11 +878,27 @@ loop:
     }
 }
 
-static void typecheck_variable( marshmallow_variable variable, marshmallow_module module ) {
+static marshmallow_type typecheck_get_type_from_variable( marshmallow_variable variable, int* has_assignment, marshmallow_module module ) ;
+
+static int is_assignable( marshmallow_variable variable, int* has_assignment, marshmallow_module module ) ;
+
+static void typecheck_variable( marshmallow_variable variable, marshmallow_function_body function, marshmallow_module module ) {
     
     int has_rechecked = 0 ;
     
+    int has_assignment = 0 ;
+    
     marshmallow_variable v = NULL ;
+    
+    marshmallow_statement statement = NULL ;
+    
+    marshmallow_variable var_a = NULL ;
+    
+    marshmallow_variable var_b = NULL ;
+    
+    marshmallow_type rettype_a = NULL ;
+    
+    marshmallow_type rettype_b = NULL ;
     
     typecheck_type(variable,module) ;
     
@@ -889,6 +918,49 @@ static void typecheck_variable( marshmallow_variable variable, marshmallow_modul
             if ( v != NULL ) {
                 
                 variable->static_assignment = v ;
+            }
+            
+            if ( v == NULL && function == NULL ) {
+                
+                printf("Non-static assignment for static assigned variable: %s.\n",RKString_GetString(variable->name)) ;
+                
+                exit(EXIT_FAILURE) ;
+            }
+            
+            if ( v == NULL && function != NULL ) {
+                
+                typecheck_type(variable->static_assignment,module) ;
+                
+                var_a = variable ;
+                
+                var_b = variable->static_assignment ;
+                
+                if ( !is_assignable(var_a,&has_assignment,module) ) {
+                    
+                    if ( ((marshmallow_variable)statement->var_a)->name != NULL )
+                        printf("Variable: '%s', is wrong type for static assignment for Variable: %s.\n",
+                               RKString_GetString(((marshmallow_variable)statement->var_a)->name),RKString_GetString(variable->name)) ;
+                    
+                    if ( ((marshmallow_variable)statement->var_a)->name == NULL ) printf("Variable lhs is of the wrong type for static assignment for Variable: %s.\n",RKString_GetString(variable->name)) ;
+                    
+                    exit(EXIT_FAILURE) ;
+                }
+                
+                rettype_a = typecheck_get_type_from_variable((marshmallow_variable)var_a, &has_assignment, module) ;
+                
+                rettype_b = typecheck_get_type_from_variable((marshmallow_variable)var_b, &has_assignment, module) ;
+                
+                if ( !typecheck_are_types_equivalent(rettype_a, rettype_b) ) {
+                    
+                    if ( ((marshmallow_variable)var_b)->name != NULL )
+                        printf("Variable: '%s', is wrong type for static assignment for Variable: %s.\n",RKString_GetString(((marshmallow_variable)statement->var_b)->name),RKString_GetString(variable->name)) ;
+                    
+                    if ( ((marshmallow_variable)var_b)->name == NULL ) printf("Variable rhs is of the wrong type for static assignment for Variable: %s.\n",RKString_GetString(variable->name)) ;
+                    
+                    exit(EXIT_FAILURE) ;
+                }
+                
+                return ;
             }
 
         }
@@ -951,7 +1023,7 @@ static void typecheck_function_signature( marshmallow_function_signature signatu
         
         while ( node != NULL ) {
             
-            typecheck_variable(RKList_GetData(node), module) ;
+            typecheck_variable(RKList_GetData(node), NULL, module) ;
             
             node = RKList_GetNextNode(node) ;
         }
@@ -965,7 +1037,7 @@ static void typecheck_function_signature( marshmallow_function_signature signatu
         
         while ( node != NULL ) {
             
-            typecheck_variable(RKList_GetData(node), module) ;
+            typecheck_variable(RKList_GetData(node), NULL, module) ;
             
             node = RKList_GetNextNode(node) ;
         }
@@ -1030,7 +1102,7 @@ static void typecheck_declaration( marshmallow_entity declaration, marshmallow_m
             
         }
         
-        typecheck_variable((marshmallow_variable)declaration, module) ;
+        typecheck_variable((marshmallow_variable)declaration, NULL, module) ;
     }
 }
 
@@ -2490,7 +2562,7 @@ static void typecheck_function( marshmallow_function_body function, marshmallow_
         
         while ( node != NULL ) {
             
-            typecheck_variable(RKList_GetData(node), module) ;
+            typecheck_variable(RKList_GetData(node), function, module) ;
             
             node = RKList_GetNextNode(node) ;
         }
@@ -2657,7 +2729,7 @@ static void typecheck_module( marshmallow_module module ) {
         
         while ( node != NULL ) {
             
-            typecheck_variable(RKList_GetData(node), module) ;
+            typecheck_variable(RKList_GetData(node), NULL, module) ;
             
             node = RKList_GetNextNode(node) ;
         }

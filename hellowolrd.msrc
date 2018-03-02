@@ -59,6 +59,8 @@ module mymod.
 
  function main() returns i32.
 
+  int* var555 := (&var303).
+
   var4 := var300.
 
   var301 := (&var303).
