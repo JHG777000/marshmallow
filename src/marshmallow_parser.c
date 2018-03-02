@@ -915,10 +915,6 @@ m_processor(typedef) {
 
 m_processor(break) {
     
-    marshmallow_variable a = marshmallow_new_variable() ;
-    
-    a->type = marshmallow_new_type() ;
-    
     if ( m_peek(0)->keyword == mgk(break) ) {
         
         m_advance ;
@@ -934,10 +930,6 @@ m_processor(break) {
 }
 
 m_processor(continue) {
-    
-    marshmallow_variable a = marshmallow_new_variable() ;
-    
-    a->type = marshmallow_new_type() ;
     
     if ( m_peek(0)->keyword == mgk(continue) ) {
         
