@@ -803,15 +803,6 @@ static void typecheck_type( marshmallow_variable variable, marshmallow_module mo
     
     marshmallow_type t2 = NULL ;
     
-    int a = 0 ;
-    
-    if ( variable->type->root_type == expression ) {
-        
-        typecheck_statment(variable->data, &a, module, NULL) ;
-        
-        return ;
-    }
-    
      t1 = t ;
     
 loop:
@@ -928,6 +919,10 @@ static void typecheck_variable( marshmallow_variable variable, marshmallow_funct
             }
             
             if ( v == NULL && function != NULL ) {
+                
+                statement = variable->static_assignment->data ;
+                
+                marshmallow_attach_function_to_statement(function, statement) ;
                 
                 typecheck_type(variable->static_assignment,module) ;
                 

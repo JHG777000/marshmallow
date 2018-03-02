@@ -519,7 +519,7 @@ static void marshmallow_attach_function_to_all_statements( marshmallow_function_
     }
 }
 
-static void marshmallow_attach_function_to_statement( marshmallow_function_body function, marshmallow_statement statement ) {
+ void marshmallow_attach_function_to_statement( marshmallow_function_body function, marshmallow_statement statement ) {
     
     statement->function = function ;
     

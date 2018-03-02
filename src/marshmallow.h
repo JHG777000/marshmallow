@@ -148,6 +148,8 @@ void marshmallow_add_return_to_function_return_list( marshmallow_function_signat
 
 marshmallow_function_body marshmallow_new_function_body( marshmallow_function_signature signature ) ;
 
+void marshmallow_attach_function_to_statement( marshmallow_function_body function, marshmallow_statement statement ) ;
+
 void marshmallow_add_statement_to_function( marshmallow_function_body function, marshmallow_statement statement )  ;
 
 void marshmallow_add_function_to_module( marshmallow_function_body function, marshmallow_module module ) ;
