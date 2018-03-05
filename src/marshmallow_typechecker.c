@@ -2507,6 +2507,13 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
                  exit(EXIT_FAILURE) ;
              }
              
+             if ( (var_a->type->is_readonly && !var_b->type->is_readonly) || (!var_a->type->is_readonly && var_b->type->is_readonly) ) {
+                 
+                 printf("Can not cast away readonly.\n") ;
+                 
+                 exit(EXIT_FAILURE) ;
+             }
+             
              return var_a->type ;
              
              break;
