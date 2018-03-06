@@ -370,7 +370,7 @@ static void output_value( marshmallow_context context, FILE* file, marshmallow_v
         if ( value->name != NULL ) output_symbol(context, file, value->name, module, 0, 0) ;
     }
     
-    if ( value->type->root_type == ptr ) {
+    if ( value->type->root_type == ptr || value->type->root_type == lambda ) {
         
         if ( ((marshmallow_type)(value->type->base_type))->root_type == nulltype ) {
             
@@ -380,6 +380,16 @@ static void output_value( marshmallow_context context, FILE* file, marshmallow_v
         }
     }
 
+    if ( value->type->root_type == array ) {
+        
+        if ( ((marshmallow_type)(value->type->base_type))->root_type == nulltype ) {
+            
+            fprintf(file, "%s", "{0}") ;
+            
+            return ;
+        }
+    }
+    
     if ( value->type->root_type != unknown && value->type->root_type != array && value->type->root_type != arguments && value->type->root_type != metacollection
         && value->type->root_type != expression && value->data != NULL ) {
         

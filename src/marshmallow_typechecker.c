@@ -904,7 +904,7 @@ static void typecheck_variable( marshmallow_variable variable, marshmallow_funct
     
     typecheck_type(variable,module) ;
     
-    if ( /*variable->static_assignment == NULL*/ 0 ) {
+    if ( variable->static_assignment == NULL ) {
         
         variable->static_assignment = marshmallow_new_variable() ;
         
@@ -919,6 +919,8 @@ static void typecheck_variable( marshmallow_variable variable, marshmallow_funct
                 value->type = marshmallow_copy_type(variable->type) ;
                 
                 value->value = rkstr("0") ;
+                
+                variable->static_assignment->data = value ;
                 
                 break;
                 

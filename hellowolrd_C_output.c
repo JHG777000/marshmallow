@@ -22,7 +22,7 @@ marshmallow_mymod_main(&returns_marshmallow_mymod_main_0) ;
 return returns_marshmallow_mymod_main_0; 
 } 
 mu64 marshmallow_mymod_myvar = 0xff ;
-mu64 marshmallow_mymod_myvar0 ;
+mu64 marshmallow_mymod_myvar0 = 0 ;
 mu64 marshmallow_mymod_var64 = 64 ;
 mu32 marshmallow_mymod_var = 5223 ;
 mu32 marshmallow_mymod_var2 = 5224 ;
@@ -43,7 +43,7 @@ mf64 x = 0.23 ;
 mu64 *ptr = ((void*)0) ;
 mu64 😀 = L'😀' ;
 mu32 myarray[3][3] = {{7,7,7},{7,7,7},{7,7,7}} ;
-mu32 myarray2[3][3] ;
+mu32 myarray2[3][3] = {0} ;
 mu64 myvar2 = 52 ;
 var4=marshmallow_mymod_var300  ;
 marshmallow_mymod_var301=(&marshmallow_mymod_var303)  ;
