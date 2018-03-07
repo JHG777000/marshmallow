@@ -57,6 +57,8 @@ module mymod.
 
  string32 test := "Hello World\n".
 
+string32 test2.
+
  function main() returns i32.
 
   int* var555 := (&var303).

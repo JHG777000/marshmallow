@@ -33,6 +33,7 @@ mu32 *marshmallow_mymod_var301 = ((void*)0) ;
 mu32 marshmallow_mymod_myvar1 = 07 ;
 mi32 marshmallow_mymod_myvar3 = -62 ;
 mu32* marshmallow_mymod_test = U"Hello World\n" ;
+mu32* marshmallow_mymod_test2 = ((void*)0) ;
 void marshmallow_mymod_main(mi32 * returns_marshmallow_mymod_main_0) {
 mu32 *var555 = (&marshmallow_mymod_var303) ;
 mu32 var4 = 5224 ;

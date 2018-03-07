@@ -780,14 +780,14 @@ static int typecheck_are_types_equivalent( marshmallow_type t1, marshmallow_type
     
     if ( typecheck_get_type_category(t1) == strings ) {
         
+        if ( t2->root_type == string8 && t2->base_type != NULL ) {
+            
+            if ( ((marshmallow_type)t2->base_type)->root_type == nulltype ) return 1 ;
+        }
+        
         if ( t2->root_type == string ) {
             
             t2->root_type = t1->root_type ;
-            
-            return 1 ; ;
-        }
-        
-        if ( t2->root_type == nulltype ) {
             
             return 1 ;
         }
@@ -826,7 +826,8 @@ loop:
     
     variable->type = t1 ;
     
-    if ( variable->type->type_name != NULL && ((m_is_type_number(variable->type) && !variable->type->is_typedef)
+    if ( variable->type->type_name != NULL && (((m_is_type_number(variable->type) || (typecheck_get_type_category(variable->type) == strings))
+                                                && !variable->type->is_typedef)
                                                || variable->type->root_type == metacollection ) ) {
     free_type_name:
         
