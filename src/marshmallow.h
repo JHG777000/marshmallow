@@ -30,7 +30,7 @@ typedef enum { public, private, protected, publish, inherit } marshmallow_access
 
 typedef enum { i8, u8, i16, u16, i32, u32, i64, u64, f32, f64, hex, oct, string, string8, string16, string32, character, class, enum_type, array, ptr, module,
     
-function, method, lambda, expression, unknown, arguments, collection, metacollection, nulltype } marshmallow_root_type ;
+function, method, lambda, expression, unknown, arguments, collection, metacollection, nulltype, inittype } marshmallow_root_type ;
 
 typedef enum { noop, assignment, array_assignment, is_equal, is_not_equal, is_greaterthan, is_greaterthan_or_equal, is_lessthan, is_lessthan_or_equal,
     
@@ -58,7 +58,7 @@ typedef struct marshmallow_class_s { marshmallow_entity_type entity_type ; RKSto
 
 typedef struct marshmallow_enum_s { RKList enum_names ; RKStore enums ; } *marshmallow_enum ;
 
-typedef struct marshmallow_type_s { marshmallow_entity_type entity_type ; RKString type_name ; RKString output_name ; int is_literal ;
+typedef struct marshmallow_type_s { marshmallow_entity_type entity_type ; RKString type_name ; RKString output_name ; int is_literal ; int is_init ;
     
 int is_typedef ; int is_readonly ; marshmallow_root_type root_type ; void* base_type ; RKULong num_of_elements ; int pointers ; } *marshmallow_type ;
 

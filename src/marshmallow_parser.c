@@ -60,8 +60,6 @@ static int marshmallow_is_symbol( char c, int balance ) {
     
     if ( c == '|' ) return 1 ;
     
-    if ( c == '@' ) return 1 ;
-    
     if ( c == '=' ) return 1 ;
     
     if ( c == '[' ) return 1 ;
@@ -3342,6 +3340,13 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
                 if ( word[0] == '_' ) {
                     
                     printf("Error: User Identifiers can not start with '_'.\n") ;
+                    
+                    exit(EXIT_FAILURE) ;
+                }
+                
+                if ( word[0] == '@' ) {
+                    
+                    printf("Error: User Identifiers can not start with '@'.\n") ;
                     
                     exit(EXIT_FAILURE) ;
                 }

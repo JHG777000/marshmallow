@@ -229,6 +229,8 @@ marshmallow_type marshmallow_new_type( void ) {
     
     type->is_literal = 0 ;
     
+    type->is_init = 0 ;
+    
     type->is_typedef = 0 ;
     
     type->is_readonly = 0 ;

@@ -370,7 +370,7 @@ static void output_value( marshmallow_context context, FILE* file, marshmallow_v
         if ( value->name != NULL ) output_symbol(context, file, value->name, module, 0, 0) ;
     }
     
-    if ( value->type->root_type == ptr || value->type->root_type == lambda || (value->type->root_type == string8 && value->type->base_type != NULL) ) {
+    if ( value->type->root_type == ptr ) {
         
         if ( ((marshmallow_type)(value->type->base_type))->root_type == nulltype ) {
             
@@ -382,7 +382,7 @@ static void output_value( marshmallow_context context, FILE* file, marshmallow_v
 
     if ( value->type->root_type == array ) {
         
-        if ( ((marshmallow_type)(value->type->base_type))->root_type == nulltype ) {
+        if ( ((marshmallow_type)(value->type->base_type))->root_type == inittype ) {
             
             fprintf(file, "%s", "{0}") ;
             
