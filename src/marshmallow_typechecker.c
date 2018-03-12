@@ -1280,6 +1280,13 @@ static int is_assignable( marshmallow_variable variable, int* has_assignment, ma
         return 0 ;
     }
     
+    if ( type->is_cast ) {
+        
+         printf("Can not cast an assignment's assignable value.\n") ;
+        
+        return 0 ;
+    }
+    
     return 1 ;
 }
 

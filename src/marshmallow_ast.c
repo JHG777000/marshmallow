@@ -233,6 +233,8 @@ marshmallow_type marshmallow_new_type( void ) {
     
     type->is_typedef = 0 ;
     
+    type->is_cast = 0 ;
+    
     type->is_readonly = 0 ;
     
     type->num_of_elements = -1 ;
@@ -256,9 +258,13 @@ marshmallow_type marshmallow_copy_type( marshmallow_type t ) {
     
     type->output_name = RKString_CopyString(t->output_name) ;
     
+    //type->is_init should not need to be copied
+    
     type->is_literal = t->is_literal ;
     
     type->is_typedef = t->is_typedef ;
+    
+    type->is_cast = t->is_cast ;
     
     type->is_readonly = t->is_readonly ;
     

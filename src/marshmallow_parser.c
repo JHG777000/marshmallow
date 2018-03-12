@@ -1279,6 +1279,8 @@ parse_cast:
         
         a->type = ((marshmallow_variable)m_process(type))->type ;
         
+        a->type->is_cast = 1 ;
+        
         flag_a++ ;
         
         *startnode = node ;
@@ -1583,6 +1585,11 @@ parse_cast:
     
     m_advanceN(1) ;
     
+    if ( m_peek(0)->keyword == mgk(pright) && (( op == castop ) || ( op == reinterpretop ) || ( op == convertop )) ) {
+        
+        m_advance ;
+    }
+    
     return marshmallow_new_statement(op, 1, (marshmallow_entity)a, (marshmallow_entity)b) ;
 }
 
@@ -1758,6 +1765,13 @@ m_processor(assignment) {
         
     }
     
+    if ( m_peek(0)->keyword == mgk(pright) && (( ((marshmallow_statement)a->data)->op == castop )
+                                               || ( ((marshmallow_statement)a->data)->op == reinterpretop )
+                                               || ( ((marshmallow_statement)a->data)->op == convertop )) ) {
+        
+        m_advance ;
+    }
+    
     if ( is_assignment(startnode, n+1) ) {
         
         m_advanceN(n+3) ;
@@ -1845,7 +1859,7 @@ m_processor(assignment) {
     if ( op == assignment && b->type->root_type == expression ) m_advanceN(1) ;
     
     if ( op == inc || op == dec ) m_advanceN(3) ;
-   
+    
     return marshmallow_new_statement(op, 0, (marshmallow_entity)a, (marshmallow_entity)b) ;
 }
 
@@ -1945,15 +1959,15 @@ m_processor(static_assignment) {
     
     if ( m_peek(n+0)->keyword == mgk(pleft) ){
         
-            m_advanceN(1) ;
+        m_advanceN(1) ;
             
-            variable->type->root_type = expression ;
+        variable->type->root_type = expression ;
             
-            variable->data = m_process(expression) ;
+        variable->data = m_process(expression) ;
             
-            marshmallow_swap_var_if_exp_is_var(&variable) ;
+        marshmallow_swap_var_if_exp_is_var(&variable) ;
             
-            return variable ;
+        return variable ;
     }
     
     if ( marshmallow_is_token_root_type(m_peek(n+0)) ) {
