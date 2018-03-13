@@ -905,8 +905,6 @@ static void typecheck_variable( marshmallow_variable variable, marshmallow_funct
     
     marshmallow_type rettype_b = NULL ;
     
-    marshmallow_type init_type = marshmallow_new_type() ;
-    
     marshmallow_type ptr_type = marshmallow_new_type() ;
     
     typecheck_type(variable,module) ;
@@ -917,15 +915,120 @@ static void typecheck_variable( marshmallow_variable variable, marshmallow_funct
         
         variable->static_assignment->type = marshmallow_copy_type(variable->type) ;
         
-        init_type->root_type = inittype ;
-        
-        init_type->base_type = variable->static_assignment->type ;
-        
-        RKString_DestroyString(init_type->type_name) ;
-        
-        init_type->type_name = NULL ;
-        
-        variable->static_assignment->type = init_type ;
+        switch ( typecheck_get_type_category(variable->type) ) {
+                
+            case arithmetic:
+                
+                value = RKMem_NewMemOfType(struct marshmallow_value_s) ;
+                
+                value->type = marshmallow_copy_type(variable->type) ;
+                
+                value->value = rkstr("0") ;
+                
+                variable->static_assignment->data = value ;
+                
+                break;
+                
+            case arrays:
+                
+                ptr_type->root_type = array ;
+                
+                ptr_type->is_init = 1 ;
+                
+                ptr_type->base_type = marshmallow_new_type() ;
+                
+                RKString_DestroyString(ptr_type->type_name) ;
+                
+                ptr_type->type_name = NULL ;
+                
+                RKString_DestroyString(((marshmallow_type)ptr_type->base_type)->type_name) ;
+                
+                ((marshmallow_type)ptr_type->base_type)->type_name = NULL ;
+                
+                ((marshmallow_type)ptr_type->base_type)->root_type = inittype ;
+                
+                free(variable->static_assignment->type) ;
+                
+                variable->static_assignment->type = ptr_type ;
+                
+                break;
+                
+            case pointers:
+                
+                ptr_type->root_type = ptr ;
+                
+                ptr_type->base_type = marshmallow_new_type() ;
+                
+                RKString_DestroyString(ptr_type->type_name) ;
+                
+                ptr_type->type_name = NULL ;
+                
+                RKString_DestroyString(((marshmallow_type)ptr_type->base_type)->type_name) ;
+                
+                ((marshmallow_type)ptr_type->base_type)->type_name = NULL ;
+                
+                ((marshmallow_type)ptr_type->base_type)->root_type = nulltype ;
+                
+                free(variable->static_assignment->type) ;
+                
+                variable->static_assignment->type = ptr_type ;
+                
+                break;
+                
+            case classes:
+                
+                //_init
+                
+                break;
+                
+            case lambdas:
+                
+                ptr_type->root_type = ptr ;
+                
+                ptr_type->base_type = marshmallow_new_type() ;
+                
+                RKString_DestroyString(ptr_type->type_name) ;
+                
+                ptr_type->type_name = NULL ;
+                
+                RKString_DestroyString(((marshmallow_type)ptr_type->base_type)->type_name) ;
+                
+                ((marshmallow_type)ptr_type->base_type)->type_name = NULL ;
+                
+                ((marshmallow_type)ptr_type->base_type)->root_type = nulltype ;
+                
+                free(variable->static_assignment->type) ;
+                
+                variable->static_assignment->type = ptr_type ;
+                
+                break;
+                
+            case strings:
+                
+                ptr_type->root_type = ptr ;
+                
+                ptr_type->base_type = marshmallow_new_type() ;
+                
+                RKString_DestroyString(ptr_type->type_name) ;
+                
+                ptr_type->type_name = NULL ;
+                
+                RKString_DestroyString(((marshmallow_type)ptr_type->base_type)->type_name) ;
+                
+                ((marshmallow_type)ptr_type->base_type)->type_name = NULL ;
+                
+                ((marshmallow_type)ptr_type->base_type)->root_type = nulltype ;
+                
+                free(variable->static_assignment->type) ;
+                
+                variable->static_assignment->type = ptr_type ;
+                
+                break;
+                
+            default:
+                break;
+        }
+
     
     }
     
@@ -947,120 +1050,7 @@ static void typecheck_variable( marshmallow_variable variable, marshmallow_funct
             
             free(v) ;
             
-            switch ( typecheck_get_type_category(variable->type) ) {
-                    
-                case arithmetic:
-                    
-                    value = RKMem_NewMemOfType(struct marshmallow_value_s) ;
-                    
-                    value->type = marshmallow_copy_type(variable->type) ;
-                    
-                    value->value = rkstr("0") ;
-                    
-                    variable->static_assignment->data = value ;
-                    
-                    break;
-                    
-                case arrays:
-                    
-                    ptr_type->root_type = array ;
-                    
-                    ptr_type->is_init = 1 ;
-                    
-                    ptr_type->base_type = marshmallow_new_type() ;
-                    
-                    RKString_DestroyString(ptr_type->type_name) ;
-                    
-                    ptr_type->type_name = NULL ;
-                    
-                    RKString_DestroyString(((marshmallow_type)ptr_type->base_type)->type_name) ;
-                    
-                    ((marshmallow_type)ptr_type->base_type)->type_name = NULL ;
-                    
-                    ((marshmallow_type)ptr_type->base_type)->root_type = inittype ;
-                    
-                    free(variable->static_assignment->type) ;
-                    
-                    variable->static_assignment->type = ptr_type ;
-                    
-                    break;
-                    
-                case pointers:
-                    
-                    ptr_type->root_type = ptr ;
-                    
-                    ptr_type->base_type = marshmallow_new_type() ;
-                    
-                    RKString_DestroyString(ptr_type->type_name) ;
-                    
-                    ptr_type->type_name = NULL ;
-                    
-                    RKString_DestroyString(((marshmallow_type)ptr_type->base_type)->type_name) ;
-                    
-                    ((marshmallow_type)ptr_type->base_type)->type_name = NULL ;
-                    
-                    ((marshmallow_type)ptr_type->base_type)->root_type = nulltype ;
-                    
-                    free(variable->static_assignment->type) ;
-                    
-                    variable->static_assignment->type = ptr_type ;
-                    
-                    break;
-                    
-                case classes:
-                    
-                    //_init
-                    
-                    break;
-                    
-                case lambdas:
-                    
-                    ptr_type->root_type = ptr ;
-                    
-                    ptr_type->base_type = marshmallow_new_type() ;
-                    
-                    RKString_DestroyString(ptr_type->type_name) ;
-                    
-                    ptr_type->type_name = NULL ;
-                    
-                    RKString_DestroyString(((marshmallow_type)ptr_type->base_type)->type_name) ;
-                    
-                    ((marshmallow_type)ptr_type->base_type)->type_name = NULL ;
-                    
-                    ((marshmallow_type)ptr_type->base_type)->root_type = nulltype ;
-                    
-                    free(variable->static_assignment->type) ;
-                    
-                    variable->static_assignment->type = ptr_type ;
-                    
-                    break;
-                    
-                case strings:
-                    
-                    ptr_type->root_type = ptr ;
-                    
-                    ptr_type->base_type = marshmallow_new_type() ;
-                    
-                    RKString_DestroyString(ptr_type->type_name) ;
-                    
-                    ptr_type->type_name = NULL ;
-                    
-                    RKString_DestroyString(((marshmallow_type)ptr_type->base_type)->type_name) ;
-                    
-                    ((marshmallow_type)ptr_type->base_type)->type_name = NULL ;
-                    
-                    ((marshmallow_type)ptr_type->base_type)->root_type = nulltype ;
-                    
-                    free(variable->static_assignment->type) ;
-                    
-                    variable->static_assignment->type = ptr_type ;
-                    
-                    break;
-                    
-                default:
-                    break;
-            }
-
+            
         }
         
         if ( variable->static_assignment->type->root_type == expression ) {
