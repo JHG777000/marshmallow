@@ -307,9 +307,18 @@ marshmallow_variable marshmallow_new_variable( void ) {
 
 void marshmallow_add_variable_to_scope( marshmallow_scope scope, marshmallow_variable variable ) {
     
+    marshmallow_module module = (scope->entity_type == entity_module) ? (marshmallow_module)scope : ((marshmallow_function_body)scope)->module ;
+    
     if ( RKStore_ItemExists(scope->variables, RKString_GetString(variable->name)) ) {
         
         printf("Variable name: '%s', already used in this scope. \n",RKString_GetString(variable->name)) ;
+        
+        exit(EXIT_FAILURE) ;
+    }
+        
+    if ( RKStore_ItemExists(module->functions_and_methods, RKString_GetString(variable->name)) ) {
+            
+        printf("Identifier error: '%s', identifier can not be used for a variable and a function or method.\n",RKString_GetString(variable->name)) ;
         
         exit(EXIT_FAILURE) ;
     }
@@ -333,7 +342,7 @@ marshmallow_entity marshmallow_lookup_identifier( marshmallow_function_body func
         
             if ( RKStore_ItemExists(module->functions_and_methods, RKString_GetString(identifier_name)) ) {
                 
-                printf("Identifier error: '%s', Identifier can not be used for a function or method and an enum.\n",RKString_GetString(identifier_name)) ;
+                printf("Identifier error: '%s', identifier can not be used for a function or method and an enum.\n",RKString_GetString(identifier_name)) ;
                 
                 exit(EXIT_FAILURE) ;
             }
@@ -365,6 +374,19 @@ marshmallow_entity marshmallow_lookup_identifier( marshmallow_function_body func
             if ( entity != NULL ) ((marshmallow_variable)entity)->is_global = 1 ;
         }
         
+        if ( entity != NULL ) {
+            
+            if ( !((marshmallow_variable)entity)->is_global ) {
+                
+                if ( RKStore_ItemExists(module->types, RKString_GetString(identifier_name)) ) {
+                    
+                    printf("Identifier already used in this module as a type, %s.\n", RKString_GetString(identifier_name)) ;
+                    
+                    exit(EXIT_FAILURE) ;
+                }
+            }
+        }
+        
         if ( RKStore_ItemExists(module->enums, RKString_GetString(identifier_name)) ) {
             
             a = marshmallow_new_variable() ;
@@ -377,7 +399,7 @@ marshmallow_entity marshmallow_lookup_identifier( marshmallow_function_body func
                 
                 if ( RKStore_ItemExists(function->variables, RKString_GetString(identifier_name)) ) {
                     
-                    printf("Identifier error: '%s', Identifier can not be used for a global or local  variable and an enum.\n",RKString_GetString(identifier_name)) ;
+                    printf("Identifier error: '%s', identifier can not be used for a global or local  variable and an enum.\n",RKString_GetString(identifier_name)) ;
                     
                     exit(EXIT_FAILURE) ;
                 }
@@ -386,7 +408,7 @@ marshmallow_entity marshmallow_lookup_identifier( marshmallow_function_body func
             
             if ( RKStore_ItemExists(module->variables, RKString_GetString(identifier_name)) ) {
                 
-                printf("Identifier error: '%s', Identifier can not be used for a global or local variable and an enum.\n",RKString_GetString(identifier_name)) ;
+                printf("Identifier error: '%s', identifier can not be used for a global or local variable and an enum.\n",RKString_GetString(identifier_name)) ;
                 
                 exit(EXIT_FAILURE) ;
             }
@@ -501,6 +523,10 @@ marshmallow_function_body marshmallow_new_function_body( marshmallow_function_si
     
     function->variables = RKStore_NewStore() ;
     
+    function->calls = RKStore_NewStore() ;
+    
+    function->module = NULL ;
+    
     return function ;
 }
 
@@ -561,7 +587,23 @@ void marshmallow_add_function_to_module( marshmallow_function_body function, mar
         exit(EXIT_FAILURE) ;
     }
     
+    if ( RKStore_ItemExists(module->types, RKString_GetString(function->signature->func_name)) ) {
+        
+        printf("Function name already used in this module as a type.\n") ;
+        
+        exit(EXIT_FAILURE) ;
+    }
+    
+    if ( RKStore_ItemExists(module->variables, RKString_GetString(function->signature->func_name)) ) {
+        
+        printf("Function name already used in this module as a global variable.\n") ;
+        
+        exit(EXIT_FAILURE) ;
+    }
+    
     RKStore_AddItem(module->functions_and_methods, function, RKString_GetString(function->signature->func_name)) ;
+    
+    function->module = module ;
 }
 
 void marshmallow_add_function_to_module_declarations( marshmallow_function_body function, marshmallow_module module ) {
@@ -569,6 +611,20 @@ void marshmallow_add_function_to_module_declarations( marshmallow_function_body 
     if ( RKStore_ItemExists(module->declarations, RKString_GetString(function->signature->func_name)) ) {
         
         printf("Declaration name already used in this module.\n") ;
+        
+        exit(EXIT_FAILURE) ;
+    }
+    
+    if ( RKStore_ItemExists(module->types, RKString_GetString(function->signature->func_name)) ) {
+        
+        printf("Declaration name already used in this module as a type.\n") ;
+        
+        exit(EXIT_FAILURE) ;
+    }
+    
+    if ( RKStore_ItemExists(module->variables, RKString_GetString(function->signature->func_name)) ) {
+        
+        printf("Declaration name already used in this module as a global variable.\n") ;
         
         exit(EXIT_FAILURE) ;
     }
@@ -614,6 +670,28 @@ void marshmallow_add_typedef_to_module( marshmallow_type type, marshmallow_modul
         
         exit(EXIT_FAILURE) ;
     }
+    
+    if ( RKStore_ItemExists(module->variables, RKString_GetString(type->type_name) ) ) {
+        
+        printf("Type name: %s, already used in this module as a global variable.\n", RKString_GetString(type->type_name)) ;
+        
+        exit(EXIT_FAILURE) ;
+    }
+    
+    if ( RKStore_ItemExists(module->functions_and_methods, RKString_GetString(type->type_name) ) ) {
+        
+        printf("Type name: %s, already used in this module as a functions or method.\n", RKString_GetString(type->type_name)) ;
+        
+        exit(EXIT_FAILURE) ;
+    }
+    
+    if ( RKStore_ItemExists(module->declarations, RKString_GetString(type->type_name) ) ) {
+        
+        printf("Type name: %s, already used in this module as a declaration.\n", RKString_GetString(type->type_name)) ;
+        
+        exit(EXIT_FAILURE) ;
+    }
+
     
     RKStore_AddItem(module->types, type, RKString_GetString(type->type_name)) ;
 }

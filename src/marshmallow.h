@@ -48,6 +48,8 @@ typedef struct marshmallow_entity_s { marshmallow_entity_type entity_type ; } *m
 
 typedef struct marshmallow_type_s* marshmallow_type ;
 
+typedef struct marshmallow_module_s* marshmallow_module ;
+
 typedef struct marshmallow_variable_s* marshmallow_variable ;
 
 typedef struct marshmallow_function_body_s* marshmallow_function_body ;
@@ -78,7 +80,7 @@ RKStore parameters ; RKList returns ; } *marshmallow_function_signature ;
 
 typedef struct marshmallow_function_body_s { marshmallow_entity_type entity_type ; marshmallow_scope_protocol
     
-marshmallow_function_signature signature ; RKStore calls ; } *marshmallow_function_body ;
+marshmallow_function_signature signature ; RKStore calls ;  marshmallow_module module ; } *marshmallow_function_body ;
 
 typedef struct marshmallow_statement_s { marshmallow_entity_type entity_type ; RKList statements ; int is_expression ; marshmallow_op_type op ;
     
