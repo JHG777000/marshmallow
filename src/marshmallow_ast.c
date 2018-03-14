@@ -323,6 +323,20 @@ void marshmallow_add_variable_to_scope( marshmallow_scope scope, marshmallow_var
         exit(EXIT_FAILURE) ;
     }
     
+    if ( RKStore_ItemExists(module->declarations, RKString_GetString(variable->name)) ) {
+        
+        printf("Identifier error: '%s', identifier can not be used for a variable and a declaration.\n",RKString_GetString(variable->name)) ;
+        
+        exit(EXIT_FAILURE) ;
+    }
+    
+    if ( RKStore_ItemExists(module->types, RKString_GetString(variable->name)) ) {
+        
+        printf("Identifier error: '%s', identifier can not be used for a variable and a type.\n",RKString_GetString(variable->name)) ;
+        
+        exit(EXIT_FAILURE) ;
+    }
+    
     RKStore_AddItem(scope->variables, variable, RKString_GetString(variable->name)) ;
 }
 
@@ -372,19 +386,6 @@ marshmallow_entity marshmallow_lookup_identifier( marshmallow_function_body func
             entity = RKStore_GetItem(module->variables, RKString_GetString(identifier_name)) ;
             
             if ( entity != NULL ) ((marshmallow_variable)entity)->is_global = 1 ;
-        }
-        
-        if ( entity != NULL ) {
-            
-            if ( !((marshmallow_variable)entity)->is_global ) {
-                
-                if ( RKStore_ItemExists(module->types, RKString_GetString(identifier_name)) ) {
-                    
-                    printf("Identifier already used in this module as a type, %s.\n", RKString_GetString(identifier_name)) ;
-                    
-                    exit(EXIT_FAILURE) ;
-                }
-            }
         }
         
         if ( RKStore_ItemExists(module->enums, RKString_GetString(identifier_name)) ) {
@@ -582,21 +583,21 @@ void marshmallow_add_function_to_module( marshmallow_function_body function, mar
     
     if ( RKStore_ItemExists(module->functions_and_methods, RKString_GetString(function->signature->func_name)) ) {
         
-        printf("Function name already used in this module.\n") ;
+        printf("Function name: %s, already used in this module.\n", RKString_GetString(function->signature->func_name)) ;
         
         exit(EXIT_FAILURE) ;
     }
     
     if ( RKStore_ItemExists(module->types, RKString_GetString(function->signature->func_name)) ) {
         
-        printf("Function name already used in this module as a type.\n") ;
+        printf("Function name: %s, already used in this module as a type.\n", RKString_GetString(function->signature->func_name)) ;
         
         exit(EXIT_FAILURE) ;
     }
     
     if ( RKStore_ItemExists(module->variables, RKString_GetString(function->signature->func_name)) ) {
         
-        printf("Function name already used in this module as a global variable.\n") ;
+        printf("Function name: %s, already used in this module as a global variable.\n", RKString_GetString(function->signature->func_name)) ;
         
         exit(EXIT_FAILURE) ;
     }
@@ -610,21 +611,21 @@ void marshmallow_add_function_to_module_declarations( marshmallow_function_body 
     
     if ( RKStore_ItemExists(module->declarations, RKString_GetString(function->signature->func_name)) ) {
         
-        printf("Declaration name already used in this module.\n") ;
+        printf("Declaration name: %s, already used in this module.\n", RKString_GetString(function->signature->func_name)) ;
         
         exit(EXIT_FAILURE) ;
     }
     
     if ( RKStore_ItemExists(module->types, RKString_GetString(function->signature->func_name)) ) {
         
-        printf("Declaration name already used in this module as a type.\n") ;
+        printf("Declaration name: %s, already used in this module as a type.\n", RKString_GetString(function->signature->func_name)) ;
         
         exit(EXIT_FAILURE) ;
     }
     
     if ( RKStore_ItemExists(module->variables, RKString_GetString(function->signature->func_name)) ) {
         
-        printf("Declaration name already used in this module as a global variable.\n") ;
+        printf("Declaration name: %s, already used in this module as a global variable.\n", RKString_GetString(function->signature->func_name)) ;
         
         exit(EXIT_FAILURE) ;
     }
