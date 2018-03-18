@@ -2488,6 +2488,8 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
              case inc:
              case dec:
              
+             rettype_a = typecheck_get_type_from_variable((marshmallow_variable)statement->var_a, has_assignment, module) ;
+             
              if ( !is_assignable((marshmallow_variable)statement->var_a,has_assignment,module)
                  || !m_is_type_number(typecheck_get_type_from_variable((marshmallow_variable)statement->var_a,has_assignment,module)) ) {
                  
@@ -2498,7 +2500,7 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
              
              *has_assignment = 1 ;
              
-             return typecheck_get_type_from_root_type(typecheck_get_type_promotion(((marshmallow_variable)statement->var_a)->type, NULL)->root_type) ;
+             return rettype_a ;
              
              break;
              
@@ -2575,6 +2577,15 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
              
          case ifop:
              
+             rettype_a = typecheck_statment((marshmallow_statement)statement->var_a, has_assignment, module, store) ;
+             
+             if ( typecheck_get_type_category(rettype_a) != arithmetic ) {
+                 
+                 printf("Statement is a non-arithmetic expression, if needs an arithmetic expression.\n") ;
+                 
+                 exit(EXIT_FAILURE) ;
+             }
+             
              list = statement->statements ;
              
              if ( list != NULL ) {
@@ -2593,11 +2604,27 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
              
              case slifop:
              
-             typecheck_statment((marshmallow_statement)statement->var_b, has_assignment, module, store) ;
+             rettype_a = typecheck_statment((marshmallow_statement)statement->var_a, has_assignment, module, store) ;
+             
+             if ( typecheck_get_type_category(rettype_a) != arithmetic ) {
+                 
+                 printf("Statement is a non-arithmetic expression, if needs an arithmetic expression.\n") ;
+                 
+                 exit(EXIT_FAILURE) ;
+             }
              
              break;
              
          case whileop:
+             
+             rettype_a = typecheck_statment((marshmallow_statement)statement->var_a, has_assignment, module, store) ;
+             
+             if ( typecheck_get_type_category(rettype_a) != arithmetic ) {
+                 
+                 printf("Statement is a non-arithmetic expression, while needs an arithmetic expression.\n") ;
+                 
+                 exit(EXIT_FAILURE) ;
+             }
              
              list = statement->statements ;
              
@@ -2696,6 +2723,46 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
              return var_a->type ;
              
              break;
+             
+             case is_equal:
+             case is_lessthan:
+             case is_not_equal:
+             case is_greaterthan:
+             case is_lessthan_or_equal:
+             case is_greaterthan_or_equal:
+             
+             rettype_a = typecheck_statment((marshmallow_statement)statement->var_a, has_assignment, module, store) ;
+            
+             rettype_b = typecheck_statment((marshmallow_statement)statement->var_b, has_assignment, module, store) ;
+             
+             if ( typecheck_get_type_category(rettype_a) != arithmetic && typecheck_get_type_category(rettype_b) != arithmetic
+                 && typecheck_get_type_category(rettype_b) != pointers && typecheck_get_type_category(rettype_b) != pointers) {
+                 
+                 return rettype_a ;
+             }
+             
+             if ( typecheck_get_type_category(rettype_a) != arithmetic && typecheck_get_type_category(rettype_b) != arithmetic
+                 && typecheck_get_type_category(rettype_a) == pointers && typecheck_get_type_category(rettype_b) != pointers) {
+                 
+                 return rettype_a ;
+             }
+             
+             if ( typecheck_get_type_category(rettype_a) != arithmetic && typecheck_get_type_category(rettype_b) != arithmetic
+                 && typecheck_get_type_category(rettype_a) != pointers && typecheck_get_type_category(rettype_b) == pointers) {
+                 
+                 return rettype_b ;
+             }
+             
+             if ( typecheck_get_type_category(rettype_a) != arithmetic && typecheck_get_type_category(rettype_b) != arithmetic
+                 && typecheck_get_type_category(rettype_a) == pointers && typecheck_get_type_category(rettype_b) == pointers) {
+                 
+                 return typecheck_get_type_from_root_type(u32) ;
+             }
+             
+             return rettype_a ;
+             
+             break;
+
             
         default:
             break;

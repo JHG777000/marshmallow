@@ -1025,13 +1025,13 @@ m_processor(else) {
             
             ifvar_a->type = marshmallow_new_type() ;
             
-             if ( marshmallow_is_token_root_type(fakeif) ) {
+            if ( marshmallow_is_token_root_type(fakeif) ) {
              
              marshmallow_parse_type(ifvar_a->type, fakeif, 0, NULL, 0) ;
              
              marshmallow_parse_value(fakeif, ifvar_a) ;
                  
-             }
+            }
             
             ifvar->data = ifvar_a ;
             
