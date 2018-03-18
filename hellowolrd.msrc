@@ -104,6 +104,8 @@ module mymod.
 
   u32[3][3] myarray2.
 
+  u32[3][3] myarray3 := myarray.
+
   myarray2 := myarray.
   
   section helloworld.

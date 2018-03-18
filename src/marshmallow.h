@@ -152,7 +152,11 @@ marshmallow_function_body marshmallow_new_function_body( marshmallow_function_si
 
 void marshmallow_attach_function_to_statement( marshmallow_function_body function, marshmallow_statement statement ) ;
 
-void marshmallow_add_statement_to_function( marshmallow_function_body function, marshmallow_statement statement )  ;
+RKList_node marshmallow_add_statement_to_function( marshmallow_function_body function, marshmallow_statement statement )  ;
+
+void marshmallow_insert_statement_before_statement_to_function( marshmallow_statement new_statement, marshmallow_statement old_statement, marshmallow_function_body function ) ;
+
+void marshmallow_insert_statement_after_statement_to_function( marshmallow_statement new_statement, marshmallow_statement old_statement, marshmallow_function_body function ) ;
 
 void marshmallow_add_function_to_module( marshmallow_function_body function, marshmallow_module module ) ;
 

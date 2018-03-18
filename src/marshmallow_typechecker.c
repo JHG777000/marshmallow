@@ -891,8 +891,6 @@ static void typecheck_variable( marshmallow_variable variable, marshmallow_funct
     
     marshmallow_variable v = NULL ;
     
-    marshmallow_type t = NULL ;
-    
     marshmallow_statement statement = NULL ;
     
     marshmallow_value value = NULL ;
@@ -1028,8 +1026,6 @@ static void typecheck_variable( marshmallow_variable variable, marshmallow_funct
             default:
                 break;
         }
-
-    
     }
     
     if ( variable->static_assignment != NULL ) {
@@ -1094,6 +1090,19 @@ static void typecheck_variable( marshmallow_variable variable, marshmallow_funct
                     exit(EXIT_FAILURE) ;
                 }
                 
+                if ( statement->op == array_assignment ) {
+                    
+                    free(variable->static_assignment->type) ;
+                    
+                    free(variable->static_assignment) ;
+                    
+                    variable->static_assignment = NULL ;
+                    
+                    statement->op = assignment ;
+                    
+                    marshmallow_insert_statement_before_statement_to_function(statement, RKList_GetData(RKList_GetFirstNode(function->statements)), function) ;
+                }
+                
                 return ;
             }
 
@@ -1108,8 +1117,32 @@ static void typecheck_variable( marshmallow_variable variable, marshmallow_funct
           if ( variable->static_assignment->type->root_type == unknown && !has_rechecked ) {
               
               
-              variable->static_assignment = (marshmallow_variable)marshmallow_lookup_identifier(NULL,
+              variable->static_assignment = (marshmallow_variable)marshmallow_lookup_identifier(function,
                                                                                                 module, (marshmallow_entity)variable->static_assignment) ;
+              
+              
+              if ( variable->type->root_type == array && variable->static_assignment->type->root_type == array ) {
+                  
+                  var_a = variable ;
+                  
+                  var_b = variable->static_assignment ;
+                  
+                  variable->static_assignment = NULL ;
+                  
+                  statement = marshmallow_new_statement(assignment, 0, (marshmallow_entity)var_a, (marshmallow_entity)var_b) ;
+                  
+                  variable->static_assignment = marshmallow_new_variable() ;
+                  
+                  variable->static_assignment->type = marshmallow_new_type() ;
+                  
+                  variable->static_assignment->type->root_type = expression ;
+                  
+                  variable->static_assignment->data = statement ;
+                  
+                  typecheck_variable(variable, function, module) ;
+                  
+                  return ;
+              }
               
               if ( variable->static_assignment != NULL && variable->static_assignment->type->root_type != unknown ) {
                   
@@ -1263,7 +1296,7 @@ static int is_assignable( marshmallow_variable variable, int* has_assignment, ma
 
 static marshmallow_type typecheck_get_type_promotion( marshmallow_type a, marshmallow_type b ) {
     
-    marshmallow_type array[2] ;
+    marshmallow_type array1[2] ;
     
     int array2[2] ;
     
@@ -1277,9 +1310,9 @@ static marshmallow_type typecheck_get_type_promotion( marshmallow_type a, marshm
     
     if ( a == NULL && b == NULL ) return typecheck_get_type_from_root_type(unknown) ;
     
-    array[0] = a ;
+    array1[0] = a ;
     
-    array[1] = b ;
+    array1[1] = b ;
     
     array2[0] = 0 ;
     
@@ -1289,7 +1322,7 @@ loop:
     
     j = 0 ;
     
-    switch ( array[i]->root_type ) {
+    switch ( array1[i]->root_type ) {
         
         case i8:
             
@@ -2448,7 +2481,7 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
              //no need to check var_b->type->num_of_elements since sizes must be equal by this point
              if ( var_a->type->root_type == array && var_b->type->root_type == array && var_a->type->num_of_elements > 0 ) statement->op = array_assignment ;
              
-             return typecheck_get_type_from_root_type(typecheck_get_type_promotion(var_a->type, var_b->type)->root_type) ;
+             return rettype_a ;
              
              break;
              

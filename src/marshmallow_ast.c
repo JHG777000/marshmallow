@@ -561,7 +561,7 @@ static void marshmallow_attach_function_to_all_statements( marshmallow_function_
     marshmallow_attach_function_to_all_statements(function, (marshmallow_variable)statement->var_a, (marshmallow_variable)statement->var_b) ;
 }
 
-void marshmallow_add_statement_to_function( marshmallow_function_body function, marshmallow_statement statement ) {
+RKList_node marshmallow_add_statement_to_function( marshmallow_function_body function, marshmallow_statement statement ) {
     
     marshmallow_function_body f = function ;
     
@@ -576,7 +576,63 @@ loop:
     
     marshmallow_attach_function_to_statement(f, statement) ;
     
-    RKList_AddToList(function->statements, statement) ;
+    return RKList_AddToList(function->statements, statement) ;
+}
+
+void marshmallow_insert_statement_before_statement_to_function( marshmallow_statement new_statement, marshmallow_statement old_statement, marshmallow_function_body function ) {
+    
+    RKList list = NULL ;
+    
+    RKList_node node = NULL ;
+    
+    RKList_node node2 = NULL ;
+    
+    list = function->statements ;
+    
+    node = RKList_GetFirstNode(list) ;
+    
+    while ( node != NULL ) {
+        
+        if ( RKList_GetData(node) == old_statement ) {
+            
+            node2 = marshmallow_add_statement_to_function(function, new_statement) ;
+            
+            RKList_InsertNodeAToNodeB(list, node2, node) ;
+            
+            return ;
+        }
+        
+        node = RKList_GetNextNode(node) ;
+    }
+}
+
+void marshmallow_insert_statement_after_statement_to_function( marshmallow_statement new_statement, marshmallow_statement old_statement, marshmallow_function_body function ) {
+    
+    RKList list = NULL ;
+    
+    RKList_node node = NULL ;
+    
+    RKList_node node2 = NULL ;
+    
+    list = function->statements ;
+    
+    node = RKList_GetFirstNode(list) ;
+    
+    while ( node != NULL ) {
+        
+        if ( RKList_GetData(node) == old_statement ) {
+            
+            node2 = marshmallow_add_statement_to_function(function, new_statement) ;
+            
+            RKList_InsertNodeAToNodeB(list, node2, node) ;
+            
+            RKList_InsertNodeAToNodeB(list, node, node2) ;
+            
+            return ;
+        }
+        
+        node = RKList_GetNextNode(node) ;
+    }
 }
 
 void marshmallow_add_function_to_module( marshmallow_function_body function, marshmallow_module module ) {
