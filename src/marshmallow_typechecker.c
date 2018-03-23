@@ -2725,8 +2725,19 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
              break;
              
              case is_equal:
-             case is_lessthan:
              case is_not_equal:
+             
+             rettype_a = typecheck_statment((marshmallow_statement)statement->var_a, has_assignment, module, store) ;
+             
+             rettype_b = typecheck_statment((marshmallow_statement)statement->var_b, has_assignment, module, store) ;
+             
+             if ( typecheck_get_type_category(rettype_a) != arithmetic && typecheck_get_type_category(rettype_b) != arithmetic
+                 && typecheck_get_type_category(rettype_a) == pointers && typecheck_get_type_category(rettype_b) == pointers) {
+                 
+                 return typecheck_get_type_from_root_type(u32) ;
+             }
+             
+             case is_lessthan:
              case is_greaterthan:
              case is_lessthan_or_equal:
              case is_greaterthan_or_equal:
@@ -2751,12 +2762,6 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
                  && typecheck_get_type_category(rettype_a) != pointers && typecheck_get_type_category(rettype_b) == pointers) {
                  
                  return rettype_b ;
-             }
-             
-             if ( typecheck_get_type_category(rettype_a) != arithmetic && typecheck_get_type_category(rettype_b) != arithmetic
-                 && typecheck_get_type_category(rettype_a) == pointers && typecheck_get_type_category(rettype_b) == pointers) {
-                 
-                 return typecheck_get_type_from_root_type(u32) ;
              }
              
              return rettype_a ;

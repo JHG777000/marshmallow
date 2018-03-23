@@ -972,6 +972,75 @@ static void output_statement( marshmallow_context context, FILE* file, marshmall
             
             break;
             
+        case band:
+            
+            output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+            
+            fprintf(file, "&") ;
+            
+            output_value(context, file, (marshmallow_variable)statement->var_b, module) ;
+            
+            break;
+            
+        case bor:
+            
+            output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+            
+            fprintf(file, "|") ;
+            
+            output_value(context, file, (marshmallow_variable)statement->var_b, module) ;
+            
+            break;
+            
+        case xor:
+            
+            output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+            
+            fprintf(file, "^") ;
+            
+            output_value(context, file, (marshmallow_variable)statement->var_b, module) ;
+            
+            break;
+            
+        case lshift:
+            
+            output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+            
+            fprintf(file, "<<") ;
+            
+            output_value(context, file, (marshmallow_variable)statement->var_b, module) ;
+            
+            break;
+            
+        case rshift:
+            
+            output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+            
+            fprintf(file, ">>") ;
+            
+            output_value(context, file, (marshmallow_variable)statement->var_b, module) ;
+            break;
+            
+        case or:
+            
+            output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+            
+            fprintf(file, "||") ;
+            
+            output_value(context, file, (marshmallow_variable)statement->var_b, module) ;
+            
+            break;
+            
+        case and:
+            
+            output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+            
+            fprintf(file, "&&") ;
+            
+            output_value(context, file, (marshmallow_variable)statement->var_b, module) ;
+            
+            break;
+            
         case negate:
             
             fprintf(file, "-") ;
