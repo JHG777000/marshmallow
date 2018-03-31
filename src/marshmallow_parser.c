@@ -308,6 +308,47 @@ static marshmallow_token marshmallow_get_token( RKList_node node ) {
     return RKList_GetData(node) ;
 }
 
+static RKList_node marshmallow_get_next_node( RKList_node* startnode, RKList symbol_list ) {
+    
+    if ( RKList_GetNextNode(*startnode) == NULL ) {
+        
+        return RKList_GetLastNode(symbol_list) ;
+    }
+    
+    return RKList_GetNextNode(*startnode) ;
+}
+
+static RKList_node marshmallow_get_next_node_after_n( RKList_node* startnode, RKList symbol_list, int n ) {
+    
+    if ( RKList_GetNextNodeAfterN(*startnode,n) == NULL ) {
+        
+        return RKList_GetLastNode(symbol_list) ;
+    }
+    
+    return RKList_GetNextNodeAfterN(*startnode,n) ;
+}
+
+static RKList_node marshmallow_get_previous_node( RKList_node* startnode, RKList symbol_list ) {
+    
+    if ( RKList_GetPreviousNode(*startnode) == NULL ) {
+        
+        return RKList_GetLastNode(symbol_list) ;
+    }
+    
+    return RKList_GetPreviousNode(*startnode) ;
+}
+
+static RKList_node marshmallow_get_previous_node_after_n( RKList_node* startnode, RKList symbol_list, int n ) {
+    
+    if ( RKList_GetPreviousNodeAfterN(*startnode,n) == NULL ) {
+        
+        return RKList_GetLastNode(symbol_list) ;
+    }
+    
+    return RKList_GetPreviousNodeAfterN(*startnode,n) ;
+
+}
+
 #define m_processor(name) static void* name##processor( marshmallow_context context, RKList symbol_list, RKList_node* startnode, int index )
 
 #define m_process(name) name##processor(context,symbol_list,startnode,index)
@@ -316,17 +357,19 @@ static marshmallow_token marshmallow_get_token( RKList_node node ) {
 
 #define m_expect(symbol) marshmallow_accept_or_expect(*startnode,rkstr(#symbol),mgk(symbol),1)
 
-#define m_expectN(n,symbol) marshmallow_accept_or_expect(RKList_GetNextNodeAfterN(*startnode,n),rkstr(#symbol),mgk(symbol),1)
+#define m_expectN(n,symbol) marshmallow_accept_or_expect(marshmallow_get_next_node_after_n(startnode,symbol_list,n),rkstr(#symbol),mgk(symbol),1)
 
-#define m_advance *startnode = RKList_GetNextNode(*startnode)
+#define m_advance *startnode = marshmallow_get_next_node(startnode,symbol_list)
 
-#define m_advanceN(n) *startnode = RKList_GetNextNodeAfterN(*startnode,n)
+#define m_advanceN(n) *startnode = marshmallow_get_next_node_after_n(startnode,symbol_list,n)
+
+#define m_retreatN(n) *startnode = marshmallow_get_previous_node_after_n(startnode,symbol_list,n)
 
 #define m_reset *startnode = RKList_GetFirstNode(symbol_list)
 
 #define m_gettoken (marshmallow_get_token(*startnode))
 
-#define m_peek(n) (marshmallow_get_token(RKList_GetNextNodeAfterN(*startnode,n)))
+#define m_peek(n) (marshmallow_get_token(marshmallow_get_next_node_after_n(startnode,symbol_list,n)))
 
 int marshmallow_accept_or_expect( RKList_node startnode, RKString symbol_name, marshmallow_keyword symbol, int expect ) {
     
@@ -351,7 +394,7 @@ int marshmallow_accept_or_expect( RKList_node startnode, RKString symbol_name, m
     return 0 ;
 }
 
-static int is_assignment( RKList_node* startnode, int n ) {
+static int is_assignment( RKList_node* startnode, RKList symbol_list, int n ) {
     
     if ( m_peek(n+0)->keyword == mgk(colon) ) {
         
@@ -735,7 +778,7 @@ m_processor(enum) {
             
             if ( m_peek(n+1)->keyword == mgk(identifier) ) {
                 
-                if ( is_assignment(startnode, n+2) ) {
+                if ( is_assignment(startnode, symbol_list, n+2) ) {
                     
                     if ( marshmallow_is_token_root_type(m_peek(n+4)) ) {
                         
@@ -1516,7 +1559,7 @@ parse_cast:
         
         if ( op == inc || op == dec  ) n++ ;
         
-        if ( op != inc && op != dec  ) {
+        if ( op != inc && op != dec && !flag_b ) {
             
             m_advanceN(n+2) ;
             
@@ -1579,6 +1622,14 @@ parse_cast:
     if ( m_peek(0)->keyword == mgk(pleft) && (( op == castop ) || ( op == reinterpretop ) || ( op == convertop )) ) {
         
         m_advanceN(2) ;
+    }
+    
+    if ( m_peek(0)->keyword == mgk(end_of_line) ) {
+        
+        while ( m_peek(0)->keyword == mgk(end_of_line) ) {
+            
+            m_retreatN(1) ;
+        }
     }
     
     m_expect(pright) ;
@@ -1772,7 +1823,7 @@ m_processor(assignment) {
         m_advance ;
     }
     
-    if ( is_assignment(startnode, n+1) ) {
+    if ( is_assignment(startnode, symbol_list, n+1) ) {
         
         m_advanceN(n+3) ;
         
@@ -2228,7 +2279,7 @@ m_processor(variable) {
             return marshmallow_new_statement(call, 0, (marshmallow_entity)function, (marshmallow_entity)variable) ;
         }
         
-        if ( is_assignment(startnode, n) || ( (m_peek(n+0)->keyword == mgk(plus)) && (m_peek(n+1)->keyword == mgk(plus)) )
+        if ( is_assignment(startnode, symbol_list, n) || ( (m_peek(n+0)->keyword == mgk(plus)) && (m_peek(n+1)->keyword == mgk(plus)) )
             || ( (m_peek(n+0)->keyword == mgk(minus)) && (m_peek(n+1)->keyword == mgk(minus)) )) {
             
             *startnode = base_node ;
@@ -2259,7 +2310,7 @@ m_processor(variable) {
         n = 2 ;
     }
    
-    if ( is_assignment(startnode, n) ) {
+    if ( is_assignment(startnode, symbol_list, n) ) {
         
         n+=2 ;
         

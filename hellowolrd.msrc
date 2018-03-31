@@ -93,7 +93,7 @@ module mymod.
 
   j := ($u64(var64)).
 
-  var64 := ($int64(j)).
+  var64 := ($int64( ($int64(j)) )).
 
   j := 4.
 

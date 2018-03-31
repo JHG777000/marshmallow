@@ -2322,7 +2322,24 @@ static marshmallow_type typecheck_get_type_from_variable( marshmallow_variable v
 }
 
 
-static marshmallow_type typecheck_make_ptr_type_from_type( marshmallow_type type ) {
+ marshmallow_type typecheck_make_ptr_type_from_type( marshmallow_type type ) {
+    
+    marshmallow_type ptrtype = marshmallow_new_type() ;
+    
+    ptrtype->base_type = type ;
+    
+    ptrtype->root_type = ptr ;
+    
+    ptrtype->is_literal = 1 ;
+    
+    RKString_DestroyString(ptrtype->type_name) ;
+    
+    ptrtype->type_name = NULL ;
+    
+    return ptrtype ;
+}
+
+ marshmallow_type typecheck_get_ptr_type_from_type( marshmallow_type type ) {
     
     marshmallow_type ptrtype = marshmallow_new_type() ;
     
@@ -2693,11 +2710,9 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
              
              var_a = (marshmallow_variable)statement->var_a ;
              
-             var_b = (marshmallow_variable)statement->var_b ;
+             rettype_b = typecheck_get_type_from_variable((marshmallow_variable)statement->var_b, has_assignment, module) ;
              
              typecheck_type(var_a, module) ;
-             
-             typecheck_type(var_b, module) ;
              
              if ( var_a->type == NULL ) {
                  
@@ -2706,14 +2721,14 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
                  exit(EXIT_FAILURE) ;
              }
              
-             if ( typecheck_get_type_category(var_a->type) != typecheck_get_type_category(var_b->type) ) {
+             if ( typecheck_get_type_category(var_a->type) != typecheck_get_type_category(rettype_b) ) {
                  
                  printf("Can not cast types of different categories.\n") ;
                  
                  exit(EXIT_FAILURE) ;
              }
              
-             if ( (var_a->type->is_readonly && !var_b->type->is_readonly) || (!var_a->type->is_readonly && var_b->type->is_readonly) ) {
+             if ( (var_a->type->is_readonly && !rettype_b->is_readonly) || (!var_a->type->is_readonly && rettype_b->is_readonly) ) {
                  
                  printf("Can not cast away readonly.\n") ;
                  
