@@ -1373,6 +1373,14 @@ parse_cast:
     //op != addrof && op != deref && op != negate && op != not, etc.
     if ( op == noop ) {
         
+        if ( m_peek(n+1)->keyword == mgk(end_of_line) ) {
+            
+            while ( m_peek(n+1)->keyword == mgk(end_of_line) ) {
+                
+                m_retreatN(1) ;
+            }
+        }
+        
         switch ( m_peek(n+1)->keyword ) {
                 
             case mgk(plus):
@@ -1551,7 +1559,7 @@ parse_cast:
             default:
                 
                 printf("Unknown operator. %s is not a operator.\n",RKString_GetString(m_peek(n+1)->value)) ;
-                
+               
                 exit(EXIT_FAILURE) ;
                 
                 break;

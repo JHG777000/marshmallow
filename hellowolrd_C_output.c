@@ -57,7 +57,7 @@ var4=43  ;
 j=(j+(i+(2/2)))  ;
 j=((mu64 )marshmallow_mymod_myvar3)  ;
 j=((mu64 )marshmallow_mymod_var64)  ;
-marshmallow_mymod_var64=((mu64 )((mu64 )j))  ;
+marshmallow_mymod_var64=((mu64 )((mu64 )((mu64 )((mu64 )((mu64 )j)))))  ;
 j=4  ;
 memcpy(myarray2,myarray, sizeof(myarray2))  ;
 helloworld:  ;
