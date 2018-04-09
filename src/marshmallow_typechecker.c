@@ -2761,22 +2761,12 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
             
              rettype_b = typecheck_statment((marshmallow_statement)statement->var_b, has_assignment, module, store) ;
              
-             if ( typecheck_get_type_category(rettype_a) != arithmetic && typecheck_get_type_category(rettype_b) != arithmetic
-                 && typecheck_get_type_category(rettype_b) != pointers && typecheck_get_type_category(rettype_b) != pointers) {
+             if ( typecheck_get_type_category(rettype_a) != arithmetic || typecheck_get_type_category(rettype_b) != arithmetic ) {
                  
-                 return rettype_a ;
-             }
-             
-             if ( typecheck_get_type_category(rettype_a) != arithmetic && typecheck_get_type_category(rettype_b) != arithmetic
-                 && typecheck_get_type_category(rettype_a) == pointers && typecheck_get_type_category(rettype_b) != pointers) {
+                 printf("Non-arithmetic expression, =, !=, <,>,<=, and >= need an arithmetic expression.\n") ;
                  
-                 return rettype_a ;
-             }
-             
-             if ( typecheck_get_type_category(rettype_a) != arithmetic && typecheck_get_type_category(rettype_b) != arithmetic
-                 && typecheck_get_type_category(rettype_a) != pointers && typecheck_get_type_category(rettype_b) == pointers) {
-                 
-                 return rettype_b ;
+                 exit(EXIT_FAILURE) ;
+
              }
              
              return rettype_a ;
