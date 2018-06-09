@@ -349,15 +349,15 @@ static RKList_node marshmallow_get_previous_node_after_n( RKList_node* startnode
 
 }
 
-#define m_processor(name) static void* name##processor( marshmallow_context context, RKList symbol_list, RKList_node* startnode, int index )
+#define m_processor(name) static void* name##processor( marshmallow_context context, RKList symbol_list, RKList_node* startnode, int index, int line_number )
 
-#define m_process(name) name##processor(context,symbol_list,startnode,index)
+#define m_process(name) name##processor(context,symbol_list,startnode,index,line_number)
 
-#define m_accept(symbol) marshmallow_accept_or_expect(*startnode,rkstr(#symbol),mgk(symbol),0)
+#define m_accept(symbol) marshmallow_accept_or_expect(*startnode,rkstr(#symbol),mgk(symbol),0,line_number)
 
-#define m_expect(symbol) marshmallow_accept_or_expect(*startnode,rkstr(#symbol),mgk(symbol),1)
+#define m_expect(symbol) marshmallow_accept_or_expect(*startnode,rkstr(#symbol),mgk(symbol),1,line_number)
 
-#define m_expectN(n,symbol) marshmallow_accept_or_expect(marshmallow_get_next_node_after_n(startnode,symbol_list,n),rkstr(#symbol),mgk(symbol),1)
+#define m_expectN(n,symbol) marshmallow_accept_or_expect(marshmallow_get_next_node_after_n(startnode,symbol_list,n),rkstr(#symbol),mgk(symbol),1,line_number)
 
 #define m_advance *startnode = marshmallow_get_next_node(startnode,symbol_list)
 
@@ -371,7 +371,7 @@ static RKList_node marshmallow_get_previous_node_after_n( RKList_node* startnode
 
 #define m_peek(n) (marshmallow_get_token(marshmallow_get_next_node_after_n(startnode,symbol_list,n)))
 
-int marshmallow_accept_or_expect( RKList_node startnode, RKString symbol_name, marshmallow_keyword symbol, int expect ) {
+int marshmallow_accept_or_expect( RKList_node startnode, RKString symbol_name, marshmallow_keyword symbol, int expect, int line_number ) {
     
     marshmallow_token token = NULL ;
     
@@ -384,7 +384,7 @@ int marshmallow_accept_or_expect( RKList_node startnode, RKString symbol_name, m
     
     if (expect) if ( symbol != token->keyword ) {
         
-        printf("Error: expected %s, %s is not %s.\n",RKString_GetString(symbol_name),RKString_GetString(token->value),RKString_GetString(symbol_name)) ;
+        printf("On line: %d, error: expected %s, %s is not %s.\n",line_number,RKString_GetString(symbol_name),RKString_GetString(token->value),RKString_GetString(symbol_name)) ;
         
         exit(EXIT_FAILURE) ;
     }
@@ -536,7 +536,7 @@ m_processor(function) {
             
             if ( variable->entity_type != entity_variable ) {
                 
-                printf("Unknown entity in function or method definition. Not a parameter in function or method: '%s'.\n", RKString_GetString(signature->func_name)) ;
+                printf("On line: %d, unknown entity in function or method definition. Not a parameter in function or method: '%s'.\n",line_number,RKString_GetString(signature->func_name)) ;
                 
                 exit(EXIT_FAILURE) ;
             }
@@ -586,7 +586,7 @@ add_the_returns:
         
         if ( m_gettoken->keyword != mgk(identifier) && !marshmallow_is_token_root_type(m_gettoken) ) {
             
-            printf("Error: expected type name in returns. Got: '%s'.\n",RKString_GetString(m_gettoken->value)) ;
+            printf("On line: %d, error: expected type name in returns. Got: '%s'.\n",line_number,RKString_GetString(m_gettoken->value)) ;
             
             exit(EXIT_FAILURE) ;
         }
@@ -595,7 +595,7 @@ add_the_returns:
         
         if ( variable->entity_type != entity_variable ) {
             
-            printf("Unknown entity in function or method definition. Not a retunrs in function or method: '%s'.\n", RKString_GetString(signature->func_name)) ;
+            printf("On line: %d, unknown entity in function or method definition. Not a retunrs in function or method: '%s'.\n",line_number,RKString_GetString(signature->func_name)) ;
             
             exit(EXIT_FAILURE) ;
         }
@@ -683,7 +683,7 @@ m_processor(statement) {
             break;
     }
     
-    printf("Expected statement. '%s' is not a statement.\n",RKString_GetString(m_peek(0)->value)) ;
+    printf("On line: %d, expected statement. '%s' is not a statement.\n",line_number,RKString_GetString(m_peek(0)->value)) ;
     
     exit(EXIT_FAILURE) ;
     
@@ -792,7 +792,7 @@ m_processor(enum) {
                         
                       error:
                         
-                        printf("Expected an integer got:%s\n",RKString_GetString(((marshmallow_value)b->data)->value)) ;
+                        printf("On line: %d, expected an integer got: %s\n",line_number,RKString_GetString(((marshmallow_value)b->data)->value)) ;
                         
                         exit(EXIT_FAILURE) ;
                     }
@@ -1006,7 +1006,7 @@ m_processor(if) {
             
         } else {
             
-            printf("Expected expression. '%s' is not an expression.\n",RKString_GetString(m_peek(1)->value)) ;
+            printf("On line: %d, expected expression. '%s' is not an expression.\n",line_number,RKString_GetString(m_peek(1)->value)) ;
             
             exit(EXIT_FAILURE) ;
             
@@ -1110,7 +1110,7 @@ m_processor(while) {
             
         } else {
             
-            printf("Expected expression. '%s' is not an expression.\n",RKString_GetString(m_peek(1)->value)) ;
+            printf("On line: %d, expected expression. '%s' is not an expression.\n",line_number,RKString_GetString(m_peek(1)->value)) ;
             
             exit(EXIT_FAILURE) ;
             
@@ -1143,7 +1143,7 @@ m_processor(switch) {
             
         } else {
             
-            printf("Expected expression. '%s' is not an expression.\n",RKString_GetString(m_peek(1)->value)) ;
+            printf("On line: %d, expected expression. '%s' is not an expression.\n",line_number,RKString_GetString(m_peek(1)->value)) ;
             
             exit(EXIT_FAILURE) ;
             
@@ -1176,7 +1176,7 @@ m_processor(case) {
             
         } else {
             
-            printf("Expected expression. '%s' is not an expression.\n",RKString_GetString(m_peek(1)->value)) ;
+            printf("On line: %d, expected expression. '%s' is not an expression.\n",line_number,RKString_GetString(m_peek(1)->value)) ;
             
             exit(EXIT_FAILURE) ;
             
@@ -1305,7 +1305,7 @@ m_processor(expression) {
     
     if ( !flag_a ) {
         
-        printf("Unknown expression variable A in expression. %s is not a value, variable, or expression.\n",RKString_GetString(m_peek(n+0)->value)) ;
+        printf("On line: %d, unknown expression variable A in expression. %s is not a value, variable, or expression.\n",line_number,RKString_GetString(m_peek(n+0)->value)) ;
         
         exit(EXIT_FAILURE) ;
     }
@@ -1492,7 +1492,7 @@ parse_cast:
                 
                 if ( op != is_equal ) {
                     
-                    printf("Unknown operator. %s is not a operator.\n",RKString_GetString(m_peek(n+2)->value)) ;
+                    printf("On line: %d, unknown operator. %s is not a operator.\n",line_number,RKString_GetString(m_peek(n+2)->value)) ;
                     
                     exit(EXIT_FAILURE) ;
                 }
@@ -1507,7 +1507,7 @@ parse_cast:
                 
                 if ( op != is_not_equal ) {
                     
-                    printf("Unknown operator. %s is not a operator.\n",RKString_GetString(m_peek(n+2)->value)) ;
+                    printf("On line: %d, unknown operator. %s is not a operator.\n",line_number,RKString_GetString(m_peek(n+2)->value)) ;
                     
                     exit(EXIT_FAILURE) ;
                 }
@@ -1558,7 +1558,7 @@ parse_cast:
                 
             default:
                 
-                printf("Unknown operator. %s is not a operator.\n",RKString_GetString(m_peek(n+1)->value)) ;
+                printf("On line: %d, unknown operator. %s is not a operator.\n",line_number,RKString_GetString(m_peek(n+1)->value)) ;
                
                 exit(EXIT_FAILURE) ;
                 
@@ -1609,7 +1609,7 @@ parse_cast:
             
             if ( !flag_b ) {
                 
-                printf("Unknown expression variable B in expression. %s is not a value, variable, or expression.\n",RKString_GetString(m_peek(n+0)->value)) ;
+                printf("On line: %d, unknown expression variable B in expression. %s is not a value, variable, or expression.\n",line_number,RKString_GetString(m_peek(n+0)->value)) ;
                 
                 exit(EXIT_FAILURE) ;
                 
@@ -1818,7 +1818,7 @@ m_processor(assignment) {
     
     if ( !flag_a ) {
         
-        printf("Unknown assignment variable A in assignment. %s is not a variable, or expression.\n",RKString_GetString(m_peek(n+0)->value)) ;
+        printf("On line: %d, unknown assignment variable A in assignment. %s is not a variable, or expression.\n",line_number,RKString_GetString(m_peek(n+0)->value)) ;
         
         exit(EXIT_FAILURE) ;
         
@@ -1889,7 +1889,7 @@ m_processor(assignment) {
         
         if ( !flag_b ) {
             
-            printf("Unknown assignment variable B in assignment. %s is not a value, variable, or expression.\n",RKString_GetString(m_peek(n+0)->value)) ;
+            printf("On line: %d, unknown assignment variable B in assignment. %s is not a value, variable, or expression.\n",line_number,RKString_GetString(m_peek(n+0)->value)) ;
             
             exit(EXIT_FAILURE) ;
             
@@ -1904,7 +1904,7 @@ m_processor(assignment) {
     
     if ( op == noop && a->type->root_type != expression ) {
         
-        printf("Unknown operator. %s is not a operator.\n",RKString_GetString(m_peek(n+1)->value)) ;
+        printf("On line: %d, unknown operator. %s is not a operator.\n",line_number,RKString_GetString(m_peek(n+1)->value)) ;
         
         exit(EXIT_FAILURE) ;
     }
@@ -1984,7 +1984,7 @@ m_processor(return) {
     
     if ( !flag ) {
         
-        printf("Unknown in return. %s is not a value, variable, collection, or expression.\n",RKString_GetString(m_peek(n+0)->value)) ;
+        printf("On line: %d, unknown in return. %s is not a value, variable, collection, or expression.\n",line_number,RKString_GetString(m_peek(n+0)->value)) ;
         
         exit(EXIT_FAILURE) ;
         
@@ -2265,7 +2265,7 @@ m_processor(variable) {
             
             if ( (arrays != NULL) || (pointers > 0) || (marshmallow_is_token_root_type(m_gettoken)) ) {
                 
-                printf("%s is not a identifier. Identifiers follow types.\n",RKString_GetString(m_peek(n)->value)) ;
+                printf("On line: %d, %s is not a identifier. Identifiers follow types.\n",line_number,RKString_GetString(m_peek(n)->value)) ;
                 
                 exit(EXIT_FAILURE) ;
             }
@@ -2298,7 +2298,7 @@ m_processor(variable) {
     
     if ( m_peek(n)->keyword != mgk(identifier) ) {
         
-        printf("%s is not a identifier.\n",RKString_GetString(m_peek(n)->value)) ;
+        printf("On line: %d, %s is not a identifier.\n",line_number,RKString_GetString(m_peek(n)->value)) ;
         
         exit(EXIT_FAILURE) ;
     }
@@ -2330,7 +2330,7 @@ m_processor(variable) {
             
         } else {
             
-            printf("Extra ':='.\n") ;
+            printf("On line: %d, extra ':='.\n",line_number) ;
             
             exit(EXIT_FAILURE) ;
         }
@@ -2356,7 +2356,7 @@ m_processor(module) {
     
     if ( m_peek(1)->keyword != mgk(identifier) ) {
         
-        printf("%s is not a identifier.\n",RKString_GetString(m_peek(1)->value)) ;
+        printf("On line: %d, %s is not a identifier.\n",line_number,RKString_GetString(m_peek(1)->value)) ;
         
         exit(EXIT_FAILURE) ;
     }
@@ -2373,7 +2373,7 @@ m_processor(module) {
     return module ;
 }
 
-static void marshmallow_parse_line( marshmallow_context context, RKList symbol_list, RKStack scope_stack ) {
+static void marshmallow_parse_line( marshmallow_context context, RKList symbol_list, RKStack scope_stack, int line_number ) {
     
     RKList_node node = RKList_GetFirstNode(symbol_list) ;
     
@@ -2709,7 +2709,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                 
             default:
                 
-                printf("Unknown primary keyword or symbol: %s.\n",RKString_GetString(symbol->value)) ;
+                printf("On line: %d, unknown primary keyword or symbol: %s.\n",line_number,RKString_GetString(symbol->value)) ;
                 
                 exit(EXIT_FAILURE) ;
                 
@@ -2722,14 +2722,14 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                 
                 if ( RKStack_IsEmpty(scope_stack) ) {
                     
-                    printf("No scope.\n") ;
+                    printf("On line: %d, no scope.\n",line_number) ;
                     
                     exit(EXIT_FAILURE) ;
                 }
                 
                 if ( ((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type != entity_module ) {
                     
-                    printf("Expected module. typedefs must exist within a module, not a function or method.\n") ;
+                    printf("On line: %d, expected module. typedefs must exist within a module, not a function or method.\n",line_number) ;
                     
                     exit(EXIT_FAILURE) ;
                 }
@@ -2747,7 +2747,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                 
                 if ( RKStack_IsEmpty(scope_stack) ) {
                     
-                    printf("No scope.\n") ;
+                    printf("On line: %d, no scope.\n",line_number) ;
                     
                     exit(EXIT_FAILURE) ;
                 }
@@ -2756,7 +2756,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                     && !(((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type == entity_function) &&
                     !(((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type == entity_statement) ) {
                     
-                    printf("Expected module or function or method. Variables must exist within a module or function or method.\n") ;
+                    printf("On line: %d, expected module or function or method. Variables must exist within a module or function or method.\n",line_number) ;
                     
                     exit(EXIT_FAILURE) ;
                 }
@@ -2773,7 +2773,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                     
                     if ( (marshmallow_scope)((marshmallow_statement)RKStack_Peek(scope_stack))->function == NULL ) {
                         
-                        printf("If or while statement without a function or method.\n") ;
+                        printf("On line: %d, if or while statement without a function or method.\n",line_number) ;
                         
                         exit(EXIT_FAILURE) ;
                     }
@@ -2787,7 +2787,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                 
                 if ( !RKStack_IsEmpty(scope_stack) ) {
                     
-                    printf("Module does not end.\n") ;
+                    printf("On line: %d, module does not end.\n",line_number) ;
                     
                     exit(EXIT_FAILURE) ;
                 }
@@ -2800,14 +2800,14 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                 
                 if ( RKStack_IsEmpty(scope_stack) ) {
                     
-                    printf("No scope.\n") ;
+                    printf("On line: %d, no scope.\n",line_number) ;
                     
                     exit(EXIT_FAILURE) ;
                 }
                 
                 if ( !(((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type == entity_module) ) {
                     
-                    printf("Expected module. Function and methods must exist within a module.\n") ;
+                    printf("On line: %d, expected module. Function and methods must exist within a module.\n",line_number) ;
                     
                     exit(EXIT_FAILURE) ;
                 }
@@ -2832,7 +2832,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                 
                 if ( RKStack_IsEmpty(scope_stack) ) {
                     
-                    printf("No scope.\n") ;
+                    printf("On line: %d, no scope.\n",line_number) ;
                     
                     exit(EXIT_FAILURE) ;
                 }
@@ -2841,7 +2841,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                                                                                        || ((marshmallow_statement)entity)->op == continueop  ) ) {
                     if ( !does_scope_have_loop(scope_stack) ) {
                         
-                        printf("Break or continue statements can only exist within a loop.\n") ;
+                        printf("On line: %d, break or continue statements can only exist within a loop.\n",line_number) ;
                         
                         exit(EXIT_FAILURE) ;
 
@@ -2852,7 +2852,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                     
                     if ( ((marshmallow_statement)RKStack_Peek(scope_stack))->op != ifop ) {
                         
-                        printf("Else statements can only exist within a if statement.\n") ;
+                        printf("On line: %d, else statements can only exist within a if statement.\n",line_number) ;
                         
                         exit(EXIT_FAILURE) ;
                     }
@@ -2871,7 +2871,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                         
                         if ( ((marshmallow_statement)RKStack_Peek(scope_stack))->op == defaultop ) {
                             
-                            printf("Case statements can not exist within a default statement.\n") ;
+                            printf("On line: %d, case statements can not exist within a default statement.\n",line_number) ;
                             
                             exit(EXIT_FAILURE) ;
                             
@@ -2882,7 +2882,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                         
                         if ( ((marshmallow_statement)RKStack_Peek(scope_stack))->op == caseop ) {
                             
-                            printf("Expected case statement. Default statements can not exist within a case statement.\n") ;
+                            printf("On line: %d, expected case statement. Default statements can not exist within a case statement.\n",line_number) ;
                             
                             exit(EXIT_FAILURE) ;
                             
@@ -2891,7 +2891,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                   
                     if ( ((marshmallow_statement)RKStack_Peek(scope_stack))->op != switchop && ((marshmallow_statement)RKStack_Peek(scope_stack))->op != caseop ) {
                         
-                        printf("Expected switch statement. Cases and default statements can only exist within a switch statement.\n") ;
+                        printf("On line: %d, expected switch statement. Cases and default statements can only exist within a switch statement.\n",line_number) ;
                         
                         exit(EXIT_FAILURE) ;
                         
@@ -2905,7 +2905,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                     
                     if ( !( ((marshmallow_statement)entity)->op == caseop || ((marshmallow_statement)entity)->op == defaultop ) )  {
                         
-                        printf("Expected case or default statement. Only case and default statements can exist within a switch statement.\n") ;
+                        printf("On line: %d, expected case or default statement. Only case and default statements can exist within a switch statement.\n",line_number) ;
                         
                         exit(EXIT_FAILURE) ;
                         
@@ -2924,7 +2924,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                 
                 if ( !(((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type == entity_function) ) {
                     
-                    printf("Expected function. Statements must exist within a function.\n") ;
+                    printf("On line: %d, expected function. Statements must exist within a function.\n",line_number) ;
                     
                     exit(EXIT_FAILURE) ;
                 }
@@ -2978,7 +2978,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                 
                 if ( RKStack_IsEmpty(scope_stack) ) {
                     
-                    printf("Scope stack is empty.\n") ;
+                    printf("On line: %d, scope stack is empty.\n",line_number) ;
                     
                     exit(EXIT_FAILURE) ;
                 }
@@ -2989,7 +2989,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                         
                         if ( m_peek(1)->keyword != mgk(module) ) {
                             
-                            printf("End wrong scope, end mismatched. Ends are unbalanced.\n") ;
+                            printf("On line: %d, end wrong scope, end mismatched. Ends are unbalanced.\n",line_number) ;
                             
                             printf("Expected module. Got: %s.\n",RKString_GetString(m_peek(1)->value)) ;
                             
@@ -3002,7 +3002,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                         
                         if ( m_peek(1)->keyword != mgk(function) ) {
                             
-                            printf("End wrong scope, end mismatched. Ends are unbalanced.\n") ;
+                            printf("On line: %d, end wrong scope, end mismatched. Ends are unbalanced.\n",line_number) ;
                             
                             printf("Expected function. Got: %s.\n",RKString_GetString(m_peek(1)->value)) ;
                             
@@ -3017,7 +3017,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                             
                             if ( m_peek(1)->keyword != mgk(if) ) {
                                 
-                                printf("End wrong scope, end mismatched. Ends are unbalanced.\n") ;
+                                printf("On line: %d, end wrong scope, end mismatched. Ends are unbalanced.\n",line_number) ;
                                 
                                 printf("Expected if. Got: %s.\n",RKString_GetString(m_peek(1)->value)) ;
                                 
@@ -3029,7 +3029,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                             
                             if ( m_peek(1)->keyword != mgk(while) ) {
                                 
-                                printf("End wrong scope, end mismatched. Ends are unbalanced.\n") ;
+                                printf("On line: %d, end wrong scope, end mismatched. Ends are unbalanced.\n",line_number) ;
                                 
                                 printf("Expected while. Got: %s.\n",RKString_GetString(m_peek(1)->value)) ;
                                 
@@ -3041,7 +3041,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                             
                             if ( m_peek(1)->keyword != mgk(switch) ) {
                                 
-                                printf("End wrong scope, end mismatched. Ends are unbalanced.\n") ;
+                                printf("On line: %d, end wrong scope, end mismatched. Ends are unbalanced.\n",line_number) ;
                                 
                                 printf("Expected switch. Got: %s.\n",RKString_GetString(m_peek(1)->value)) ;
                                 
@@ -3055,7 +3055,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                             
                             if ( m_peek(1)->keyword != mgk(case) ) {
                                 
-                                printf("End wrong scope, end mismatched. Ends are unbalanced.\n") ;
+                                printf("On line: %d, end wrong scope, end mismatched. Ends are unbalanced.\n",line_number) ;
                                 
                                 printf("Expected case. Got: %s.\n",RKString_GetString(m_peek(1)->value)) ;
                                 
@@ -3067,7 +3067,7 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                             
                             if ( m_peek(1)->keyword != mgk(default) ) {
                                 
-                                printf("End wrong scope, end mismatched. Ends are unbalanced.\n") ;
+                                printf("On line: %d, end wrong scope, end mismatched. Ends are unbalanced.\n",line_number) ;
                                 
                                 printf("Expected default. Got: %s.\n",RKString_GetString(m_peek(1)->value)) ;
                                 
@@ -3135,9 +3135,13 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
     
     RKStack scope_stack = RKStack_NewStack() ;
     
+    int line_number = 1 ;
+    
     word[word_size-1] = '\0' ;
     
     while ( (c = RKFile_GetUTF32Character(file)) != EOF ) {
+        
+        if ( c == '\n' ) line_number++ ;
         
         if ( noline == 2 && c != '/' && !noline2 ) {
             
@@ -3274,7 +3278,7 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
                     
                 default:
                     
-                    printf("Not valid escape sequence.\n") ;
+                    printf("On line: %d, not valid escape sequence.\n",line_number) ;
                     
                     exit(EXIT_FAILURE) ;
                     
@@ -3313,7 +3317,7 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
         
          if ( is_character == 2 && c != '\'' && (is_escape != 2) && (is_escape != -1) ) {
             
-             printf("Single quotes must have only one character.\n") ;
+             printf("On line: %d, single quotes must have only one character.\n",line_number) ;
             
              exit(EXIT_FAILURE) ;
          }
@@ -3340,7 +3344,7 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
         
         if ( balance < 0 ) {
             
-            printf("Error: non-balanced: ')'.\n") ;
+            printf("On line: %d, error: non-balanced: ')'.\n",line_number) ;
             
             exit(EXIT_FAILURE) ;
         }
@@ -3365,7 +3369,7 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
             
             if ( RKStore_GetItem(context->words, symword) == NULL ) {
                 
-                printf("Error: non-identifier: %s.\n",symword) ;
+                printf("On line: %d, error: non-identifier: %s.\n",line_number,symword) ;
                 
                 exit(EXIT_FAILURE) ;
                 
@@ -3412,14 +3416,14 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
                 
                 if ( word[0] == '_' ) {
                     
-                    printf("Error: User Identifiers can not start with '_'.\n") ;
+                    printf("On line: %d, error: User Identifiers can not start with '_'.\n",line_number) ;
                     
                     exit(EXIT_FAILURE) ;
                 }
                 
                 if ( word[0] == '@' ) {
                     
-                    printf("Error: User Identifiers can not start with '@'.\n") ;
+                    printf("On line: %d, error: User Identifiers can not start with '@'.\n",line_number) ;
                     
                     exit(EXIT_FAILURE) ;
                 }
@@ -3434,7 +3438,7 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
                                || (word[i] == 'c') || (word[i] == 'C') || (word[i] == 'd') || (word[i] == 'D') || (word[i] == 'e')
                                || (word[i] == 'e') || (word[i] == 'f') || (word[i] == 'F')) ) {
                             
-                            printf("Error: %s is not a hex. Hex can only contain 0-9,a-f,A-F.\n",RKString_GetString(RKString_NewStringFromUTF32(word,word_size-1))) ;
+                            printf("On line: %d, error: %s is not a hex. Hex can only contain 0-9,a-f,A-F.\n",line_number,RKString_GetString(RKString_NewStringFromUTF32(word,word_size-1))) ;
                             
                             exit(EXIT_FAILURE) ;
                         }
@@ -3465,7 +3469,7 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
                                 
                                 if ( !is_double ) {
                                     
-                                    printf("Error: %s is not a floating-point number, 'f' can only be used with floating-point numbers.\n",RKString_GetString(RKString_NewStringFromUTF32(word,word_size-1))) ;
+                                    printf("On line: %d, error: %s is not a floating-point number, 'f' can only be used with floating-point numbers.\n",line_number,RKString_GetString(RKString_NewStringFromUTF32(word,word_size-1))) ;
                                     
                                     exit(EXIT_FAILURE) ;
 
@@ -3482,7 +3486,7 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
                                 
                                 if ( is_double ) {
                                     
-                                    printf("Error: %s is a floating-point number, 'l' can not be used with floating-point numbers.\n",RKString_GetString(RKString_NewStringFromUTF32(word,word_size-1))) ;
+                                    printf("On line: %d, error: %s is a floating-point number, 'l' can not be used with floating-point numbers.\n",line_number,RKString_GetString(RKString_NewStringFromUTF32(word,word_size-1))) ;
                                     
                                     exit(EXIT_FAILURE) ;
                                     
@@ -3495,7 +3499,7 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
                                 continue ;
                             }
                             
-                            printf("Error: %s is not a number or identifier. Identifiers can not start with a number, and hex must start with '0x'.\n",RKString_GetString(RKString_NewStringFromUTF32(word,word_size-1))) ;
+                            printf("On line: %d, error: %s is not a number or identifier. Identifiers can not start with a number, and hex must start with '0x'.\n",line_number,RKString_GetString(RKString_NewStringFromUTF32(word,word_size-1))) ;
                             
                             exit(EXIT_FAILURE) ;
                         }
@@ -3505,7 +3509,7 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
                     
                     if ( is_double > 1 ) {
                         
-                        printf("Error: Too many '.' in %s\n",RKString_GetString(RKString_NewStringFromUTF32(word,word_size-1))) ;
+                        printf("On line: %d, error: Too many '.' in %s\n",line_number,RKString_GetString(RKString_NewStringFromUTF32(word,word_size-1))) ;
                         
                         exit(EXIT_FAILURE) ;
                     }
@@ -3527,7 +3531,7 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
                         
                         if ( !(isdigit(word[i])) || (word[i] == '8') || (word[i] == '9') ) {
                             
-                            printf("Error: %s is not an octal. Octal can only contain 0-7.\n",RKString_GetString(RKString_NewStringFromUTF32(word,word_size-1))) ;
+                            printf("On line: %d, error: %s is not an octal. Octal can only contain 0-7.\n",line_number,RKString_GetString(RKString_NewStringFromUTF32(word,word_size-1))) ;
                             
                             exit(EXIT_FAILURE) ;
                         }
@@ -3579,7 +3583,7 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
                 
                 RKList_AddToList(symbol_list, symtoken) ;
                 
-                marshmallow_parse_line(context, symbol_list, scope_stack) ;
+                marshmallow_parse_line(context, symbol_list, scope_stack, line_number) ;
                 
                 RKList_DeleteAllNodesInList(symbol_list) ;
                 
@@ -3590,7 +3594,7 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
     
     if ( !RKStack_IsEmpty(scope_stack) ) {
         
-        printf("Not ended. Ends are unbalanced.\n") ;
+        printf("On line: %d, not ended. Ends are unbalanced.\n",line_number) ;
         
         switch ( ((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type ) {
                 
