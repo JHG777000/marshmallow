@@ -11,7 +11,7 @@ build MarshmallowBuild.
 
  options.
 
-  on test_enable("-t", "--test", "Enable Fmarshmallow tests.").
+  on test_enable("-t", "--test", "Enable marshmallow tests.").
 
   on toolchain_select("-s", "--select_toolchain=tool", "Select toolchain.").
 
