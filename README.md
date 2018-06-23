@@ -141,12 +141,21 @@ helloworld.msrc provides a working example of marshmallow, while hellowolrd\_C_o
 
 ## Building marshmallow
 
-Any standard C11 compliant C compiler(64-bit) should be able to compile marshmallow, and the code it generates.
+Any standard C11 compliant C compiler(64-bit) should be able to compile marshmallow, and the code it generates. Make sure the compiler can handle unicode identifiers in source.
 
-#### Dependencies for building marshmallow: 
+Marshmallow uses [builder][1] for its build system.
 
- -RKLib https://github.com/JHG777000/RKLib
- 
+[1]:https://github.com/JHG777000/builder
+
+Marshmallow defaults to using the clang compiler in its buildfile.
+
+To download and build use this command:
+
+	builder -u https://raw.githubusercontent.com/JHG777000/marshmallow/master/buildfile
+	
+To run tests, add -i __t:
+
+	builder -i __t -u https://raw.githubusercontent.com/JHG777000/marshmallow/master/buildfile 
 ## License
 
 
