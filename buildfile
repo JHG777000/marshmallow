@@ -13,7 +13,7 @@ build MarshmallowBuild.
 
   on test_enable("-t", "--test", "Enable Fmarshmallow tests.").
 
-  on toolchain_select("-s", "--select_toolchain=tool", "Select toolchain, clang or gcc.").
+  on toolchain_select("-s", "--select_toolchain=tool", "Select toolchain.").
 
  end options.
 
