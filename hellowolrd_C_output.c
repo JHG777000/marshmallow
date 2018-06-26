@@ -42,6 +42,10 @@ mu64 i = 0 ;
 mu64 j = 4 ;
 mf64 x = 0.23 ;
 mu64 *ptr = ((void*)0) ;
+mf32 root = 2.f ;
+mf32 q = root ;
+mf32 xhalf = 0 ;
+mu32 z = 0 ;
 mu64 😀 = L'😀' ;
 mu32 myarray[3][3] = {{7,7,7},{7,7,7},{7,7,7}} ;
 mu32 myarray2[3][3] = {0} ;
@@ -58,7 +62,15 @@ j=(j+(i+(2/2)))  ;
 j=((mu64 )marshmallow_mymod_myvar3)  ;
 j=((mu64 )marshmallow_mymod_var64)  ;
 marshmallow_mymod_var64=((mu64 )((mu64 )((mu64 )((mu64 )((mu64 )j)))))  ;
-j=4  ;
+xhalf=(0.5f*q)  ;
+z=(*(mu32 *)&q)  ;
+z=((mu32 )(0x5f3759df-(z>>1)))  ;
+q=(*(mf32 *)&z)  ;
+q=(q*(1.5f-(xhalf*(q*q))))  ;
+root=(root*q)  ;
+if ((root==1.41386008f)) {
+puts(u8"yes!!!");  ;
+} j=4  ;
 memcpy(myarray2,myarray, sizeof(myarray2))  ;
 helloworld:  ;
 if ((ptr==((void*)0))) {

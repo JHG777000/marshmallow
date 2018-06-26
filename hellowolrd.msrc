@@ -95,6 +95,34 @@ module mymod.
 
   var64 := ($int64( ($int64( ($int64( ($int64( ($int64(j)) )) )) )) )).
 
+  //The Quake 3 InvSqrt
+
+  f32 root := (2.f).
+
+  f32 q := root.
+
+  f32 xhalf.
+
+  xhalf := (0.5f * q).
+
+  int z.
+
+  z := ($$int(q)).
+
+  z := ($int((0x5f3759df - (z >> 1)))).
+
+  q := ($$f32(z)).
+
+  q := (q * ( 1.5f - ( xhalf * ( q * q ) ) ) ).
+
+  root := (root * q).
+
+  if ( root == 1.41386008f ).
+
+   puts("yes!!!").
+
+  end if.
+
   j := 4.
 
   //because all new languages need to support unicode identifiers

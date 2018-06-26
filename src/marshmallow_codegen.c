@@ -1059,6 +1059,20 @@ static void output_statement( marshmallow_context context, FILE* file, marshmall
             
             output_value(context, file, (marshmallow_variable)statement->var_b, module) ;
             
+            break;
+            
+        case reinterpretop:
+            
+            fprintf(file, "*(") ;
+            
+            output_type(context, file, ((marshmallow_variable)statement->var_a)->type, NULL, module) ;
+            
+            fprintf(file, "*)&") ;
+            
+            output_value(context, file, (marshmallow_variable)statement->var_b, module) ;
+            
+            break;
+            
         default:
             break;
     }

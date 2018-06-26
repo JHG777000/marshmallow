@@ -70,6 +70,10 @@ static int marshmallow_is_symbol( char c, int balance ) {
     
     if ( c == '}' ) return 1 ;
     
+    if ( c == '>' ) return 1 ;
+    
+    if ( c == '<' ) return 1 ;
+    
     return 0 ;
 }
 
@@ -1318,6 +1322,10 @@ parse_cast:
         
         m_advanceN(1) ;
         
+        if ( op == reinterpretop ) m_advanceN(1) ;
+        
+        if ( op == convertop ) m_advanceN(1) ;
+        
         free(a->type) ;
         
         a->type = ((marshmallow_variable)m_process(type))->type ;
@@ -1335,6 +1343,10 @@ parse_cast:
     if ( op == castop || op == reinterpretop || op == convertop ) {
         
         m_advanceN(n+1) ;
+        
+        if ( op == reinterpretop ) m_retreatN(1) ;
+        
+        if ( op == convertop ) m_retreatN(2) ;
         
         if ( marshmallow_is_token_root_type(m_peek(n+0)) ) {
             
@@ -1367,6 +1379,14 @@ parse_cast:
             n = n-1 ;
             
             flag_b++ ;
+        }
+        
+        if ( !flag_b ) {
+            
+            printf("On line: %d, unknown expression variable B in expression. %s is not a value, variable, or expression.\n",line_number,RKString_GetString(m_peek(n+0)->value)) ;
+            
+            exit(EXIT_FAILURE) ;
+            
         }
     }
     
@@ -1570,9 +1590,9 @@ parse_cast:
         if ( op != inc && op != dec && !flag_b ) {
             
             m_advanceN(n+2) ;
-            
+           
             if ( op == assignment || op == is_equal || op == is_not_equal || op == is_greaterthan_or_equal
-                || op == is_lessthan_or_equal || op == or || op == and) n-- ;
+                || op == is_lessthan_or_equal || op == or || op == and || op == rshift || op == lshift) n-- ;
             
             if ( marshmallow_is_token_root_type(m_peek(n+0)) ) {
                 

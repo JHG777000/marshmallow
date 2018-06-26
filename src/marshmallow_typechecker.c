@@ -73,6 +73,12 @@ break;
             
             get_type_from_root_type(u64)
             
+            case hex:
+            
+             return typecheck_get_type_from_root_type(u64) ;
+            
+            break;
+            
             get_type_from_root_type(f32)
             
             get_type_from_root_type(f64)
@@ -2463,6 +2469,31 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
             
             break;
              
+            case rshift:
+            case lshift:
+             
+             rettype_a = typecheck_get_type_from_variable((marshmallow_variable)statement->var_a, has_assignment, module) ;
+             
+             rettype_b = typecheck_get_type_from_variable((marshmallow_variable)statement->var_b, has_assignment, module) ;
+             
+             if ( typecheck_get_type_category(rettype_a) != arithmetic || typecheck_get_type_category(rettype_b) != arithmetic ) {
+                 
+                 printf("Can not use types from categories other than arithmetic, for rshift or lshift.\n") ;
+                 
+                 exit(EXIT_FAILURE) ;
+             }
+             
+             if ( m_is_type_float(rettype_a) || m_is_type_float(rettype_b) ) {
+                 
+                 printf("Can not use float types for rshift or lshift.\n") ;
+                 
+                 exit(EXIT_FAILURE) ;
+             }
+             
+             return typecheck_get_type_from_root_type(typecheck_get_type_promotion(rettype_a, rettype_b)->root_type) ;
+             
+             break;
+             
              case assignment:
              
              *has_assignment = 1 ;
@@ -2731,6 +2762,46 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
              if ( (var_a->type->is_readonly && !rettype_b->is_readonly) || (!var_a->type->is_readonly && rettype_b->is_readonly) ) {
                  
                  printf("Can not cast away readonly.\n") ;
+                 
+                 exit(EXIT_FAILURE) ;
+             }
+             
+             return var_a->type ;
+             
+             break;
+             
+         case reinterpretop:
+             
+             var_a = (marshmallow_variable)statement->var_a ;
+             
+             rettype_b = typecheck_get_type_from_variable((marshmallow_variable)statement->var_b, has_assignment, module) ;
+             
+             typecheck_type(var_a, module) ;
+             
+             if ( var_a->type == NULL ) {
+                 
+                 printf("Can not use reinterpret with a non-type.\n") ;
+                 
+                 exit(EXIT_FAILURE) ;
+             }
+             
+             if ( typecheck_get_type_category(var_a->type) != typecheck_get_type_category(rettype_b) ) {
+                 
+                 printf("Can not reinterpret types of different categories.\n") ;
+                 
+                 exit(EXIT_FAILURE) ;
+             }
+             
+             if ( typecheck_get_type_category(var_a->type) != arithmetic && typecheck_get_type_category(var_a->type) != classes) {
+                 
+                 printf("Can not reinterpret types from categories other than arithmetic and classes.\n") ;
+                 
+                 exit(EXIT_FAILURE) ;
+             }
+             
+             if ( (var_a->type->is_readonly && !rettype_b->is_readonly) || (!var_a->type->is_readonly && rettype_b->is_readonly) ) {
+                 
+                 printf("Can not reinterpret away readonly.\n") ;
                  
                  exit(EXIT_FAILURE) ;
              }

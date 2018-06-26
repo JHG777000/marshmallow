@@ -18,7 +18,7 @@
 #include "marshmallow.h"
 
 int main(int argc, const char **argv) {
-    
+
     if ( argc < 3 ) {
         
         printf("Marshmallow needs a file to compile, and a file to output C code.\n") ;
