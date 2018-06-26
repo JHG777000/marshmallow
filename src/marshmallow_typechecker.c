@@ -1042,9 +1042,24 @@ static void typecheck_variable( marshmallow_variable variable, marshmallow_funct
                 
                 v = typecheck_float_evaluator(variable->static_assignment->data, module) ;
                 
+                if ( variable->type->root_type == f32 && v != NULL ) {
+                    
+                    v->type->root_type = f32 ;
+                    
+                    ((marshmallow_value)v->data)->type->root_type = f32 ;
+                }
+                
             } else {
                 
                 v = typecheck_integer_evaluator(variable->static_assignment->data, module) ;
+                
+                 if ( v != NULL ) {
+                
+                 v->type->root_type = variable->type->root_type ;
+                
+                 ((marshmallow_value)v->data)->type->root_type = variable->type->root_type ;
+                     
+                 }
             }
             
             if ( v != NULL ) {
