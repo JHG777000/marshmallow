@@ -101,13 +101,9 @@ module mymod.
 
   f32 q := root.
 
-  f32 xhalf.
+  f32 xhalf := (0.5f * q).
 
-  xhalf := (0.5f * q).
-
-  int z.
-
-  z := ($$int(q)).
+  int z := ($$int(q)).
 
   z := ($int((0x5f3759df - (z >> 1)))).
 

@@ -1062,6 +1062,11 @@ static void typecheck_variable( marshmallow_variable variable, marshmallow_funct
                  }
             }
             
+            if ( function != NULL ) {
+                
+                v = NULL ;
+            }
+            
             if ( v != NULL ) {
                 
                 variable->static_assignment = v ;
