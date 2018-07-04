@@ -754,7 +754,9 @@ m_processor(enum) {
     
     int flag = 0 ;
     
-    unsigned int numval = 0 ;
+    int sign = 1 ;
+    
+    int numval = 0 ;
     
     marshmallow_variable a = marshmallow_new_variable() ;
     
@@ -780,9 +782,18 @@ m_processor(enum) {
             
         loop:
             
+            sign = 1 ;
+            
             if ( m_peek(n+1)->keyword == mgk(identifier) ) {
                 
                 if ( is_assignment(startnode, symbol_list, n+2) ) {
+                    
+                    if ( m_peek(n+4)->keyword == mgk(minus) ) {
+                        
+                        sign = -1 ;
+                        
+                        n++ ;
+                    }
                     
                     if ( marshmallow_is_token_root_type(m_peek(n+4)) ) {
                         
@@ -807,9 +818,15 @@ m_processor(enum) {
                     }
                     
                     numval = atoi(RKString_GetString(((marshmallow_value)b->data)->value)) ;
+                    
+                    numval *= sign ;
                 }
                 
+                if ( sign == -1 ) n-- ;
+                
                 marshmallow_parse_value(m_peek(n+1), a) ;
+                
+                if ( sign == -1 ) n++ ;
                 
                 RKList_AddToList(new_enum->enum_names, RKString_CopyString(((marshmallow_value)a->data)->value)) ;
                 

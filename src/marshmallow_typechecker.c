@@ -1521,9 +1521,9 @@ statment_evaluator:
             
             if ( RKStore_ItemExists(((marshmallow_enum)(variable->type->base_type))->enums, RKString_GetString(variable->name)) ) {
                 
-                retptr->intval = *((unsigned int*)(RKStore_GetItem(((marshmallow_enum)(variable->type->base_type))->enums, RKString_GetString(variable->name)))) ;
+                retptr->intval = *((int*)(RKStore_GetItem(((marshmallow_enum)(variable->type->base_type))->enums, RKString_GetString(variable->name)))) ;
                 
-                retptr->root_type = u32 ;
+                retptr->root_type = i32 ;
                 
                 retptr->error = 0 ;
             }

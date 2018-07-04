@@ -37,7 +37,7 @@ module mymod.
 
  int64 var64 := 64.
 
- enum ( enum1 := 5223, enum2, enum3 := 42, enum4, enum5 := 0 ) myenum.
+ enum ( enum1 := -5223, enum2, enum3 := 42, enum4, enum5 := 0 ) myenum.
 
  myenum var := enum1.
 
