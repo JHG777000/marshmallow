@@ -16,7 +16,10 @@
  */
 
 #include "marshmallow.h"
+#include "marshmallow_backend.h"
 
-//marshmallow intermediate "bytecode", or mib
-//mib, will be an intermediate stage in marshmallow's new codegen pipeline
-//mib, will be a stack based intermediate, taking inspiration of WebAssembly
+struct mib_module_s { RKString name ; RKStore routines ; RKStore variables ; } ;
+
+struct mib_routine_s { RKString name ; int is_global ; mib_root_type return_type ; RKStore parameters ; RKStore variables ;
+
+RKList code ; RKStack data_stack ; RKStack op_stack ; }  ;
