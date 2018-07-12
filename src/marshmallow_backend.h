@@ -75,4 +75,16 @@ typedef struct mib_routine_s* mib_routine ;
 
 typedef marshmallow_root_type mib_root_type ; //mib and the other intermediates will only use a subset
 
+typedef marshmallow_root_type mob_root_type ;
+
+typedef marshmallow_root_type mlb_root_type ;
+
+typedef mib_module mlb_module ;
+
+typedef mib_routine mlb_routine ;
+
+typedef enum { mlb_add, mlb_sub, mlb_mult, mlb_div, mlb_rem, mlb_inc, mlb_dec, mlb_rshift, mlb_lshift, mlb_and, mlb_or, mlb_logic_and, mlb_logic_or,
+
+mlb_load, mlb_store, mlb_move, mlb_if, mlb_go_equals, mlb_go_not_equals, mlb_greaterthan, go_lessthan } mlb_opcodes ;
+
 #endif /* marshmallow_backend_h */
