@@ -275,7 +275,6 @@ marshmallow_type marshmallow_copy_type( marshmallow_type t ) {
     return type ;
 }
 
-
 marshmallow_variable marshmallow_new_variable( void ) {
     
     marshmallow_variable variable = RKMem_NewMemOfType(struct marshmallow_variable_s) ;
@@ -293,8 +292,6 @@ marshmallow_variable marshmallow_new_variable( void ) {
     variable->is_external = 0 ;
     
     variable->is_global = 0 ;
-    
-    variable->is_hidden = 0 ;
     
     variable->is_persistent = 0 ;
     

@@ -66,7 +66,7 @@ int is_typedef ; int is_cast ; int is_readonly ; marshmallow_root_type root_type
 
 typedef struct marshmallow_variable_s { marshmallow_entity_type entity_type ; marshmallow_type type ;
     
-RKString name ; void* data ; int is_hidden ; int is_persistent ; int is_declared ; int is_external ; int is_global ;
+RKString name ; void* data ; int is_persistent ; int is_declared ; int is_external ; int is_global ;
     
 marshmallow_access_control access_control ; marshmallow_variable static_assignment ; } *marshmallow_variable ;
 

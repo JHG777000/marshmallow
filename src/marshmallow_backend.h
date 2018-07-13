@@ -73,6 +73,10 @@ typedef struct mib_module_s* mib_module ;
 
 typedef struct mib_routine_s* mib_routine ;
 
+typedef struct mib_variable_s* mib_variable ;
+
+typedef struct mib_instruction_s* mib_instruction ;
+
 typedef marshmallow_root_type mib_root_type ; //mib and the other intermediates will only use a subset
 
 typedef marshmallow_root_type mob_root_type ;
@@ -83,8 +87,22 @@ typedef mib_module mlb_module ;
 
 typedef mib_routine mlb_routine ;
 
+typedef mib_variable mlb_variable ;
+
+typedef mib_instruction mlb_instruction ;
+
+struct mib_module_s { RKString name ; RKStore routines ; RKStore variables ; } ;
+
+struct mib_routine_s { RKString name ; int is_global ; mib_root_type return_type ; RKStore parameters ; RKStore variables ;
+    
+RKList mib_code ; RKList mob_code ; RKList mlb_code ; RKStack data_stack ; RKStack op_stack ; }  ;
+
+struct mib_variable_s { marshmallow_type type ; RKString name ; void* data ; int is_global ; } ;
+
+struct mib_instruction_s { mib_root_type type ; mib_routine routine ; void* a ; void* b ; void* c ; } ;
+
 typedef enum { mlb_add, mlb_sub, mlb_mult, mlb_div, mlb_rem, mlb_inc, mlb_dec, mlb_rshift, mlb_lshift, mlb_and, mlb_or, mlb_logic_and, mlb_logic_or,
 
-mlb_load, mlb_store, mlb_move, mlb_if, mlb_go_equals, mlb_go_not_equals, mlb_greaterthan, go_lessthan } mlb_opcodes ;
+mlb_load, mlb_store, mlb_move, mlb_if, mlb_go_equals, mlb_go_not_equals, mlb_greaterthan, go_lessthan } mlb_opcode ;
 
 #endif /* marshmallow_backend_h */

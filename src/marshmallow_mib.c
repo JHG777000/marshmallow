@@ -18,8 +18,35 @@
 #include "marshmallow.h"
 #include "marshmallow_backend.h"
 
-struct mib_module_s { RKString name ; RKStore routines ; RKStore variables ; } ;
 
-struct mib_routine_s { RKString name ; int is_global ; mib_root_type return_type ; RKStore parameters ; RKStore variables ;
+mib_routine mib_new_routine( RKString name, int is_global, mib_root_type return_type ) {
+    
+    mib_routine routine = RKMem_NewMemOfType(struct mib_routine_s) ;
+    
+    routine->name = name ;
+    
+    routine->is_global = is_global ;
+    
+    routine->return_type = return_type ;
+    
+    routine->parameters = NULL ;
+    
+    routine->variables = NULL ;
+    
+    routine->mib_code = NULL ;
+    
+    routine->mob_code = NULL ;
+    
+    routine->mlb_code = NULL ;
+    
+    routine->data_stack = NULL ;
+    
+    routine->op_stack = NULL ;
+    
+    return routine ;
+}
 
-RKList code ; RKStack data_stack ; RKStack op_stack ; }  ;
+void mib_add_parameter_to_routine( mib_variable parameter, mib_routine routine ) {
+    
+    RKList_AddToList(RKStore_GetList(routine->parameters), parameter) ;
+}
