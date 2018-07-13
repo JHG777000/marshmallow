@@ -16,6 +16,7 @@
  */
 
 #include "marshmallow.h"
+#include "marshmallow_backend.h"
 
  const char* marshmallow_ltoa( RKULong val, char* string ) {
     
@@ -1497,4 +1498,25 @@ void marshmallow_codegen( marshmallow_context context, FILE* out_file ) {
     #undef token
     
     output_app(context, out_file) ;
+}
+
+//////////////////NEW CODEGEN//////////////////////////////////////////////////
+
+codegen_architecture codegen_new_architecture( codegen_architecture_type arch ) {
+    
+    codegen_architecture architecture = RKMem_NewMemOfType(struct codegen_architecture_s) ;
+    
+    switch (arch) {
+            
+        case m_x86_64:
+            
+            
+            
+            break;
+            
+        default:
+            break;
+    }
+    
+    return NULL ;
 }

@@ -97,12 +97,18 @@ struct mib_routine_s { RKString name ; int is_global ; mib_root_type return_type
     
 RKList mib_code ; RKList mob_code ; RKList mlb_code ; RKStack data_stack ; RKStack op_stack ; }  ;
 
-struct mib_variable_s { marshmallow_type type ; RKString name ; void* data ; int is_global ; } ;
+struct mib_variable_s { marshmallow_type type ; RKString name ; RKString value ; int is_global ; } ;
 
 struct mib_instruction_s { mib_root_type type ; mib_routine routine ; void* a ; void* b ; void* c ; } ;
 
 typedef enum { mlb_add, mlb_sub, mlb_mult, mlb_div, mlb_rem, mlb_inc, mlb_dec, mlb_rshift, mlb_lshift, mlb_and, mlb_or, mlb_logic_and, mlb_logic_or,
 
 mlb_load, mlb_store, mlb_move, mlb_if, mlb_go_equals, mlb_go_not_equals, mlb_greaterthan, go_lessthan } mlb_opcode ;
+
+typedef void (*mlb_opcode_func_type)(mlb_routine routine, RKList_node node, mlb_root_type type, mlb_opcode op, void* a, void* b, void* c ) ;
+
+typedef enum {m_x86_64} codegen_architecture_type ;
+
+typedef struct codegen_architecture_s { mlb_opcode_func_type mlb_opcode_func[32] ; } *codegen_architecture ;
 
 #endif /* marshmallow_backend_h */

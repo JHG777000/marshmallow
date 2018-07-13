@@ -33,8 +33,10 @@ void mlb_add_instruction( mlb_routine routine, mlb_root_type type, mlb_opcode op
     
     instruction->b = b ;
     
-    instruction->c= c ;
+    instruction->c = c ;
     
     RKList_AddToList(routine->mlb_code, instruction) ;
 }
+
+
 
