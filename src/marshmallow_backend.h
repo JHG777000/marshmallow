@@ -69,6 +69,12 @@
 #ifndef marshmallow_backend_h
 #define marshmallow_backend_h
 
+
+#define new_architecture(name) void name##_func(codegen_architecture architecture)
+
+#define define_mlb_instructions(name)\
+architecture->mlb_opcode_func[mlb_add] = mlb_add_##name ;
+
 typedef struct mib_module_s* mib_module ;
 
 typedef struct mib_routine_s* mib_routine ;
@@ -105,7 +111,7 @@ typedef enum { mlb_add, mlb_sub, mlb_mult, mlb_div, mlb_rem, mlb_inc, mlb_dec, m
 
 mlb_load, mlb_store, mlb_move, mlb_if, mlb_go_equals, mlb_go_not_equals, mlb_greaterthan, go_lessthan } mlb_opcode ;
 
-typedef void (*mlb_opcode_func_type)(mlb_routine routine, RKList_node node, mlb_root_type type, mlb_opcode op, void* a, void* b, void* c ) ;
+typedef void (*mlb_opcode_func_type)(mlb_routine routine, RKList_node node, mlb_root_type type, mlb_opcode op, void* a, void* b, void* c) ;
 
 typedef enum {m_x86_64} codegen_architecture_type ;
 
