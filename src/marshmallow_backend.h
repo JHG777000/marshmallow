@@ -69,11 +69,37 @@
 #ifndef marshmallow_backend_h
 #define marshmallow_backend_h
 
+#define init_arch(name) if (arch == m_##name) {\
+void name##_func(codegen_architecture architecture) ;\
+name##_func(architecture) ;\
+}
 
 #define new_architecture(name) void name##_func(codegen_architecture architecture)
 
 #define define_mlb_instructions(name)\
-architecture->mlb_opcode_func[mlb_add] = mlb_add_##name ;
+architecture->mlb_opcode_func[mlb_add] = mlb_add_##name ;\
+architecture->mlb_opcode_func[mlb_add] = mlb_sub_##name ;\
+architecture->mlb_opcode_func[mlb_add] = mlb_mult_##name ;\
+architecture->mlb_opcode_func[mlb_add] = mlb_div_##name ;\
+architecture->mlb_opcode_func[mlb_add] = mlb_rem_##name ;\
+architecture->mlb_opcode_func[mlb_add] = mlb_inc_##name ;\
+architecture->mlb_opcode_func[mlb_add] = mlb_dec_##name ;\
+architecture->mlb_opcode_func[mlb_add] = mlb_rshift_##name ;\
+architecture->mlb_opcode_func[mlb_add] = mlb_lshift_##name ;\
+architecture->mlb_opcode_func[mlb_add] = mlb_and_##name ;\
+architecture->mlb_opcode_func[mlb_add] = mlb_or_##name ;\
+architecture->mlb_opcode_func[mlb_add] = mlb_logic_and_##name ;\
+architecture->mlb_opcode_func[mlb_add] = mlb_logic_or_##name ;\
+architecture->mlb_opcode_func[mlb_add] = mlb_load_##name ;\
+architecture->mlb_opcode_func[mlb_add] = mlb_store_##name ;\
+architecture->mlb_opcode_func[mlb_add] = mlb_move_##name ;\
+architecture->mlb_opcode_func[mlb_add] = mlb_if_##name ;\
+architecture->mlb_opcode_func[mlb_add] = mlb_go_equals_##name ;\
+architecture->mlb_opcode_func[mlb_add] = mlb_go_not_equals_##name ;\
+architecture->mlb_opcode_func[mlb_add] = mlb_go_greaterthan_##name ;\
+architecture->mlb_opcode_func[mlb_add] = mlb_go_lessthan_##name ;\
+
+#define define_mlb_opcode(name,arch) void mlb_##name##_##arch(mlb_routine routine, RKList_node node, void* arch_ptr, mlb_root_type type, mlb_opcode op, void* a, void* b, void* c)
 
 typedef struct mib_module_s* mib_module ;
 
@@ -109,12 +135,12 @@ struct mib_instruction_s { mib_root_type type ; mib_routine routine ; void* a ; 
 
 typedef enum { mlb_add, mlb_sub, mlb_mult, mlb_div, mlb_rem, mlb_inc, mlb_dec, mlb_rshift, mlb_lshift, mlb_and, mlb_or, mlb_logic_and, mlb_logic_or,
 
-mlb_load, mlb_store, mlb_move, mlb_if, mlb_go_equals, mlb_go_not_equals, mlb_greaterthan, go_lessthan } mlb_opcode ;
+mlb_load, mlb_store, mlb_move, mlb_if, mlb_go_equals, mlb_go_not_equals, mlb_go_greaterthan, mlb_go_lessthan } mlb_opcode ;
 
-typedef void (*mlb_opcode_func_type)(mlb_routine routine, RKList_node node, mlb_root_type type, mlb_opcode op, void* a, void* b, void* c) ;
+typedef void (*mlb_opcode_func_type)(mlb_routine routine, RKList_node node, void* arch_ptr, mlb_root_type type, mlb_opcode op, void* a, void* b, void* c) ;
 
-typedef enum {m_x86_64} codegen_architecture_type ;
+typedef enum {m_arch_x86_64} codegen_architecture_type ;
 
-typedef struct codegen_architecture_s { mlb_opcode_func_type mlb_opcode_func[32] ; } *codegen_architecture ;
+typedef struct codegen_architecture_s { mlb_opcode_func_type mlb_opcode_func[32] ; void* arch_ptr ; } *codegen_architecture ;
 
 #endif /* marshmallow_backend_h */

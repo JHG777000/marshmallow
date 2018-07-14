@@ -19,8 +19,107 @@
 #include "marshmallow.h"
 #include "marshmallow_backend.h"
 
+define_mlb_opcode(add,arch_x86_64) {
+    
+    
+}
 
-void mlb_add_arch_x86_64(mlb_routine routine, RKList_node node, mlb_root_type type, mlb_opcode op, void* a, void* b, void* c) {
+define_mlb_opcode(sub,arch_x86_64) {
+    
+    
+}
+
+define_mlb_opcode(mult,arch_x86_64) {
+    
+    
+}
+
+define_mlb_opcode(div,arch_x86_64) {
+    
+    
+}
+
+define_mlb_opcode(rem,arch_x86_64) {
+    
+    
+}
+
+define_mlb_opcode(inc,arch_x86_64) {
+    
+    
+}
+
+define_mlb_opcode(dec,arch_x86_64) {
+    
+    
+}
+
+define_mlb_opcode(rshift,arch_x86_64) {
+    
+    
+}
+
+define_mlb_opcode(lshift,arch_x86_64) {
+    
+    
+}
+
+define_mlb_opcode(and,arch_x86_64) {
+    
+    
+}
+
+define_mlb_opcode(or,arch_x86_64) {
+    
+    
+}
+
+define_mlb_opcode(logic_and,arch_x86_64) {
+    
+    
+}
+
+define_mlb_opcode(logic_or,arch_x86_64) {
+    
+    
+}
+
+define_mlb_opcode(load,arch_x86_64) {
+    
+    
+}
+
+define_mlb_opcode(store,arch_x86_64) {
+    
+    
+}
+
+define_mlb_opcode(move,arch_x86_64) {
+    
+    
+}
+
+define_mlb_opcode(if,arch_x86_64) {
+    
+    
+}
+
+define_mlb_opcode(go_equals,arch_x86_64) {
+    
+    
+}
+
+define_mlb_opcode(go_not_equals,arch_x86_64) {
+    
+    
+}
+
+define_mlb_opcode(go_greaterthan,arch_x86_64) {
+    
+    
+}
+
+define_mlb_opcode(go_lessthan,arch_x86_64) {
     
     
 }

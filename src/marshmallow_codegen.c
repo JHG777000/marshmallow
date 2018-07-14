@@ -1505,18 +1505,8 @@ void marshmallow_codegen( marshmallow_context context, FILE* out_file ) {
 codegen_architecture codegen_new_architecture( codegen_architecture_type arch ) {
     
     codegen_architecture architecture = RKMem_NewMemOfType(struct codegen_architecture_s) ;
-    
-    switch (arch) {
-            
-        case m_x86_64:
-            
-            
-            
-            break;
-            
-        default:
-            break;
-    }
+   
+    init_arch(arch_x86_64) ;
     
     return NULL ;
 }
