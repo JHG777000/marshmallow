@@ -131,15 +131,15 @@ RKList mib_code ; RKList mob_code ; RKList mlb_code ; RKStack data_stack ; RKSta
 
 struct mib_variable_s { marshmallow_type type ; RKString name ; RKString value ; int is_global ; } ;
 
-struct mib_instruction_s { mib_root_type type ; mib_routine routine ; void* a ; void* b ; void* c ; } ;
-
 typedef enum { mlb_add, mlb_sub, mlb_mult, mlb_div, mlb_rem, mlb_inc, mlb_dec, mlb_rshift, mlb_lshift, mlb_and, mlb_or, mlb_logic_and, mlb_logic_or,
-
+    
 mlb_load, mlb_store, mlb_move, mlb_if, mlb_go_equals, mlb_go_not_equals, mlb_go_greaterthan, mlb_go_lessthan } mlb_opcode ;
+
+struct mib_instruction_s { mib_root_type type ; mib_routine routine ; mlb_opcode opcode ; void* a ; void* b ; void* c ; } ;
 
 typedef void (*mlb_opcode_func_type)(mlb_routine routine, RKList_node node, void* arch_ptr, mlb_root_type type, mlb_opcode op, void* a, void* b, void* c) ;
 
-typedef enum {m_arch_x86_64} codegen_architecture_type ;
+typedef enum { m_arch_x86_64 } codegen_architecture_type ;
 
 typedef struct codegen_architecture_s { mlb_opcode_func_type mlb_opcode_func[32] ; void* arch_ptr ; } *codegen_architecture ;
 

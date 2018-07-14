@@ -38,5 +38,22 @@ void mlb_add_instruction( mlb_routine routine, mlb_root_type type, mlb_opcode op
     RKList_AddToList(routine->mlb_code, instruction) ;
 }
 
+void mlb_generate_assembly( mlb_routine routine, codegen_architecture architecture ) {
+    
+    RKList_node node = RKList_GetFirstNode(routine->mlb_code) ;
+    
+    mlb_instruction instruction = NULL ;
+    
+    while ( node != NULL ) {
+        
+        instruction = RKList_GetData(node) ;
+        
+        architecture->mlb_opcode_func[instruction->opcode](instruction->routine, node, architecture->arch_ptr, instruction->type, instruction->opcode,
+                                                           instruction->a, instruction->b, instruction->c) ; 
+        node = RKList_GetNextNode(node) ;
+        
+    }
+}
+
 
 
