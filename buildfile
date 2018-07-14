@@ -1,7 +1,7 @@
 
 project := "MarshmallowProject".
 
-project_version := "0.1.5".
+project_version := "0.1.6".
 
 buildfile_version := "1.0".
 
@@ -33,13 +33,15 @@ build MarshmallowBuild.
 
  grab RKLib from RKLibProject.
 
- files Files("src.directory").
+ files Files("src.directories").
 
  sources Source(Files,RKLib).
 
+ make filepath include_path from "resources" to "src".
+
  make filepath rklib_include_path from "resources" to "include" from RKLibProject.
 
- compiler CompilerFlags("-Wall", "-I " + rklib_include_path).
+ compiler CompilerFlags("-Wall", "-I " + include_path,"-I " + rklib_include_path).
 
  toolchain ToolChain(toolchain_select,CompilerFlags).
 
