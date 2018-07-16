@@ -104,6 +104,11 @@ define_mlb_opcode(if,arch_x86_64) {
     
 }
 
+define_mlb_opcode(go,arch_x86_64) {
+    
+    
+}
+
 define_mlb_opcode(go_equals,arch_x86_64) {
     
     
@@ -120,6 +125,11 @@ define_mlb_opcode(go_greaterthan,arch_x86_64) {
 }
 
 define_mlb_opcode(go_lessthan,arch_x86_64) {
+    
+    
+}
+
+define_mlb_opcode(return,arch_x86_64) {
     
     
 }

@@ -94,10 +94,12 @@ architecture->mlb_opcode_func[mlb_add] = mlb_load_##name ;\
 architecture->mlb_opcode_func[mlb_add] = mlb_store_##name ;\
 architecture->mlb_opcode_func[mlb_add] = mlb_move_##name ;\
 architecture->mlb_opcode_func[mlb_add] = mlb_if_##name ;\
+architecture->mlb_opcode_func[mlb_add] = mlb_go_##name ;\
 architecture->mlb_opcode_func[mlb_add] = mlb_go_equals_##name ;\
 architecture->mlb_opcode_func[mlb_add] = mlb_go_not_equals_##name ;\
 architecture->mlb_opcode_func[mlb_add] = mlb_go_greaterthan_##name ;\
 architecture->mlb_opcode_func[mlb_add] = mlb_go_lessthan_##name ;\
+architecture->mlb_opcode_func[mlb_add] = mlb_return_##name ;\
 
 #define define_mlb_opcode(name,arch) void mlb_##name##_##arch(mlb_routine routine, RKList_node node, void* arch_ptr, mlb_root_type type, mlb_opcode op, void* a, void* b, void* c)
 
@@ -133,7 +135,7 @@ struct mib_variable_s { marshmallow_type type ; RKString name ; RKString value ;
 
 typedef enum { mlb_add, mlb_sub, mlb_mult, mlb_div, mlb_rem, mlb_inc, mlb_dec, mlb_rshift, mlb_lshift, mlb_and, mlb_or, mlb_logic_and, mlb_logic_or,
     
-mlb_load, mlb_store, mlb_move, mlb_if, mlb_go_equals, mlb_go_not_equals, mlb_go_greaterthan, mlb_go_lessthan } mlb_opcode ;
+mlb_load, mlb_store, mlb_move, mlb_if, mlb_go, mlb_go_equals, mlb_go_not_equals, mlb_go_greaterthan, mlb_go_lessthan, mlb_return } mlb_opcode ;
 
 struct mib_instruction_s { mib_root_type type ; mib_routine routine ; mlb_opcode opcode ; void* a ; void* b ; void* c ; } ;
 
