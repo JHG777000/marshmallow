@@ -74,12 +74,22 @@ define_mlb_opcode(or,arch_x86_64) {
     
 }
 
+define_mlb_opcode(not,arch_x86_64) {
+    
+    
+}
+
 define_mlb_opcode(logic_and,arch_x86_64) {
     
     
 }
 
 define_mlb_opcode(logic_or,arch_x86_64) {
+    
+    
+}
+
+define_mlb_opcode(logic_not,arch_x86_64) {
     
     
 }

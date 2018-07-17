@@ -78,28 +78,30 @@ name##_func(architecture) ;\
 
 #define define_mlb_instructions(name)\
 architecture->mlb_opcode_func[mlb_add] = mlb_add_##name ;\
-architecture->mlb_opcode_func[mlb_add] = mlb_sub_##name ;\
-architecture->mlb_opcode_func[mlb_add] = mlb_mult_##name ;\
-architecture->mlb_opcode_func[mlb_add] = mlb_div_##name ;\
-architecture->mlb_opcode_func[mlb_add] = mlb_rem_##name ;\
-architecture->mlb_opcode_func[mlb_add] = mlb_inc_##name ;\
-architecture->mlb_opcode_func[mlb_add] = mlb_dec_##name ;\
-architecture->mlb_opcode_func[mlb_add] = mlb_rshift_##name ;\
-architecture->mlb_opcode_func[mlb_add] = mlb_lshift_##name ;\
-architecture->mlb_opcode_func[mlb_add] = mlb_and_##name ;\
-architecture->mlb_opcode_func[mlb_add] = mlb_or_##name ;\
-architecture->mlb_opcode_func[mlb_add] = mlb_logic_and_##name ;\
-architecture->mlb_opcode_func[mlb_add] = mlb_logic_or_##name ;\
-architecture->mlb_opcode_func[mlb_add] = mlb_load_##name ;\
-architecture->mlb_opcode_func[mlb_add] = mlb_store_##name ;\
-architecture->mlb_opcode_func[mlb_add] = mlb_move_##name ;\
-architecture->mlb_opcode_func[mlb_add] = mlb_if_##name ;\
-architecture->mlb_opcode_func[mlb_add] = mlb_go_##name ;\
-architecture->mlb_opcode_func[mlb_add] = mlb_go_equals_##name ;\
-architecture->mlb_opcode_func[mlb_add] = mlb_go_not_equals_##name ;\
-architecture->mlb_opcode_func[mlb_add] = mlb_go_greaterthan_##name ;\
-architecture->mlb_opcode_func[mlb_add] = mlb_go_lessthan_##name ;\
-architecture->mlb_opcode_func[mlb_add] = mlb_return_##name ;\
+architecture->mlb_opcode_func[mlb_sub] = mlb_sub_##name ;\
+architecture->mlb_opcode_func[mlb_mult] = mlb_mult_##name ;\
+architecture->mlb_opcode_func[mlb_div] = mlb_div_##name ;\
+architecture->mlb_opcode_func[mlb_rem] = mlb_rem_##name ;\
+architecture->mlb_opcode_func[mlb_inc] = mlb_inc_##name ;\
+architecture->mlb_opcode_func[mlb_dec] = mlb_dec_##name ;\
+architecture->mlb_opcode_func[mlb_rshift] = mlb_rshift_##name ;\
+architecture->mlb_opcode_func[mlb_lshift] = mlb_lshift_##name ;\
+architecture->mlb_opcode_func[mlb_and] = mlb_and_##name ;\
+architecture->mlb_opcode_func[mlb_or] = mlb_or_##name ;\
+architecture->mlb_opcode_func[mlb_not] = mlb_not_##name ;\
+architecture->mlb_opcode_func[mlb_logic_and] = mlb_logic_and_##name ;\
+architecture->mlb_opcode_func[mlb_logic_or] = mlb_logic_or_##name ;\
+architecture->mlb_opcode_func[mlb_logic_not] = mlb_logic_not_##name ;\
+architecture->mlb_opcode_func[mlb_load] = mlb_load_##name ;\
+architecture->mlb_opcode_func[mlb_store] = mlb_store_##name ;\
+architecture->mlb_opcode_func[mlb_move] = mlb_move_##name ;\
+architecture->mlb_opcode_func[mlb_if] = mlb_if_##name ;\
+architecture->mlb_opcode_func[mlb_go] = mlb_go_##name ;\
+architecture->mlb_opcode_func[mlb_go_equals] = mlb_go_equals_##name ;\
+architecture->mlb_opcode_func[mlb_go_not_equals] = mlb_go_not_equals_##name ;\
+architecture->mlb_opcode_func[mlb_go_greaterthan] = mlb_go_greaterthan_##name ;\
+architecture->mlb_opcode_func[mlb_go_lessthan] = mlb_go_lessthan_##name ;\
+architecture->mlb_opcode_func[mlb_return] = mlb_return_##name ;\
 
 #define define_mlb_opcode(name,arch) void mlb_##name##_##arch(mlb_routine routine, RKList_node node, void* arch_ptr, mlb_root_type type, mlb_opcode op, void* a, void* b, void* c)
 
@@ -133,7 +135,7 @@ RKList mib_code ; RKList mob_code ; RKList mlb_code ; RKStack data_stack ; RKSta
 
 struct mib_variable_s { marshmallow_type type ; RKString name ; RKString value ; int is_global ; } ;
 
-typedef enum { mlb_add, mlb_sub, mlb_mult, mlb_div, mlb_rem, mlb_inc, mlb_dec, mlb_rshift, mlb_lshift, mlb_and, mlb_or, mlb_logic_and, mlb_logic_or,
+typedef enum { mlb_add, mlb_sub, mlb_mult, mlb_div, mlb_rem, mlb_inc, mlb_dec, mlb_rshift, mlb_lshift, mlb_and, mlb_or, mlb_not, mlb_logic_and, mlb_logic_or, mlb_logic_not,
     
 mlb_load, mlb_store, mlb_move, mlb_if, mlb_go, mlb_go_equals, mlb_go_not_equals, mlb_go_greaterthan, mlb_go_lessthan, mlb_return } mlb_opcode ;
 
