@@ -1508,5 +1508,5 @@ codegen_architecture codegen_new_architecture( codegen_architecture_type arch ) 
    
     init_arch(arch_x86_64) ;
     
-    return NULL ;
+    return architecture ;
 }
