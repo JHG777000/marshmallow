@@ -29,6 +29,21 @@ define_mlb_opcode(end_routine,arch_x86_64) {
     printf("end_routine\n") ;
 }
 
+define_mlb_opcode(block,arch_x86_64) {
+    
+    printf("end_routine\n") ;
+}
+
+define_mlb_opcode(alloc,arch_x86_64) {
+    
+    printf("end_routine\n") ;
+}
+
+define_mlb_opcode(terminate,arch_x86_64) {
+    
+    printf("end_routine\n") ;
+}
+
 define_mlb_opcode(add,arch_x86_64) {
     
     printf("add\n") ;
@@ -120,6 +135,16 @@ define_mlb_opcode(store,arch_x86_64) {
 }
 
 define_mlb_opcode(move,arch_x86_64) {
+    
+    printf("move\n") ;
+}
+
+define_mlb_opcode(upsilon,arch_x86_64) {
+    
+    printf("move\n") ;
+}
+
+define_mlb_opcode(phi,arch_x86_64) {
     
     printf("move\n") ;
 }

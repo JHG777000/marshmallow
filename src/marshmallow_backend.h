@@ -79,6 +79,9 @@ name##_func(architecture) ;\
 #define define_mlb_instructions(name)\
 architecture->mlb_opcode_func[mlb_start_routine] = mlb_start_routine_##name ;\
 architecture->mlb_opcode_func[mlb_end_routine] = mlb_end_routine_##name ;\
+architecture->mlb_opcode_func[mlb_block] = mlb_block_##name ;\
+architecture->mlb_opcode_func[mlb_alloc] = mlb_alloc_##name ;\
+architecture->mlb_opcode_func[mlb_terminate] = mlb_terminate_##name ;\
 architecture->mlb_opcode_func[mlb_add] = mlb_add_##name ;\
 architecture->mlb_opcode_func[mlb_sub] = mlb_sub_##name ;\
 architecture->mlb_opcode_func[mlb_mult] = mlb_mult_##name ;\
@@ -98,6 +101,8 @@ architecture->mlb_opcode_func[mlb_logic_not] = mlb_logic_not_##name ;\
 architecture->mlb_opcode_func[mlb_load] = mlb_load_##name ;\
 architecture->mlb_opcode_func[mlb_store] = mlb_store_##name ;\
 architecture->mlb_opcode_func[mlb_move] = mlb_move_##name ;\
+architecture->mlb_opcode_func[mlb_upsilon] = mlb_upsilon_##name ;\
+architecture->mlb_opcode_func[mlb_phi] = mlb_phi_##name ;\
 architecture->mlb_opcode_func[mlb_if] = mlb_if_##name ;\
 architecture->mlb_opcode_func[mlb_go] = mlb_go_##name ;\
 architecture->mlb_opcode_func[mlb_go_equals] = mlb_go_equals_##name ;\
@@ -138,7 +143,7 @@ RKList mib_code ; RKList mob_code ; RKList mlb_code ; RKStack data_stack ; RKSta
 
 struct mib_variable_s { marshmallow_type type ; RKString name ; RKString value ; int is_global ; } ;
 
-typedef enum {  mlb_start_routine, mlb_end_routine, mbl_block, mlb_alloc, mlb_terminate, mlb_add, mlb_sub, mlb_mult, mlb_div, mlb_rem, mlb_inc, mlb_dec, //12
+typedef enum {  mlb_start_routine, mlb_end_routine, mlb_block, mlb_alloc, mlb_terminate, mlb_add, mlb_sub, mlb_mult, mlb_div, mlb_rem, mlb_inc, mlb_dec, //12
     
 mlb_rshift, mlb_lshift, mlb_and, mlb_or, mlb_xor, mlb_not, mlb_logic_and, mlb_logic_or, mlb_logic_not, //9
     
