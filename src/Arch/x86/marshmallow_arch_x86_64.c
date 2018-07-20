@@ -21,127 +21,127 @@
 
 define_mlb_opcode(add,arch_x86_64) {
     
-    
+    printf("add\n") ;
 }
 
 define_mlb_opcode(sub,arch_x86_64) {
     
-    
+    printf("sub\n") ;
 }
 
 define_mlb_opcode(mult,arch_x86_64) {
     
-    
+     printf("mult\n") ;
 }
 
 define_mlb_opcode(div,arch_x86_64) {
     
-    
+    printf("div\n") ;
 }
 
 define_mlb_opcode(rem,arch_x86_64) {
     
-    
+    printf("rem\n") ;
 }
 
 define_mlb_opcode(inc,arch_x86_64) {
     
-    
+    printf("inc\n") ;
 }
 
 define_mlb_opcode(dec,arch_x86_64) {
     
-    
+    printf("dec\n") ;
 }
 
 define_mlb_opcode(rshift,arch_x86_64) {
     
-    
+    printf("rshift\n") ;
 }
 
 define_mlb_opcode(lshift,arch_x86_64) {
     
-    
+    printf("lshift\n") ;
 }
 
 define_mlb_opcode(and,arch_x86_64) {
     
-    
+    printf("and\n") ;
 }
 
 define_mlb_opcode(or,arch_x86_64) {
     
-    
+    printf("or\n") ;
 }
 
 define_mlb_opcode(not,arch_x86_64) {
     
-    
+    printf("not\n") ;
 }
 
 define_mlb_opcode(logic_and,arch_x86_64) {
     
-    
+    printf("logic_and\n") ;
 }
 
 define_mlb_opcode(logic_or,arch_x86_64) {
     
-    
+    printf("logic_or\n") ;
 }
 
 define_mlb_opcode(logic_not,arch_x86_64) {
     
-    
+    printf("logic_not\n") ;
 }
 
 define_mlb_opcode(load,arch_x86_64) {
     
-    
+    printf("load\n") ;
 }
 
 define_mlb_opcode(store,arch_x86_64) {
     
-    
+    printf("store\n") ;
 }
 
 define_mlb_opcode(move,arch_x86_64) {
     
-    
+    printf("move\n") ;
 }
 
 define_mlb_opcode(if,arch_x86_64) {
     
-    
+    printf("if\n") ;
 }
 
 define_mlb_opcode(go,arch_x86_64) {
     
-    
+    printf("go\n") ;
 }
 
 define_mlb_opcode(go_equals,arch_x86_64) {
     
-    
+    printf("go_equals\n") ;
 }
 
 define_mlb_opcode(go_not_equals,arch_x86_64) {
     
-    
+    printf("go_not_equals\n") ;
 }
 
 define_mlb_opcode(go_greaterthan,arch_x86_64) {
     
-    
+     printf("go_greaterthan\n") ;
 }
 
 define_mlb_opcode(go_lessthan,arch_x86_64) {
     
-    
+    printf("go_lessthan\n") ;
 }
 
 define_mlb_opcode(return,arch_x86_64) {
     
-    
+    printf("return\n") ;
 }
 
 new_architecture(arch_x86_64) {
