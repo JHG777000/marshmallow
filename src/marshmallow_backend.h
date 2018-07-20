@@ -138,11 +138,11 @@ RKList mib_code ; RKList mob_code ; RKList mlb_code ; RKStack data_stack ; RKSta
 
 struct mib_variable_s { marshmallow_type type ; RKString name ; RKString value ; int is_global ; } ;
 
-typedef enum {  mlb_start_routine, mlb_end_routine, mlb_add, mlb_sub, mlb_mult, mlb_div, mlb_rem, mlb_inc, mlb_dec, //9
+typedef enum {  mlb_start_routine, mlb_end_routine, mbl_block, mlb_alloc, mlb_terminate, mlb_add, mlb_sub, mlb_mult, mlb_div, mlb_rem, mlb_inc, mlb_dec, //12
     
 mlb_rshift, mlb_lshift, mlb_and, mlb_or, mlb_xor, mlb_not, mlb_logic_and, mlb_logic_or, mlb_logic_not, //9
     
-mlb_load, mlb_store, mlb_move, mlb_if, mlb_go, mlb_go_equals, mlb_go_not_equals, mlb_go_greaterthan, mlb_go_lessthan, mlb_return } mlb_opcode ; //10
+mlb_load, mlb_store, mlb_move, mlb_upsilon, mlb_phi, mlb_if, mlb_go, mlb_go_equals, mlb_go_not_equals, mlb_go_greaterthan, mlb_go_lessthan, mlb_return } mlb_opcode ; //12
 
 struct mib_instruction_s { mib_root_type type ; mib_routine routine ; mlb_opcode opcode ; RKInt a ; RKInt b ; RKInt c ; } ;
 
