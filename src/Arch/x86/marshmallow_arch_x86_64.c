@@ -31,17 +31,17 @@ define_mlb_opcode(end_routine,arch_x86_64) {
 
 define_mlb_opcode(block,arch_x86_64) {
     
-    printf("end_routine\n") ;
+    printf("block\n") ;
 }
 
 define_mlb_opcode(alloc,arch_x86_64) {
     
-    printf("end_routine\n") ;
+    printf("alloc\n") ;
 }
 
 define_mlb_opcode(terminate,arch_x86_64) {
     
-    printf("end_routine\n") ;
+    printf("terminate\n") ;
 }
 
 define_mlb_opcode(add,arch_x86_64) {
@@ -141,12 +141,12 @@ define_mlb_opcode(move,arch_x86_64) {
 
 define_mlb_opcode(upsilon,arch_x86_64) {
     
-    printf("move\n") ;
+    printf("upsilon\n") ;
 }
 
 define_mlb_opcode(phi,arch_x86_64) {
     
-    printf("move\n") ;
+    printf("phi\n") ;
 }
 
 define_mlb_opcode(if,arch_x86_64) {
