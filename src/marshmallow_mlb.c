@@ -19,7 +19,7 @@
 #include "marshmallow.h"
 #include "marshmallow_backend.h"
 
-void mlb_add_instruction( mlb_routine routine, mlb_root_type type, mlb_opcode op, void* a, void* b, void* c ) {
+void mlb_add_instruction( mlb_routine routine, mlb_root_type type, mlb_opcode op, RKInt a, RKInt b, RKInt c ) {
     
     if ( routine->mlb_code == NULL ) routine->mlb_code = RKList_NewList() ;
     

@@ -19,6 +19,16 @@
 #include "marshmallow.h"
 #include "marshmallow_backend.h"
 
+define_mlb_opcode(start_routine,arch_x86_64) {
+    
+    printf("start_routine\n") ;
+}
+
+define_mlb_opcode(end_routine,arch_x86_64) {
+    
+    printf("end_routine\n") ;
+}
+
 define_mlb_opcode(add,arch_x86_64) {
     
     printf("add\n") ;
@@ -72,6 +82,11 @@ define_mlb_opcode(and,arch_x86_64) {
 define_mlb_opcode(or,arch_x86_64) {
     
     printf("or\n") ;
+}
+
+define_mlb_opcode(xor,arch_x86_64) {
+    
+    printf("xor\n") ;
 }
 
 define_mlb_opcode(not,arch_x86_64) {

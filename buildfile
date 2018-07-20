@@ -1,7 +1,7 @@
 
 project := "MarshmallowProject".
 
-project_version := "0.1.7.3".
+project_version := "0.1.7.4".
 
 buildfile_version := "1.0".
 
@@ -92,6 +92,3 @@ build clean_build.
 end build.
 
 default MarshmallowBuild.
-
-
-
