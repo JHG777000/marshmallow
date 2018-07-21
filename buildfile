@@ -1,7 +1,7 @@
 
 project := "MarshmallowProject".
 
-project_version := "0.1.7.4".
+project_version := "0.1.7.5".
 
 buildfile_version := "1.0".
 
@@ -55,13 +55,13 @@ build MarshmallowBuild.
 
   make filepath marshmallow_path from "project" to "marshmallow".
 
-  make filepath hellowolrd_msrc_path from "resources" to "hellowolrd.msrc".
+  make filepath helloworld_msrc_path from "resources" to "helloworld.msrc".
 
-  make filepath marshmallow_c_output_path from "resources" to "hellowolrd_C_output.c".
+  make filepath marshmallow_c_output_path from "resources" to "helloworld_C_output.c".
 
-  run(marshmallow_path + " " + hellowolrd_msrc_path + " " + marshmallow_c_output_path).
+  run(marshmallow_path + " " + helloworld_msrc_path + " " + marshmallow_c_output_path).
 
-  files Files("hellowolrd_C_output.c").
+  files Files("helloworld_C_output.c").
 
   sources Source(Files).
 

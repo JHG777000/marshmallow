@@ -129,7 +129,7 @@ Marshmallow as of now, is very much a work in progress. Core language features h
 
 The compiler is full of bugs and memory leaks, as such marshmallow has a long way to go before v1.0, however work is ongoing and active.
 
-helloworld.msrc provides a working example of marshmallow, while hellowolrd\_C_output.c is the C code marshmallow will  generate from helloworld.msrc.
+helloworld.msrc provides a working example of marshmallow, while helloworld\_C_output.c is the C code marshmallow will  generate from helloworld.msrc.
 
 ### File Extensions:
 
