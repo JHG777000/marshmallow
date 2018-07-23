@@ -157,4 +157,8 @@ typedef enum { m_arch_x86_64 } codegen_architecture_type ;
 
 typedef struct codegen_architecture_s { mlb_opcode_func_type mlb_opcode_func[64] ; void* arch_ptr ; } *codegen_architecture ;
 
+mib_routine mib_new_routine( RKString name, int is_global, mib_root_type return_type ) ;
+
+void mib_add_parameter_to_routine( mib_variable parameter, mib_routine routine ) ;
+
 #endif /* marshmallow_backend_h */
