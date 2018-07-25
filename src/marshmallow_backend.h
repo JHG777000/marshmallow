@@ -143,7 +143,7 @@ struct mib_module_s { RKString name ; RKStore routines ; RKStore variables ; } ;
 
 struct mib_routine_s { RKString name ; int is_global ; mib_root_type return_type ; RKStore parameters ; RKStore variables ;
     
-RKList mib_code ; RKList mob_code ; RKList mlb_code ; RKStack data_stack ; RKStack op_stack ; RKStore registers ; }  ;
+RKList mib_code ; RKList mob_code ; RKList mlb_code ; RKStack data_stack ; RKStack op_stack ; RKIndex blocks ; RKIndex registers ; }  ;
 
 struct mib_variable_s { marshmallow_type type ; RKString name ; RKString value ; int is_global ; } ;
 
@@ -157,7 +157,7 @@ mlb_rshift, mlb_lshift, mlb_and, mlb_or, mlb_xor, mlb_not, mlb_logic_and, mlb_lo
     
 mlb_load, mlb_store, mlb_move, mlb_upsilon, mlb_phi, mlb_if, mlb_go, mlb_go_equals, mlb_go_not_equals, mlb_go_greaterthan, mlb_go_lessthan, mlb_return } mlb_opcode ; //12
 
-struct mib_instruction_s { mib_root_type type ; mib_routine routine ; mlb_opcode opcode ; RKInt a ; RKInt b ; RKInt c ; } ;
+struct mib_instruction_s { mib_root_type type ; mib_routine routine ; mlb_opcode opcode ; RKInt a ; RKInt b ; RKInt c ; RKList assembly ; } ;
 
 typedef void (*mlb_opcode_func_type)(mlb_routine routine, RKList_node node, void* arch_ptr, mlb_root_type type, mlb_opcode op, RKInt a, RKInt b, RKInt c) ;
 
