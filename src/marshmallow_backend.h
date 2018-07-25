@@ -137,15 +137,19 @@ typedef mib_instruction mlb_instruction ;
 
 typedef struct mlb_block_s* mlb_block_type ;
 
+typedef struct mlb_register_s* mlb_register ;
+
 struct mib_module_s { RKString name ; RKStore routines ; RKStore variables ; } ;
 
 struct mib_routine_s { RKString name ; int is_global ; mib_root_type return_type ; RKStore parameters ; RKStore variables ;
     
-RKList mib_code ; RKList mob_code ; RKList mlb_code ; RKStack data_stack ; RKStack op_stack ; }  ;
+RKList mib_code ; RKList mob_code ; RKList mlb_code ; RKStack data_stack ; RKStack op_stack ; RKStore registers ; }  ;
 
 struct mib_variable_s { marshmallow_type type ; RKString name ; RKString value ; int is_global ; } ;
 
 struct mlb_block_s { RKList code ; RKList gos ; RKInt block_id ; RKString section_name ; } ;
+
+struct mlb_register_s { RKString reserved_register ; int r_id ; mlb_root_type type ; int alloc_size ; int is_alive ; } ;
 
 typedef enum {  mlb_start_routine, mlb_end_routine, mlb_block, mlb_alloc, mlb_terminate, mlb_add, mlb_sub, mlb_mult, mlb_div, mlb_rem, mlb_inc, mlb_dec, //12
     
