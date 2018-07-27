@@ -19,13 +19,13 @@
 #include "marshmallow.h"
 #include "marshmallow_backend.h"
 
-void mlb_add_instruction( mlb_routine routine, mlb_block_type block, mlb_root_type type, mlb_opcode op, RKInt a, RKInt b, RKInt c ) {
+void mlb_add_instruction( cg_routine routine, cg_block block, cg_root_type type, mlb_opcode op, RKInt a, RKInt b, RKInt c ) {
     
     if ( block->code == NULL ) block->code = RKList_NewList() ;
     
     if ( block->gos == NULL ) block->gos = RKList_NewList() ;
     
-    mlb_instruction instruction = RKMem_NewMemOfType(struct mib_instruction_s) ;
+    cg_instruction instruction = RKMem_NewMemOfType(struct cg_instruction_s) ;
     
     instruction->type = type ;
     
@@ -43,11 +43,11 @@ void mlb_add_instruction( mlb_routine routine, mlb_block_type block, mlb_root_ty
         op == mlb_go_lessthan || op == mlb_go_greaterthan) RKList_AddToList(block->gos, instruction) ;
 }
 
-void mlb_generate_assembly( mlb_routine routine, codegen_architecture architecture ) {
+void mlb_generate_assembly( cg_routine routine, codegen_architecture architecture ) {
     
     RKList_node node = RKList_GetFirstNode(routine->mlb_code) ;
     
-    mlb_instruction instruction = NULL ;
+    cg_instruction instruction = NULL ;
     
     while ( node != NULL ) {
         
@@ -59,6 +59,3 @@ void mlb_generate_assembly( mlb_routine routine, codegen_architecture architectu
         
     }
 }
-
-
-

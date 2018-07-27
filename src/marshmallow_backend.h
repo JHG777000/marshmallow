@@ -111,45 +111,33 @@ architecture->mlb_opcode_func[mlb_go_greaterthan] = mlb_go_greaterthan_##name ;\
 architecture->mlb_opcode_func[mlb_go_lessthan] = mlb_go_lessthan_##name ;\
 architecture->mlb_opcode_func[mlb_return] = mlb_return_##name ;\
 
-#define define_mlb_opcode(name,arch) void mlb_##name##_##arch(mlb_routine routine, RKList_node node, void* arch_ptr, mlb_root_type type, mlb_opcode op, RKInt a, RKInt b, RKInt c)
+#define define_mlb_opcode(name,arch) void mlb_##name##_##arch(cg_routine routine, RKList_node node, void* arch_ptr, cg_root_type type, mlb_opcode op, RKInt a, RKInt b, RKInt c)
 
-typedef struct mib_module_s* mib_module ;
+typedef struct cg_module_s* cg_module ;
 
-typedef struct mib_routine_s* mib_routine ;
+typedef struct cg_routine_s* cg_routine ;
 
-typedef struct mib_variable_s* mib_variable ;
+typedef struct cg_variable_s* cg_variable ;
 
-typedef struct mib_instruction_s* mib_instruction ;
+typedef struct cg_instruction_s* cg_instruction ;
 
-typedef marshmallow_root_type mib_root_type ; //mib and the other intermediates will only use a subset
+typedef marshmallow_root_type cg_root_type ; //mib and the other intermediates will only use a subset
 
-typedef marshmallow_root_type mob_root_type ;
+typedef struct cg_block_s* cg_block ;
 
-typedef marshmallow_root_type mlb_root_type ;
+typedef struct cg_register_s* cg_register ;
 
-typedef mib_module mlb_module ;
+struct cg_module_s { RKString name ; RKStore routines ; RKStore variables ; } ;
 
-typedef mib_routine mlb_routine ;
-
-typedef mib_variable mlb_variable ;
-
-typedef mib_instruction mlb_instruction ;
-
-typedef struct mlb_block_s* mlb_block_type ;
-
-typedef struct mlb_register_s* mlb_register ;
-
-struct mib_module_s { RKString name ; RKStore routines ; RKStore variables ; } ;
-
-struct mib_routine_s { RKString name ; int is_global ; mib_root_type return_type ; RKStore parameters ; RKStore variables ;
+struct cg_routine_s { RKString name ; int is_global ; cg_root_type return_type ; RKStore parameters ; RKStore variables ;
     
 RKList mib_code ; RKList mob_code ; RKList mlb_code ; RKStack data_stack ; RKStack op_stack ; RKIndex blocks ; RKIndex registers ; }  ;
 
-struct mib_variable_s { marshmallow_type type ; RKString name ; RKString value ; int is_global ; } ;
+struct cg_variable_s { marshmallow_type type ; RKString name ; RKString value ; int is_global ; } ;
 
-struct mlb_block_s { RKList code ; RKList gos ; RKInt block_id ; RKString section_name ; } ;
+struct cg_block_s { RKList code ; RKList gos ; RKInt block_id ; RKString section_name ; } ;
 
-struct mlb_register_s { RKString reserved_register ; int r_id ; mlb_root_type type ; int alloc_size ; int is_alive ; } ;
+struct cg_register_s { RKString reserved_register ; int r_id ; cg_root_type type ; int alloc_size ; int is_alive ; } ;
 
 typedef enum {  mlb_start_routine, mlb_end_routine, mlb_block, mlb_alloc, mlb_terminate, mlb_add, mlb_sub, mlb_mult, mlb_div, mlb_rem, mlb_inc, mlb_dec, //12
     
@@ -157,16 +145,16 @@ mlb_rshift, mlb_lshift, mlb_and, mlb_or, mlb_xor, mlb_not, mlb_logic_and, mlb_lo
     
 mlb_load, mlb_store, mlb_move, mlb_upsilon, mlb_phi, mlb_if, mlb_go, mlb_go_equals, mlb_go_not_equals, mlb_go_greaterthan, mlb_go_lessthan, mlb_return } mlb_opcode ; //12
 
-struct mib_instruction_s { mib_root_type type ; mib_routine routine ; mlb_opcode opcode ; RKInt a ; RKInt b ; RKInt c ; RKList assembly ; } ;
+struct cg_instruction_s { cg_root_type type ; cg_routine routine ; mlb_opcode opcode ; RKInt a ; RKInt b ; RKInt c ; RKList assembly ; } ;
 
-typedef void (*mlb_opcode_func_type)(mlb_routine routine, RKList_node node, void* arch_ptr, mlb_root_type type, mlb_opcode op, RKInt a, RKInt b, RKInt c) ;
+typedef void (*mlb_opcode_func_type)(cg_routine routine, RKList_node node, void* arch_ptr, cg_root_type type, mlb_opcode op, RKInt a, RKInt b, RKInt c) ;
 
 typedef enum { m_arch_x86_64 } codegen_architecture_type ;
 
 typedef struct codegen_architecture_s { mlb_opcode_func_type mlb_opcode_func[64] ; void* arch_ptr ; } *codegen_architecture ;
 
-mib_routine mib_new_routine( RKString name, int is_global, mib_root_type return_type ) ;
+cg_routine mib_new_routine( RKString name, int is_global, cg_root_type return_type ) ;
 
-void mib_add_parameter_to_routine( mib_variable parameter, mib_routine routine ) ;
+void mib_add_parameter_to_routine( cg_variable parameter, cg_routine routine ) ;
 
 #endif /* marshmallow_backend_h */
