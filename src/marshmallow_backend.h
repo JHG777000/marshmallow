@@ -135,7 +135,7 @@ RKList mib_code ; RKList mob_code ; RKList mlb_code ; RKStack data_stack ; RKSta
 
 struct cg_variable_s { marshmallow_type type ; RKString name ; RKString value ; int is_global ; } ;
 
-struct cg_block_s { RKList code ; RKList gos ; RKInt block_id ; RKString section_name ; } ;
+struct cg_block_s { cg_routine routine ; RKList code ; RKList gos ; RKInt block_id ; RKString section_name ; } ;
 
 struct cg_register_s { RKString reserved_register ; int r_id ; cg_root_type type ; int alloc_size ; int is_alive ; } ;
 

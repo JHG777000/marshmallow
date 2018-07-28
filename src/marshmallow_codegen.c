@@ -1543,7 +1543,26 @@ void cg_add_parameter_to_routine( cg_variable parameter, cg_routine routine ) {
     RKList_AddToList(RKStore_GetList(routine->parameters), parameter) ;
 }
 
-void cg_add_instruction( cg_routine routine, cg_block block, cg_root_type type, mlb_opcode op, RKInt a, RKInt b, RKInt c ) {
+cg_block cg_new_block( cg_routine routine ) {
+    
+    cg_block block = RKMem_NewMemOfType(struct cg_block_s) ;
+    
+    block->section_name = NULL ;
+    
+    block->routine = routine ;
+    
+    block->code = NULL ;
+    
+    block->gos = NULL ;
+    
+    block->block_id = RKIndex_GetNumOfItems(routine->blocks) ;
+    
+    RKIndex_AddItem(routine->blocks, block) ;
+    
+    return block ;
+}
+
+void cg_add_mlb_instruction_to_block( cg_block block, cg_root_type type, mlb_opcode op, RKInt a, RKInt b, RKInt c ) {
     
     if ( block->code == NULL ) block->code = RKList_NewList() ;
     
@@ -1551,9 +1570,9 @@ void cg_add_instruction( cg_routine routine, cg_block block, cg_root_type type, 
     
     cg_instruction instruction = RKMem_NewMemOfType(struct cg_instruction_s) ;
     
-    instruction->type = type ;
+    instruction->routine = block->routine ;
     
-    instruction->routine = routine ;
+    instruction->type = type ;
     
     instruction->a = a ;
     
