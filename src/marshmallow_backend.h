@@ -153,8 +153,8 @@ typedef enum { m_arch_x86_64 } codegen_architecture_type ;
 
 typedef struct codegen_architecture_s { mlb_opcode_func_type mlb_opcode_func[64] ; void* arch_ptr ; } *codegen_architecture ;
 
-cg_routine mib_new_routine( RKString name, int is_global, cg_root_type return_type ) ;
+cg_routine cg_new_routine( RKString name, int is_global, cg_root_type return_type ) ;
 
-void mib_add_parameter_to_routine( cg_variable parameter, cg_routine routine ) ;
+void cg_add_parameter_to_routine( cg_variable parameter, cg_routine routine ) ;
 
 #endif /* marshmallow_backend_h */

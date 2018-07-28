@@ -1510,3 +1510,76 @@ codegen_architecture codegen_new_architecture( codegen_architecture_type arch ) 
     
     return architecture ;
 }
+
+cg_routine cg_new_routine( RKString name, int is_global, cg_root_type return_type ) {
+    
+    cg_routine routine = RKMem_NewMemOfType(struct cg_routine_s) ;
+    
+    routine->name = name ;
+    
+    routine->is_global = is_global ;
+    
+    routine->return_type = return_type ;
+    
+    routine->parameters = NULL ;
+    
+    routine->variables = NULL ;
+    
+    routine->mib_code = NULL ;
+    
+    routine->mob_code = NULL ;
+    
+    routine->mlb_code = NULL ;
+    
+    routine->data_stack = NULL ;
+    
+    routine->op_stack = NULL ;
+    
+    return routine ;
+}
+
+void cg_add_parameter_to_routine( cg_variable parameter, cg_routine routine ) {
+    
+    RKList_AddToList(RKStore_GetList(routine->parameters), parameter) ;
+}
+
+void cg_add_instruction( cg_routine routine, cg_block block, cg_root_type type, mlb_opcode op, RKInt a, RKInt b, RKInt c ) {
+    
+    if ( block->code == NULL ) block->code = RKList_NewList() ;
+    
+    if ( block->gos == NULL ) block->gos = RKList_NewList() ;
+    
+    cg_instruction instruction = RKMem_NewMemOfType(struct cg_instruction_s) ;
+    
+    instruction->type = type ;
+    
+    instruction->routine = routine ;
+    
+    instruction->a = a ;
+    
+    instruction->b = b ;
+    
+    instruction->c = c ;
+    
+    RKList_AddToList(block->code, instruction) ;
+    
+    if ( op == mlb_go || op == mlb_go_equals || op == mlb_go_not_equals ||
+        op == mlb_go_lessthan || op == mlb_go_greaterthan) RKList_AddToList(block->gos, instruction) ;
+}
+
+void cg_generate_assembly( cg_routine routine, codegen_architecture architecture ) {
+    
+    RKList_node node = RKList_GetFirstNode(routine->mlb_code) ;
+    
+    cg_instruction instruction = NULL ;
+    
+    while ( node != NULL ) {
+        
+        instruction = RKList_GetData(node) ;
+        
+        architecture->mlb_opcode_func[instruction->opcode](instruction->routine, node, architecture->arch_ptr, instruction->type, instruction->opcode,
+                                                           instruction->a, instruction->b, instruction->c) ;
+        node = RKList_GetNextNode(node) ;
+        
+    }
+}
