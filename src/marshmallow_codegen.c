@@ -1562,7 +1562,7 @@ cg_block cg_new_block( cg_routine routine ) {
     return block ;
 }
 
-void cg_add_mlb_instruction_to_block( cg_block block, cg_root_type type, mlb_opcode op, RKInt a, RKInt b, RKInt c ) {
+void cg_add_mlb_instruction_to_block( cg_block block, cg_root_type type, mlb_opcode op, cg_variable a, cg_variable b, cg_variable c ) {
     
     if ( block->code == NULL ) block->code = RKList_NewList() ;
     
