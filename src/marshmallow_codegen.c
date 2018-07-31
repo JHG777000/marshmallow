@@ -1505,8 +1505,6 @@ void marshmallow_codegen( marshmallow_context context, FILE* out_file ) {
 codegen_architecture codegen_new_architecture( codegen_architecture_type arch ) {
     
     codegen_architecture architecture = RKMem_NewMemOfType(struct codegen_architecture_s) ;
-   
-    init_arch(arch_x86_64) ;
     
     return architecture ;
 }
@@ -1588,7 +1586,7 @@ void cg_add_mlb_instruction_to_block( cg_block block, cg_root_type type, mlb_opc
 
 void cg_generate_assembly( cg_routine routine, codegen_architecture architecture ) {
     
-    RKList_node node = RKList_GetFirstNode(routine->mlb_code) ;
+    RKList_node node = RKList_GetFirstNode(routine->mlb_code->code) ;
     
     cg_instruction instruction = NULL ;
     

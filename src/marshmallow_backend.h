@@ -63,11 +63,6 @@
 #ifndef marshmallow_backend_h
 #define marshmallow_backend_h
 
-#define init_arch(name) if (arch == m_##name) {\
-void name##_func(codegen_architecture architecture) ;\
-name##_func(architecture) ;\
-}
-
 #define new_architecture(name) void name##_func(codegen_architecture architecture)
 
 #define define_mlb_instructions(name)\
