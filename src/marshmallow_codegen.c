@@ -1502,14 +1502,14 @@ void marshmallow_codegen( marshmallow_context context, FILE* out_file ) {
 
 //////////////////NEW CODEGEN//////////////////////////////////////////////////
 
-codegen_architecture codegen_new_architecture( codegen_architecture_type arch ) {
+codegen_backend codegen_new_backend( codegen_backend_type backend_type ) {
     
-    codegen_architecture architecture = RKMem_NewMemOfType(struct codegen_architecture_s) ;
+    codegen_backend backend = RKMem_NewMemOfType(struct codegen_backend_s) ;
     
-    return architecture ;
+    return backend ;
 }
 
-cg_routine cg_new_routine( RKString name, int is_global, cg_root_type return_type ) {
+cg_routine cg_new_routine( RKString name, int is_global, RKList return_types ) {
     
     cg_routine routine = RKMem_NewMemOfType(struct cg_routine_s) ;
     
@@ -1517,7 +1517,7 @@ cg_routine cg_new_routine( RKString name, int is_global, cg_root_type return_typ
     
     routine->is_global = is_global ;
     
-    routine->return_type = return_type ;
+    routine->return_types = return_types ;
     
     routine->parameters = NULL ;
     
@@ -1538,65 +1538,5 @@ cg_routine cg_new_routine( RKString name, int is_global, cg_root_type return_typ
 
 void cg_add_parameter_to_routine( cg_variable parameter, cg_routine routine ) {
     
-    RKList_AddToList(RKStore_GetList(routine->parameters), parameter) ;
-}
-
-cg_block cg_new_block( cg_routine routine ) {
-    
-    cg_block block = RKMem_NewMemOfType(struct cg_block_s) ;
-    
-    block->section_name = NULL ;
-    
-    block->routine = routine ;
-    
-    block->code = NULL ;
-    
-    block->gos = NULL ;
-    
-    block->block_id = RKIndex_GetNumOfItems(routine->blocks) ;
-    
-    RKIndex_AddItem(routine->blocks, block) ;
-    
-    return block ;
-}
-
-void cg_add_mlb_instruction_to_block( cg_block block, cg_root_type type, mlb_opcode op, cg_variable a, cg_variable b, cg_variable c ) {
-    
-    if ( block->code == NULL ) block->code = RKList_NewList() ;
-    
-    if ( block->gos == NULL ) block->gos = RKList_NewList() ;
-    
-    cg_instruction instruction = RKMem_NewMemOfType(struct cg_instruction_s) ;
-    
-    instruction->routine = block->routine ;
-    
-    instruction->type = type ;
-    
-    instruction->a = a ;
-    
-    instruction->b = b ;
-    
-    instruction->c = c ;
-    
-    RKList_AddToList(block->code, instruction) ;
-    
-    if ( op == mlb_go || op == mlb_go_equals || op == mlb_go_not_equals ||
-        op == mlb_go_lessthan || op == mlb_go_greaterthan) RKList_AddToList(block->gos, instruction) ;
-}
-
-void cg_generate_assembly( cg_routine routine, codegen_architecture architecture ) {
-    
-    RKList_node node = RKList_GetFirstNode(routine->mlb_code->code) ;
-    
-    cg_instruction instruction = NULL ;
-    
-    while ( node != NULL ) {
-        
-        instruction = RKList_GetData(node) ;
-        
-        architecture->mlb_opcode_func[instruction->opcode](instruction->routine, node, architecture->arch_ptr, instruction->type, instruction->opcode,
-                                                           instruction->a, instruction->b, instruction->c) ;
-        node = RKList_GetNextNode(node) ;
-        
-    }
+    RKStore_AddItem(routine->parameters, parameter, RKString_GetString(parameter->name)) ;
 }

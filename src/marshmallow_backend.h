@@ -63,44 +63,7 @@
 #ifndef marshmallow_backend_h
 #define marshmallow_backend_h
 
-#define new_architecture(name) void name##_func(codegen_architecture architecture)
-
-#define define_mlb_instructions(name)\
-architecture->mlb_opcode_func[mlb_start_routine] = mlb_start_routine_##name ;\
-architecture->mlb_opcode_func[mlb_end_routine] = mlb_end_routine_##name ;\
-architecture->mlb_opcode_func[mlb_block] = mlb_block_##name ;\
-architecture->mlb_opcode_func[mlb_alloc] = mlb_alloc_##name ;\
-architecture->mlb_opcode_func[mlb_terminate] = mlb_terminate_##name ;\
-architecture->mlb_opcode_func[mlb_add] = mlb_add_##name ;\
-architecture->mlb_opcode_func[mlb_sub] = mlb_sub_##name ;\
-architecture->mlb_opcode_func[mlb_mult] = mlb_mult_##name ;\
-architecture->mlb_opcode_func[mlb_div] = mlb_div_##name ;\
-architecture->mlb_opcode_func[mlb_rem] = mlb_rem_##name ;\
-architecture->mlb_opcode_func[mlb_inc] = mlb_inc_##name ;\
-architecture->mlb_opcode_func[mlb_dec] = mlb_dec_##name ;\
-architecture->mlb_opcode_func[mlb_rshift] = mlb_rshift_##name ;\
-architecture->mlb_opcode_func[mlb_lshift] = mlb_lshift_##name ;\
-architecture->mlb_opcode_func[mlb_and] = mlb_and_##name ;\
-architecture->mlb_opcode_func[mlb_or] = mlb_or_##name ;\
-architecture->mlb_opcode_func[mlb_xor] = mlb_xor_##name ;\
-architecture->mlb_opcode_func[mlb_not] = mlb_not_##name ;\
-architecture->mlb_opcode_func[mlb_logic_and] = mlb_logic_and_##name ;\
-architecture->mlb_opcode_func[mlb_logic_or] = mlb_logic_or_##name ;\
-architecture->mlb_opcode_func[mlb_logic_not] = mlb_logic_not_##name ;\
-architecture->mlb_opcode_func[mlb_load] = mlb_load_##name ;\
-architecture->mlb_opcode_func[mlb_store] = mlb_store_##name ;\
-architecture->mlb_opcode_func[mlb_move] = mlb_move_##name ;\
-architecture->mlb_opcode_func[mlb_upsilon] = mlb_upsilon_##name ;\
-architecture->mlb_opcode_func[mlb_phi] = mlb_phi_##name ;\
-architecture->mlb_opcode_func[mlb_if] = mlb_if_##name ;\
-architecture->mlb_opcode_func[mlb_go] = mlb_go_##name ;\
-architecture->mlb_opcode_func[mlb_go_equals] = mlb_go_equals_##name ;\
-architecture->mlb_opcode_func[mlb_go_not_equals] = mlb_go_not_equals_##name ;\
-architecture->mlb_opcode_func[mlb_go_greaterthan] = mlb_go_greaterthan_##name ;\
-architecture->mlb_opcode_func[mlb_go_lessthan] = mlb_go_lessthan_##name ;\
-architecture->mlb_opcode_func[mlb_return] = mlb_return_##name ;\
-
-#define define_mlb_opcode(name,arch) void mlb_##name##_##arch(cg_routine routine, RKList_node node, void* arch_ptr, cg_root_type type, mlb_opcode op, cg_variable a, cg_variable b, cg_variable c)
+#define new_backend(name) void name##_func(codegen_backend backend)
 
 typedef struct cg_module_s* cg_module ;
 
@@ -108,25 +71,19 @@ typedef struct cg_routine_s* cg_routine ;
 
 typedef struct cg_variable_s* cg_variable ;
 
-typedef struct cg_instruction_s* cg_instruction ;
+typedef struct cg_statement_s* cg_statement ;
 
 typedef marshmallow_root_type cg_root_type ; //mib and the other intermediates will only use a subset
 
-typedef struct cg_block_s* cg_block ;
-
-typedef struct cg_register_s* cg_register ;
-
 struct cg_module_s { RKString name ; RKStore routines ; RKStore variables ; } ;
 
-struct cg_routine_s { RKString name ; int is_global ; cg_root_type return_type ; RKStore parameters ; RKStore variables ;
+struct cg_routine_s { RKString name ; int is_global ; int is_external ; RKList return_types ; RKStore parameters ; RKStore variables ;
     
-RKList mib_code ; cg_block mob_code ; cg_block mlb_code ; RKStack data_stack ; RKStack op_stack ; RKIndex blocks ; }  ;
+RKList mib_code ; RKList mob_code ; RKList mlb_code ; RKStack data_stack ; RKStack op_stack ; }  ;
 
 struct cg_variable_s { marshmallow_type type ; RKString name ; RKString value ; RKList values ; int alloc_size ; int is_global ; } ;
 
-struct cg_block_s { cg_routine routine ; RKList code ; RKList gos ; RKInt block_id ; RKString section_name ; } ;
-
-typedef enum {  mlb_start_routine, mlb_end_routine, mlb_block, mlb_alloc, mlb_terminate, mlb_add, mlb_sub, mlb_mult, mlb_div, mlb_rem, mlb_inc, mlb_dec, //12
+typedef enum {  mlb_add, mlb_sub, mlb_mult, mlb_div, mlb_rem, mlb_inc, mlb_dec, //12
     
 mlb_rshift, mlb_lshift, mlb_and, mlb_or, mlb_xor, mlb_not, mlb_logic_and, mlb_logic_or, mlb_logic_not, //9
     
@@ -136,11 +93,11 @@ struct cg_instruction_s { cg_root_type type ; cg_routine routine ; mlb_opcode op
 
 typedef void (*mlb_opcode_func_type)(cg_routine routine, RKList_node node, void* arch_ptr, cg_root_type type, mlb_opcode op, cg_variable a, cg_variable b, cg_variable c) ;
 
-typedef enum { m_arch_x86_64 } codegen_architecture_type ;
+typedef enum { m_C_backend } codegen_backend_type ;
 
-typedef struct codegen_architecture_s { mlb_opcode_func_type mlb_opcode_func[64] ; void* arch_ptr ; } *codegen_architecture ;
+typedef struct codegen_backend_s { void* backend_ptr ; } *codegen_backend ;
 
-cg_routine cg_new_routine( RKString name, int is_global, cg_root_type return_type ) ;
+cg_routine cg_new_routine( RKString name, int is_global, RKList return_types ) ;
 
 void cg_add_parameter_to_routine( cg_variable parameter, cg_routine routine ) ;
 
