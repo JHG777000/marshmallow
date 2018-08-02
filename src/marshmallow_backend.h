@@ -16,7 +16,6 @@
  */
 
 /*
- 
  INTERNAL HEADER FOR MARSHMALLOW'S BACKEND
  
  Only backend files should include this file, and after "marshmallow.h".
@@ -25,9 +24,9 @@
  
  marshmallow_codegen.c -- Manage the codegen process, and provide any needed codegen APIs to the rest of the compiler.
  
- marshmallow_mib.c -- Transform the marshmallow ast to mib, then transform mib into mob.
+ marshmallow_mib.c -- Transform the marshmallow ast to mib.
  
- marshmallow_mob.c -- Optimize, in a high-level and platform neutral manner.
+ marshmallow_mob.c -- Transform mib into mob, then optimize, in a high-level and platform neutral manner.
  
  marshmallow_mlb.c -- Transform mob into mlb, and then transform mlb into C code.
  
@@ -53,12 +52,10 @@
  
  --- Overview of backend -------------------------------------------------------------------------------------------------------
  
- mib(stack based) -> mob(stack based, more like WebAssembly, optimization) -> mlb(low-level optimization) -> C
+ mib(stack based) -> mob(stack based, more like WebAssembly, optimization) -> mlb(low-level optimization) -> C(or other backend)
  
  -------------------------------------------------------------------------------------------------------------------------------
- 
  */
-
 
 #ifndef marshmallow_backend_h
 #define marshmallow_backend_h
@@ -73,9 +70,11 @@ typedef struct cg_variable_s* cg_variable ;
 
 typedef struct cg_statement_s* cg_statement ;
 
+typedef struct mlb_statement_s* mlb_statement ;
+
 typedef marshmallow_root_type cg_root_type ; //mib and the other intermediates will only use a subset
 
-struct cg_module_s { RKString name ; RKStore routines ; RKStore variables ; } ;
+struct cg_module_s { RKString name ; RKStore routines ; RKStore variables ; RKStore variable_declarations ; RKStore routine_declarations ; } ;
 
 struct cg_routine_s { RKString name ; int is_global ; int is_external ; RKList return_types ; RKStore parameters ; RKStore variables ;
     
@@ -83,22 +82,24 @@ RKList mib_code ; RKList mob_code ; RKList mlb_code ; RKStack data_stack ; RKSta
 
 struct cg_variable_s { marshmallow_type type ; RKString name ; RKString value ; RKList values ; int alloc_size ; int is_global ; } ;
 
-typedef enum {  mlb_add, mlb_sub, mlb_mult, mlb_div, mlb_rem, mlb_inc, mlb_dec, //12
+typedef enum { mlb_add, mlb_sub, mlb_mult, mlb_div, mlb_rem,
     
-mlb_rshift, mlb_lshift, mlb_and, mlb_or, mlb_xor, mlb_not, mlb_logic_and, mlb_logic_or, mlb_logic_not, //9
+mlb_rshift, mlb_lshift, mlb_and, mlb_or, mlb_xor, mlb_not, mlb_logic_and, mlb_logic_or, mlb_logic_not,
     
-mlb_load, mlb_store, mlb_move, mlb_upsilon, mlb_phi, mlb_if, mlb_go, mlb_go_equals, mlb_go_not_equals, mlb_go_greaterthan, mlb_go_lessthan, mlb_return } mlb_opcode ; //12
+mlb_if, mlb_goto, mlb_section, mlb_equals, mlb_not_equals, mlb_greaterthan, mlb_lessthan,
+    
+mlb_greaterthan_or_equals, mlb_lessthan_or_equals, mlb_return } mlb_op_type ;
 
-struct cg_instruction_s { cg_root_type type ; cg_routine routine ; mlb_opcode opcode ; cg_variable a ; cg_variable b ; cg_variable c ; } ;
+struct mlb_statement_s { cg_routine routine ; mlb_op_type op ; cg_variable A ; cg_variable B ; cg_variable C ; } ;
 
-typedef void (*mlb_opcode_func_type)(cg_routine routine, RKList_node node, void* arch_ptr, cg_root_type type, mlb_opcode op, cg_variable a, cg_variable b, cg_variable c) ;
-
-typedef enum { m_C_backend } codegen_backend_type ;
+typedef enum { marshmallow_C_backend } codegen_backend_type ;
 
 typedef struct codegen_backend_s { void* backend_ptr ; } *codegen_backend ;
 
 cg_routine cg_new_routine( RKString name, int is_global, RKList return_types ) ;
 
 void cg_add_parameter_to_routine( cg_variable parameter, cg_routine routine ) ;
+
+void cg_add_return_to_returns_in_routine( cg_root_type return_type, cg_routine routine ) ;
 
 #endif /* marshmallow_backend_h */

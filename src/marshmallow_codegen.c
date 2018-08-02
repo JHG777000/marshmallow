@@ -1540,3 +1540,8 @@ void cg_add_parameter_to_routine( cg_variable parameter, cg_routine routine ) {
     
     RKStore_AddItem(routine->parameters, parameter, RKString_GetString(parameter->name)) ;
 }
+
+void cg_add_return_to_returns_in_routine( cg_root_type return_type, cg_routine routine ) {
+    
+    RKList_AddToList(routine->return_types, rkany(return_type)) ;
+}

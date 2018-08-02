@@ -28,7 +28,7 @@
 
 typedef enum { public, private, protected, publish, inherit } marshmallow_access_control ;
 
-typedef enum { i8, u8, i16, u16, i32, u32, i64, u64, f32, f64, hex, oct, string, string8, string16, string32, character, class, enum_type, array, ptr, module,
+typedef enum { i8, u8, i16, u16, i32, u32, i64, u64, f32, f64, blank, hex, oct, string, string8, string16, string32, character, class, enum_type, array, ptr, module,
     
 function, method, lambda, expression, unknown, arguments, collection, metacollection, nulltype, inittype } marshmallow_root_type ;
 
@@ -80,7 +80,7 @@ RKStore parameters ; RKList returns ; } *marshmallow_function_signature ;
 
 typedef struct marshmallow_function_body_s { marshmallow_entity_type entity_type ; marshmallow_scope_protocol
     
-marshmallow_function_signature signature ; RKStore calls ;  marshmallow_module module ; } *marshmallow_function_body ;
+marshmallow_function_signature signature ; RKStore calls ; marshmallow_module module ; } *marshmallow_function_body ;
 
 typedef struct marshmallow_statement_s { marshmallow_entity_type entity_type ; RKList statements ; int is_expression ; marshmallow_op_type op ;
     
