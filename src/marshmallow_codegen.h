@@ -16,11 +16,11 @@
  */
 
 /*
- INTERNAL HEADER FOR MARSHMALLOW'S BACKEND
+ INTERNAL HEADER FOR MARSHMALLOW'S CODEGEN
  
- Only backend files should include this file, and after "marshmallow.h".
+ Only codegen files should include this file, and after "marshmallow.h".
  
- The marshmallow backend will consist of:
+ The marshmallow codegen infrastructure will consist of:
  
  marshmallow_codegen.c -- Manage the codegen process, and provide any needed codegen APIs to the rest of the compiler.
  
@@ -32,7 +32,7 @@
  
  -- marshmallow intermediate "bytecode" --
  
- Will be the first intermediate stage in marshmallow's backend.
+ Will be the first intermediate stage in marshmallow's codegen.
  
  Will be a stack based intermediate, taking inspiration from WebAssembly.
  
@@ -52,15 +52,15 @@
  
  Will be transformed into C code, or other backend.
  
- --- Overview of backend -----------------------------------------------------------------------------------------------------------
+ --- Overview of codegen -----------------------------------------------------------------------------------------------------------
  
  mib(stack based) -> mob(stack based, more like WebAssembly, optimization) -> mlb(low-level optimization,TAC) -> C(or other backend)
  
  -----------------------------------------------------------------------------------------------------------------------------------
  */
 
-#ifndef marshmallow_backend_h
-#define marshmallow_backend_h
+#ifndef marshmallow_codegen_h
+#define marshmallow_codegen_h
 
 #define new_backend(name) void name##_func(codegen_backend backend)
 
@@ -108,4 +108,4 @@ void cg_add_parameter_to_routine( cg_variable parameter, cg_routine routine ) ;
 
 void cg_add_return_to_returns_in_routine( cg_root_type return_type, cg_routine routine ) ;
 
-#endif /* marshmallow_backend_h */
+#endif /* marshmallow_codegen_h */
