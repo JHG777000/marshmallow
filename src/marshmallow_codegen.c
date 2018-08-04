@@ -1568,3 +1568,39 @@ void cg_add_return_to_returns_in_routine( cg_root_type return_type, cg_routine r
     
     RKList_AddToList(routine->return_types, rkany(return_type)) ;
 }
+
+cg_variable cg_new_variable( RKString name, cg_root_type type, int mlb_return_value, int mlb_get_return_value, int num_of_items, int is_global ) {
+    
+    cg_variable variable = RKMem_NewMemOfType(struct cg_variable_s) ;
+    
+    variable->mlb_get_return_value = mlb_get_return_value ;
+    
+    variable->mlb_return_value = mlb_return_value ;
+    
+    variable->num_of_items = num_of_items ;
+    
+    variable->is_global = is_global ;
+    
+    variable->values = NULL ;
+    
+    variable->value = NULL ;
+    
+    variable->type = type ;
+    
+    variable->name = name ;
+    
+    variable->ptr = NULL ;
+    
+    return variable ;
+}
+
+void cg_destroy_variable( cg_variable variable ) {
+    
+    RKString_DestroyString(variable->name) ;
+    
+    if ( variable->value != NULL ) RKString_DestroyString(variable->value) ;
+    
+    if ( variable->values != NULL ) RKList_DeleteList(variable->values) ;
+    
+    free(variable) ;
+}

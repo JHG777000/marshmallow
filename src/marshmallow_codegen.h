@@ -82,7 +82,7 @@ struct cg_routine_s { RKString name ; int is_global ; int is_external ; RKList r
     
 RKList mib_code ; RKList mob_code ; RKList mlb_code ; RKStack data_stack ; RKStack op_stack ; }  ;
 
-struct cg_variable_s { marshmallow_type type ; RKString name ; RKString value ; RKList values ; int mlb_return_value ; int mlb_get_return_value ;
+struct cg_variable_s { RKString name ; cg_root_type type ; RKString value ; RKList values ; int mlb_return_value ; int mlb_get_return_value ;
     
 void* ptr ; int num_of_items ; int is_global ; } ;
 
