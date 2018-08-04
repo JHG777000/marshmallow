@@ -1536,6 +1536,29 @@ cg_routine cg_new_routine( RKString name, int is_global, RKList return_types ) {
     return routine ;
 }
 
+void cg_destroy_routine( cg_routine routine ) {
+    
+    RKString_DestroyString(routine->name) ;
+    
+    if ( routine->parameters != NULL ) RKStore_DestroyStore(routine->parameters) ;
+    
+    if ( routine->variables != NULL ) RKStore_DestroyStore(routine->variables) ;
+    
+    if ( routine->return_types != NULL ) RKList_DeleteList(routine->return_types) ;
+    
+    if ( routine->mib_code != NULL ) RKList_DeleteList(routine->mib_code) ;
+    
+    if ( routine->mob_code != NULL ) RKList_DeleteList(routine->mob_code) ;
+    
+    if ( routine->mlb_code != NULL ) RKList_DeleteList(routine->mlb_code) ;
+    
+    if ( routine->data_stack != NULL ) RKStack_DestroyStack(routine->data_stack) ;
+    
+    if ( routine->op_stack != NULL ) RKStack_DestroyStack(routine->op_stack) ;
+    
+    free(routine) ;
+}
+
 void cg_add_parameter_to_routine( cg_variable parameter, cg_routine routine ) {
     
     RKStore_AddItem(routine->parameters, parameter, RKString_GetString(parameter->name)) ;

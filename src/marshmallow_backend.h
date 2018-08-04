@@ -82,17 +82,19 @@ struct cg_routine_s { RKString name ; int is_global ; int is_external ; RKList r
     
 RKList mib_code ; RKList mob_code ; RKList mlb_code ; RKStack data_stack ; RKStack op_stack ; }  ;
 
-struct cg_variable_s { marshmallow_type type ; RKString name ; RKString value ; RKList values ; void* ptr ; int num_of_items ; int is_global ; } ;
+struct cg_variable_s { marshmallow_type type ; RKString name ; RKString value ; RKList values ; int mlb_return_value ; int mlb_get_return_value ;
+    
+void* ptr ; int num_of_items ; int is_global ; } ;
 
 typedef enum { mlb_add, mlb_sub, mlb_mult, mlb_div, mlb_rem, mlb_rshift, mlb_lshift, mlb_and, mlb_or, mlb_xor,
     
 mlb_not, mlb_logic_and, mlb_logic_or, mlb_logic_not, mlb_deref, mlb_addrof, mlb_sizeof, mlb_cast, mlb_array_index,
     
-mlb_struct_access, mlb_if, mlb_endif, mlb_else, mlb_while, mlb_endwhile, mlb_break, mlb_continue, mlb_switch, mlb_endswitch, mlb_case, mlb_endcase, mlb_default,
+mlb_struct_access, mlb_if, mlb_endif, mlb_else, mlb_else_if, mlb_while, mlb_endwhile, mlb_break, mlb_continue,
     
-mlb_goto, mlb_section, mlb_equals, mlb_not_equals, mlb_greaterthan, mlb_lessthan,
+mlb_switch, mlb_endswitch, mlb_case, mlb_endcase, mlb_default, mlb_goto, mlb_section, mlb_equals, mlb_not_equals,
     
-mlb_greaterthan_or_equals, mlb_lessthan_or_equals, mlb_call, mlb_return } mlb_op_type ;
+mlb_greaterthan, mlb_lessthan, mlb_greaterthan_or_equals, mlb_lessthan_or_equals, mlb_memcpy, mlb_call, mlb_return } mlb_op_type ;
 
 struct mlb_statement_s { cg_routine routine ; mlb_op_type op ; cg_variable A ; cg_variable B ; cg_variable C ; } ;
 
