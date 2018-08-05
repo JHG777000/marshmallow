@@ -17,3 +17,32 @@
 
 #include "marshmallow.h"
 #include "marshmallow_codegen.h"
+
+mlb_statement mlb_new_statement( mlb_op_type op, cg_variable A, cg_variable B, cg_variable C ) {
+    
+    mlb_statement statement = RKMem_NewMemOfType(struct mlb_statement_s) ;
+    
+    statement->routine = NULL ;
+    
+    statement->op = op ;
+    
+    statement->A = A ;
+    
+    statement->B = B ;
+    
+    statement->C = C ;
+    
+    return statement ;
+}
+
+void mlb_destroy_statement( mlb_statement statement ) {
+    
+    free(statement) ;
+}
+
+void mlb_add_statement_to_routine( mlb_statement statement, cg_routine routine ) {
+    
+    RKList_AddToList(routine->mlb_code, statement) ;
+    
+    statement->routine = routine ;
+}

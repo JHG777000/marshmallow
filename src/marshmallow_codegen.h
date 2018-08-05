@@ -104,8 +104,20 @@ typedef struct codegen_backend_s { void* backend_ptr ; } *codegen_backend ;
 
 cg_routine cg_new_routine( RKString name, int is_global, RKList return_types ) ;
 
+void cg_destroy_routine( cg_routine routine ) ;
+
 void cg_add_parameter_to_routine( cg_variable parameter, cg_routine routine ) ;
 
 void cg_add_return_to_returns_in_routine( cg_root_type return_type, cg_routine routine ) ;
+
+cg_variable cg_new_variable( RKString name, cg_root_type type, int mlb_return_value, int mlb_get_return_value, int num_of_items, int is_global ) ;
+
+void cg_destroy_variable( cg_variable variable ) ;
+
+mlb_statement mlb_new_statement( mlb_op_type op, cg_variable A, cg_variable B, cg_variable C ) ;
+
+void mlb_destroy_statement( mlb_statement statement ) ;
+
+void mlb_add_statement_to_routine( mlb_statement statement, cg_routine routine ) ;
 
 #endif /* marshmallow_codegen_h */

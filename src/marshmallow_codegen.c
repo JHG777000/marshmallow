@@ -1594,11 +1594,18 @@ cg_variable cg_new_variable( RKString name, cg_root_type type, int mlb_return_va
     return variable ;
 }
 
+static void DeleteListItem(void* data) {
+    
+    cg_destroy_variable(data) ;
+}
+
 void cg_destroy_variable( cg_variable variable ) {
     
     RKString_DestroyString(variable->name) ;
     
     if ( variable->value != NULL ) RKString_DestroyString(variable->value) ;
+    
+    if ( variable->values != NULL ) RKList_IterateListWith(DeleteListItem, variable->values) ;
     
     if ( variable->values != NULL ) RKList_DeleteList(variable->values) ;
     
