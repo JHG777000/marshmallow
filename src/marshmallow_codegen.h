@@ -102,6 +102,20 @@ typedef enum { marshmallow_C_backend } codegen_backend_type ;
 
 typedef struct codegen_backend_s { void* backend_ptr ; } *codegen_backend ;
 
+codegen_backend codegen_new_backend( codegen_backend_type backend_type ) ;
+
+cg_module cg_new_module( RKString name ) ;
+
+void cg_destroy_module( cg_module module ) ;
+
+void cg_add_variable_declaration_to_module( cg_variable variable, cg_module module ) ;
+
+void cg_add_routine_declaration_to_module( cg_routine routine, cg_module module ) ;
+
+void cg_add_variable_to_module( cg_variable variable, cg_module module ) ;
+
+void cg_add_routine_to_module( cg_routine routine, cg_module module ) ;
+
 cg_routine cg_new_routine( RKString name, int is_global, RKList return_types ) ;
 
 void cg_destroy_routine( cg_routine routine ) ;
@@ -109,6 +123,8 @@ void cg_destroy_routine( cg_routine routine ) ;
 void cg_add_parameter_to_routine( cg_variable parameter, cg_routine routine ) ;
 
 void cg_add_return_to_returns_in_routine( cg_root_type return_type, cg_routine routine ) ;
+
+void cg_add_variable_to_routine( cg_variable variable, cg_routine routine ) ;
 
 cg_variable cg_new_variable( RKString name, cg_root_type type, int mlb_return_value, int mlb_get_return_value, int num_of_items, int is_global ) ;
 

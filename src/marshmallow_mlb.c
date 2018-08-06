@@ -42,6 +42,8 @@ void mlb_destroy_statement( mlb_statement statement ) {
 
 void mlb_add_statement_to_routine( mlb_statement statement, cg_routine routine ) {
     
+    if ( routine->mlb_code == NULL ) routine->mlb_code = RKList_NewList() ;
+    
     RKList_AddToList(routine->mlb_code, statement) ;
     
     statement->routine = routine ;

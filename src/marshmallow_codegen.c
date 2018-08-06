@@ -1502,11 +1502,71 @@ void marshmallow_codegen( marshmallow_context context, FILE* out_file ) {
 
 //////////////////NEW CODEGEN//////////////////////////////////////////////////
 
+static void DeleteVariableInListOrStore(void* data) {
+    
+    cg_destroy_variable(data) ;
+}
+
+static void DeleteRoutineInListOrStore(void* data) {
+    
+    cg_destroy_routine(data) ;
+}
+
 codegen_backend codegen_new_backend( codegen_backend_type backend_type ) {
     
     codegen_backend backend = RKMem_NewMemOfType(struct codegen_backend_s) ;
     
     return backend ;
+}
+
+cg_module cg_new_module( RKString name ) {
+    
+    cg_module module = RKMem_NewMemOfType(struct cg_module_s) ;
+    
+    module->name = name ;
+    
+    module->routines = NULL ;
+    
+    module->variables = NULL ;
+    
+    module->routine_declarations = NULL ;
+    
+    module->variable_declarations = NULL ;
+    
+    return module ;
+}
+
+void cg_destroy_module( cg_module module ) {
+    
+    if ( module->routines != NULL ) RKStore_IterateStoreWith(DeleteRoutineInListOrStore, module->routines) ;
+    
+    if ( module->variables != NULL ) RKStore_IterateStoreWith(DeleteVariableInListOrStore, module->variables) ;
+    
+    if ( module->routine_declarations != NULL ) RKStore_IterateStoreWith(DeleteRoutineInListOrStore, module->routine_declarations) ;
+    
+    if ( module->variable_declarations != NULL ) RKStore_IterateStoreWith(DeleteVariableInListOrStore, module->variable_declarations) ;
+    
+    free(module) ;
+}
+
+void cg_add_variable_declaration_to_module( cg_variable variable, cg_module module ) {
+    
+    RKStore_AddItem(module->variable_declarations, variable, RKString_GetString(variable->name)) ;
+}
+
+void cg_add_routine_declaration_to_module( cg_routine routine, cg_module module ) {
+    
+    RKStore_AddItem(module->routine_declarations, routine, RKString_GetString(routine->name)) ;
+}
+
+void cg_add_variable_to_module( cg_variable variable, cg_module module ) {
+    
+    RKStore_AddItem(module->variables, variable, RKString_GetString(variable->name)) ;
+}
+
+void cg_add_routine_to_module( cg_routine routine, cg_module module ) {
+    
+    RKStore_AddItem(module->routines, routine, RKString_GetString(routine->name)) ;
 }
 
 cg_routine cg_new_routine( RKString name, int is_global, RKList return_types ) {
@@ -1569,6 +1629,11 @@ void cg_add_return_to_returns_in_routine( cg_root_type return_type, cg_routine r
     RKList_AddToList(routine->return_types, rkany(return_type)) ;
 }
 
+void cg_add_variable_to_routine( cg_variable variable, cg_routine routine ) {
+    
+    RKStore_AddItem(routine->variables, variable, RKString_GetString(variable->name)) ;
+}
+
 cg_variable cg_new_variable( RKString name, cg_root_type type, int mlb_return_value, int mlb_get_return_value, int num_of_items, int is_global ) {
     
     cg_variable variable = RKMem_NewMemOfType(struct cg_variable_s) ;
@@ -1594,18 +1659,13 @@ cg_variable cg_new_variable( RKString name, cg_root_type type, int mlb_return_va
     return variable ;
 }
 
-static void DeleteListItem(void* data) {
-    
-    cg_destroy_variable(data) ;
-}
-
 void cg_destroy_variable( cg_variable variable ) {
     
     RKString_DestroyString(variable->name) ;
     
     if ( variable->value != NULL ) RKString_DestroyString(variable->value) ;
     
-    if ( variable->values != NULL ) RKList_IterateListWith(DeleteListItem, variable->values) ;
+    if ( variable->values != NULL ) RKList_IterateListWith(DeleteVariableInListOrStore, variable->values) ;
     
     if ( variable->values != NULL ) RKList_DeleteList(variable->values) ;
     
