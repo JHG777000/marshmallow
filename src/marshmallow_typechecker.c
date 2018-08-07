@@ -2840,7 +2840,7 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
              if ( typecheck_get_type_category(rettype_a) != arithmetic && typecheck_get_type_category(rettype_b) != arithmetic
                  && typecheck_get_type_category(rettype_a) == pointers && typecheck_get_type_category(rettype_b) == pointers) {
                  
-                 return typecheck_get_type_from_root_type(u32) ;
+                 return typecheck_get_type_from_root_type(i32) ;
              }
              
              case is_lessthan:
@@ -2854,13 +2854,13 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
              
              if ( typecheck_get_type_category(rettype_a) != arithmetic || typecheck_get_type_category(rettype_b) != arithmetic ) {
                  
-                 printf("Non-arithmetic expression, =, !=, <,>,<=, and >= need an arithmetic expression.\n") ;
+                 printf("Non-arithmetic expression, ==, !=, <,>,<=, and >= need an arithmetic expression.\n") ;
                  
                  exit(EXIT_FAILURE) ;
 
              }
              
-             return rettype_a ;
+             return typecheck_get_type_from_root_type(typecheck_get_type_promotion(rettype_a, rettype_b)->root_type) ;
              
              break;
 

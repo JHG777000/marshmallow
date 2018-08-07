@@ -22,6 +22,27 @@
 
 int main(int argc, const char **argv) {
 
-    return 0 ;
+    cg_module my_module = cg_new_module(rkstr("mymod")) ;
     
+    cg_routine my_routine = cg_new_routine(rkstr("mroutine"), 0) ;
+    
+    cg_add_return_to_returns_in_routine(i32, my_routine) ;
+    
+    cg_variable A = cg_new_variable(rkstr("A"), i32, -1, -1, 0, 0) ;
+    
+    cg_variable B = cg_new_variable(rkstr("B"), i32, -1, -1, 0, 0) ;
+    
+    cg_variable C = cg_new_variable(rkstr("C"), i32, -1, -1, 0, 0) ;
+    
+    cg_add_variable_to_routine(A, my_routine) ;
+    
+    cg_add_variable_to_routine(B, my_routine) ;
+    
+    cg_add_variable_to_routine(C, my_routine) ;
+    
+    mlb_new_statement(mlb_add, my_routine, A->name, B->name, C->name) ;
+    
+    cg_destroy_module(my_module) ;
+    
+    return 0 ;
 }

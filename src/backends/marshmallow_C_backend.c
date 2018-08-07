@@ -18,28 +18,8 @@
 #include "marshmallow.h"
 #include "marshmallow_codegen.h"
 
-mlb_statement mlb_new_statement( mlb_op_type op, cg_routine routine, RKString A, RKString B, RKString C ) {
-    
-    mlb_statement statement = RKMem_NewMemOfType(struct mlb_statement_s) ;
-    
-    statement->op = op ;
-    
-    statement->A = RKStore_GetItem(routine->variables, RKString_GetString(A)) ;
-    
-    statement->B = RKStore_GetItem(routine->variables, RKString_GetString(B)) ;
-    
-    statement->C = RKStore_GetItem(routine->variables, RKString_GetString(C)) ;
-    
-    if ( routine->mlb_code == NULL ) routine->mlb_code = RKList_NewList() ;
-    
-    RKList_AddToList(routine->mlb_code, statement) ;
-    
-    statement->routine = routine ;
-    
-    return statement ;
-}
 
-void mlb_destroy_statement( mlb_statement statement ) {
+new_backend(C) {
     
-    free(statement) ;
+    
 }

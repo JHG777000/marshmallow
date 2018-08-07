@@ -1516,6 +1516,8 @@ codegen_backend codegen_new_backend( codegen_backend_type backend_type ) {
     
     codegen_backend backend = RKMem_NewMemOfType(struct codegen_backend_s) ;
     
+    init_backend(C) ;
+    
     return backend ;
 }
 
@@ -1569,7 +1571,7 @@ void cg_add_routine_to_module( cg_routine routine, cg_module module ) {
     RKStore_AddItem(module->routines, routine, RKString_GetString(routine->name)) ;
 }
 
-cg_routine cg_new_routine( RKString name, int is_global, RKList return_types ) {
+cg_routine cg_new_routine( RKString name, int is_global ) {
     
     cg_routine routine = RKMem_NewMemOfType(struct cg_routine_s) ;
     
@@ -1577,7 +1579,7 @@ cg_routine cg_new_routine( RKString name, int is_global, RKList return_types ) {
     
     routine->is_global = is_global ;
     
-    routine->return_types = return_types ;
+    routine->return_types = NULL ;
     
     routine->parameters = NULL ;
     
@@ -1621,15 +1623,21 @@ void cg_destroy_routine( cg_routine routine ) {
 
 void cg_add_parameter_to_routine( cg_variable parameter, cg_routine routine ) {
     
+    if ( routine->parameters == NULL ) routine->parameters = RKStore_NewStore() ;
+    
     RKStore_AddItem(routine->parameters, parameter, RKString_GetString(parameter->name)) ;
 }
 
 void cg_add_return_to_returns_in_routine( cg_root_type return_type, cg_routine routine ) {
     
+    if ( routine->return_types == NULL ) routine->return_types = RKList_NewList() ;
+    
     RKList_AddToList(routine->return_types, rkany(return_type)) ;
 }
 
 void cg_add_variable_to_routine( cg_variable variable, cg_routine routine ) {
+    
+    if ( routine->variables == NULL ) routine->variables = RKStore_NewStore() ;
     
     RKStore_AddItem(routine->variables, variable, RKString_GetString(variable->name)) ;
 }

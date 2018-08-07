@@ -28,7 +28,7 @@
  
  marshmallow_mob.c -- Transform mib into mob, then optimize, in a high-level and platform neutral manner.
  
- marshmallow_mlb.c -- Transform mob into mlb, and then transform mlb into C code.
+ marshmallow_mlb.c -- Transform mob into mlb, and then transform mlb into C code, or other backend.
  
  -- marshmallow intermediate "bytecode" --
  
@@ -62,7 +62,12 @@
 #ifndef marshmallow_codegen_h
 #define marshmallow_codegen_h
 
-#define new_backend(name) void name##_func(codegen_backend backend)
+#define init_backend(name) if (backend_type == marshmallow_##name##_backend) {\
+void marshmallow_##name##_backend##_func(codegen_backend backend) ;\
+marshmallow_##name##_backend##_func(backend) ;\
+}
+
+#define new_backend(name) void marshmallow_##name##_backend##_func(codegen_backend backend)
 
 typedef struct cg_module_s* cg_module ;
 
@@ -116,7 +121,7 @@ void cg_add_variable_to_module( cg_variable variable, cg_module module ) ;
 
 void cg_add_routine_to_module( cg_routine routine, cg_module module ) ;
 
-cg_routine cg_new_routine( RKString name, int is_global, RKList return_types ) ;
+cg_routine cg_new_routine( RKString name, int is_global ) ;
 
 void cg_destroy_routine( cg_routine routine ) ;
 
@@ -130,10 +135,8 @@ cg_variable cg_new_variable( RKString name, cg_root_type type, int mlb_return_va
 
 void cg_destroy_variable( cg_variable variable ) ;
 
-mlb_statement mlb_new_statement( mlb_op_type op, cg_variable A, cg_variable B, cg_variable C ) ;
+mlb_statement mlb_new_statement( mlb_op_type op, cg_routine routine, RKString A, RKString B, RKString C ) ;
 
 void mlb_destroy_statement( mlb_statement statement ) ;
-
-void mlb_add_statement_to_routine( mlb_statement statement, cg_routine routine ) ;
 
 #endif /* marshmallow_codegen_h */
