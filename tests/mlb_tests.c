@@ -19,12 +19,11 @@
 #include "marshmallow.h"
 #include "marshmallow_codegen.h"
 
-
 int main(int argc, const char **argv) {
 
     cg_module my_module = cg_new_module(rkstr("mymod")) ;
     
-    cg_routine my_routine = cg_new_routine(rkstr("mroutine"), 0) ;
+    cg_routine my_routine = cg_new_routine(rkstr("myroutine"), 0) ;
     
     cg_add_return_to_returns_in_routine(i32, my_routine) ;
     

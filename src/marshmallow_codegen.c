@@ -1512,6 +1512,11 @@ static void DeleteRoutineInListOrStore(void* data) {
     cg_destroy_routine(data) ;
 }
 
+static void DeleteModuleInListOrStore(void* data) {
+    
+    cg_destroy_module(data) ;
+}
+
 codegen_backend codegen_new_backend( codegen_backend_type backend_type ) {
     
     codegen_backend backend = RKMem_NewMemOfType(struct codegen_backend_s) ;
@@ -1519,6 +1524,27 @@ codegen_backend codegen_new_backend( codegen_backend_type backend_type ) {
     init_backend(C) ;
     
     return backend ;
+}
+
+cg_context cg_new_context( void ) {
+    
+    cg_context context = RKMem_NewMemOfType(struct cg_context_s) ;
+    
+    context->modules = RKStore_NewStore() ;
+    
+    return context ;
+}
+
+void cg_destroy_context( cg_context context ) {
+    
+    RKStore_IterateStoreWith(DeleteModuleInListOrStore, context->modules) ;
+    
+    free(context) ;
+}
+
+void cg_add_module_to_context( cg_module module, cg_context context ) {
+    
+    RKStore_AddItem(context->modules, module, RKString_GetString(module->name)) ;
 }
 
 cg_module cg_new_module( RKString name ) {
@@ -1602,9 +1628,19 @@ void cg_destroy_routine( cg_routine routine ) {
     
     RKString_DestroyString(routine->name) ;
     
-    if ( routine->parameters != NULL ) RKStore_DestroyStore(routine->parameters) ;
+    if ( routine->parameters != NULL ) {
+        
+        RKStore_IterateStoreWith(DeleteVariableInListOrStore, routine->parameters) ;
+        
+        RKStore_DestroyStore(routine->parameters) ;
+    }
     
-    if ( routine->variables != NULL ) RKStore_DestroyStore(routine->variables) ;
+    if ( routine->variables != NULL ) {
+        
+        RKStore_IterateStoreWith(DeleteVariableInListOrStore, routine->variables) ;
+        
+        RKStore_DestroyStore(routine->variables) ;
+    }
     
     if ( routine->return_types != NULL ) RKList_DeleteList(routine->return_types) ;
     

@@ -69,6 +69,8 @@ marshmallow_##name##_backend##_func(backend) ;\
 
 #define new_backend(name) void marshmallow_##name##_backend##_func(codegen_backend backend)
 
+typedef struct cg_context_s* cg_context ;
+
 typedef struct cg_module_s* cg_module ;
 
 typedef struct cg_routine_s* cg_routine ;
@@ -80,6 +82,8 @@ typedef struct cg_statement_s* cg_statement ;
 typedef struct mlb_statement_s* mlb_statement ;
 
 typedef marshmallow_root_type cg_root_type ; //mib and the other intermediates will only use a subset
+
+struct cg_context_s { RKStore modules ; } ;
 
 struct cg_module_s { RKString name ; RKStore routines ; RKStore variables ; RKStore variable_declarations ; RKStore routine_declarations ; } ;
 
@@ -108,6 +112,12 @@ typedef enum { marshmallow_C_backend } codegen_backend_type ;
 typedef struct codegen_backend_s { void* backend_ptr ; } *codegen_backend ;
 
 codegen_backend codegen_new_backend( codegen_backend_type backend_type ) ;
+
+cg_context cg_new_context( void ) ;
+
+void cg_destroy_context( cg_context context ) ;
+
+void cg_add_module_to_context( cg_module module, cg_context context ) ;
 
 cg_module cg_new_module( RKString name ) ;
 
