@@ -63,13 +63,23 @@
 #define marshmallow_codegen_h
 
 #define init_backend(name) if (backend_type == marshmallow_##name##_backend) {\
-void marshmallow_##name##_backend##_func(codegen_backend backend) ;\
-marshmallow_##name##_backend##_func(backend) ;\
+void marshmallow_##name##_backend_func(codegen_backend backend) ;\
+marshmallow_##name##_backend_func(backend) ;\
 }
 
-#define new_backend(name) void marshmallow_##name##_backend##_func(codegen_backend backend)
+#define new_backend(name) void marshmallow_##name##_backend_func(codegen_backend backend)
+
+#define return_pointer_size(name) static RKULong marshmallow_##name##_backend_return_pointer_size(void)
+
+#define get_context(name) static void marshmallow_##name##_backend_get_context(cg_context context)
+
+#define get_builder(name) static void marshmallow_##name##_backend_get_builder(cg_builder builder)
+
+#define get_callback(name,callback) marshmallow_##name##_backend_##callback
 
 typedef struct cg_context_s* cg_context ;
+
+typedef struct cg_builder_s* cg_builder ;
 
 typedef struct cg_module_s* cg_module ;
 
@@ -107,9 +117,17 @@ mlb_greaterthan, mlb_lessthan, mlb_greaterthan_or_equals, mlb_lessthan_or_equals
 
 struct mlb_statement_s { cg_routine routine ; mlb_op_type op ; cg_variable A ; cg_variable B ; cg_variable C ; } ;
 
+typedef RKULong (*cg_callback_for_pointer_size)(void) ;
+
+typedef void (*cg_callback_for_context)(cg_context context) ;
+
+typedef void (*cg_callback_for_builder)(cg_builder builder) ;
+
 typedef enum { marshmallow_C_backend } codegen_backend_type ;
 
-typedef struct codegen_backend_s { void* backend_ptr ; } *codegen_backend ;
+typedef struct codegen_backend_s { void* backend_ptr ; cg_callback_for_pointer_size size_callback ;
+    
+cg_callback_for_context context_callback ; cg_callback_for_builder builder_callback ; } *codegen_backend ;
 
 codegen_backend codegen_new_backend( codegen_backend_type backend_type ) ;
 

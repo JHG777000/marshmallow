@@ -18,8 +18,36 @@
 #include "marshmallow.h"
 #include "marshmallow_codegen.h"
 
+typedef struct c_backend_s { RKStore declarations ; RKStore symbols ; } *c_backend ;
+
+return_pointer_size(C) {
+    
+    return 8 ;
+}
+
+get_context(C) {
+    
+    
+}
+
+get_builder(C) {
+    
+    
+}
 
 new_backend(C) {
     
+    backend->size_callback = get_callback(C,return_pointer_size) ;
     
+    backend->context_callback = get_callback(C,get_context) ;
+    
+    backend->builder_callback = get_callback(C,get_builder) ;
+    
+    c_backend c = RKMem_NewMemOfType(struct c_backend_s) ;
+    
+    c->declarations = RKStore_NewStore() ;
+    
+    c->symbols = RKStore_NewStore() ;
+    
+    backend->backend_ptr = c ;
 }
