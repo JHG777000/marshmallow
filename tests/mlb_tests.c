@@ -21,11 +21,17 @@
 
 int main(int argc, const char **argv) {
 
+    cg_context my_context = cg_new_context() ;
+    
     cg_module my_module = cg_new_module(rkstr("mymod")) ;
+    
+    cg_add_module_to_context(my_module, my_context) ;
     
     cg_routine my_routine = cg_new_routine(rkstr("myroutine"), 0) ;
     
     cg_add_return_to_returns_in_routine(i32, my_routine) ;
+    
+    cg_add_routine_to_module(my_routine, my_module) ;
     
     cg_variable A = cg_new_variable(rkstr("A"), i32, -1, -1, 0, 0) ;
     
@@ -33,15 +39,23 @@ int main(int argc, const char **argv) {
     
     cg_variable C = cg_new_variable(rkstr("C"), i32, -1, -1, 0, 0) ;
     
+    cg_variable R0 = cg_new_variable(rkstr("R0"), i32, 0, -1, 0, 0) ;
+    
     cg_add_variable_to_routine(A, my_routine) ;
     
     cg_add_variable_to_routine(B, my_routine) ;
     
     cg_add_variable_to_routine(C, my_routine) ;
     
-    mlb_new_statement(mlb_add, my_routine, A->name, B->name, C->name) ;
+    cg_add_variable_to_routine(R0, my_routine) ;
     
-    cg_destroy_module(my_module) ;
+    mlb_add_statement(mlb_add, my_routine, A->name, B->name, C->name) ;
+    
+    mlb_add_statement(mlb_set, my_routine, R0->name, A->name, NULL) ;
+    
+    mlb_add_statement(mlb_return, my_routine, NULL, NULL, NULL) ;
+    
+    cg_destroy_context(my_context) ;
     
     return 0 ;
 }

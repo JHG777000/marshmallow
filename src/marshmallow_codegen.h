@@ -73,7 +73,7 @@ marshmallow_##name##_backend_func(backend) ;\
 
 #define get_context(name) static void marshmallow_##name##_backend_get_context(cg_context context)
 
-#define get_builder(name) static void marshmallow_##name##_backend_get_builder(cg_builder builder)
+#define get_builder(name) static void marshmallow_##name##_backend_get_builder(cg_builder builder, cg_context context)
 
 #define get_callback(name,callback) marshmallow_##name##_backend_##callback
 
@@ -105,7 +105,7 @@ struct cg_variable_s { RKString name ; cg_root_type type ; RKString value ; RKLi
     
 void* ptr ; int num_of_items ; int is_global ; } ;
 
-typedef enum { mlb_add, mlb_sub, mlb_mult, mlb_div, mlb_rem, mlb_rshift, mlb_lshift, mlb_and, mlb_or, mlb_xor,
+typedef enum { mlb_set, mlb_add, mlb_sub, mlb_mult, mlb_div, mlb_rem, mlb_rshift, mlb_lshift, mlb_and, mlb_or, mlb_xor,
     
 mlb_not, mlb_logic_and, mlb_logic_or, mlb_logic_not, mlb_deref, mlb_addrof, mlb_sizeof, mlb_cast, mlb_array_index,
     
@@ -121,7 +121,7 @@ typedef RKULong (*cg_callback_for_pointer_size)(void) ;
 
 typedef void (*cg_callback_for_context)(cg_context context) ;
 
-typedef void (*cg_callback_for_builder)(cg_builder builder) ;
+typedef void (*cg_callback_for_builder)(cg_builder builder, cg_context context) ;
 
 typedef enum { marshmallow_C_backend } codegen_backend_type ;
 
@@ -163,7 +163,7 @@ cg_variable cg_new_variable( RKString name, cg_root_type type, int mlb_return_va
 
 void cg_destroy_variable( cg_variable variable ) ;
 
-mlb_statement mlb_new_statement( mlb_op_type op, cg_routine routine, RKString A, RKString B, RKString C ) ;
+mlb_statement mlb_add_statement( mlb_op_type op, cg_routine routine, RKString A, RKString B, RKString C ) ;
 
 void mlb_destroy_statement( mlb_statement statement ) ;
 

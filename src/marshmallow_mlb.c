@@ -18,17 +18,17 @@
 #include "marshmallow.h"
 #include "marshmallow_codegen.h"
 
-mlb_statement mlb_new_statement( mlb_op_type op, cg_routine routine, RKString A, RKString B, RKString C ) {
+mlb_statement mlb_add_statement( mlb_op_type op, cg_routine routine, RKString A, RKString B, RKString C ) {
     
     mlb_statement statement = RKMem_NewMemOfType(struct mlb_statement_s) ;
     
     statement->op = op ;
     
-    statement->A = RKStore_GetItem(routine->variables, RKString_GetString(A)) ;
+    statement->A = ( A != NULL ) ? RKStore_GetItem(routine->variables, RKString_GetString(A)) : NULL ;
     
-    statement->B = RKStore_GetItem(routine->variables, RKString_GetString(B)) ;
+    statement->B = ( B != NULL ) ? RKStore_GetItem(routine->variables, RKString_GetString(B)) : NULL ;
     
-    statement->C = RKStore_GetItem(routine->variables, RKString_GetString(C)) ;
+    statement->C = ( C != NULL ) ? RKStore_GetItem(routine->variables, RKString_GetString(C)) : NULL ;
     
     if ( routine->mlb_code == NULL ) routine->mlb_code = RKList_NewList() ;
     
@@ -42,4 +42,44 @@ mlb_statement mlb_new_statement( mlb_op_type op, cg_routine routine, RKString A,
 void mlb_destroy_statement( mlb_statement statement ) {
     
     free(statement) ;
+}
+
+void mlb_validate_statement( mlb_statement statement ) {
+    
+    switch (statement->op) {
+         
+        case mlb_set:
+            
+            if (statement->A->type != statement->B->type || statement->C != NULL) {
+                
+                printf("codegen error: failed to validate a mlb statement.\n") ;
+                
+                exit(EXIT_FAILURE) ;
+            }
+            
+        break;
+            
+        case mlb_return:
+            
+            if (statement->A != NULL || statement->B != NULL || statement->C != NULL) {
+                
+                printf("codegen error: failed to validate a mlb statement.\n") ;
+                
+                exit(EXIT_FAILURE) ;
+            }
+            
+            break;
+            
+            
+        default:
+            
+            if (statement->A->type != statement->B->type || statement->A->type != statement->C->type) {
+                
+                printf("codegen error: failed to validate a mlb statement.\n") ;
+                
+                exit(EXIT_FAILURE) ;
+            }
+            
+            break;
+    }
 }

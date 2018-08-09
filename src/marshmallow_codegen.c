@@ -1553,26 +1553,26 @@ cg_module cg_new_module( RKString name ) {
     
     module->name = name ;
     
-    module->routines = NULL ;
+    module->routines = RKStore_NewStore() ;
     
-    module->variables = NULL ;
+    module->variables = RKStore_NewStore() ;
     
-    module->routine_declarations = NULL ;
+    module->routine_declarations = RKStore_NewStore() ;
     
-    module->variable_declarations = NULL ;
+    module->variable_declarations = RKStore_NewStore() ;
     
     return module ;
 }
 
 void cg_destroy_module( cg_module module ) {
     
-    if ( module->routines != NULL ) RKStore_IterateStoreWith(DeleteRoutineInListOrStore, module->routines) ;
+    RKStore_IterateStoreWith(DeleteRoutineInListOrStore, module->routines) ;
     
-    if ( module->variables != NULL ) RKStore_IterateStoreWith(DeleteVariableInListOrStore, module->variables) ;
+    RKStore_IterateStoreWith(DeleteVariableInListOrStore, module->variables) ;
     
-    if ( module->routine_declarations != NULL ) RKStore_IterateStoreWith(DeleteRoutineInListOrStore, module->routine_declarations) ;
+    RKStore_IterateStoreWith(DeleteRoutineInListOrStore, module->routine_declarations) ;
     
-    if ( module->variable_declarations != NULL ) RKStore_IterateStoreWith(DeleteVariableInListOrStore, module->variable_declarations) ;
+    RKStore_IterateStoreWith(DeleteVariableInListOrStore, module->variable_declarations) ;
     
     free(module) ;
 }
