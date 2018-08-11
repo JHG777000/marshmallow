@@ -125,7 +125,7 @@ typedef void (*cg_callback_for_builder)(cg_builder builder, cg_context context) 
 
 typedef enum { marshmallow_C_backend } codegen_backend_type ;
 
-typedef struct codegen_backend_s { void* backend_ptr ; cg_callback_for_pointer_size size_callback ;
+typedef struct codegen_backend_s { void* backend_ptr ; FILE* output_file ; cg_callback_for_pointer_size size_callback ;
     
 cg_callback_for_context context_callback ; cg_callback_for_builder builder_callback ; } *codegen_backend ;
 

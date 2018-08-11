@@ -44,13 +44,42 @@ void mlb_destroy_statement( mlb_statement statement ) {
     free(statement) ;
 }
 
+void mlb_validate_variable( cg_variable variable ) {
+    
+    if ( (variable->mlb_return_value < 0 && variable->mlb_get_return_value < 0) || variable->num_of_items < 0 ) {
+        
+        printf("codegen error: failed to validate a cg variable.\n") ;
+        
+        exit(EXIT_FAILURE) ;
+    }
+    
+    if ( variable->values != NULL ) {
+        
+        RKList_node node = RKList_GetFirstNode(variable->values) ;
+        
+        while ( node != NULL ) {
+            
+         mlb_validate_variable(RKList_GetData(node)) ;
+            
+         node = RKList_GetNextNode(node) ;
+            
+        }
+    }
+}
+
 void mlb_validate_statement( mlb_statement statement ) {
     
+    if ( statement->A != NULL ) mlb_validate_variable(statement->A) ;
+    
+    if ( statement->B != NULL ) mlb_validate_variable(statement->B) ;
+    
+    if ( statement->C != NULL ) mlb_validate_variable(statement->C) ;
+    //mlb_cast
     switch (statement->op) {
-         
-        case mlb_set:
+        
+       case mlb_sizeof:
             
-            if (statement->A->type != statement->B->type || statement->C != NULL) {
+            if (statement->A == NULL || statement->B == NULL || statement->A->type != pointer || statement->C != NULL) {
                 
                 printf("codegen error: failed to validate a mlb statement.\n") ;
                 
@@ -59,6 +88,51 @@ void mlb_validate_statement( mlb_statement statement ) {
             
         break;
             
+        case mlb_deref:
+            
+            if (statement->A == NULL || statement->B == NULL || statement->B->type != ptr || statement->B->ptr == NULL
+                || statement->A->type != ((cg_variable)statement->B->ptr)->type || statement->C != NULL) {
+                
+                printf("codegen error: failed to validate a mlb statement.\n") ;
+                
+                exit(EXIT_FAILURE) ;
+            }
+            
+        break;
+            
+        case mlb_addrof:
+            
+            if (statement->A == NULL || statement->B == NULL || statement->A->ptr == NULL || statement->A->type != ptr
+                || ((cg_variable)statement->A->ptr)->type != statement->B->type || statement->C != NULL) {
+                
+                printf("codegen error: failed to validate a mlb statement.\n") ;
+                
+                exit(EXIT_FAILURE) ;
+            }
+            
+            break;
+            
+            
+        case mlb_set:
+            
+            if (statement->A == NULL || statement->B == NULL || statement->A->type != statement->B->type || statement->C != NULL) {
+                
+                printf("codegen error: failed to validate a mlb statement.\n") ;
+                
+                exit(EXIT_FAILURE) ;
+            }
+            
+        break;
+        
+            
+        case mlb_else:
+        case mlb_endif:
+        case mlb_endwhile:
+        case mlb_endswitch:
+        case mlb_endcase:
+        case mlb_default:
+        case mlb_break:
+        case mlb_continue:
         case mlb_return:
             
             if (statement->A != NULL || statement->B != NULL || statement->C != NULL) {
@@ -73,7 +147,8 @@ void mlb_validate_statement( mlb_statement statement ) {
             
         default:
             
-            if (statement->A->type != statement->B->type || statement->A->type != statement->C->type) {
+            if (statement->A == NULL || statement->B == NULL || statement->C == NULL
+                || statement->A->type != statement->B->type || statement->A->type != statement->C->type) {
                 
                 printf("codegen error: failed to validate a mlb statement.\n") ;
                 
