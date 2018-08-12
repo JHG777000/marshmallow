@@ -74,9 +74,20 @@ void mlb_validate_statement( mlb_statement statement ) {
     if ( statement->B != NULL ) mlb_validate_variable(statement->B) ;
     
     if ( statement->C != NULL ) mlb_validate_variable(statement->C) ;
-    //mlb_cast
+    
     switch (statement->op) {
-        
+       
+       case mlb_cast:
+            
+            if (statement->A == NULL || statement->B == NULL || statement->C != NULL) {
+                
+                printf("codegen error: failed to validate a mlb statement.\n") ;
+                
+                exit(EXIT_FAILURE) ;
+            }
+            
+       break;
+            
        case mlb_sizeof:
             
             if (statement->A == NULL || statement->B == NULL || statement->A->type != pointer || statement->C != NULL) {
