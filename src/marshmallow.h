@@ -186,6 +186,8 @@ marshmallow_type typecheck_make_ptr_type_from_type( marshmallow_type type ) ;
 
 marshmallow_type typecheck_get_ptr_type_from_type( marshmallow_type type ) ;
 
+marshmallow_type typecheck_get_type_from_root_type( marshmallow_root_type root ) ;
+
 int m_get_size_of_root_type_in_bytes( marshmallow_type type ) ;
 
 RKULong m_get_size_of_type_in_bytes( marshmallow_type type, marshmallow_root_type* root_type ) ;

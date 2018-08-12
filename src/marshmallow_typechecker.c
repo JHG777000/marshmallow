@@ -19,7 +19,7 @@
 
 #include "marshmallow.h"
 
-static marshmallow_type typecheck_get_type_from_root_type( marshmallow_root_type root ) {
+ marshmallow_type typecheck_get_type_from_root_type( marshmallow_root_type root ) {
     
     static marshmallow_type unknown_t = NULL ;
     

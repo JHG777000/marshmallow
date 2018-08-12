@@ -1690,6 +1690,8 @@ cg_variable cg_new_variable( RKString name, cg_root_type type, int mlb_return_va
     
     variable->is_global = is_global ;
     
+    variable->values_struct = NULL ;
+    
     variable->values = NULL ;
     
     variable->value = NULL ;

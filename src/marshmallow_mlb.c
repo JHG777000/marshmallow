@@ -77,6 +77,33 @@ void mlb_validate_statement( mlb_statement statement ) {
     
     switch (statement->op) {
        
+      case mlb_struct_access:
+      
+            if (statement->A == NULL || statement->B == NULL || statement->C == NULL || statement->C->value == NULL || statement->B->type != class
+                || statement->B->values_struct == NULL
+                || RKStore_GetItem(statement->B->values_struct, RKString_GetString(statement->C->value)) == NULL
+                || statement->A->type != ((cg_variable)RKStore_GetItem(statement->B->values_struct, RKString_GetString(statement->C->value)))->type) {
+                
+                printf("codegen error: failed to validate a mlb statement.\n") ;
+                
+                exit(EXIT_FAILURE) ;
+            }
+            
+      break;
+            
+      case mlb_array_index:
+            
+            if (statement->A == NULL || statement->B == NULL || statement->C == NULL || statement->B->type != array || statement->B->ptr == NULL
+                || statement->A->type != ((cg_variable)statement->B->ptr)->type
+                || !(statement->C->type == u32 || statement->C->type == u64) ) {
+                
+                printf("codegen error: failed to validate a mlb statement.\n") ;
+                
+                exit(EXIT_FAILURE) ;
+            }
+            
+      break;
+            
        case mlb_cast:
             
             if (statement->A == NULL || statement->B == NULL || statement->C != NULL) {
@@ -135,6 +162,23 @@ void mlb_validate_statement( mlb_statement statement ) {
             
         break;
         
+        case mlb_if:
+        case mlb_else_if:
+        case mlb_while:
+        case mlb_switch:
+        case mlb_goto:
+        case mlb_section:
+        case mlb_memcpy:
+        case mlb_call:
+            
+            if (statement->A == NULL || statement->B != NULL || statement->C != NULL) {
+                
+                printf("codegen error: failed to validate a mlb statement.\n") ;
+                
+                exit(EXIT_FAILURE) ;
+            }
+            
+        break;
             
         case mlb_else:
         case mlb_endif:
@@ -153,7 +197,7 @@ void mlb_validate_statement( mlb_statement statement ) {
                 exit(EXIT_FAILURE) ;
             }
             
-            break;
+        break;
             
             
         default:
