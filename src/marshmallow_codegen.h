@@ -167,4 +167,14 @@ mlb_statement mlb_add_statement( mlb_op_type op, cg_routine routine, RKString A,
 
 void mlb_destroy_statement( mlb_statement statement ) ;
 
+void mlb_validate_context( cg_context context ) ;
+
+void mlb_validate_module( cg_module module ) ;
+
+void mlb_validate_routine( cg_routine routine ) ;
+
+void mlb_validate_variable( cg_variable variable ) ;
+
+void mlb_validate_statement( mlb_statement statement ) ;
+
 #endif /* marshmallow_codegen_h */

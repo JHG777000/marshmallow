@@ -1715,5 +1715,9 @@ void cg_destroy_variable( cg_variable variable ) {
     
     if ( variable->values != NULL ) RKList_DeleteList(variable->values) ;
     
+    if ( variable->values_struct != NULL ) RKStore_IterateStoreWith(DeleteVariableInListOrStore, variable->values_struct) ;
+    
+    if ( variable->values_struct != NULL ) RKStore_DestroyStore(variable->values_struct) ;
+    
     free(variable) ;
 }

@@ -44,6 +44,95 @@ void mlb_destroy_statement( mlb_statement statement ) {
     free(statement) ;
 }
 
+void mlb_validate_context( cg_context context ) {
+    
+    RKList_node node = RKList_GetFirstNode(RKStore_GetList(context->modules)) ;
+    
+    while ( node != NULL ) {
+        
+        mlb_validate_module(RKList_GetData(node)) ;
+        
+        node = RKList_GetNextNode(node) ;
+        
+    }
+}
+
+void mlb_validate_module( cg_module module ) {
+    
+    RKList_node node = RKList_GetFirstNode(RKStore_GetList(module->variables)) ;
+    
+    while ( node != NULL ) {
+        
+        mlb_validate_variable(RKList_GetData(node)) ;
+        
+        node = RKList_GetNextNode(node) ;
+        
+    }
+    
+    node = RKList_GetFirstNode(RKStore_GetList(module->variable_declarations)) ;
+    
+    while ( node != NULL ) {
+        
+        mlb_validate_variable(RKList_GetData(node)) ;
+        
+        node = RKList_GetNextNode(node) ;
+        
+    }
+    
+    node = RKList_GetFirstNode(RKStore_GetList(module->routines)) ;
+    
+    while ( node != NULL ) {
+        
+        mlb_validate_routine(RKList_GetData(node)) ;
+        
+        node = RKList_GetNextNode(node) ;
+        
+    }
+    
+    node = RKList_GetFirstNode(RKStore_GetList(module->routine_declarations)) ;
+    
+    while ( node != NULL ) {
+        
+        mlb_validate_routine(RKList_GetData(node)) ;
+        
+        node = RKList_GetNextNode(node) ;
+        
+    }
+}
+
+void mlb_validate_routine( cg_routine routine ) {
+    
+    RKList_node node = RKList_GetFirstNode(RKStore_GetList(routine->parameters)) ;
+    
+    while ( node != NULL ) {
+        
+        mlb_validate_variable(RKList_GetData(node)) ;
+        
+        node = RKList_GetNextNode(node) ;
+        
+    }
+    
+    node = RKList_GetFirstNode(RKStore_GetList(routine->variables)) ;
+    
+    while ( node != NULL ) {
+        
+        mlb_validate_variable(RKList_GetData(node)) ;
+        
+        node = RKList_GetNextNode(node) ;
+        
+    }
+    
+    node = RKList_GetFirstNode(routine->mlb_code) ;
+    
+    while ( node != NULL ) {
+        
+        mlb_validate_statement(RKList_GetData(node)) ;
+        
+        node = RKList_GetNextNode(node) ;
+        
+    }
+}
+
 void mlb_validate_variable( cg_variable variable ) {
     
     if ( (variable->mlb_return_value < 0 && variable->mlb_get_return_value < 0) || variable->num_of_items < 0 ) {
