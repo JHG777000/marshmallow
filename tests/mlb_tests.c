@@ -21,6 +21,8 @@
 
 int main(int argc, const char **argv) {
 
+    codegen_backend backend = codegen_new_backend(get_backend_type(C),NULL) ;
+    
     cg_context my_context = cg_new_context() ;
     
     cg_module my_module = cg_new_module(rkstr("mymod")) ;
@@ -54,6 +56,8 @@ int main(int argc, const char **argv) {
     mlb_add_statement(mlb_set, my_routine, R0->name, A->name, NULL) ;
     
     mlb_add_statement(mlb_return, my_routine, NULL, NULL, NULL) ;
+    
+    cg_give_context_to_backend(my_context, backend) ;
     
     cg_destroy_context(my_context) ;
     

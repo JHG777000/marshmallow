@@ -1517,13 +1517,22 @@ static void DeleteModuleInListOrStore(void* data) {
     cg_destroy_module(data) ;
 }
 
-codegen_backend codegen_new_backend( codegen_backend_type backend_type ) {
+codegen_backend codegen_new_backend( codegen_backend_type backend_type, FILE* out_file ) {
     
     codegen_backend backend = RKMem_NewMemOfType(struct codegen_backend_s) ;
+    
+    backend->output_file = out_file ;
     
     init_backend(C) ;
     
     return backend ;
+}
+
+void cg_give_context_to_backend( cg_context context, codegen_backend backend ) {
+    
+    mlb_validate_context(context) ;
+    
+    backend->context_callback(context,backend) ;
 }
 
 cg_context cg_new_context( void ) {
@@ -1605,21 +1614,21 @@ cg_routine cg_new_routine( RKString name, int is_global ) {
     
     routine->is_global = is_global ;
     
-    routine->return_types = NULL ;
+    routine->return_types = RKList_NewList() ;
     
-    routine->parameters = NULL ;
+    routine->parameters = RKStore_NewStore() ;
     
-    routine->variables = NULL ;
+    routine->variables = RKStore_NewStore() ;
     
-    routine->mib_code = NULL ;
+    routine->mib_code = RKList_NewList() ;
     
-    routine->mob_code = NULL ;
+    routine->mob_code = RKList_NewList() ;
     
-    routine->mlb_code = NULL ;
+    routine->mlb_code = RKList_NewList() ;
     
-    routine->data_stack = NULL ;
+    routine->data_stack = RKStack_NewStack() ;
     
-    routine->op_stack = NULL ;
+    routine->op_stack = RKStack_NewStack() ;
     
     return routine ;
 }
@@ -1642,17 +1651,17 @@ void cg_destroy_routine( cg_routine routine ) {
         RKStore_DestroyStore(routine->variables) ;
     }
     
-    if ( routine->return_types != NULL ) RKList_DeleteList(routine->return_types) ;
+    RKList_DeleteList(routine->return_types) ;
     
-    if ( routine->mib_code != NULL ) RKList_DeleteList(routine->mib_code) ;
+    RKList_DeleteList(routine->mib_code) ;
     
-    if ( routine->mob_code != NULL ) RKList_DeleteList(routine->mob_code) ;
+    RKList_DeleteList(routine->mob_code) ;
     
-    if ( routine->mlb_code != NULL ) RKList_DeleteList(routine->mlb_code) ;
+    RKList_DeleteList(routine->mlb_code) ;
     
-    if ( routine->data_stack != NULL ) RKStack_DestroyStack(routine->data_stack) ;
+    RKStack_DestroyStack(routine->data_stack) ;
     
-    if ( routine->op_stack != NULL ) RKStack_DestroyStack(routine->op_stack) ;
+    RKStack_DestroyStack(routine->op_stack) ;
     
     free(routine) ;
 }

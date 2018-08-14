@@ -67,13 +67,15 @@ void marshmallow_##name##_backend_func(codegen_backend backend) ;\
 marshmallow_##name##_backend_func(backend) ;\
 }
 
+#define get_backend_type(name) marshmallow_##name##_backend
+
 #define new_backend(name) void marshmallow_##name##_backend_func(codegen_backend backend)
 
 #define return_pointer_size(name) static RKULong marshmallow_##name##_backend_return_pointer_size(void)
 
-#define get_context(name) static void marshmallow_##name##_backend_get_context(cg_context context)
+#define get_context(name) static void marshmallow_##name##_backend_get_context(cg_context context, codegen_backend backend)
 
-#define get_builder(name) static void marshmallow_##name##_backend_get_builder(cg_builder builder, cg_context context)
+#define get_builder(name) static void marshmallow_##name##_backend_get_builder(cg_builder builder, cg_context context, codegen_backend backend)
 
 #define get_callback(name,callback) marshmallow_##name##_backend_##callback
 
@@ -117,19 +119,23 @@ mlb_greaterthan, mlb_lessthan, mlb_greaterthan_or_equals, mlb_lessthan_or_equals
 
 struct mlb_statement_s { cg_routine routine ; mlb_op_type op ; cg_variable A ; cg_variable B ; cg_variable C ; } ;
 
+typedef struct codegen_backend_s* codegen_backend ;
+
 typedef RKULong (*cg_callback_for_pointer_size)(void) ;
 
-typedef void (*cg_callback_for_context)(cg_context context) ;
+typedef void (*cg_callback_for_context)(cg_context context, codegen_backend backend) ;
 
-typedef void (*cg_callback_for_builder)(cg_builder builder, cg_context context) ;
+typedef void (*cg_callback_for_builder)(cg_builder builder, cg_context context, codegen_backend backend) ;
 
 typedef enum { marshmallow_C_backend } codegen_backend_type ;
 
-typedef struct codegen_backend_s { void* backend_ptr ; FILE* output_file ; cg_callback_for_pointer_size size_callback ;
+struct codegen_backend_s { void* backend_ptr ; FILE* output_file ; cg_callback_for_pointer_size size_callback ;
     
-cg_callback_for_context context_callback ; cg_callback_for_builder builder_callback ; } *codegen_backend ;
+cg_callback_for_context context_callback ; cg_callback_for_builder builder_callback ; };
 
-codegen_backend codegen_new_backend( codegen_backend_type backend_type ) ;
+codegen_backend codegen_new_backend( codegen_backend_type backend_type, FILE* out_file ) ;
+
+void cg_give_context_to_backend( cg_context context, codegen_backend backend ) ;
 
 cg_context cg_new_context( void ) ;
 

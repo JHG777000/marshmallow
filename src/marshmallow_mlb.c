@@ -135,7 +135,7 @@ void mlb_validate_routine( cg_routine routine ) {
 
 void mlb_validate_variable( cg_variable variable ) {
     
-    if ( (variable->mlb_return_value < 0 && variable->mlb_get_return_value < 0) || variable->num_of_items < 0 ) {
+    if ( (variable->mlb_return_value > 0 && variable->mlb_get_return_value > 0) || variable->num_of_items < 0 ) {
         
         printf("codegen error: failed to validate a cg variable.\n") ;
         
