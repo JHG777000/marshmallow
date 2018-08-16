@@ -15,13 +15,14 @@
  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 #include "marshmallow.h"
 #include "marshmallow_codegen.h"
 
 int main(int argc, const char **argv) {
 
-    codegen_backend backend = codegen_new_backend(get_backend_type(C),NULL) ;
+    FILE* output_file = fopen(argv[2], "w") ;
+    
+    codegen_backend backend = codegen_new_backend(get_backend_type(C),output_file) ;
     
     cg_context my_context = cg_new_context() ;
     

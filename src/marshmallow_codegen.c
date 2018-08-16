@@ -1528,6 +1528,11 @@ codegen_backend codegen_new_backend( codegen_backend_type backend_type, FILE* ou
     return backend ;
 }
 
+void codegen_destroy_backend( codegen_backend backend ) {
+    
+    free(backend) ;
+}
+
 void cg_give_context_to_backend( cg_context context, codegen_backend backend ) {
     
     mlb_validate_context(context) ;

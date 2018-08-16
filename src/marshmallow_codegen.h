@@ -135,6 +135,8 @@ cg_callback_for_context context_callback ; cg_callback_for_builder builder_callb
 
 codegen_backend codegen_new_backend( codegen_backend_type backend_type, FILE* out_file ) ;
 
+void codegen_destroy_backend( codegen_backend backend ) ;
+
 void cg_give_context_to_backend( cg_context context, codegen_backend backend ) ;
 
 cg_context cg_new_context( void ) ;
