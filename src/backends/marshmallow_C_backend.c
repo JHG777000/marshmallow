@@ -20,6 +20,16 @@
 
 typedef struct c_backend_s { RKStore declarations ; RKStore symbols ; } *c_backend ;
 
+static void add_to_declarations( cg_routine routine, cg_variable variable ) {
+    
+    
+}
+
+static int is_symbol_used( RKString symbol ) {
+    
+    return 0 ;
+}
+
 return_pointer_size(C) {
     
     return 8 ;
@@ -50,4 +60,22 @@ new_backend(C) {
     c->symbols = RKStore_NewStore() ;
     
     backend->backend_ptr = c ;
+    
+    cg_routine memcpy_routine = cg_new_routine(rkstr("memcpy"), 1) ;
+    
+    cg_variable dest = cg_new_variable(rkstr("dest"), blank, -1, -1, 0, 0) ;
+    
+    cg_variable src = cg_new_variable(rkstr("src"), blank, -1, -1, 0, 0) ;
+    
+    cg_variable n = cg_new_variable(rkstr("n"), pointer, -1, -1, 0, 0) ;
+    
+    cg_add_parameter_to_routine(dest, memcpy_routine) ;
+    
+    cg_add_parameter_to_routine(src, memcpy_routine) ;
+    
+    cg_add_parameter_to_routine(n, memcpy_routine) ;
+    
+    mlb_validate_routine(memcpy_routine) ;
+    
+    add_to_declarations(memcpy_routine,NULL) ;
 }

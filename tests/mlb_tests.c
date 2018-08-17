@@ -62,5 +62,9 @@ int main(int argc, const char **argv) {
     
     cg_destroy_context(my_context) ;
     
+    codegen_destroy_backend(backend) ;
+    
+    fclose(output_file) ;
+    
     return 0 ;
 }
