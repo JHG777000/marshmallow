@@ -63,9 +63,13 @@ new_backend(C) {
     
     cg_routine memcpy_routine = cg_new_routine(rkstr("memcpy"), 1) ;
     
-    cg_variable dest = cg_new_variable(rkstr("dest"), blank, -1, -1, 0, 0) ;
+    cg_variable dest = cg_new_variable(rkstr("dest"), ptr, -1, -1, 0, 0) ;
     
-    cg_variable src = cg_new_variable(rkstr("src"), blank, -1, -1, 0, 0) ;
+    dest->ptr = cg_new_variable(rkstr(""), blank, -1, -1, 0, 0) ;
+    
+    cg_variable src = cg_new_variable(rkstr("src"), ptr, -1, -1, 0, 0) ;
+    
+    src->ptr = cg_new_variable(rkstr(""), blank, -1, -1, 0, 0) ;
     
     cg_variable n = cg_new_variable(rkstr("n"), pointer, -1, -1, 0, 0) ;
     

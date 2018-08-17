@@ -105,7 +105,7 @@ RKList mib_code ; RKList mob_code ; RKList mlb_code ; RKStack data_stack ; RKSta
 
 struct cg_variable_s { RKString name ; cg_root_type type ; RKString value ; RKList values ; RKStore values_struct ;
 
-int mlb_return_value ; int mlb_get_return_value ; void* ptr ; int num_of_items ; int is_global ; } ;
+int mlb_return_value ; int mlb_get_return_value ; cg_variable ptr ; int num_of_items ; int is_global ; } ;
 
 typedef enum { mlb_set, mlb_add, mlb_sub, mlb_mult, mlb_div, mlb_rem, mlb_rshift, mlb_lshift, mlb_and, mlb_or, mlb_xor,
     

@@ -15,7 +15,7 @@ The following is an example of what marshmallow aims to be:
 
     use module marshmallow.
 
-    @build.
+    build.
 
       @public os(macOS | Windows | Linux).
 
@@ -39,7 +39,7 @@ The following is an example of what marshmallow aims to be:
 
       @endif.
 
-     @end.
+     end build.
 
      function main( args main_args ).
 
