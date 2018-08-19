@@ -173,6 +173,8 @@ cg_variable cg_new_variable( RKString name, cg_root_type type, int mlb_return_va
 
 void cg_destroy_variable( cg_variable variable ) ;
 
+int cg_variables_are_equal( cg_variable a, cg_variable b ) ;
+
 mlb_statement mlb_add_statement( mlb_op_type op, cg_routine routine, RKString A, RKString B, RKString C ) ;
 
 void mlb_destroy_statement( mlb_statement statement ) ;

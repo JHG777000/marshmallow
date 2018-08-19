@@ -142,6 +142,25 @@ void mlb_validate_variable( cg_variable variable ) {
         exit(EXIT_FAILURE) ;
     }
     
+    if ( variable->ptr != NULL && variable->type != ptr && variable->type != array ) {
+        
+        printf("codegen error: failed to validate a cg variable.\n") ;
+        
+        exit(EXIT_FAILURE) ;
+    }
+    
+    if ( variable->type == ptr || variable->type == array ) {
+        
+        if ( variable->ptr == NULL ) {
+            
+            printf("codegen error: failed to validate a cg variable.\n") ;
+            
+            exit(EXIT_FAILURE) ;
+        }
+        
+        mlb_validate_variable(variable->ptr) ;
+    }
+    
     if ( variable->values != NULL ) {
         
         RKList_node node = RKList_GetFirstNode(variable->values) ;
@@ -151,6 +170,19 @@ void mlb_validate_variable( cg_variable variable ) {
          mlb_validate_variable(RKList_GetData(node)) ;
             
          node = RKList_GetNextNode(node) ;
+            
+        }
+    }
+    
+    if ( variable->values_struct != NULL ) {
+        
+        RKList_node node = RKList_GetFirstNode(RKStore_GetList(variable->values_struct)) ;
+        
+        while ( node != NULL ) {
+            
+            mlb_validate_variable(RKList_GetData(node)) ;
+            
+            node = RKList_GetNextNode(node) ;
             
         }
     }

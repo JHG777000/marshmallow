@@ -32,11 +32,15 @@ static void validate_definition( int add, cg_routine routine, cg_variable variab
         
         definition_name = routine->name ;
         
+        mlb_validate_routine(definition) ;
+        
     } else if (routine == NULL && variable != NULL) {
         
         definition = variable ;
         
         definition_name = variable->name ;
+        
+        mlb_validate_variable(definition) ;
         
     } else if (routine == NULL && variable == NULL) {
         
@@ -45,16 +49,24 @@ static void validate_definition( int add, cg_routine routine, cg_variable variab
     
     if ( RKStore_ItemExists(c->definitions, RKString_GetString(definition_name)) ) {
         
-        cg_variable d = RKStore_GetItem(c->definitions, RKString_GetString(definition_name)) ;
+        cg_variable v = RKStore_GetItem(c->definitions, RKString_GetString(definition_name)) ;
         
-        if ( d->cgtype != ((cg_variable)definition)->cgtype) goto error ;
+        cg_routine r = (cg_routine)v ;
         
-        if ( d->cgtype == cg_variable_type ) {
-            
+        if ( v->cgtype != ((cg_variable)definition)->cgtype) goto error ;
+        
+        if ( v->cgtype == cg_variable_type ) {
+         
+            if ( !cg_variables_are_equal(v, definition) ) goto error ;
             
         }
         
-        if ( d->cgtype == cg_routine_type ) {
+        if ( v->cgtype == cg_routine_type ) {
+            
+            if ( r->is_global != ((cg_routine)definition)->is_global ) goto error ;
+            
+            if ( r->is_external != ((cg_routine)definition)->is_external ) goto error ;
+            
             
             
         }

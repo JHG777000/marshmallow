@@ -1741,3 +1741,76 @@ void cg_destroy_variable( cg_variable variable ) {
     
     free(variable) ;
 }
+
+int cg_variables_are_equal( cg_variable a, cg_variable b ) {
+
+loop:
+    
+    if ( a->is_global != b->is_global ) return 0 ;
+    
+    if ( a->mlb_get_return_value != b->mlb_get_return_value ) return 0 ;
+    
+    if ( a->mlb_return_value != b->mlb_return_value ) return 0 ;
+    
+    if ( a->num_of_items != b->num_of_items ) return 0 ;
+    
+    if ( a->type != b->type ) return 0 ;
+    
+    if ( a->ptr != NULL ) {
+        
+        a = a->ptr ;
+        
+        b = b->ptr ;
+        
+        goto loop ;
+    }
+    
+    if ( a->values == NULL && b->values != NULL) return 0 ;
+    
+    if ( a->values != NULL && b->values == NULL) return 0 ;
+    
+    if ( a->values != NULL ) {
+        
+        if ( RKList_GetNumOfNodes(a->values) != RKList_GetNumOfNodes(b->values) ) return 0 ;
+        
+        RKList_node node = RKList_GetFirstNode(a->values) ;
+        
+        RKList_node node2 = RKList_GetFirstNode(b->values) ;
+        
+        while ( node != NULL ) {
+            
+            if ( !cg_variables_are_equal(RKList_GetData(node),RKList_GetData(node2)) ) return 0 ;
+            
+            node = RKList_GetNextNode(node) ;
+            
+            node2 = RKList_GetNextNode(node2) ;
+        }
+    }
+    
+    if ( a->values_struct == NULL && b->values_struct != NULL) return 0 ;
+    
+    if ( a->values_struct != NULL && b->values_struct == NULL) return 0 ;
+    
+    if ( a->values_struct != NULL ) {
+        
+        if ( RKList_GetNumOfNodes(RKStore_GetList(a->values_struct)) != RKList_GetNumOfNodes(RKStore_GetList(b->values_struct)) ) return 0 ;
+        
+        RKList_node node = RKList_GetFirstNode(RKStore_GetList(a->values_struct)) ;
+        
+        RKList_node node2 = RKList_GetFirstNode(RKStore_GetList(b->values_struct)) ;
+        
+        while ( node != NULL ) {
+            
+            if ( !cg_variables_are_equal(RKList_GetData(node),RKList_GetData(node2)) ) return 0 ;
+            
+            if ( !RKString_AreStringsEqual(RKStore_GetStoreLabelFromListNode(node), RKStore_GetStoreLabelFromListNode(node2)) ) return 0 ;
+            
+            node = RKList_GetNextNode(node) ;
+            
+            node2 = RKList_GetNextNode(node2) ;
+            
+        }
+    }
+    
+    return 1 ;
+}
