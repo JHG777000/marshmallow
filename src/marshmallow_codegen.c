@@ -1619,6 +1619,8 @@ cg_routine cg_new_routine( RKString name, int is_global ) {
     
     routine->is_global = is_global ;
     
+    routine->cgtype = cg_routine_type ;
+    
     routine->return_types = RKList_NewList() ;
     
     routine->parameters = RKStore_NewStore() ;
@@ -1702,6 +1704,8 @@ cg_variable cg_new_variable( RKString name, cg_root_type type, int mlb_return_va
     
     variable->num_of_items = num_of_items ;
     
+    variable->cgtype = cg_variable_type ;
+    
     variable->is_global = is_global ;
     
     variable->values_struct = NULL ;
@@ -1732,6 +1736,8 @@ void cg_destroy_variable( cg_variable variable ) {
     if ( variable->values_struct != NULL ) RKStore_IterateStoreWith(DeleteVariableInListOrStore, variable->values_struct) ;
     
     if ( variable->values_struct != NULL ) RKStore_DestroyStore(variable->values_struct) ;
+    
+    if ( variable->ptr != NULL ) cg_destroy_variable(variable->ptr) ;
     
     free(variable) ;
 }

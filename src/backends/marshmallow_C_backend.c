@@ -18,16 +18,57 @@
 #include "marshmallow.h"
 #include "marshmallow_codegen.h"
 
-typedef struct c_backend_s { RKStore declarations ; RKStore symbols ; } *c_backend ;
+typedef struct c_backend_s { RKStore definitions ; RKStore symbols ; } *c_backend ;
 
-static void add_to_declarations( cg_routine routine, cg_variable variable ) {
+static void validate_definition( int add, cg_routine routine, cg_variable variable, c_backend c ) {
     
+    void* definition = NULL ;
     
-}
-
-static int is_symbol_used( RKString symbol ) {
+    RKString definition_name = NULL ;
     
-    return 0 ;
+    if ( routine != NULL && variable == NULL ) {
+        
+        definition = routine ;
+        
+        definition_name = routine->name ;
+        
+    } else if (routine == NULL && variable != NULL) {
+        
+        definition = variable ;
+        
+        definition_name = variable->name ;
+        
+    } else if (routine == NULL && variable == NULL) {
+        
+        return ;
+    }
+    
+    if ( RKStore_ItemExists(c->definitions, RKString_GetString(definition_name)) ) {
+        
+        cg_variable d = RKStore_GetItem(c->definitions, RKString_GetString(definition_name)) ;
+        
+        if ( d->cgtype != ((cg_variable)definition)->cgtype) goto error ;
+        
+        if ( d->cgtype == cg_variable_type ) {
+            
+            
+        }
+        
+        if ( d->cgtype == cg_routine_type ) {
+            
+            
+        }
+        
+        return ;
+        
+    error:
+        
+        printf("codegen error: definition '%s', already exists.\n",RKString_GetString(definition_name)) ;
+        
+        exit(EXIT_FAILURE) ;
+    }
+    
+    if (add) RKStore_AddItem(c->definitions, definition, RKString_GetString(definition_name)) ;
 }
 
 return_pointer_size(C) {
@@ -55,7 +96,7 @@ new_backend(C) {
     
     c_backend c = RKMem_NewMemOfType(struct c_backend_s) ;
     
-    c->declarations = RKStore_NewStore() ;
+    c->definitions = RKStore_NewStore() ;
     
     c->symbols = RKStore_NewStore() ;
     
@@ -81,5 +122,5 @@ new_backend(C) {
     
     mlb_validate_routine(memcpy_routine) ;
     
-    add_to_declarations(memcpy_routine,NULL) ;
+    validate_definition(1,memcpy_routine,NULL,c) ;
 }

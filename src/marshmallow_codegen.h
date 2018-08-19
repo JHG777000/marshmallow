@@ -95,15 +95,17 @@ typedef struct mlb_statement_s* mlb_statement ;
 
 typedef marshmallow_root_type cg_root_type ; //mib and the other intermediates will only use a subset
 
+typedef enum {cg_variable_type,cg_routine_type} cg_type ;
+
 struct cg_context_s { RKStore modules ; } ;
 
 struct cg_module_s { RKString name ; RKStore routines ; RKStore variables ; RKStore variable_declarations ; RKStore routine_declarations ; } ;
 
-struct cg_routine_s { RKString name ; int is_global ; int is_external ; RKList return_types ; RKStore parameters ; RKStore variables ;
+struct cg_routine_s { cg_type cgtype ; RKString name ; int is_global ; int is_external ; RKList return_types ; RKStore parameters ; RKStore variables ;
     
 RKList mib_code ; RKList mob_code ; RKList mlb_code ; RKStack data_stack ; RKStack op_stack ; }  ;
 
-struct cg_variable_s { RKString name ; cg_root_type type ; RKString value ; RKList values ; RKStore values_struct ;
+struct cg_variable_s { cg_type cgtype ; RKString name ; cg_root_type type ; RKString value ; RKList values ; RKStore values_struct ;
 
 int mlb_return_value ; int mlb_get_return_value ; cg_variable ptr ; int num_of_items ; int is_global ; } ;
 
