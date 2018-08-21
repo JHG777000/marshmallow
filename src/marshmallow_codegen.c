@@ -1797,17 +1797,11 @@ loop:
         
         RKList_node node = RKList_GetFirstNode(RKStore_GetList(a->values_struct)) ;
         
-        RKList_node node2 = RKList_GetFirstNode(RKStore_GetList(b->values_struct)) ;
-        
         while ( node != NULL ) {
             
-            if ( !cg_variables_are_equal(RKList_GetData(node),RKList_GetData(node2)) ) return 0 ;
-            
-            if ( !RKString_AreStringsEqual(RKStore_GetStoreLabelFromListNode(node), RKStore_GetStoreLabelFromListNode(node2)) ) return 0 ;
+            if ( !cg_variables_are_equal(RKList_GetData(node),RKStore_GetItem(b->values_struct,RKString_GetString(RKStore_GetStoreLabelFromListNode(node))))) return 0 ;
             
             node = RKList_GetNextNode(node) ;
-            
-            node2 = RKList_GetNextNode(node2) ;
             
         }
     }
