@@ -18,7 +18,7 @@
 #include "marshmallow.h"
 #include "marshmallow_codegen.h"
 
-typedef struct c_backend_s { RKStore definitions ; RKStore symbols ; } *c_backend ;
+typedef struct c_backend_s { RKStore definitions ; } *c_backend ;
 
 static void validate_definition( int add, cg_routine routine, cg_variable variable, c_backend c ) {
     
@@ -67,7 +67,32 @@ static void validate_definition( int add, cg_routine routine, cg_variable variab
             
             if ( r->is_external != ((cg_routine)definition)->is_external ) goto error ;
             
+            if ( RKList_GetNumOfNodes(RKStore_GetList(r->parameters)) != RKList_GetNumOfNodes(RKStore_GetList(((cg_routine)definition)->parameters))) goto error ;
             
+            if ( RKList_GetNumOfNodes(r->return_types) != RKList_GetNumOfNodes(((cg_routine)definition)->return_types) ) goto error ;
+            
+            RKList_node node = RKList_GetFirstNode(RKStore_GetList(r->parameters)) ;
+            
+            RKList_node node2 = NULL ;
+            
+            while (node != NULL) {
+                
+             if ( !cg_variables_are_equal(RKList_GetData(node),RKStore_GetItem(((cg_routine)definition)->parameters,RKString_GetString(RKStore_GetStoreLabelFromListNode(node))))) goto error ;
+                
+            node = RKList_GetNextNode(node) ;
+                
+            }
+            
+            node = RKList_GetFirstNode(r->return_types) ;
+            
+            node2 = RKList_GetFirstNode(((cg_routine)definition)->return_types) ;
+            
+            while (node != NULL ) {
+                
+                if ( !cg_variables_are_equal(RKList_GetData(node),RKList_GetData(node2)) ) goto error ;
+                
+                node = RKList_GetNextNode(node) ;
+            }
             
         }
         
@@ -88,6 +113,9 @@ return_pointer_size(C) {
     return 8 ;
 }
 
+
+
+
 get_context(C) {
     
     
@@ -98,6 +126,20 @@ get_builder(C) {
     
 }
 
+static void DeleteRoutineInListOrStore(void* data) {
+    
+    cg_destroy_routine(data) ;
+}
+
+get_destroyer(C) {
+    
+    RKStore_IterateStoreWith(DeleteRoutineInListOrStore, ((c_backend)backend->backend_ptr)->definitions) ;
+    
+    RKStore_DestroyStore(((c_backend)backend->backend_ptr)->definitions) ;
+    
+    free(backend->backend_ptr) ;
+}
+
 new_backend(C) {
     
     backend->size_callback = get_callback(C,return_pointer_size) ;
@@ -106,11 +148,11 @@ new_backend(C) {
     
     backend->builder_callback = get_callback(C,get_builder) ;
     
+    backend->destroyer_callback = get_callback(C, get_destroyer) ;
+    
     c_backend c = RKMem_NewMemOfType(struct c_backend_s) ;
     
     c->definitions = RKStore_NewStore() ;
-    
-    c->symbols = RKStore_NewStore() ;
     
     backend->backend_ptr = c ;
     

@@ -77,6 +77,8 @@ marshmallow_##name##_backend_func(backend) ;\
 
 #define get_builder(name) static void marshmallow_##name##_backend_get_builder(cg_builder builder, cg_context context, codegen_backend backend)
 
+#define get_destroyer(name) static void marshmallow_##name##_backend_get_destroyer(codegen_backend backend)
+
 #define get_callback(name,callback) marshmallow_##name##_backend_##callback
 
 typedef struct cg_context_s* cg_context ;
@@ -129,11 +131,13 @@ typedef void (*cg_callback_for_context)(cg_context context, codegen_backend back
 
 typedef void (*cg_callback_for_builder)(cg_builder builder, cg_context context, codegen_backend backend) ;
 
+typedef void (*cg_callback_for_destroyer) (codegen_backend backend);
+
 typedef enum { marshmallow_C_backend } codegen_backend_type ;
 
 struct codegen_backend_s { void* backend_ptr ; FILE* output_file ; cg_callback_for_pointer_size size_callback ;
     
-cg_callback_for_context context_callback ; cg_callback_for_builder builder_callback ; };
+cg_callback_for_context context_callback ; cg_callback_for_builder builder_callback ; cg_callback_for_destroyer destroyer_callback ; };
 
 codegen_backend codegen_new_backend( codegen_backend_type backend_type, FILE* out_file ) ;
 

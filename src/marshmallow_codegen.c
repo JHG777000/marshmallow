@@ -1530,6 +1530,8 @@ codegen_backend codegen_new_backend( codegen_backend_type backend_type, FILE* ou
 
 void codegen_destroy_backend( codegen_backend backend ) {
     
+    backend->destroyer_callback(backend) ;
+    
     free(backend) ;
 }
 
