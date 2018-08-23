@@ -251,38 +251,15 @@ loop:
 
 static void output_array( FILE* file, cg_variable type, void* static_assignment ) {
     
-    int is_not_zero = 0 ;
-    
-    int is_first = 1 ;
-    
-    int is_zero = 0 ;
-    
     cg_variable t = type ;
     
 loop:
+    
     if ( t->type == array ) {
-        
-        if ( t->num_of_elements == 0 ) is_zero++ ;
-        
-        if ( t->num_of_elements != 0 ) is_not_zero++ ;
-        
-        if ( t->num_of_elements == 0 && !is_first && static_assignment != NULL ) {
-            
-            printf("Error: Only the first array is allowed to be zero, when statically assigned.\n") ;
-            
-            exit(EXIT_FAILURE) ;
-        }
-        
-        if ( ((t->num_of_elements != 0 && is_zero) || (t->num_of_elements == 0 && is_not_zero)) && static_assignment == NULL ) {
-            
-            printf("Error: When not statically assigned zero and non-zero arrays can not be mixed.\n") ;
-            
-            exit(EXIT_FAILURE) ;
-        }
         
         if ( static_assignment == NULL && t->num_of_elements != 0 ) fprintf(file,"[") ;
         
-        if ( static_assignment != NULL ) fprintf(file,"[") ;
+        if ( static_assignment != NULL && t->num_of_elements != 0 ) fprintf(file,"[") ;
         
 #ifdef _WIN32
         
@@ -299,8 +276,6 @@ loop:
         if ( static_assignment != NULL ) fprintf(file,"]") ;
         
         t = t->ptr ;
-        
-        is_first = 0 ;
         
         goto loop ;
     }
