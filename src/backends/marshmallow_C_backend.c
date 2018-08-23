@@ -113,7 +113,164 @@ return_pointer_size(C) {
     return 8 ;
 }
 
+static void output_type( marshmallow_context context, FILE* file, marshmallow_type type, marshmallow_variable static_assignment, marshmallow_module module ) {
+    
+    marshmallow_type t = type ;
+    
+loop:
+    
+    if ( (t->root_type == ptr) || (t->root_type == array)  ) t = t->base_type ;
+    
+    if ( (t->root_type == ptr) || (t->root_type == array) ) goto loop ;
+    
+    if ( t->root_type != unknown ) {
+        
+        switch (t->root_type) {
+                
+            case u8:
+                
+                fprintf(file, "_mu8 ") ;
+                
+                break;
+                
+            case i8:
+                
+                fprintf(file, "_mi8 ") ;
+                
+                break;
+                
+            case u16:
+                
+                fprintf(file, "_mu16 ") ;
+                
+                break;
+                
+            case i16:
+                
+                fprintf(file, "_mi16 ") ;
+                
+                break;
+                
+            case u32:
+                
+                fprintf(file, "_mu32 ") ;
+                
+                break;
+                
+            case enum_type:
+                
+                fprintf(file, "_mu32 ") ;
+                
+                break;
+                
+            case string8:
+                
+                fprintf(file, "_mu8* ") ;
+                
+                break;
+                
+            case string16:
+                
+                fprintf(file, "_mu16* ") ;
+                
+                break;
+                
+                
+            case string32:
+                
+                fprintf(file, "_mu32* ") ;
+                
+                break;
+                
+                
+            case i32:
+                
+                fprintf(file, "_mi32 ") ;
+                
+                break;
+                
+            case u64:
+                
+                fprintf(file, "_mu64 ") ;
+                
+                break;
+                
+            case i64:
+                
+                fprintf(file, "_mi64 ") ;
+                
+                break;
+                
+            case f32:
+                
+                fprintf(file, "_mf32 ") ;
+                
+                break;
+                
+            case f64:
+                
+                fprintf(file, "_mf64 ") ;
+                
+                break;
+                
+            default:
+                break;
+        }
+        
+        
+    }
+    
+    if ( (type->root_type == ptr) || (type->root_type == array) ) {
+        
+        t = type ;
+    loop2:
+        if ( (t->root_type == ptr) || (t->root_type == array) ) {
+            
+            if (t->root_type == ptr) fprintf(file,"*") ;
+            
+            if (t->root_type == array && t->num_of_elements == 0 && static_assignment == NULL ) fprintf(file,"*") ;
+            
+            t = t->base_type ;
+            
+            goto loop2 ;
+        }
+    }
+}
 
+static void output_runtime( marshmallow_context context, FILE* file ) {
+    
+    fprintf(file, "typedef float _mf32 ;\n") ;
+
+    fprintf(file, "typedef double _mf64 ;\n") ;
+    
+    fprintf(file, "typedef unsigned char _mu8 ;\n") ;
+    
+    fprintf(file, "typedef signed char _mi8 ;\n") ;
+    
+    fprintf(file, "typedef signed short _mi16 ;\n") ;
+    
+    fprintf(file, "typedef unsigned short _mu16 ;\n") ;
+    
+    fprintf(file, "typedef signed int _mi32 ;\n") ;
+    
+    fprintf(file, "typedef unsigned int _mu32 ;\n") ;
+    
+    fprintf(file, "#ifdef _WIN32\n") ;
+    
+    fprintf(file, "typedef signed long long _mi64 ;\n") ;
+    
+    fprintf(file, "typedef unsigned long long _mu64 ;\n") ;
+    
+    fprintf(file, "#else\n") ;
+    
+    fprintf(file, "typedef signed long _mi64 ;\n") ;
+    
+    fprintf(file, "typedef unsigned long _mu64 ;\n") ;
+    
+    fprintf(file, "#endif\n") ;
+    
+    fprintf(file, "\n") ;
+}
 
 
 get_context(C) {
