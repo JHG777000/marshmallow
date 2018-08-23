@@ -1573,6 +1573,8 @@ cg_module cg_new_module( RKString name ) {
     
     module->variables = RKStore_NewStore() ;
     
+    module->entity_type = cg_entity_module ;
+    
     module->routine_declarations = RKStore_NewStore() ;
     
     module->variable_declarations = RKStore_NewStore() ;
@@ -1621,7 +1623,7 @@ cg_routine cg_new_routine( RKString name, int is_global ) {
     
     routine->is_global = is_global ;
     
-    routine->cgtype = cg_routine_type ;
+    routine->entity_type = cg_entity_routine ;
     
     routine->return_types = RKList_NewList() ;
     
@@ -1704,9 +1706,9 @@ cg_variable cg_new_variable( RKString name, cg_root_type type, int mlb_return_va
     
     variable->mlb_return_value = mlb_return_value ;
     
-    variable->num_of_items = num_of_items ;
+    variable->num_of_elements = num_of_items ;
     
-    variable->cgtype = cg_variable_type ;
+    variable->entity_type = cg_entity_variable ;
     
     variable->is_global = is_global ;
     
@@ -1754,7 +1756,7 @@ loop:
     
     if ( a->mlb_return_value != b->mlb_return_value ) return 0 ;
     
-    if ( a->num_of_items != b->num_of_items ) return 0 ;
+    if ( a->num_of_elements != b->num_of_elements ) return 0 ;
     
     if ( a->type != b->type ) return 0 ;
     

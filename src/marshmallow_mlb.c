@@ -24,6 +24,8 @@ mlb_statement mlb_add_statement( mlb_op_type op, cg_routine routine, RKString A,
     
     statement->op = op ;
     
+    statement->entity_type = cg_entity_mlb_statement ;
+    
     statement->A = ( A != NULL ) ? RKStore_GetItem(routine->variables, RKString_GetString(A)) : NULL ;
     
     statement->B = ( B != NULL ) ? RKStore_GetItem(routine->variables, RKString_GetString(B)) : NULL ;
@@ -135,7 +137,7 @@ void mlb_validate_routine( cg_routine routine ) {
 
 void mlb_validate_variable( cg_variable variable ) {
     
-    if ( (variable->mlb_return_value > 0 && variable->mlb_get_return_value > 0) || variable->num_of_items < 0 ) {
+    if ( (variable->mlb_return_value > 0 && variable->mlb_get_return_value > 0) ) {
         
         printf("codegen error: failed to validate a cg variable.\n") ;
         

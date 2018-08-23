@@ -53,15 +53,15 @@ static void validate_definition( int add, cg_routine routine, cg_variable variab
         
         cg_routine r = (cg_routine)v ;
         
-        if ( v->cgtype != ((cg_variable)definition)->cgtype) goto error ;
+        if ( v->entity_type != ((cg_variable)definition)->entity_type) goto error ;
         
-        if ( v->cgtype == cg_variable_type ) {
+        if ( v->entity_type == cg_entity_variable ) {
          
             if ( !cg_variables_are_equal(v, definition) ) goto error ;
             
         }
         
-        if ( v->cgtype == cg_routine_type ) {
+        if ( v->entity_type == cg_entity_routine) {
             
             if ( r->is_global != ((cg_routine)definition)->is_global ) goto error ;
             
@@ -108,24 +108,37 @@ static void validate_definition( int add, cg_routine routine, cg_variable variab
     if (add) RKStore_AddItem(c->definitions, definition, RKString_GetString(definition_name)) ;
 }
 
+
+static void* get_static_assignment( cg_variable variable ) {
+    
+    if ( !variable->is_literal ) {
+        
+        if ( variable->type == array && variable->values != NULL ) return variable->values ;
+        
+        if ( variable->type == class && variable->values_struct != NULL ) return variable->values_struct ;
+        
+        if ( variable->type != array && variable->type != class && variable->value != NULL ) return variable->value ;
+    }
+    
+    return NULL ;
+}
+
 return_pointer_size(C) {
     
     return 8 ;
 }
 
-static void output_type( marshmallow_context context, FILE* file, marshmallow_type type, marshmallow_variable static_assignment, marshmallow_module module ) {
+static void output_type( FILE* file, cg_variable type, void* static_assignment ) {
     
-    marshmallow_type t = type ;
+    cg_variable t = type ;
     
 loop:
     
-    if ( (t->root_type == ptr) || (t->root_type == array)  ) t = t->base_type ;
+    if ( (t->type == ptr) || (t->type == array)  ) t = t->ptr ;
     
-    if ( (t->root_type == ptr) || (t->root_type == array) ) goto loop ;
-    
-    if ( t->root_type != unknown ) {
+    if ( (t->type == ptr) || (t->type == array) ) goto loop ;
         
-        switch (t->root_type) {
+        switch (t->type) {
                 
             case u8:
                 
@@ -216,24 +229,80 @@ loop:
             default:
                 break;
         }
-        
-        
-    }
     
-    if ( (type->root_type == ptr) || (type->root_type == array) ) {
+    if ( (type->type == ptr) || (type->type == array) ) {
         
         t = type ;
+        
     loop2:
-        if ( (t->root_type == ptr) || (t->root_type == array) ) {
+        
+        if ( (t->type == ptr) || (t->type == array) ) {
             
-            if (t->root_type == ptr) fprintf(file,"*") ;
+            if (t->type == ptr) fprintf(file,"*") ;
             
-            if (t->root_type == array && t->num_of_elements == 0 && static_assignment == NULL ) fprintf(file,"*") ;
+            if (t->type == array && t->num_of_elements == 0 && static_assignment == NULL ) fprintf(file,"*") ;
             
-            t = t->base_type ;
+            t = t->ptr ;
             
             goto loop2 ;
         }
+    }
+}
+
+static void output_array( FILE* file, cg_variable type, void* static_assignment ) {
+    
+    int is_not_zero = 0 ;
+    
+    int is_first = 1 ;
+    
+    int is_zero = 0 ;
+    
+    cg_variable t = type ;
+    
+loop:
+    if ( t->type == array ) {
+        
+        if ( t->num_of_elements == 0 ) is_zero++ ;
+        
+        if ( t->num_of_elements != 0 ) is_not_zero++ ;
+        
+        if ( t->num_of_elements == 0 && !is_first && static_assignment != NULL ) {
+            
+            printf("Error: Only the first array is allowed to be zero, when statically assigned.\n") ;
+            
+            exit(EXIT_FAILURE) ;
+        }
+        
+        if ( ((t->num_of_elements != 0 && is_zero) || (t->num_of_elements == 0 && is_not_zero)) && static_assignment == NULL ) {
+            
+            printf("Error: When not statically assigned zero and non-zero arrays can not be mixed.\n") ;
+            
+            exit(EXIT_FAILURE) ;
+        }
+        
+        if ( static_assignment == NULL && t->num_of_elements != 0 ) fprintf(file,"[") ;
+        
+        if ( static_assignment != NULL ) fprintf(file,"[") ;
+        
+#ifdef _WIN32
+        
+        if ( t->num_of_elements > 0 ) fprintf(file, "%llu", t->num_of_elements) ;
+        
+#else
+        
+        if ( t->num_of_elements > 0 ) fprintf(file, "%lu", t->num_of_elements) ;
+        
+#endif
+        
+        if ( static_assignment == NULL && t->num_of_elements != 0 ) fprintf(file,"]") ;
+        
+        if ( static_assignment != NULL ) fprintf(file,"]") ;
+        
+        t = t->ptr ;
+        
+        is_first = 0 ;
+        
+        goto loop ;
     }
 }
 

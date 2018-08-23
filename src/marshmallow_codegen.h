@@ -97,19 +97,23 @@ typedef struct mlb_statement_s* mlb_statement ;
 
 typedef marshmallow_root_type cg_root_type ; //mib and the other intermediates will only use a subset
 
-typedef enum {cg_variable_type,cg_routine_type} cg_type ;
+typedef enum {cg_entity_variable,cg_entity_mlb_statement,cg_entity_statement,cg_entity_routine,cg_entity_module,cg_entity_context} cg_entity_type;
 
-struct cg_context_s { RKStore modules ; } ;
+struct cg_context_s { cg_entity_type entity_type ; RKStore modules ; } ;
 
-struct cg_module_s { RKString name ; RKStore routines ; RKStore variables ; RKStore variable_declarations ; RKStore routine_declarations ; } ;
-
-struct cg_routine_s { cg_type cgtype ; RKString name ; int is_global ; int is_external ; RKList return_types ; RKStore parameters ; RKStore variables ;
+struct cg_module_s { cg_entity_type entity_type ; RKString name ; RKStore routines ; RKStore variables ;
     
-RKList mib_code ; RKList mob_code ; RKList mlb_code ; RKStack data_stack ; RKStack op_stack ; }  ;
+RKStore variable_declarations ; RKStore routine_declarations ; } ;
 
-struct cg_variable_s { cg_type cgtype ; RKString name ; cg_root_type type ; RKString value ; RKList values ; RKStore values_struct ;
+struct cg_routine_s { cg_entity_type entity_type ; RKString name ; int is_global ; int is_external ;
+    
+RKList return_types ; RKStore parameters ; RKStore variables ; RKList mib_code ; RKList mob_code ;
+    
+RKList mlb_code ; RKStack data_stack ; RKStack op_stack ; }  ;
 
-int mlb_return_value ; int mlb_get_return_value ; cg_variable ptr ; int num_of_items ; int is_global ; } ;
+struct cg_variable_s { cg_entity_type entity_type ; RKString name ; cg_root_type type ; RKString value ; RKList values ; RKStore values_struct ;
+
+int mlb_return_value ; int mlb_get_return_value ; cg_variable ptr ; RKULong num_of_elements ; int is_global ; int is_literal ; } ;
 
 typedef enum { mlb_set, mlb_add, mlb_sub, mlb_mult, mlb_div, mlb_rem, mlb_rshift, mlb_lshift, mlb_and, mlb_or, mlb_xor,
     
@@ -121,7 +125,7 @@ mlb_switch, mlb_endswitch, mlb_case, mlb_endcase, mlb_default, mlb_goto, mlb_sec
     
 mlb_greaterthan, mlb_lessthan, mlb_greaterthan_or_equals, mlb_lessthan_or_equals, mlb_memcpy, mlb_call, mlb_return } mlb_op_type ;
 
-struct mlb_statement_s { cg_routine routine ; mlb_op_type op ; cg_variable A ; cg_variable B ; cg_variable C ; } ;
+struct mlb_statement_s { cg_entity_type entity_type ; cg_routine routine ; mlb_op_type op ; cg_variable A ; cg_variable B ; cg_variable C ; } ;
 
 typedef struct codegen_backend_s* codegen_backend ;
 
