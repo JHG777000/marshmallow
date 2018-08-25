@@ -128,6 +128,12 @@ return_pointer_size(C) {
     return 8 ;
 }
 
+static void output_type( FILE* file, cg_variable type, void* static_assignment ) ;
+
+static void output_array( FILE* file, cg_variable type, void* static_assignment ) ;
+
+static void output_runtime( FILE* file ) ;
+
 static void output_type( FILE* file, cg_variable type, void* static_assignment ) {
     
     cg_variable t = type ;
@@ -270,7 +276,7 @@ loop:
         if ( t->num_of_elements > 0 ) fprintf(file, "%lu", t->num_of_elements) ;
         
 #endif
-        
+
         if ( static_assignment == NULL && t->num_of_elements != 0 ) fprintf(file,"]") ;
         
         if ( static_assignment != NULL ) fprintf(file,"]") ;
@@ -281,7 +287,7 @@ loop:
     }
 }
 
-static void output_runtime( marshmallow_context context, FILE* file ) {
+static void output_runtime( FILE* file ) {
     
     fprintf(file, "typedef float _mf32 ;\n") ;
 

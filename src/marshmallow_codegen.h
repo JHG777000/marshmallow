@@ -34,29 +34,29 @@
  
  Will be the first intermediate stage in marshmallow's codegen.
  
- Will be a stack based intermediate, taking inspiration from WebAssembly.
+ Will be a stack based intermediate.
  
  Mib's only purpose is to aid the transformation of the marshmallow ast into mob.
  
  -- marshmallow optimizing bytecode --
  
- Will also be a stack based intermediate, but more like WebAssembly.
+ Will also be a stack based intermediate, will be taking inspiration from WebAssembly.
  
- Will allow for high-level and platform neutral optimization.
+ Will allow for high-level optimization.
  
  -- marshmallow low-level bytecode --
  
- Will allow for low-level and platform specific optimization.
+ Will allow for additional optimization, such as inlining.
  
  Will be three-address code.
  
  Will be transformed into C code, or other backend.
  
- --- Overview of codegen -----------------------------------------------------------------------------------------------------------
+ --- Overview of codegen -------------------------------------------------------------------------------------------------------
  
- mib(stack based) -> mob(stack based, more like WebAssembly, optimization) -> mlb(low-level optimization,TAC) -> C(or other backend)
+ mib(stack based) -> mob(stack based like WebAssembly, optimization) -> mlb(three-address code, inlining) -> C(or other backend)
  
- -----------------------------------------------------------------------------------------------------------------------------------
+ -------------------------------------------------------------------------------------------------------------------------------
  */
 
 #ifndef marshmallow_codegen_h
