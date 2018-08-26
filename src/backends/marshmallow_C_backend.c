@@ -20,7 +20,7 @@
 
 typedef struct c_backend_s { RKStore definitions ; } *c_backend ;
 
-static void validate_definition( int add, cg_routine routine, cg_variable variable, c_backend c ) {
+static void validate_definition( cg_routine routine, cg_variable variable, c_backend c ) {
     
     void* definition = NULL ;
     
@@ -105,7 +105,6 @@ static void validate_definition( int add, cg_routine routine, cg_variable variab
         exit(EXIT_FAILURE) ;
     }
     
-    if (add) RKStore_AddItem(c->definitions, definition, RKString_GetString(definition_name)) ;
 }
 
 
@@ -123,10 +122,31 @@ static void* get_static_assignment( cg_variable variable ) {
     return NULL ;
 }
 
+static void name_mangle( cg_module module, cg_variable variable ) {
+    
+    RKString name = variable->name ;
+    
+    RKString underscore = rkstr("_") ;
+    
+    RKString str0 = RKString_AppendString(rkstr("marshmallow_"), module->name) ;
+    
+    RKString str1  = RKString_AppendString(str0, underscore) ;
+    
+    RKString str2 = RKString_AppendString(str1, name) ;
+    
+    variable->name = str2 ;
+    
+    RKString_DestroyString(underscore) ;
+    
+    RKString_DestroyString(name) ;
+}
+
 return_pointer_size(C) {
     
     return 8 ;
 }
+
+static void output_declarations( FILE* file, RKStore declarations ) ;
 
 static void output_type( FILE* file, cg_variable type, void* static_assignment ) ;
 
@@ -383,5 +403,5 @@ new_backend(C) {
     
     mlb_validate_routine(memcpy_routine) ;
     
-    validate_definition(1,memcpy_routine,NULL,c) ;
+    validate_definition(memcpy_routine,NULL,c) ;
 }
