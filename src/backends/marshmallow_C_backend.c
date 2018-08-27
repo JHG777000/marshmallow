@@ -18,7 +18,7 @@
 #include "marshmallow.h"
 #include "marshmallow_codegen.h"
 
-typedef struct c_backend_s { RKStore definitions ; } *c_backend ;
+typedef struct c_backend_s { RKStore definitions ; RKStore banned_symbols ; } *c_backend ;
 
 static void validate_definition( cg_routine routine, cg_variable variable, c_backend c ) {
     
@@ -150,6 +150,8 @@ static void output_declarations( FILE* file, RKStore declarations ) ;
 
 static void output_type( FILE* file, cg_variable type, void* static_assignment ) ;
 
+static void output_symbol( FILE* file, cg_variable variable, c_backend c ) ;
+
 static void output_array( FILE* file, cg_variable type, void* static_assignment ) ;
 
 static void output_runtime( FILE* file ) ;
@@ -275,6 +277,27 @@ loop:
     }
 }
 
+static void output_variable_name( FILE* file, cg_variable variable, c_backend c ) {
+    
+    RKString name = variable->name ;
+    
+    if ( variable->is_global ) {
+        
+        fprintf(file, "%s", RKString_GetString(name)) ;
+        
+        return ;
+    }
+    
+    if ( RKStore_ItemExists(c->banned_symbols, RKString_GetString(name)) ) {
+        
+        printf("codegen error: symbol '%s', already exists.\n",RKString_GetString(name)) ;
+        
+        exit(EXIT_FAILURE) ;
+    }
+    
+    fprintf(file, "%s", RKString_GetString(name)) ;
+}
+
 static void output_array( FILE* file, cg_variable type, void* static_assignment ) {
     
     cg_variable t = type ;
@@ -381,6 +404,8 @@ new_backend(C) {
     
     c->definitions = RKStore_NewStore() ;
     
+    c->banned_symbols = RKStore_NewStore() ;
+    
     backend->backend_ptr = c ;
     
     cg_routine memcpy_routine = cg_new_routine(rkstr("memcpy"), 1) ;
@@ -404,4 +429,6 @@ new_backend(C) {
     mlb_validate_routine(memcpy_routine) ;
     
     validate_definition(memcpy_routine,NULL,c) ;
+    
+    RKStore_AddItem(c->banned_symbols, rkstr("memcpy"), "memcpy") ;
 }
