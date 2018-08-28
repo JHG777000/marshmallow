@@ -86,9 +86,11 @@ typedef struct marshmallow_statement_s { marshmallow_entity_type entity_type ; R
     
 marshmallow_entity var_a ; marshmallow_entity var_b ; marshmallow_function_body function ; } *marshmallow_statement ;
 
-typedef struct marshmallow_module_s { marshmallow_entity_type entity_type ; marshmallow_scope_protocol RKStore declarations ; RKStore types ; RKStore unprocessed_types ;
+typedef struct marshmallow_module_s { marshmallow_entity_type entity_type ; marshmallow_scope_protocol RKStore declarations ;
     
-RKStore enums ; RKStore macros ; RKStore modules ; RKStore functions_and_methods ; RKString name ; } *marshmallow_module ;
+RKStore types ; RKStore unprocessed_types ; RKStore enums ; RKStore macros ; RKStore templates ; RKStore modules ;
+    
+RKStore functions_and_methods ; RKString name ; } *marshmallow_module ;
 
 typedef struct marshmallow_scope_s { marshmallow_entity_type entity_type ; marshmallow_scope_protocol } *marshmallow_scope ;
 

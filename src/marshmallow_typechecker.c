@@ -2064,6 +2064,18 @@ statment_evaluator:
             
             break;
             
+        case rshift:
+
+            c = a >> b ;
+            
+            break;
+            
+        case lshift:
+            
+            c = a << b ;
+            
+            break;
+            
         default:
             
             return NULL ;

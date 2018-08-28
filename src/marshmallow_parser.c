@@ -3458,11 +3458,21 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
                     exit(EXIT_FAILURE) ;
                 }
                 
-                if ( word[0] == '@' ) {
+                if ( word_size > 1 ) {
+                
+                 i = 0 ;
                     
-                    printf("On line: %d, error: User Identifiers can not start with '@'.\n",line_number) ;
-                    
-                    exit(EXIT_FAILURE) ;
+                    while (i < word_size-1) {
+                        
+                         if ( word[i] == '@' ) {
+                            
+                             printf("On line: %d, error: User Identifiers can not have '@'.\n",line_number) ;
+                            
+                             exit(EXIT_FAILURE) ;
+                         }
+                        
+                        i++ ;
+                    }
                 }
                 
                 if ( word_size > 1 ) if (  (word[0] == '0') && (word[1] == 'x')  ) {
