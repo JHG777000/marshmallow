@@ -364,11 +364,8 @@ static void output_value( marshmallow_context context, FILE* file, marshmallow_v
     if ( value->type->root_type == enum_type ) {
         
         output_enum(context, file, value, module) ;
-    }
-    
-    if ( value->type->root_type == array ) {
         
-        if ( value->name != NULL ) output_symbol(context, file, value->name, module, 0, 0) ;
+        return ;
     }
     
     if ( value->type->root_type == ptr ) {
@@ -391,30 +388,28 @@ static void output_value( marshmallow_context context, FILE* file, marshmallow_v
         }
     }
     
-    if ( value->type->root_type != unknown && value->type->root_type != array && value->type->root_type != arguments && value->type->root_type != metacollection
-        && value->type->root_type != expression && value->data != NULL ) {
-        
-        fprintf(file, "%s", RKString_GetString(((marshmallow_value)value->data)->value)) ;
-        
-    }
-    
     if ( value->type->root_type == expression ) {
         
         output_statement(context, file, value->data, module) ;
+        
+        return ;
     }
     
     if ( value->type->root_type == metacollection ) {
         
         output_collection(context, file, value->data, module) ;
+        
+        return ;
     }
     
-    if ( (value->type->root_type == unknown || value->type->root_type == ptr
-          || ( m_is_type_number(value->type) && value->type->root_type != hex )) && value->name != NULL ) {
+    if ( !value->type->is_literal && value->name != NULL ) {
         
         output_symbol(context, file, value->name, module, value->is_global, 0) ;
+        
+        return ;
     }
     
-    if ( value->type->root_type == unknown && value->name == NULL ) {
+    if ( value->data != NULL ) {
         
          fprintf(file, "%s", RKString_GetString(((marshmallow_value)value->data)->value)) ;
     }
@@ -428,7 +423,6 @@ static void output_value( marshmallow_context context, FILE* file, marshmallow_v
     if ( value->type->root_type == string32 && value->type->is_literal ) fprintf(file, "\"") ;
     
     if ( value->type->root_type == character ) fprintf(file, "\'") ;
-    
 }
 
 static void output_collection( marshmallow_context context, FILE* file, marshmallow_variable the_collection, marshmallow_module module ) {

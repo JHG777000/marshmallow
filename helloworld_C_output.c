@@ -34,7 +34,9 @@ mu32 marshmallow_mymod_myvar1 = 07 ;
 mi32 marshmallow_mymod_myvar3 = -62 ;
 mu32* marshmallow_mymod_test = U"Hello World\n" ;
 mu32* marshmallow_mymod_test2 = ((void*)0) ;
+mu32 marshmallow_mymod_myarray42[3][3] = {{7,7,7},{7,7,7},{7,7,7}} ;
 void marshmallow_mymod_main(mi32 * returns_marshmallow_mymod_main_0) {
+mu32 myarray43[3][3] ;
 mu32 *var555 = (&marshmallow_mymod_var303) ;
 mu32 var4 = -5222 ;
 mu64 myvar = 0xff ;
@@ -52,6 +54,7 @@ mu32 myarray2[3][3] = {0} ;
 mu32 myarray3[3][3] ;
 mu64 myvar2 = 52 ;
 memcpy(myarray3,myarray, sizeof(myarray3))  ;
+memcpy(myarray43,marshmallow_mymod_myarray42, sizeof(myarray43))  ;
 var4=marshmallow_mymod_var300  ;
 marshmallow_mymod_var301=(&marshmallow_mymod_var303)  ;
 ((*marshmallow_mymod_var301)=0)  ;

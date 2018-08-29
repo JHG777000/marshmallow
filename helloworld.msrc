@@ -59,7 +59,11 @@ module mymod.
 
  string32 test2.
 
+ u32[3][3] myarray42 := {{7,7,7},{7,7,7},{7,7,7}}.
+
  function main() returns i32.
+
+  u32[3][3] myarray43 := myarray42.
 
   int* var555 := (&var303).
 

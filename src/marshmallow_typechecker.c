@@ -630,10 +630,6 @@ RKULong m_get_size_of_type_or_array_in_bytes( marshmallow_type type_or_array, ma
     return size ;
 }
 
-typedef enum { arithmetic, arrays, pointers, classes, lambdas, strings, unknowns } type_category ;
-
-static type_category typecheck_get_type_category( marshmallow_type type ) ;
-
 static int typecheck_are_types_equivalent( marshmallow_type t1, marshmallow_type t2 ) {
     
     RKULong size = 0 ;
@@ -2392,7 +2388,7 @@ static marshmallow_type typecheck_get_type_from_variable( marshmallow_variable v
     return ptrtype ;
 }
 
-static type_category typecheck_get_type_category( marshmallow_type type ) {
+type_category typecheck_get_type_category( marshmallow_type type ) {
    
     if ( m_is_type_number(type) || type->root_type == enum_type ) {
         

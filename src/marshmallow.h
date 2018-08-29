@@ -174,6 +174,8 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
 
 //typecheck
 
+typedef enum { arithmetic, arrays, pointers, classes, lambdas, strings, unknowns } type_category ;
+
 int m_is_type_float( marshmallow_type type ) ;
 
 int m_is_type_signed( marshmallow_type type ) ;
@@ -189,6 +191,8 @@ marshmallow_type typecheck_make_ptr_type_from_type( marshmallow_type type ) ;
 marshmallow_type typecheck_get_ptr_type_from_type( marshmallow_type type ) ;
 
 marshmallow_type typecheck_get_type_from_root_type( marshmallow_root_type root ) ;
+
+type_category typecheck_get_type_category( marshmallow_type type ) ;
 
 int m_get_size_of_root_type_in_bytes( marshmallow_type type ) ;
 
