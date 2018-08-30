@@ -458,7 +458,8 @@ static void output_collection( marshmallow_context context, FILE* file, marshmal
     
 }
 
-static void output_multiple_returns( marshmallow_context context, FILE* file, marshmallow_variable the_collection, marshmallow_function_signature signature, marshmallow_module module ) {
+static void output_multiple_returns( marshmallow_context context, FILE* file, marshmallow_variable the_collection,
+                                     marshmallow_function_signature signature, marshmallow_module module ) {
     
     int n = 0 ;
     

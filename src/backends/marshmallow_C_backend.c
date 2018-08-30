@@ -156,6 +156,40 @@ static void output_array( FILE* file, cg_variable type, void* static_assignment 
 
 static void output_runtime( FILE* file ) ;
 
+
+static void output_collection( FILE* file, cg_variable variable ) {
+    
+    RKList list = NULL ;
+    
+    RKList_node node = NULL ;
+    
+    if ( variable->values != NULL ) {
+        
+        list = variable->values ;
+        
+        if ( list != NULL ) {
+            
+            fprintf(file, "{") ;
+            
+            node = RKList_GetFirstNode(list) ;
+            
+            while (node != NULL) {
+                
+                //output_value(context, file, RKList_GetData(node), module) ;
+                
+                if ( RKList_GetNextNode(node) != NULL ) fprintf(file, ",") ;
+                
+                node = RKList_GetNextNode(node) ;
+            }
+            
+            fprintf(file, "}") ;
+            
+        }
+        
+    }
+    
+}
+
 static void output_type( FILE* file, cg_variable type, void* static_assignment ) {
     
     cg_variable t = type ;
