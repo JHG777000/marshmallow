@@ -811,12 +811,16 @@ m_processor(enum) {
                             
                             z = typecheck_integer_evaluator((marshmallow_statement)z, NULL) ;
                            
+                            if ( z == NULL ) {
+                                
+                                printf("On line: %d, expected static assignment in enum, got non-static assignment.\n", line_number) ;
+                                
+                                exit(EXIT_FAILURE) ;
+                            }
+                            
                             m = RKList_GetIndex(symbol_list, *startnode) ;
                             
                             m_reset ;
-                            
-                            marshmallow_token t = m_peek(n+4);
-                            marshmallow_token t3 = m_gettoken;
                             
                         } else {
                         
@@ -832,7 +836,7 @@ m_processor(enum) {
                         
                       error:
                         
-                        printf("On line: %d, expected an integer got: %s.\n",line_number,RKString_GetString(((marshmallow_value)b->data)->value)) ;
+                        printf("On line: %d, expected an integer, got: %s.\n",line_number,RKString_GetString(m_peek(n+4)->value)) ;
                         
                         exit(EXIT_FAILURE) ;
                     }
