@@ -365,6 +365,8 @@ static RKList_node marshmallow_get_previous_node_after_n( RKList_node* startnode
 
 #define m_advance *startnode = marshmallow_get_next_node(startnode,symbol_list)
 
+#define m_retreat *startnode = marshmallow_get_previous_node(startnode,symbol_list)
+
 #define m_advanceN(n) *startnode = marshmallow_get_next_node_after_n(startnode,symbol_list,n)
 
 #define m_retreatN(n) *startnode = marshmallow_get_previous_node_after_n(startnode,symbol_list,n)
@@ -750,6 +752,8 @@ m_processor(goto) {
 
 m_processor(enum) {
     
+    int m = 0 ;
+    
     int n = 0 ;
     
     int flag = 0 ;
@@ -765,6 +769,8 @@ m_processor(enum) {
     marshmallow_variable b = marshmallow_new_variable() ;
     
     b->type = marshmallow_new_type() ;
+    
+    marshmallow_variable z = NULL ;
     
     marshmallow_type t1 = marshmallow_new_type() ;
     
@@ -795,19 +801,38 @@ m_processor(enum) {
                         n++ ;
                     }
                     
-                    if ( marshmallow_is_token_root_type(m_peek(n+4)) ) {
+                    if ( marshmallow_is_token_root_type(m_peek(n+4)) || m_peek(n+4)->keyword == mgk(pleft) ) {
                         
-                        marshmallow_parse_type(b->type, m_peek(n+4), 0, NULL, 0) ;
+                        if ( m_peek(n+4)->keyword == mgk(pleft) ) {
+                            
+                            m_advanceN(n+4) ;
+                            
+                            z = m_process(expression) ;
+                            
+                            z = typecheck_integer_evaluator((marshmallow_statement)z, NULL) ;
+                           
+                            m = RKList_GetIndex(symbol_list, *startnode) ;
+                            
+                            m_reset ;
+                            
+                            marshmallow_token t = m_peek(n+4);
+                            marshmallow_token t3 = m_gettoken;
+                            
+                        } else {
                         
-                        marshmallow_parse_value(m_peek(n+4), b) ;
+                         marshmallow_parse_type(b->type, m_peek(n+4), 0, NULL, 0) ;
                         
-                        if ( m_is_type_float(b->type) ) goto error ;
+                         marshmallow_parse_value(m_peek(n+4), b) ;
+                        
+                         if ( m_is_type_float(b->type) ) goto error ;
+                            
+                        }
                         
                     } else {
                         
                       error:
                         
-                        printf("On line: %d, expected an integer got: %s\n",line_number,RKString_GetString(((marshmallow_value)b->data)->value)) ;
+                        printf("On line: %d, expected an integer got: %s.\n",line_number,RKString_GetString(((marshmallow_value)b->data)->value)) ;
                         
                         exit(EXIT_FAILURE) ;
                     }
@@ -817,7 +842,16 @@ m_processor(enum) {
                         flag++ ;
                     }
                     
-                    numval = atoi(RKString_GetString(((marshmallow_value)b->data)->value)) ;
+                    if ( z != NULL ) {
+                        
+                        numval = atoi(RKString_GetString(((marshmallow_value)z->data)->value)) ;
+                        
+                        z = NULL ;
+                        
+                    } else {
+                        
+                        numval = atoi(RKString_GetString(((marshmallow_value)b->data)->value)) ;
+                    }
                     
                     numval *= sign ;
                 }
@@ -832,7 +866,16 @@ m_processor(enum) {
                 
                 RKStore_AddItem(new_enum->enums, rkany(numval), RKString_GetString(((marshmallow_value)a->data)->value)) ;
                 
-                if ( flag ) n+=3 ;
+                if ( flag && m == 0 ) n+=3 ;
+                
+                if ( flag && m > 0 ) {
+    
+                    if ( m_peek(m)->keyword != mgk(comma) ) m -= 1 ;
+                    
+                    n = m-2 ;
+                    
+                    m = 0 ;
+                }
                 
                 if ( m_peek(n+2)->keyword == mgk(comma) ) {
                     

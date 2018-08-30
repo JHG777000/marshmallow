@@ -2453,13 +2453,13 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
     
     if ( statement->var_a != NULL && (statement->var_a->entity_type == entity_function
                                        || (statement->var_a->entity_type == entity_variable && ((marshmallow_variable)statement->var_a)->name != NULL)) ) {
-        
+        if (statement->function != NULL && module != NULL)
         statement->var_a = (marshmallow_entity)marshmallow_lookup_identifier(statement->function, module, statement->var_a) ;
     }
     
     if (  statement->var_b != NULL && (statement->var_b->entity_type == entity_function
                                        || (statement->var_b->entity_type == entity_variable && ((marshmallow_variable)statement->var_b)->name != NULL)) ) {
-        
+        if (statement->function != NULL && module != NULL)
         statement->var_b = (marshmallow_entity)marshmallow_lookup_identifier(statement->function, module, statement->var_b) ;
     }
     
