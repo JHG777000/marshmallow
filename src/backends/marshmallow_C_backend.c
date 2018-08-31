@@ -148,6 +148,10 @@ return_pointer_size(C) {
 
 static void output_declarations( FILE* file, RKStore declarations ) ;
 
+static void output_value( FILE* file, cg_variable value ) ;
+
+static void output_collection( FILE* file, cg_variable variable ) ;
+
 static void output_type( FILE* file, cg_variable type, void* static_assignment ) ;
 
 static void output_symbol( FILE* file, cg_variable variable, c_backend c ) ;
@@ -156,6 +160,50 @@ static void output_array( FILE* file, cg_variable type, void* static_assignment 
 
 static void output_runtime( FILE* file ) ;
 
+
+static void output_value( FILE* file, cg_variable value ) {
+    
+    if ( value == NULL ) return ;
+    
+    if ( value->type == string ) fprintf(file, "u8\"") ;
+    
+    if ( value->type == string8 && value->is_literal ) fprintf(file, "u8\"") ;
+    
+    if ( value->type == string16 && value->is_literal ) fprintf(file, "u\"") ;
+    
+    if ( value->type == string32 && value->is_literal ) fprintf(file, "U\"") ;
+    
+    if ( value->type == character ) fprintf(file, "L\'") ;
+    
+    if ( value->values != NULL ) {
+        
+        output_collection( file, value) ;
+        
+        return ;
+    }
+    
+    if ( !value->is_literal && value->name != NULL ) {
+        
+        fprintf(file, "%s", RKString_GetString(value->name)) ;
+        
+        return ;
+    }
+    
+    if ( value->value != NULL ) {
+        
+        fprintf(file, "%s", RKString_GetString(value->value)) ;
+    }
+    
+    if ( value->type == string ) fprintf(file, "\"") ;
+    
+    if ( value->type == string8 && value->is_literal ) fprintf(file, "\"") ;
+    
+    if ( value->type == string16 && value->is_literal ) fprintf(file, "\"") ;
+    
+    if ( value->type == string32 && value->is_literal ) fprintf(file, "\"") ;
+    
+    if ( value->type == character ) fprintf(file, "\'") ;
+}
 
 static void output_collection( FILE* file, cg_variable variable ) {
     
