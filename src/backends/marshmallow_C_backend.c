@@ -148,7 +148,7 @@ return_pointer_size(C) {
 
 static void output_declarations( FILE* file, RKStore declarations ) ;
 
-static void output_value( FILE* file, cg_variable value ) ;
+static void output_value( FILE* file, cg_variable value, void* static_assignment ) ;
 
 static void output_collection( FILE* file, cg_variable variable ) ;
 
@@ -161,7 +161,7 @@ static void output_array( FILE* file, cg_variable type, void* static_assignment 
 static void output_runtime( FILE* file ) ;
 
 
-static void output_value( FILE* file, cg_variable value ) {
+static void output_value( FILE* file, cg_variable value, void* static_assignment ) {
     
     if ( value == NULL ) return ;
     
@@ -175,16 +175,16 @@ static void output_value( FILE* file, cg_variable value ) {
     
     if ( value->type == character ) fprintf(file, "L\'") ;
     
-    if ( value->values != NULL ) {
+    if ( !value->is_literal && value->name != NULL && static_assignment == NULL ) {
         
-        output_collection( file, value) ;
+        fprintf(file, "%s", RKString_GetString(value->name)) ;
         
         return ;
     }
     
-    if ( !value->is_literal && value->name != NULL ) {
+    if ( value->values != NULL ) {
         
-        fprintf(file, "%s", RKString_GetString(value->name)) ;
+        output_collection( file, value) ;
         
         return ;
     }
@@ -409,6 +409,26 @@ loop:
         t = t->ptr ;
         
         goto loop ;
+    }
+}
+
+static void output_variable_definition(  FILE* file, cg_variable variable, c_backend c ) {
+    
+    output_type(file, variable, get_static_assignment(variable)) ;
+    
+    output_variable_name(file, variable, c) ;
+    
+    output_array(file, variable, get_static_assignment(variable)) ;
+    
+    if ( get_static_assignment(variable) != NULL ) {
+        
+        fprintf(file, " ") ;
+        
+        fprintf(file, "=") ;
+        
+        fprintf(file, " ") ;
+        
+        output_value(file, variable, get_static_assignment(variable)) ;
     }
 }
 

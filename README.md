@@ -73,21 +73,21 @@ The following is an example of what marshmallow aims to be:
 
      end function.
 
-     template alloc(type_to_alloc) returns blank*.
+     function template alloc(type_to_alloc) returns blank*.
 
        if ( _is_ptr(type_to_alloc) ) return _init(malloc(_sizeof(_typeofptr(type_to_alloc)))).
 
        return _init(malloc(_sizeof(type_to_alloc))).
 
-     end template.
+     end function.
 
-      _free function free(blank* ptr).
+     function freer free(blank* ptr).
 
       mfree(ptr).
 
      end function.
 
-    class ( int num_of_nodes, list_node first, list_node last ) *List.
+     class ( int num_of_nodes, list_node first, list_node last ) *List.
 
      function List_NewList returns List.
 
