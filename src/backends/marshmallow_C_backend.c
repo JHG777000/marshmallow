@@ -146,7 +146,7 @@ return_pointer_size(C) {
     return 8 ;
 }
 
-static void output_declarations( FILE* file, RKStore declarations ) ;
+static void output_declarations( FILE* file, RKStore declarations, c_backend c ) ;
 
 static void output_value( FILE* file, cg_variable value, void* static_assignment ) ;
 
@@ -430,6 +430,52 @@ static void output_variable_definition(  FILE* file, cg_variable variable, c_bac
         
         output_value(file, variable, get_static_assignment(variable)) ;
     }
+}
+
+static void output_signature( FILE* file, cg_routine routine ) {
+    
+    
+}
+
+static void output_declarations( FILE* file, RKStore declarations, c_backend c ) {
+    
+    RKList list = NULL ;
+    
+    RKList_node node = NULL ;
+    
+    cg_variable entity = NULL ;
+    
+    list = RKStore_GetList(declarations) ;
+    
+    if ( list != NULL ) {
+        
+        node = RKList_GetFirstNode(list) ;
+        
+        while (node != NULL) {
+            
+            entity = RKList_GetData(node) ;
+            
+            if ( entity->entity_type == cg_entity_variable ) {
+                
+                fprintf(file, "extern ") ;
+                
+                output_variable_definition(file, RKList_GetData(node), c) ;
+                
+            } else if ( entity->entity_type == cg_entity_routine ) {
+                
+                //output_signature(context, file, ((marshmallow_function_body)entity)->signature, module) ;
+                    
+                fprintf(file, ")") ;
+                
+            }
+            
+            fprintf(file, " ;\n") ;
+            
+            node = RKList_GetNextNode(node) ;
+        }
+        
+    }
+    
 }
 
 static void output_runtime( FILE* file ) {
