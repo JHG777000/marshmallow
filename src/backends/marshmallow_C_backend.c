@@ -114,7 +114,7 @@ static void* get_static_assignment( cg_variable variable ) {
         
         if ( variable->type == array && variable->values != NULL ) return variable->values ;
         
-        if ( variable->type == class && variable->values_struct != NULL ) return variable->values_struct ;
+        if ( variable->type == class && variable->class_values != NULL ) return variable->class_values ;
         
         if ( variable->type != array && variable->type != class && variable->value != NULL ) return variable->value ;
     }
@@ -434,7 +434,60 @@ static void output_variable_definition(  FILE* file, cg_variable variable, c_bac
 
 static void output_signature( FILE* file, cg_routine routine ) {
     
+    RKList list = NULL ;
     
+    RKList_node node = NULL ;
+    
+    RKString string = NULL ;
+    
+    RKString returns_name = NULL ;
+    
+    if ( !routine->is_external ) {
+        
+         fprintf(file, "struct _") ;
+        
+         string = rkstr("_returns") ;
+        
+         returns_name = RKString_AppendString(RKString_CopyString(routine->name), string) ;
+        
+         RKString_DestroyString(string) ;
+        
+         fprintf(file, "{") ;
+        
+         node = RKList_GetFirstNode(routine->return_types) ;
+        
+        while ( node != NULL ) {
+            
+            output_type(file, RKList_GetData(node), NULL) ;
+            
+            node = RKList_GetNextNode(node) ;
+        }
+        
+         fprintf(file, "} ;\n") ;
+        
+         fprintf(file, "void") ;
+    }
+    
+    if ( routine->is_external ) {
+        
+        if ( RKList_GetNumOfNodes(routine->return_types) == 0 ) {
+            
+            fprintf(file, "void") ;
+            
+        } else if ( RKList_GetNumOfNodes(routine->return_types) == 1 ) {
+            
+            output_type(file, RKList_GetData(RKList_GetFirstNode(routine->return_types)), NULL) ;
+            
+        } else if ( RKList_GetNumOfNodes(routine->return_types) > 1 ) {
+            
+            printf("codegen error: external routine '%s', can only have one return.\n",RKString_GetString(routine->name)) ;
+            
+            exit(EXIT_FAILURE) ;
+        }
+        
+    }
+    
+    fprintf(file, " ") ;
 }
 
 static void output_declarations( FILE* file, RKStore declarations, c_backend c ) {

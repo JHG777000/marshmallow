@@ -111,7 +111,7 @@ RKList return_types ; RKStore parameters ; RKStore variables ; RKList mib_code ;
     
 RKList mlb_code ; RKStack data_stack ; RKStack op_stack ; }  ;
 
-struct cg_variable_s { cg_entity_type entity_type ; RKString name ; cg_root_type type ; RKString value ; RKList values ; RKStore values_struct ;
+struct cg_variable_s { cg_entity_type entity_type ; RKString name ; cg_root_type type ; RKString value ; RKList values ; RKStore class_values ;
 
 int mlb_return_value ; int mlb_get_return_value ; cg_variable ptr ; RKULong num_of_elements ; int is_global ; int is_external ; int is_literal ; } ;
 
@@ -119,7 +119,7 @@ typedef enum { mlb_set, mlb_add, mlb_sub, mlb_mult, mlb_div, mlb_rem, mlb_rshift
     
 mlb_not, mlb_logic_and, mlb_logic_or, mlb_logic_not, mlb_deref, mlb_addrof, mlb_sizeof, mlb_cast, mlb_array_index,
     
-mlb_struct_access, mlb_if, mlb_endif, mlb_else, mlb_else_if, mlb_while, mlb_endwhile, mlb_break, mlb_continue,
+mlb_class_access, mlb_if, mlb_endif, mlb_else, mlb_else_if, mlb_while, mlb_endwhile, mlb_break, mlb_continue,
     
 mlb_switch, mlb_endswitch, mlb_case, mlb_endcase, mlb_default, mlb_goto, mlb_section, mlb_equals, mlb_not_equals,
     

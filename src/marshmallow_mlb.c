@@ -176,9 +176,9 @@ void mlb_validate_variable( cg_variable variable ) {
         }
     }
     
-    if ( variable->values_struct != NULL ) {
+    if ( variable->class_values != NULL ) {
         
-        RKList_node node = RKList_GetFirstNode(RKStore_GetList(variable->values_struct)) ;
+        RKList_node node = RKList_GetFirstNode(RKStore_GetList(variable->class_values)) ;
         
         while ( node != NULL ) {
             
@@ -200,12 +200,12 @@ void mlb_validate_statement( mlb_statement statement ) {
     
     switch (statement->op) {
        
-      case mlb_struct_access:
+      case mlb_class_access:
       
             if (statement->A == NULL || statement->B == NULL || statement->C == NULL || statement->C->value == NULL || statement->B->type != class
-                || statement->B->values_struct == NULL
-                || RKStore_GetItem(statement->B->values_struct, RKString_GetString(statement->C->value)) == NULL
-                || statement->A->type != ((cg_variable)RKStore_GetItem(statement->B->values_struct, RKString_GetString(statement->C->value)))->type) {
+                || statement->B->class_values == NULL
+                || RKStore_GetItem(statement->B->class_values, RKString_GetString(statement->C->value)) == NULL
+                || statement->A->type != ((cg_variable)RKStore_GetItem(statement->B->class_values, RKString_GetString(statement->C->value)))->type) {
                 
                 printf("codegen error: failed to validate a mlb statement.\n") ;
                 

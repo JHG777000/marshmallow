@@ -1707,7 +1707,7 @@ cg_variable cg_new_variable( RKString name, cg_root_type type, int mlb_return_va
     
     variable->is_global = is_global ;
     
-    variable->values_struct = NULL ;
+    variable->class_values = NULL ;
     
     variable->values = NULL ;
     
@@ -1732,9 +1732,9 @@ void cg_destroy_variable( cg_variable variable ) {
     
     if ( variable->values != NULL ) RKList_DeleteList(variable->values) ;
     
-    if ( variable->values_struct != NULL ) RKStore_IterateStoreWith(DeleteVariableInListOrStore, variable->values_struct) ;
+    if ( variable->class_values != NULL ) RKStore_IterateStoreWith(DeleteVariableInListOrStore, variable->class_values) ;
     
-    if ( variable->values_struct != NULL ) RKStore_DestroyStore(variable->values_struct) ;
+    if ( variable->class_values != NULL ) RKStore_DestroyStore(variable->class_values) ;
     
     if ( variable->ptr != NULL ) cg_destroy_variable(variable->ptr) ;
     
@@ -1786,19 +1786,19 @@ loop:
         }
     }
     
-    if ( a->values_struct == NULL && b->values_struct != NULL) return 0 ;
+    if ( a->class_values == NULL && b->class_values != NULL) return 0 ;
     
-    if ( a->values_struct != NULL && b->values_struct == NULL) return 0 ;
+    if ( a->class_values != NULL && b->class_values == NULL) return 0 ;
     
-    if ( a->values_struct != NULL ) {
+    if ( a->class_values != NULL ) {
         
-        if ( RKList_GetNumOfNodes(RKStore_GetList(a->values_struct)) != RKList_GetNumOfNodes(RKStore_GetList(b->values_struct)) ) return 0 ;
+        if ( RKList_GetNumOfNodes(RKStore_GetList(a->class_values)) != RKList_GetNumOfNodes(RKStore_GetList(b->class_values)) ) return 0 ;
         
-        RKList_node node = RKList_GetFirstNode(RKStore_GetList(a->values_struct)) ;
+        RKList_node node = RKList_GetFirstNode(RKStore_GetList(a->class_values)) ;
         
         while ( node != NULL ) {
             
-            if ( !cg_variables_are_equal(RKList_GetData(node),RKStore_GetItem(b->values_struct,RKString_GetString(RKStore_GetStoreLabelFromListNode(node))))) return 0 ;
+            if ( !cg_variables_are_equal(RKList_GetData(node),RKStore_GetItem(b->class_values,RKString_GetString(RKStore_GetStoreLabelFromListNode(node))))) return 0 ;
             
             node = RKList_GetNextNode(node) ;
             
