@@ -1583,9 +1583,9 @@ void cg_destroy_module( cg_module module ) {
     
     RKStore_IterateStoreWith(DeleteVariableInListOrStore, module->variables) ;
     
-    RKStore_IterateStoreWith(DeleteRoutineInListOrStore, module->routine_declarations) ;
+    //RKStore_IterateStoreWith(DeleteRoutineInListOrStore, module->routine_declarations) ;
     
-    RKStore_IterateStoreWith(DeleteVariableInListOrStore, module->variable_declarations) ;
+    //RKStore_IterateStoreWith(DeleteVariableInListOrStore, module->variable_declarations) ;
     
     free(module) ;
 }
@@ -1679,11 +1679,11 @@ void cg_add_parameter_to_routine( cg_variable parameter, cg_routine routine ) {
     RKStore_AddItem(routine->parameters, parameter, RKString_GetString(parameter->name)) ;
 }
 
-void cg_add_return_to_returns_in_routine( cg_root_type return_type, cg_routine routine ) {
+void cg_add_return_to_returns_in_routine( cg_variable return_type, cg_routine routine ) {
     
     if ( routine->return_types == NULL ) routine->return_types = RKList_NewList() ;
     
-    RKList_AddToList(routine->return_types, rkany(return_type)) ;
+    RKList_AddToList(routine->return_types, return_type) ;
 }
 
 void cg_add_variable_to_routine( cg_variable variable, cg_routine routine ) {

@@ -122,25 +122,6 @@ static void* get_static_assignment( cg_variable variable ) {
     return NULL ;
 }
 
-static void name_mangle( cg_module module, cg_variable variable ) {
-    
-    RKString name = variable->name ;
-    
-    RKString underscore = rkstr("_") ;
-    
-    RKString str0 = RKString_AppendString(rkstr("marshmallow_"), module->name) ;
-    
-    RKString str1  = RKString_AppendString(str0, underscore) ;
-    
-    RKString str2 = RKString_AppendString(str1, name) ;
-    
-    variable->name = str2 ;
-    
-    RKString_DestroyString(underscore) ;
-    
-    RKString_DestroyString(name) ;
-}
-
 return_pointer_size(C) {
     
     return 8 ;
@@ -157,6 +138,12 @@ static void output_type( FILE* file, cg_variable type, void* static_assignment )
 static void output_symbol( FILE* file, cg_variable variable, c_backend c ) ;
 
 static void output_array( FILE* file, cg_variable type, void* static_assignment ) ;
+
+static void output_variable_definition( FILE* file, cg_variable variable, c_backend c ) ;
+
+static void output_signature( FILE* file, cg_routine routine, c_backend c ) ;
+
+static void output_declarations( FILE* file, RKStore declarations, c_backend c ) ;
 
 static void output_runtime( FILE* file ) ;
 
@@ -223,7 +210,7 @@ static void output_collection( FILE* file, cg_variable variable ) {
             
             while (node != NULL) {
                 
-                //output_value(context, file, RKList_GetData(node), module) ;
+                output_value(file, RKList_GetData(node), NULL) ;
                 
                 if ( RKList_GetNextNode(node) != NULL ) fprintf(file, ",") ;
                 
@@ -432,17 +419,41 @@ static void output_variable_definition( FILE* file, cg_variable variable, c_back
     }
 }
 
-static void output_signature( FILE* file, cg_routine routine, c_backend c ) {
-    
-    RKList list = NULL ;
-    
-    RKList_node node = NULL ;
+static RKString get_struct_name_for_routines_returns( RKString routine_name ) {
     
     RKString string = rkstr("_returns") ;
     
-    RKString returns_type_name = RKString_AppendString(RKString_CopyString(routine->name), string) ;
+    RKString returns_type_name = RKString_AppendString(RKString_CopyString(routine_name), string) ;
     
     RKString_DestroyString(string) ;
+    
+    return returns_type_name ;
+}
+
+static RKString get_routines_returns_name_from_index( RKInt index ) {
+    
+    char string[100] ;
+    
+    marshmallow_itoa(index, string) ;
+    
+    RKString string_index =  RKString_NewStringFromCString(string) ;
+    
+    RKString returns_index = RKString_AppendString(rkstr("_returns_"),string_index) ;
+    
+    RKString_DestroyString(string_index) ;
+    
+    return returns_index ;
+}
+
+static void output_signature( FILE* file, cg_routine routine, c_backend c ) {
+    
+    int i = 0 ;
+    
+    RKList_node node = NULL ;
+    
+    RKString returns_index = NULL ;
+    
+    RKString returns_type_name = get_struct_name_for_routines_returns(routine->name) ;
     
     if ( !routine->is_external ) {
         
@@ -458,9 +469,19 @@ static void output_signature( FILE* file, cg_routine routine, c_backend c ) {
             
             output_type(file, RKList_GetData(node), NULL) ;
             
+            fprintf(file, " ") ;
+            
+            returns_index = get_routines_returns_name_from_index(i) ;
+            
+            fprintf(file, " %s",RKString_GetString(returns_index)) ;
+            
+            RKString_DestroyString(returns_index) ;
+            
             fprintf(file, ";") ;
             
             node = RKList_GetNextNode(node) ;
+            
+            i++ ;
         }
         
          fprintf(file, "} ;\n") ;
@@ -499,7 +520,9 @@ static void output_signature( FILE* file, cg_routine routine, c_backend c ) {
         
         fprintf(file, "%s",RKString_GetString(returns_type_name)) ;
         
-        fprintf(file, " _returns,") ;
+        fprintf(file, " _returns") ;
+        
+        if ( RKStore_GetNumOfItems(routine->parameters) > 0 ) fprintf(file, ",") ;
     }
     
     node = RKList_GetFirstNode(RKStore_GetList(routine->parameters)) ;
@@ -532,7 +555,7 @@ static void output_declarations( FILE* file, RKStore declarations, c_backend c )
         
         node = RKList_GetFirstNode(list) ;
         
-        while (node != NULL) {
+        while ( node != NULL ) {
             
             entity = RKList_GetData(node) ;
             
@@ -544,9 +567,7 @@ static void output_declarations( FILE* file, RKStore declarations, c_backend c )
                 
             } else if ( entity->entity_type == cg_entity_routine ) {
                 
-                //output_signature(context, file, ((marshmallow_function_body)entity)->signature, module) ;
-                    
-                fprintf(file, ")") ;
+                output_signature(file, RKList_GetData(node), c) ;
                 
             }
             
@@ -594,10 +615,78 @@ static void output_runtime( FILE* file ) {
     fprintf(file, "\n") ;
 }
 
+static void output_module( FILE* file, cg_context context,  c_backend c, cg_module module ) {
+    
+    RKList list = NULL ;
+    
+    RKList_node node = NULL ;
+    
+    output_declarations(file, module->variable_declarations, c) ;
+    
+    output_declarations(file, module->routine_declarations, c) ;
+    
+    list = RKStore_GetList(module->variables) ;
+    
+    if ( list != NULL ) {
+        
+        node = RKList_GetFirstNode(list) ;
+        
+        while (node != NULL) {
+            
+            //output_variable(context, file, RKList_GetData(node), module, 1, 0) ;
+            
+            fprintf(file, " ;\n") ;
+            
+            node = RKList_GetNextNode(node) ;
+            
+        }
+        
+    }
+    
+    //list = RKStore_GetList(module->functions_and_methods) ;
+    
+    if ( list != NULL ) {
+        
+        node = RKList_GetFirstNode(list) ;
+        
+        while (node != NULL) {
+            
+            //output_function(context, file, RKList_GetData(node), module) ;
+            
+            node = RKList_GetNextNode(node) ;
+            
+        }
+        
+    }
+}
+
+static void output_app( FILE* file, cg_context context, c_backend c ) {
+    
+    RKList list = NULL ;
+    
+    RKList_node node = NULL ;
+    
+    list = RKStore_GetList(context->modules) ;
+    
+    if ( list != NULL ) {
+        
+        node = RKList_GetFirstNode(list) ;
+        
+        output_runtime(file) ;
+        
+        while (node != NULL) {
+            
+            output_module(file, context, c, RKList_GetData(node)) ;
+            
+            node = RKList_GetNextNode(node) ;
+        }
+        
+    }
+}
 
 get_context(C) {
     
-    
+    output_app(backend->output_file, context, backend->backend_ptr) ;
 }
 
 get_builder(C) {

@@ -173,7 +173,7 @@ void cg_destroy_routine( cg_routine routine ) ;
 
 void cg_add_parameter_to_routine( cg_variable parameter, cg_routine routine ) ;
 
-void cg_add_return_to_returns_in_routine( cg_root_type return_type, cg_routine routine ) ;
+void cg_add_return_to_returns_in_routine( cg_variable return_type, cg_routine routine ) ;
 
 void cg_add_variable_to_routine( cg_variable variable, cg_routine routine ) ;
 

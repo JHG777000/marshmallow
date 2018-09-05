@@ -30,9 +30,17 @@ int main(int argc, const char **argv) {
     
     cg_add_module_to_context(my_module, my_context) ;
     
+    cg_variable E = cg_new_variable(rkstr("E"), i32, -1, -1, 0, 0) ;
+    
+    cg_add_variable_declaration_to_module(E, my_module) ;
+    
     cg_routine my_routine = cg_new_routine(rkstr("myroutine"), 0) ;
     
-    cg_add_return_to_returns_in_routine(i32, my_routine) ;
+    my_routine->is_external = 0 ;
+    
+    cg_add_routine_declaration_to_module(my_routine, my_module) ;
+    
+    cg_add_return_to_returns_in_routine(cg_new_variable(NULL,i32,-1,-1,0,0), my_routine) ;
     
     cg_add_routine_to_module(my_routine, my_module) ;
     
