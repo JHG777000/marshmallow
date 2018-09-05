@@ -412,7 +412,7 @@ loop:
     }
 }
 
-static void output_variable_definition(  FILE* file, cg_variable variable, c_backend c ) {
+static void output_variable_definition( FILE* file, cg_variable variable, c_backend c ) {
     
     output_type(file, variable, get_static_assignment(variable)) ;
     
@@ -432,25 +432,23 @@ static void output_variable_definition(  FILE* file, cg_variable variable, c_bac
     }
 }
 
-static void output_signature( FILE* file, cg_routine routine ) {
+static void output_signature( FILE* file, cg_routine routine, c_backend c ) {
     
     RKList list = NULL ;
     
     RKList_node node = NULL ;
     
-    RKString string = NULL ;
+    RKString string = rkstr("_returns") ;
     
-    RKString returns_name = NULL ;
+    RKString returns_type_name = RKString_AppendString(RKString_CopyString(routine->name), string) ;
+    
+    RKString_DestroyString(string) ;
     
     if ( !routine->is_external ) {
         
          fprintf(file, "struct _") ;
         
-         string = rkstr("_returns") ;
-        
-         returns_name = RKString_AppendString(RKString_CopyString(routine->name), string) ;
-        
-         RKString_DestroyString(string) ;
+         fprintf(file, "%s",RKString_GetString(returns_type_name)) ;
         
          fprintf(file, "{") ;
         
@@ -459,6 +457,8 @@ static void output_signature( FILE* file, cg_routine routine ) {
         while ( node != NULL ) {
             
             output_type(file, RKList_GetData(node), NULL) ;
+            
+            fprintf(file, ";") ;
             
             node = RKList_GetNextNode(node) ;
         }
@@ -488,6 +488,34 @@ static void output_signature( FILE* file, cg_routine routine ) {
     }
     
     fprintf(file, " ") ;
+    
+    fprintf(file, "%s",RKString_GetString(routine->name)) ;
+    
+    fprintf(file, "(") ;
+    
+    if ( !routine->is_external ) {
+        
+        fprintf(file, "struct _") ;
+        
+        fprintf(file, "%s",RKString_GetString(returns_type_name)) ;
+        
+        fprintf(file, " _returns,") ;
+    }
+    
+    node = RKList_GetFirstNode(RKStore_GetList(routine->parameters)) ;
+    
+    while ( node != NULL ) {
+        
+        output_variable_definition(file, RKList_GetData(node), c) ;
+        
+        if ( RKList_GetNextNode(node) != NULL ) fprintf(file, ",") ;
+        
+        node = RKList_GetNextNode(node) ;
+    }
+    
+    fprintf(file, ")") ;
+    
+    RKString_DestroyString(returns_type_name) ;
 }
 
 static void output_declarations( FILE* file, RKStore declarations, c_backend c ) {
