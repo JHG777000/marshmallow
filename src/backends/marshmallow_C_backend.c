@@ -96,6 +96,8 @@ static void validate_definition( cg_routine routine, cg_variable variable, c_bac
             
         }
         
+        RKStore_AddItem(c->definitions, v, RKString_GetString(v->name)) ;
+        
         return ;
         
     error:
@@ -104,6 +106,8 @@ static void validate_definition( cg_routine routine, cg_variable variable, c_bac
         
         exit(EXIT_FAILURE) ;
     }
+    
+    RKStore_AddItem(c->definitions, definition, RKString_GetString(definition_name)) ;
     
 }
 
@@ -320,6 +324,19 @@ loop:
                 fprintf(file, "_mf64 ") ;
                 
                 break;
+                
+            case blank:
+                
+                fprintf(file, "void ") ;
+                
+                break;
+                
+            case pointer:
+                
+                fprintf(file, "_mu64 ") ;
+                
+                break;
+                
                 
             default:
                 break;
@@ -658,6 +675,8 @@ static void output_module( FILE* file, cg_context context,  c_backend c, cg_modu
 
 static void output_app( FILE* file, cg_context context, c_backend c ) {
     
+    int i = 0 ;
+    
     RKList list = NULL ;
     
     RKList_node node = NULL ;
@@ -672,9 +691,13 @@ static void output_app( FILE* file, cg_context context, c_backend c ) {
         
         while (node != NULL) {
             
+            if ( i == 0 ) cg_add_routine_declaration_to_module(RKStore_GetItem(c->definitions, "memcpy"), RKList_GetData(node)) ;
+            
             output_module(file, context, c, RKList_GetData(node)) ;
             
             node = RKList_GetNextNode(node) ;
+            
+            i++ ;
         }
         
     }
@@ -690,16 +713,18 @@ get_builder(C) {
     
 }
 
-static void DeleteRoutineInListOrStore(void* data) {
+static void DeleteStringInListOrStore(void* data) {
     
-    cg_destroy_routine(data) ;
+    RKString_DestroyString(data) ;
 }
 
 get_destroyer(C) {
     
-    RKStore_IterateStoreWith(DeleteRoutineInListOrStore, ((c_backend)backend->backend_ptr)->definitions) ;
-    
     RKStore_DestroyStore(((c_backend)backend->backend_ptr)->definitions) ;
+    
+    RKStore_IterateStoreWith(DeleteStringInListOrStore, ((c_backend)backend->backend_ptr)->banned_symbols) ;
+    
+    RKStore_DestroyStore(((c_backend)backend->backend_ptr)->banned_symbols) ;
     
     free(backend->backend_ptr) ;
 }
@@ -723,6 +748,8 @@ new_backend(C) {
     backend->backend_ptr = c ;
     
     cg_routine memcpy_routine = cg_new_routine(rkstr("memcpy"), 1) ;
+    
+    memcpy_routine->is_external = 1 ;
     
     cg_variable dest = cg_new_variable(rkstr("dest"), ptr, -1, -1, 0, 0) ;
     

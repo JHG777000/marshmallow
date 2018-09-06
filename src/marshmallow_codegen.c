@@ -1497,6 +1497,30 @@ void marshmallow_codegen( marshmallow_context context, FILE* out_file ) {
 
 //////////////////NEW CODEGEN//////////////////////////////////////////////////
 
+static void name_mangle( cg_module module, cg_variable variable ) {
+    
+    RKString name = variable->name ;
+    
+    RKString underscore = rkstr("_") ;
+    
+    RKString str0 = RKString_AppendString(rkstr("marshmallow_"), module->name) ;
+    
+    RKString str1  = RKString_AppendString(str0, underscore) ;
+    
+    RKString str2 = RKString_AppendString(str1, name) ;
+    
+    variable->name = str2 ;
+    
+    RKString_DestroyString(underscore) ;
+    
+    RKString_DestroyString(name) ;
+}
+
+static void DeleteMlbStatementInListOrStore(void* data) {
+    
+    mlb_destroy_statement(data) ;
+}
+
 static void DeleteVariableInListOrStore(void* data) {
     
     cg_destroy_variable(data) ;
@@ -1550,6 +1574,8 @@ void cg_destroy_context( cg_context context ) {
     
     RKStore_IterateStoreWith(DeleteModuleInListOrStore, context->modules) ;
     
+    RKStore_DestroyStore(context->modules) ;
+    
     free(context) ;
 }
 
@@ -1579,13 +1605,43 @@ cg_module cg_new_module( RKString name ) {
 
 void cg_destroy_module( cg_module module ) {
     
+    RKList_node node = NULL ;
+    
     RKStore_IterateStoreWith(DeleteRoutineInListOrStore, module->routines) ;
+    
+    node = RKList_GetFirstNode(RKStore_GetList(module->routines)) ;
+    
+    while ( node != NULL ) {
+        
+        RKStore_RemoveItem(module->routine_declarations, RKString_GetString(RKStore_GetStoreLabelFromListNode(node))) ;
+        
+        node = RKList_GetNextNode(node) ;
+    }
     
     RKStore_IterateStoreWith(DeleteVariableInListOrStore, module->variables) ;
     
-    //RKStore_IterateStoreWith(DeleteRoutineInListOrStore, module->routine_declarations) ;
+    node = RKList_GetFirstNode(RKStore_GetList(module->variables)) ;
     
-    //RKStore_IterateStoreWith(DeleteVariableInListOrStore, module->variable_declarations) ;
+    while ( node != NULL ) {
+        
+        RKStore_RemoveItem(module->variable_declarations, RKString_GetString(RKStore_GetStoreLabelFromListNode(node))) ;
+        
+        node = RKList_GetNextNode(node) ;
+    }
+    
+    RKStore_IterateStoreWith(DeleteRoutineInListOrStore, module->routine_declarations) ;
+    
+    RKStore_IterateStoreWith(DeleteVariableInListOrStore, module->variable_declarations) ;
+    
+    RKStore_DestroyStore(module->routines) ;
+    
+    RKStore_DestroyStore(module->variables) ;
+    
+    RKStore_DestroyStore(module->routine_declarations) ;
+    
+    RKStore_DestroyStore(module->variable_declarations) ;
+    
+    RKString_DestroyString(module->name) ;
     
     free(module) ;
 }
@@ -1643,6 +1699,13 @@ void cg_destroy_routine( cg_routine routine ) {
     
     RKString_DestroyString(routine->name) ;
     
+    if ( routine->return_types != NULL ) {
+        
+        RKList_IterateListWith(DeleteVariableInListOrStore, routine->return_types) ;
+        
+        RKList_DeleteList(routine->return_types) ;
+    }
+    
     if ( routine->parameters != NULL ) {
         
         RKStore_IterateStoreWith(DeleteVariableInListOrStore, routine->parameters) ;
@@ -1657,13 +1720,26 @@ void cg_destroy_routine( cg_routine routine ) {
         RKStore_DestroyStore(routine->variables) ;
     }
     
-    RKList_DeleteList(routine->return_types) ;
+    if ( routine->mib_code != NULL ) {
+        
+        //RKList_IterateListWith(DeleteStatementInListOrStore, routine->mib_code) ;
+        
+        RKList_DeleteList(routine->mib_code) ;
+    }
     
-    RKList_DeleteList(routine->mib_code) ;
+    if ( routine->mob_code != NULL ) {
+        
+        //RKList_IterateListWith(DeleteStatementInListOrStore, routine->mob_code) ;
+        
+        RKList_DeleteList(routine->mob_code) ;
+    }
     
-    RKList_DeleteList(routine->mob_code) ;
-    
-    RKList_DeleteList(routine->mlb_code) ;
+    if ( routine->mlb_code != NULL ) {
+        
+        RKList_IterateListWith(DeleteMlbStatementInListOrStore, routine->mlb_code) ;
+        
+        RKList_DeleteList(routine->mlb_code) ;
+    }
     
     RKStack_DestroyStack(routine->data_stack) ;
     

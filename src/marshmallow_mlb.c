@@ -104,7 +104,17 @@ void mlb_validate_module( cg_module module ) {
 
 void mlb_validate_routine( cg_routine routine ) {
     
-    RKList_node node = RKList_GetFirstNode(RKStore_GetList(routine->parameters)) ;
+    RKList_node node = RKList_GetFirstNode(routine->return_types) ;
+    
+    while ( node != NULL ) {
+        
+        mlb_validate_variable(RKList_GetData(node)) ;
+        
+        node = RKList_GetNextNode(node) ;
+        
+    }
+    
+    node = RKList_GetFirstNode(RKStore_GetList(routine->parameters)) ;
     
     while ( node != NULL ) {
         
