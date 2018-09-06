@@ -135,8 +135,6 @@ static void output_collection( FILE* file, cg_variable variable ) ;
 
 static void output_type( FILE* file, cg_variable type, void* static_assignment ) ;
 
-static void output_symbol( FILE* file, cg_variable variable, c_backend c ) ;
-
 static void output_array( FILE* file, cg_variable type, void* static_assignment ) ;
 
 static void output_variable_definition( FILE* file, cg_variable variable, c_backend c ) ;
@@ -461,7 +459,7 @@ static void output_signature( FILE* file, cg_routine routine, c_backend c ) {
         
          fprintf(file, "%s",RKString_GetString(returns_type_name)) ;
         
-         fprintf(file, "{") ;
+         fprintf(file, " { ") ;
         
          node = RKList_GetFirstNode(routine->return_types) ;
         
@@ -469,15 +467,13 @@ static void output_signature( FILE* file, cg_routine routine, c_backend c ) {
             
             output_type(file, RKList_GetData(node), NULL) ;
             
-            fprintf(file, " ") ;
-            
             returns_index = get_routines_returns_name_from_index(i) ;
             
-            fprintf(file, " %s",RKString_GetString(returns_index)) ;
+            fprintf(file, "%s",RKString_GetString(returns_index)) ;
             
             RKString_DestroyString(returns_index) ;
             
-            fprintf(file, ";") ;
+            fprintf(file, " ; ") ;
             
             node = RKList_GetNextNode(node) ;
             
@@ -520,7 +516,7 @@ static void output_signature( FILE* file, cg_routine routine, c_backend c ) {
         
         fprintf(file, "%s",RKString_GetString(returns_type_name)) ;
         
-        fprintf(file, " _returns") ;
+        fprintf(file, "* _returns") ;
         
         if ( RKStore_GetNumOfItems(routine->parameters) > 0 ) fprintf(file, ",") ;
     }
@@ -633,7 +629,7 @@ static void output_module( FILE* file, cg_context context,  c_backend c, cg_modu
         
         while (node != NULL) {
             
-            //output_variable(context, file, RKList_GetData(node), module, 1, 0) ;
+            output_variable_definition(file, RKList_GetData(node), c) ;
             
             fprintf(file, " ;\n") ;
             

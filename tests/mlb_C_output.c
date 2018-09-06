@@ -15,5 +15,6 @@ typedef unsigned long _mu64 ;
 #endif
 
 extern _mi32 E ;
-struct _myroutine_returns{_mi32   _returns_0;} ;
-void myroutine(struct _myroutine_returns _returns) ;
+struct _myroutine_returns { _mi32 _returns_0 ; _mi32 _returns_1 ; } ;
+void myroutine(struct _myroutine_returns* _returns) ;
+_mi32 E ;
