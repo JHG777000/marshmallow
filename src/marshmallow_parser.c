@@ -3422,9 +3422,9 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
         
         symbol = mgk(notoken) ;
         
-        if ( c == '(' ) balance++ ;
+        if ( c == '(' && (!is_string && !is_character)) balance++ ;
         
-        if ( c == ')' ) balance-- ;
+        if ( c == ')' && (!is_string && !is_character)) balance-- ;
         
         if ( balance < 0 ) {
             
