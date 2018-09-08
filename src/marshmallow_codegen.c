@@ -1497,6 +1497,97 @@ void marshmallow_codegen( marshmallow_context context, FILE* out_file ) {
 
 //////////////////NEW CODEGEN//////////////////////////////////////////////////
 
+static void validate_definition( cg_context context, cg_routine routine, cg_variable variable ) {
+    
+    void* definition = NULL ;
+    
+    RKString definition_name = NULL ;
+    
+    if ( routine != NULL && variable == NULL ) {
+        
+        definition = routine ;
+        
+        definition_name = routine->name ;
+        
+        mlb_validate_routine(definition) ;
+        
+    } else if (routine == NULL && variable != NULL) {
+        
+        definition = variable ;
+        
+        definition_name = variable->name ;
+        
+        mlb_validate_variable(definition) ;
+        
+    } else if (routine == NULL && variable == NULL) {
+        
+        return ;
+    }
+    
+    if ( RKStore_ItemExists(context->definitions, RKString_GetString(definition_name)) ) {
+        
+        cg_variable v = RKStore_GetItem(context->definitions, RKString_GetString(definition_name)) ;
+        
+        cg_routine r = (cg_routine)v ;
+        
+        if ( v->entity_type != ((cg_variable)definition)->entity_type) goto error ;
+        
+        if ( v->entity_type == cg_entity_variable ) {
+            
+            if ( !cg_variables_are_equal(v, definition) ) goto error ;
+            
+        }
+        
+        if ( v->entity_type == cg_entity_routine) {
+            
+            if ( r->is_global != ((cg_routine)definition)->is_global ) goto error ;
+            
+            if ( r->is_external != ((cg_routine)definition)->is_external ) goto error ;
+            
+            if ( RKList_GetNumOfNodes(RKStore_GetList(r->parameters)) != RKList_GetNumOfNodes(RKStore_GetList(((cg_routine)definition)->parameters))) goto error ;
+            
+            if ( RKList_GetNumOfNodes(r->return_types) != RKList_GetNumOfNodes(((cg_routine)definition)->return_types) ) goto error ;
+            
+            RKList_node node = RKList_GetFirstNode(RKStore_GetList(r->parameters)) ;
+            
+            RKList_node node2 = NULL ;
+            
+            while (node != NULL) {
+                
+                if ( !cg_variables_are_equal(RKList_GetData(node),RKStore_GetItem(((cg_routine)definition)->parameters,RKString_GetString(RKStore_GetStoreLabelFromListNode(node))))) goto error ;
+                
+                node = RKList_GetNextNode(node) ;
+                
+            }
+            
+            node = RKList_GetFirstNode(r->return_types) ;
+            
+            node2 = RKList_GetFirstNode(((cg_routine)definition)->return_types) ;
+            
+            while (node != NULL ) {
+                
+                if ( !cg_variables_are_equal(RKList_GetData(node),RKList_GetData(node2)) ) goto error ;
+                
+                node = RKList_GetNextNode(node) ;
+            }
+            
+        }
+        
+        RKStore_AddItem(context->definitions, v, RKString_GetString(v->name)) ;
+        
+        return ;
+        
+    error:
+        
+        printf("codegen error: definition '%s', already exists.\n",RKString_GetString(definition_name)) ;
+        
+        exit(EXIT_FAILURE) ;
+    }
+    
+    RKStore_AddItem(context->definitions, definition, RKString_GetString(definition_name)) ;
+    
+}
+
 static void name_mangle( cg_module module, cg_variable variable ) {
     
     RKString name = variable->name ;
@@ -1567,6 +1658,8 @@ cg_context cg_new_context( void ) {
     
     context->modules = RKStore_NewStore() ;
     
+    context->definitions = RKStore_NewStore() ;
+    
     return context ;
 }
 
@@ -1576,10 +1669,14 @@ void cg_destroy_context( cg_context context ) {
     
     RKStore_DestroyStore(context->modules) ;
     
+    RKStore_DestroyStore(context->definitions) ;
+    
     free(context) ;
 }
 
 void cg_add_module_to_context( cg_module module, cg_context context ) {
+    
+    module->context = context ;
     
     RKStore_AddItem(context->modules, module, RKString_GetString(module->name)) ;
 }
@@ -1589,6 +1686,8 @@ cg_module cg_new_module( RKString name ) {
     cg_module module = RKMem_NewMemOfType(struct cg_module_s) ;
     
     module->name = name ;
+    
+    module->context = NULL ;
     
     module->routines = RKStore_NewStore() ;
     
@@ -1647,21 +1746,29 @@ void cg_destroy_module( cg_module module ) {
 }
 
 void cg_add_variable_declaration_to_module( cg_variable variable, cg_module module ) {
+        
+    validate_definition(module->context, NULL, variable) ;
     
     RKStore_AddItem(module->variable_declarations, variable, RKString_GetString(variable->name)) ;
 }
 
 void cg_add_routine_declaration_to_module( cg_routine routine, cg_module module ) {
-    
+        
+    validate_definition(module->context, routine, NULL) ;
+
     RKStore_AddItem(module->routine_declarations, routine, RKString_GetString(routine->name)) ;
 }
 
 void cg_add_variable_to_module( cg_variable variable, cg_module module ) {
+        
+    validate_definition(module->context, NULL, variable) ;
     
     RKStore_AddItem(module->variables, variable, RKString_GetString(variable->name)) ;
 }
 
 void cg_add_routine_to_module( cg_routine routine, cg_module module ) {
+        
+    validate_definition(module->context, routine, NULL) ;
     
     RKStore_AddItem(module->routines, routine, RKString_GetString(routine->name)) ;
 }

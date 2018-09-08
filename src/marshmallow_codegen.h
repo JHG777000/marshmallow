@@ -99,11 +99,11 @@ typedef marshmallow_root_type cg_root_type ; //mib and the other intermediates w
 
 typedef enum {cg_entity_variable,cg_entity_mlb_statement,cg_entity_statement,cg_entity_routine,cg_entity_module,cg_entity_context} cg_entity_type;
 
-struct cg_context_s { cg_entity_type entity_type ; RKStore modules ; } ;
+struct cg_context_s { cg_entity_type entity_type ; RKStore modules ; RKStore definitions ; } ;
 
 struct cg_module_s { cg_entity_type entity_type ; RKString name ; RKStore routines ; RKStore variables ;
     
-RKStore variable_declarations ; RKStore routine_declarations ; } ;
+RKStore variable_declarations ; RKStore routine_declarations ; cg_context context ; } ;
 
 struct cg_routine_s { cg_entity_type entity_type ; RKString name ; int is_global ; int is_external ;
     

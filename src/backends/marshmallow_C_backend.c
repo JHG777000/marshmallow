@@ -18,98 +18,7 @@
 #include "marshmallow.h"
 #include "marshmallow_codegen.h"
 
-typedef struct c_backend_s { RKStore definitions ; RKStore banned_symbols ; } *c_backend ;
-
-static void validate_definition( cg_routine routine, cg_variable variable, c_backend c ) {
-    
-    void* definition = NULL ;
-    
-    RKString definition_name = NULL ;
-    
-    if ( routine != NULL && variable == NULL ) {
-        
-        definition = routine ;
-        
-        definition_name = routine->name ;
-        
-        mlb_validate_routine(definition) ;
-        
-    } else if (routine == NULL && variable != NULL) {
-        
-        definition = variable ;
-        
-        definition_name = variable->name ;
-        
-        mlb_validate_variable(definition) ;
-        
-    } else if (routine == NULL && variable == NULL) {
-        
-        return ;
-    }
-    
-    if ( RKStore_ItemExists(c->definitions, RKString_GetString(definition_name)) ) {
-        
-        cg_variable v = RKStore_GetItem(c->definitions, RKString_GetString(definition_name)) ;
-        
-        cg_routine r = (cg_routine)v ;
-        
-        if ( v->entity_type != ((cg_variable)definition)->entity_type) goto error ;
-        
-        if ( v->entity_type == cg_entity_variable ) {
-         
-            if ( !cg_variables_are_equal(v, definition) ) goto error ;
-            
-        }
-        
-        if ( v->entity_type == cg_entity_routine) {
-            
-            if ( r->is_global != ((cg_routine)definition)->is_global ) goto error ;
-            
-            if ( r->is_external != ((cg_routine)definition)->is_external ) goto error ;
-            
-            if ( RKList_GetNumOfNodes(RKStore_GetList(r->parameters)) != RKList_GetNumOfNodes(RKStore_GetList(((cg_routine)definition)->parameters))) goto error ;
-            
-            if ( RKList_GetNumOfNodes(r->return_types) != RKList_GetNumOfNodes(((cg_routine)definition)->return_types) ) goto error ;
-            
-            RKList_node node = RKList_GetFirstNode(RKStore_GetList(r->parameters)) ;
-            
-            RKList_node node2 = NULL ;
-            
-            while (node != NULL) {
-                
-             if ( !cg_variables_are_equal(RKList_GetData(node),RKStore_GetItem(((cg_routine)definition)->parameters,RKString_GetString(RKStore_GetStoreLabelFromListNode(node))))) goto error ;
-                
-            node = RKList_GetNextNode(node) ;
-                
-            }
-            
-            node = RKList_GetFirstNode(r->return_types) ;
-            
-            node2 = RKList_GetFirstNode(((cg_routine)definition)->return_types) ;
-            
-            while (node != NULL ) {
-                
-                if ( !cg_variables_are_equal(RKList_GetData(node),RKList_GetData(node2)) ) goto error ;
-                
-                node = RKList_GetNextNode(node) ;
-            }
-            
-        }
-        
-        RKStore_AddItem(c->definitions, v, RKString_GetString(v->name)) ;
-        
-        return ;
-        
-    error:
-        
-        printf("codegen error: definition '%s', already exists.\n",RKString_GetString(definition_name)) ;
-        
-        exit(EXIT_FAILURE) ;
-    }
-    
-    RKStore_AddItem(c->definitions, definition, RKString_GetString(definition_name)) ;
-    
-}
+typedef struct c_backend_s { RKStore banned_symbols ; cg_routine memcpy_routine ; } *c_backend ;
 
 
 static void* get_static_assignment( cg_variable variable ) {
@@ -691,7 +600,7 @@ static void output_app( FILE* file, cg_context context, c_backend c ) {
         
         while (node != NULL) {
             
-            if ( i == 0 ) cg_add_routine_declaration_to_module(RKStore_GetItem(c->definitions, "memcpy"), RKList_GetData(node)) ;
+            if ( i == 0 ) cg_add_routine_declaration_to_module(c->memcpy_routine, RKList_GetData(node)) ;
             
             output_module(file, context, c, RKList_GetData(node)) ;
             
@@ -720,8 +629,6 @@ static void DeleteStringInListOrStore(void* data) {
 
 get_destroyer(C) {
     
-    RKStore_DestroyStore(((c_backend)backend->backend_ptr)->definitions) ;
-    
     RKStore_IterateStoreWith(DeleteStringInListOrStore, ((c_backend)backend->backend_ptr)->banned_symbols) ;
     
     RKStore_DestroyStore(((c_backend)backend->backend_ptr)->banned_symbols) ;
@@ -740,8 +647,6 @@ new_backend(C) {
     backend->destroyer_callback = get_callback(C, get_destroyer) ;
     
     c_backend c = RKMem_NewMemOfType(struct c_backend_s) ;
-    
-    c->definitions = RKStore_NewStore() ;
     
     c->banned_symbols = RKStore_NewStore() ;
     
@@ -769,7 +674,7 @@ new_backend(C) {
     
     mlb_validate_routine(memcpy_routine) ;
     
-    validate_definition(memcpy_routine,NULL,c) ;
+    c->memcpy_routine = memcpy_routine ;
     
     RKStore_AddItem(c->banned_symbols, rkstr("memcpy"), "memcpy") ;
 }
