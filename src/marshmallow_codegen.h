@@ -103,7 +103,7 @@ struct cg_context_s { cg_entity_type entity_type ; RKStore modules ; RKStore def
 
 struct cg_module_s { cg_entity_type entity_type ; RKString name ; RKStore routines ; RKStore variables ;
     
-RKStore variable_declarations ; RKStore routine_declarations ; cg_context context ; } ;
+RKStore variable_declarations ; RKStore routine_declarations ; RKStore classes ; cg_context context ; } ;
 
 struct cg_routine_s { cg_entity_type entity_type ; RKString name ; int is_global ; int is_external ;
     
@@ -158,6 +158,8 @@ void cg_add_module_to_context( cg_module module, cg_context context ) ;
 cg_module cg_new_module( RKString name ) ;
 
 void cg_destroy_module( cg_module module ) ;
+
+void cg_add_class_to_module( cg_variable class, cg_module module ) ;
 
 void cg_add_variable_declaration_to_module( cg_variable variable, cg_module module ) ;
 

@@ -1,7 +1,7 @@
 
 project := "MarshmallowProject".
 
-project_version := "0.1.43".
+project_version := "0.1.44".
 
 buildfile_version := "1.0".
 
@@ -41,7 +41,7 @@ build MarshmallowBuild.
 
  make filepath rklib_include_path from "resources" to "include" from RKLibProject.
 
- compiler CompilerFlags("-Wall", "-I " + include_path,"-I " + rklib_include_path).
+ compiler CompilerFlags("-Wall", "-I " + include_path, "-I " + rklib_include_path).
 
  toolchain ToolChain(toolchain_select,CompilerFlags).
 

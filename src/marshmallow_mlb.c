@@ -154,7 +154,7 @@ void mlb_validate_variable( cg_variable variable ) {
         exit(EXIT_FAILURE) ;
     }
     
-    if ( variable->ptr != NULL && variable->type != ptr && variable->type != array ) {
+    if ( variable->ptr != NULL && variable->type != ptr && variable->type != array && variable->type != class ) {
         
         printf("codegen error: failed to validate a cg variable.\n") ;
         

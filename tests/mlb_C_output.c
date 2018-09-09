@@ -14,8 +14,12 @@ typedef signed long _mi64 ;
 typedef unsigned long _mu64 ;
 #endif
 
+struct myclass ; 
+struct myclass { _mi32 var_a ; _mi64 var_b ; _mu64 var_c ; _mu32 var_d[10] ; } ;
 extern _mi32 E ;
+extern struct myclass F ;
 struct _myroutine_returns { _mi32 _returns_0 ; _mi32 _returns_1 ; } ;
 void myroutine(struct _myroutine_returns* _returns) ;
 void memcpy(void *dest,void *src,_mu64 n) ;
 _mi32 E ;
+struct myclass F ;

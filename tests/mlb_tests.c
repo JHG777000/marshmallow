@@ -30,11 +30,45 @@ int main(int argc, const char **argv) {
     
     cg_add_module_to_context(my_module, my_context) ;
     
+    cg_variable my_class = cg_new_variable(rkstr("myclass"), class, -1, -1, 0, 0) ;
+    
+    my_class->value = rkstr("myclass") ;
+    
+    my_class->class_values = RKStore_NewStore() ;
+    
+    cg_add_class_to_module(my_class, my_module) ;
+    
+    cg_variable var_a = cg_new_variable(rkstr("var_a"), i32, -1, -1, 0, 0) ;
+    
+    cg_variable var_b = cg_new_variable(rkstr("var_b"), i64, -1, -1, 0, 0) ;
+    
+    cg_variable var_c = cg_new_variable(rkstr("var_c"), u64, -1, -1, 0, 0) ;
+    
+    cg_variable var_d = cg_new_variable(rkstr("var_d"), array, -1, -1, 10, 0) ;
+    
+    var_d->ptr = cg_new_variable(NULL, u32, -1, -1, 0, 0) ;
+    
+    RKStore_AddItem(my_class->class_values, var_a, RKString_GetString(var_a->name)) ;
+    
+    RKStore_AddItem(my_class->class_values, var_b, RKString_GetString(var_b->name)) ;
+    
+    RKStore_AddItem(my_class->class_values, var_c, RKString_GetString(var_c->name)) ;
+    
+    RKStore_AddItem(my_class->class_values, var_d, RKString_GetString(var_d->name)) ;
+    
     cg_variable E = cg_new_variable(rkstr("E"), i32, -1, -1, 0, 0) ;
     
     cg_add_variable_declaration_to_module(E, my_module) ;
     
     cg_add_variable_to_module(E, my_module) ;
+    
+    cg_variable F = cg_new_variable(rkstr("F"), class, -1, -1, 0, 0) ;
+    
+    F->ptr = my_class ;
+    
+    cg_add_variable_declaration_to_module(F, my_module) ;
+    
+    cg_add_variable_to_module(F, my_module) ;
     
     cg_routine my_routine = cg_new_routine(rkstr("myroutine"), 0) ;
     

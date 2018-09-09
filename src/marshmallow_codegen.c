@@ -1689,6 +1689,8 @@ cg_module cg_new_module( RKString name ) {
     
     module->context = NULL ;
     
+    module->classes = RKStore_NewStore() ;
+    
     module->routines = RKStore_NewStore() ;
     
     module->variables = RKStore_NewStore() ;
@@ -1732,6 +1734,8 @@ void cg_destroy_module( cg_module module ) {
     
     RKStore_IterateStoreWith(DeleteVariableInListOrStore, module->variable_declarations) ;
     
+    RKStore_IterateStoreWith(DeleteVariableInListOrStore, module->classes) ;
+    
     RKStore_DestroyStore(module->routines) ;
     
     RKStore_DestroyStore(module->variables) ;
@@ -1740,9 +1744,16 @@ void cg_destroy_module( cg_module module ) {
     
     RKStore_DestroyStore(module->variable_declarations) ;
     
+    RKStore_DestroyStore(module->classes) ;
+    
     RKString_DestroyString(module->name) ;
     
     free(module) ;
+}
+
+void cg_add_class_to_module( cg_variable class, cg_module module ) {
+    
+    RKStore_AddItem(module->classes, class, RKString_GetString(class->value)) ;
 }
 
 void cg_add_variable_declaration_to_module( cg_variable variable, cg_module module ) {
@@ -1919,7 +1930,7 @@ void cg_destroy_variable( cg_variable variable ) {
     
     if ( variable->class_values != NULL ) RKStore_DestroyStore(variable->class_values) ;
     
-    if ( variable->ptr != NULL ) cg_destroy_variable(variable->ptr) ;
+    if ( variable->ptr != NULL && variable->ptr->type != class ) cg_destroy_variable(variable->ptr) ;
     
     free(variable) ;
 }

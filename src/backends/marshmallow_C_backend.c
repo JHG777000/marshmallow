@@ -20,7 +20,6 @@
 
 typedef struct c_backend_s { RKStore banned_symbols ; cg_routine memcpy_routine ; } *c_backend ;
 
-
 static void* get_static_assignment( cg_variable variable ) {
     
     if ( !variable->is_literal ) {
@@ -40,11 +39,15 @@ return_pointer_size(C) {
     return 8 ;
 }
 
+static void output_classes( FILE* file, cg_module module, c_backend c ) ;
+
+static void output_class( FILE* file, cg_variable class, c_backend c ) ;
+
 static void output_declarations( FILE* file, RKStore declarations, c_backend c ) ;
 
 static void output_value( FILE* file, cg_variable value, void* static_assignment ) ;
 
-static void output_collection( FILE* file, cg_variable variable ) ;
+static void output_collection( FILE* file, cg_variable value ) ;
 
 static void output_type( FILE* file, cg_variable type, void* static_assignment ) ;
 
@@ -58,6 +61,77 @@ static void output_declarations( FILE* file, RKStore declarations, c_backend c )
 
 static void output_runtime( FILE* file ) ;
 
+static void output_classes( FILE* file, cg_module module, c_backend c ) {
+    
+    RKList list = NULL ;
+    
+    RKList_node node = NULL ;
+    
+    if ( module->classes != NULL ) {
+        
+        list = RKStore_GetList(module->classes) ;
+        
+        if ( list != NULL ) {
+            
+            node = RKList_GetFirstNode(list) ;
+            
+            while (node != NULL) {
+                
+                output_type(file, RKList_GetData(node), NULL) ;
+                
+                fprintf(file, "; \n") ;
+                
+                node = RKList_GetNextNode(node) ;
+            }
+            
+            node = RKList_GetFirstNode(list) ;
+            
+            while (node != NULL) {
+                
+                output_class(file, RKList_GetData(node), c) ;
+                
+                fprintf(file, " ;\n") ;
+                
+                node = RKList_GetNextNode(node) ;
+            }
+        }
+        
+    }
+}
+
+static void output_class( FILE* file, cg_variable class, c_backend c ) {
+    
+    RKList list = NULL ;
+    
+    RKList_node node = NULL ;
+    
+    if ( class->class_values != NULL ) {
+        
+        list = RKStore_GetList(class->class_values) ;
+        
+        if ( list != NULL ) {
+            
+            output_type(file, class, NULL) ;
+            
+            fprintf(file, "{ ") ;
+            
+            node = RKList_GetFirstNode(list) ;
+            
+            while (node != NULL) {
+                
+                output_variable_definition(file, RKList_GetData(node), c) ;
+                
+                fprintf(file, " ; ") ;
+                
+                node = RKList_GetNextNode(node) ;
+            }
+            
+            fprintf(file, "}") ;
+            
+        }
+        
+    }
+}
 
 static void output_value( FILE* file, cg_variable value, void* static_assignment ) {
     
@@ -82,7 +156,7 @@ static void output_value( FILE* file, cg_variable value, void* static_assignment
     
     if ( value->values != NULL ) {
         
-        output_collection( file, value) ;
+        output_collection( file, value ) ;
         
         return ;
     }
@@ -103,15 +177,15 @@ static void output_value( FILE* file, cg_variable value, void* static_assignment
     if ( value->type == character ) fprintf(file, "\'") ;
 }
 
-static void output_collection( FILE* file, cg_variable variable ) {
+static void output_collection( FILE* file, cg_variable value ) {
     
     RKList list = NULL ;
     
     RKList_node node = NULL ;
     
-    if ( variable->values != NULL ) {
+    if ( value->values != NULL ) {
         
-        list = variable->values ;
+        list = value->values ;
         
         if ( list != NULL ) {
             
@@ -133,7 +207,6 @@ static void output_collection( FILE* file, cg_variable variable ) {
         }
         
     }
-    
 }
 
 static void output_type( FILE* file, cg_variable type, void* static_assignment ) {
@@ -246,6 +319,15 @@ loop:
                 
                 break;
                 
+            case class:
+                
+                fprintf(file, "struct ") ;
+                
+                if ( type->ptr == NULL ) fprintf(file, "%s ", RKString_GetString(type->value)) ;
+                
+                if ( type->ptr != NULL ) fprintf(file, "%s ", RKString_GetString(type->ptr->value)) ;
+                
+                break;
                 
             default:
                 break;
@@ -542,6 +624,8 @@ static void output_module( FILE* file, cg_context context,  c_backend c, cg_modu
     RKList list = NULL ;
     
     RKList_node node = NULL ;
+    
+    output_classes(file, module, c) ;
     
     output_declarations(file, module->variable_declarations, c) ;
     
