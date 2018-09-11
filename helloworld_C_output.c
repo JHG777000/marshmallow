@@ -13,9 +13,6 @@ typedef unsigned long long mu64 ;
 typedef signed long mi64 ;
 typedef unsigned long mu64 ;
 #endif
-struct myclass ;
-struct myclass { mi32 var_a ; mi64 var_b ; mu64 var_c ; mu32 var_d[10] ; } ;
-struct myclass F ;
 void* memcpy(void* dest, const void* src, mu64 n) ;
 void puts(mu8 *string) ;
 void marshmallow_mymod_main(mi32 * returns_marshmallow_mymod_main_0)  ;
@@ -40,7 +37,6 @@ mu32* marshmallow_mymod_test = U"Hello World\n" ;
 mu32* marshmallow_mymod_test2 = ((void*)0) ;
 mu32 marshmallow_mymod_myarray42[3][3] = {{7,7,7},{7,7,7},{7,7,7}} ;
 void marshmallow_mymod_main(mi32 * returns_marshmallow_mymod_main_0) {
-    F;
 mu32 myarray43[3][3] ;
 mu32 *var555 = (&marshmallow_mymod_var303) ;
 mu32 var4 = -5222 ;

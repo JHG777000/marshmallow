@@ -55,11 +55,20 @@ static void output_array( FILE* file, cg_variable type, void* static_assignment 
 
 static void output_variable_definition( FILE* file, cg_variable variable, c_backend c ) ;
 
-static void output_signature( FILE* file, cg_routine routine, c_backend c ) ;
+static void output_signature( FILE* file, cg_routine routine, int output_returns_struct, c_backend c ) ;
 
 static void output_declarations( FILE* file, RKStore declarations, c_backend c ) ;
 
 static void output_runtime( FILE* file ) ;
+
+static void output_routine( FILE* file, cg_routine routine, c_backend c ) {
+    
+    output_signature(file, routine, 0, c) ;
+    
+    fprintf(file, " {\n") ;
+    
+    fprintf(file, "}\n") ;
+}
 
 static void output_classes( FILE* file, cg_module module, c_backend c ) {
     
@@ -451,7 +460,7 @@ static RKString get_routines_returns_name_from_index( RKInt index ) {
     return returns_index ;
 }
 
-static void output_signature( FILE* file, cg_routine routine, c_backend c ) {
+static void output_signature( FILE* file, cg_routine routine, int output_returns_struct, c_backend c ) {
     
     int i = 0 ;
     
@@ -461,7 +470,7 @@ static void output_signature( FILE* file, cg_routine routine, c_backend c ) {
     
     RKString returns_type_name = get_struct_name_for_routines_returns(routine->name) ;
     
-    if ( !routine->is_external ) {
+    if ( !routine->is_external && output_returns_struct) {
         
          fprintf(file, "struct _") ;
         
@@ -491,6 +500,11 @@ static void output_signature( FILE* file, cg_routine routine, c_backend c ) {
          fprintf(file, "} ;\n") ;
         
          fprintf(file, "void") ;
+    }
+    
+    if ( !routine->is_external && !output_returns_struct) {
+        
+        fprintf(file, "void") ;
     }
     
     if ( routine->is_external ) {
@@ -571,8 +585,8 @@ static void output_declarations( FILE* file, RKStore declarations, c_backend c )
                 
             } else if ( entity->entity_type == cg_entity_routine ) {
                 
-                output_signature(file, RKList_GetData(node), c) ;
-                
+                output_signature(file, RKList_GetData(node), 1, c) ;
+
             }
             
             fprintf(file, " ;\n") ;
@@ -649,7 +663,7 @@ static void output_module( FILE* file, cg_context context,  c_backend c, cg_modu
         
     }
     
-    //list = RKStore_GetList(module->functions_and_methods) ;
+    list = RKStore_GetList(module->routines) ;
     
     if ( list != NULL ) {
         
@@ -657,7 +671,7 @@ static void output_module( FILE* file, cg_context context,  c_backend c, cg_modu
         
         while (node != NULL) {
             
-            //output_function(context, file, RKList_GetData(node), module) ;
+            output_routine(file, RKList_GetData(node), c) ;
             
             node = RKList_GetNextNode(node) ;
             

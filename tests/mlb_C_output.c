@@ -23,3 +23,5 @@ void myroutine(struct _myroutine_returns* _returns) ;
 void memcpy(void *dest,void *src,_mu64 n) ;
 _mi32 E ;
 struct myclass F ;
+void myroutine(struct _myroutine_returns* _returns) {
+}
