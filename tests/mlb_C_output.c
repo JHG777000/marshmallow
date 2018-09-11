@@ -24,4 +24,10 @@ void memcpy(void *dest,void *src,_mu64 n) ;
 _mi32 E ;
 struct myclass F ;
 void myroutine(struct _myroutine_returns* _returns) {
+_mi32 A ;
+_mi32 B ;
+_mi32 C ;
+A = B + C ;
+_returns->_returns_0 = A ;
+return ;
 }

@@ -1790,6 +1790,8 @@ cg_routine cg_new_routine( RKString name, int is_global ) {
     
     routine->name = name ;
     
+    routine->is_external = 0 ;
+    
     routine->is_global = is_global ;
     
     routine->entity_type = cg_entity_routine ;
@@ -1900,6 +1902,12 @@ cg_variable cg_new_variable( RKString name, cg_root_type type, int mlb_return_va
     variable->entity_type = cg_entity_variable ;
     
     variable->is_global = is_global ;
+    
+    variable->is_temporary = 0 ;
+    
+    variable->is_external = 0 ;
+    
+    variable->is_literal = 0 ;
     
     variable->class_values = NULL ;
     

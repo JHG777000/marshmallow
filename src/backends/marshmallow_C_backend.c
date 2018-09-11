@@ -39,9 +39,15 @@ return_pointer_size(C) {
     return 8 ;
 }
 
+static RKString get_routines_returns_name_from_index( RKInt index ) ;
+
+static void output_routine( FILE* file, cg_routine routine, c_backend c ) ;
+
 static void output_classes( FILE* file, cg_module module, c_backend c ) ;
 
 static void output_class( FILE* file, cg_variable class, c_backend c ) ;
+
+static void output_statement( FILE* file, mlb_statement statement ) ;
 
 static void output_declarations( FILE* file, RKStore declarations, c_backend c ) ;
 
@@ -53,6 +59,8 @@ static void output_type( FILE* file, cg_variable type, void* static_assignment )
 
 static void output_array( FILE* file, cg_variable type, void* static_assignment ) ;
 
+static void output_variable_name( FILE* file, cg_variable variable, c_backend c ) ;
+
 static void output_variable_definition( FILE* file, cg_variable variable, c_backend c ) ;
 
 static void output_signature( FILE* file, cg_routine routine, int output_returns_struct, c_backend c ) ;
@@ -63,9 +71,44 @@ static void output_runtime( FILE* file ) ;
 
 static void output_routine( FILE* file, cg_routine routine, c_backend c ) {
     
+    RKList list = NULL ;
+    
+    RKList_node node = NULL ;
+    
     output_signature(file, routine, 0, c) ;
     
     fprintf(file, " {\n") ;
+    
+    list = RKStore_GetList(routine->variables) ;
+    
+    if ( list != NULL ) {
+        
+        node = RKList_GetFirstNode(list) ;
+        
+        while ( node != NULL ) {
+            
+            output_variable_definition(file, RKList_GetData(node), c) ;
+            
+            if ( ((cg_variable)RKList_GetData(node))->mlb_return_value < 0 && ((cg_variable)RKList_GetData(node))->mlb_get_return_value < 0 )
+                fprintf(file, " ;\n") ;
+            
+            node = RKList_GetNextNode(node) ;
+        }
+    }
+    
+    list = routine->mlb_code ;
+    
+    if ( list != NULL ) {
+        
+        node = RKList_GetFirstNode(list) ;
+        
+        while ( node != NULL ) {
+           
+            output_statement(file, RKList_GetData(node)) ;
+            
+            node = RKList_GetNextNode(node) ;
+        }
+    }
     
     fprintf(file, "}\n") ;
 }
@@ -142,6 +185,47 @@ static void output_class( FILE* file, cg_variable class, c_backend c ) {
     }
 }
 
+static void output_statement( FILE* file, mlb_statement statement ) {
+    
+    switch (statement->op) {
+          
+        case mlb_return:
+
+            fprintf(file, "return") ;
+            
+            break;
+            
+        case mlb_set:
+            
+            output_value(file, statement->A, NULL) ;
+            
+            fprintf(file, " = ") ;
+            
+            output_value(file, statement->B, NULL) ;
+            
+            break;
+            
+        case mlb_add:
+            
+            output_value(file, statement->A, NULL) ;
+            
+            fprintf(file, " = ") ;
+            
+            output_value(file, statement->B, NULL) ;
+            
+            fprintf(file, " + ") ;
+            
+            output_value(file, statement->C, NULL) ;
+            
+            break;
+            
+        default:
+            break;
+    }
+    
+    fprintf(file, " ;\n") ;
+}
+
 static void output_value( FILE* file, cg_variable value, void* static_assignment ) {
     
     if ( value == NULL ) return ;
@@ -155,6 +239,13 @@ static void output_value( FILE* file, cg_variable value, void* static_assignment
     if ( value->type == string32 && value->is_literal ) fprintf(file, "U\"") ;
     
     if ( value->type == character ) fprintf(file, "L\'") ;
+    
+    if ( !value->is_literal && value->name != NULL && static_assignment == NULL && value->mlb_return_value >= 0 ) {
+        
+        fprintf(file, "_returns->%s", RKString_GetString(get_routines_returns_name_from_index(value->mlb_return_value))) ;
+        
+        return ;
+    }
     
     if ( !value->is_literal && value->name != NULL && static_assignment == NULL ) {
         
@@ -415,6 +506,8 @@ loop:
 }
 
 static void output_variable_definition( FILE* file, cg_variable variable, c_backend c ) {
+    
+    if ( variable->mlb_return_value >= 0 || variable->mlb_get_return_value >= 0 ) return ;
     
     output_type(file, variable, get_static_assignment(variable)) ;
     
