@@ -56,13 +56,13 @@ int main(int argc, const char **argv) {
     
     RKStore_AddItem(my_class->class_values, var_d, RKString_GetString(var_d->name)) ;
     
-    cg_variable E = cg_new_variable(rkstr("E"), i32, -1, -1, 0, 0) ;
+    cg_variable E = cg_new_variable(rkstr("E"), i32, -1, -1, 0, 1) ;
     
     cg_add_variable_declaration_to_module(E, my_module) ;
     
     cg_add_variable_to_module(E, my_module) ;
     
-    cg_variable F = cg_new_variable(rkstr("F"), class, -1, -1, 0, 0) ;
+    cg_variable F = cg_new_variable(rkstr("F"), class, -1, -1, 0, 1) ;
     
     F->ptr = my_class ;
     
@@ -70,9 +70,7 @@ int main(int argc, const char **argv) {
     
     cg_add_variable_to_module(F, my_module) ;
     
-    cg_routine my_routine = cg_new_routine(rkstr("myroutine"), 0) ;
-    
-    my_routine->is_external = 0 ;
+    cg_routine my_routine = cg_new_routine(rkstr("myroutine"), 1) ;
     
     cg_add_routine_declaration_to_module(my_routine, my_module) ;
     

@@ -1781,6 +1781,8 @@ void cg_add_routine_to_module( cg_routine routine, cg_module module ) {
         
     validate_definition(module->context, routine, NULL) ;
     
+    routine->module = module ;
+    
     RKStore_AddItem(module->routines, routine, RKString_GetString(routine->name)) ;
 }
 
@@ -1789,6 +1791,8 @@ cg_routine cg_new_routine( RKString name, int is_global ) {
     cg_routine routine = RKMem_NewMemOfType(struct cg_routine_s) ;
     
     routine->name = name ;
+    
+    routine->module = NULL ;
     
     routine->is_external = 0 ;
     
@@ -1904,8 +1908,6 @@ cg_variable cg_new_variable( RKString name, cg_root_type type, int mlb_return_va
     variable->is_global = is_global ;
     
     variable->is_temporary = 0 ;
-    
-    variable->is_external = 0 ;
     
     variable->is_literal = 0 ;
     

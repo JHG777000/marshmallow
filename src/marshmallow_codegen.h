@@ -109,13 +109,13 @@ struct cg_routine_s { cg_entity_type entity_type ; RKString name ; int is_global
     
 RKList return_types ; RKStore parameters ; RKStore variables ; RKList mib_code ; RKList mob_code ;
     
-RKList mlb_code ; RKStack data_stack ; RKStack op_stack ; }  ;
+RKList mlb_code ; RKStack data_stack ; RKStack op_stack ; cg_module module ; }  ;
 
 struct cg_variable_s { cg_entity_type entity_type ; RKString name ; cg_root_type type ; RKString value ; RKList values ; RKStore class_values ;
 
 int mlb_return_value ; int mlb_get_return_value ; cg_variable ptr ; RKULong num_of_elements ;
     
-int is_global ; int is_external ; int is_literal ; int is_temporary ; } ;
+int is_global ; int is_literal ; int is_temporary ; } ;
 
 typedef enum { mlb_set, mlb_add, mlb_sub, mlb_mult, mlb_div, mlb_rem, mlb_rshift, mlb_lshift, mlb_and, mlb_or, mlb_xor,
     

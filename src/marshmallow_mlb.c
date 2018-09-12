@@ -18,6 +18,15 @@
 #include "marshmallow.h"
 #include "marshmallow_codegen.h"
 
+static cg_variable mlb_get_variable( cg_routine routine, RKString var ) {
+    
+    cg_variable variable = RKStore_GetItem(routine->variables, RKString_GetString(var)) ;
+    
+    if ( variable == NULL ) variable = RKStore_GetItem(routine->module->variables, RKString_GetString(var)) ;
+    
+    return variable ;
+}
+
 mlb_statement mlb_add_statement( mlb_op_type op, cg_routine routine, RKString A, RKString B, RKString C ) {
     
     mlb_statement statement = RKMem_NewMemOfType(struct mlb_statement_s) ;
@@ -26,11 +35,11 @@ mlb_statement mlb_add_statement( mlb_op_type op, cg_routine routine, RKString A,
     
     statement->entity_type = cg_entity_mlb_statement ;
     
-    statement->A = ( A != NULL ) ? RKStore_GetItem(routine->variables, RKString_GetString(A)) : NULL ;
+    statement->A = ( A != NULL ) ? mlb_get_variable(routine, A) : NULL ;
     
-    statement->B = ( B != NULL ) ? RKStore_GetItem(routine->variables, RKString_GetString(B)) : NULL ;
+    statement->B = ( B != NULL ) ? mlb_get_variable(routine, B) : NULL ;
     
-    statement->C = ( C != NULL ) ? RKStore_GetItem(routine->variables, RKString_GetString(C)) : NULL ;
+    statement->C = ( C != NULL ) ? mlb_get_variable(routine, C) : NULL ;
     
     if ( routine->mlb_code == NULL ) routine->mlb_code = RKList_NewList() ;
     

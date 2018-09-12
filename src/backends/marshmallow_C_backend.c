@@ -61,7 +61,7 @@ static void output_array( FILE* file, cg_variable type, void* static_assignment 
 
 static void output_variable_name( FILE* file, cg_variable variable, c_backend c ) ;
 
-static void output_variable_definition( FILE* file, cg_variable variable, c_backend c ) ;
+static void output_variable_definition( FILE* file, cg_variable variable, int can_be_static, c_backend c ) ;
 
 static void output_signature( FILE* file, cg_routine routine, int output_returns_struct, c_backend c ) ;
 
@@ -87,7 +87,9 @@ static void output_routine( FILE* file, cg_routine routine, c_backend c ) {
         
         while ( node != NULL ) {
             
-            output_variable_definition(file, RKList_GetData(node), c) ;
+            ((cg_variable)RKList_GetData(node))->is_global = !((cg_variable)RKList_GetData(node))->is_global ;
+            
+            output_variable_definition(file, RKList_GetData(node), 1, c) ;
             
             if ( ((cg_variable)RKList_GetData(node))->mlb_return_value < 0 && ((cg_variable)RKList_GetData(node))->mlb_get_return_value < 0 )
                 fprintf(file, " ;\n") ;
@@ -171,7 +173,7 @@ static void output_class( FILE* file, cg_variable class, c_backend c ) {
             
             while (node != NULL) {
                 
-                output_variable_definition(file, RKList_GetData(node), c) ;
+                output_variable_definition(file, RKList_GetData(node), 0, c) ;
                 
                 fprintf(file, " ; ") ;
                 
@@ -505,9 +507,11 @@ loop:
     }
 }
 
-static void output_variable_definition( FILE* file, cg_variable variable, c_backend c ) {
+static void output_variable_definition( FILE* file, cg_variable variable, int can_be_static, c_backend c ) {
     
     if ( variable->mlb_return_value >= 0 || variable->mlb_get_return_value >= 0 ) return ;
+    
+    if ( !variable->is_global && can_be_static ) fprintf(file, "static ") ;
     
     output_type(file, variable, get_static_assignment(variable)) ;
     
@@ -592,10 +596,14 @@ static void output_signature( FILE* file, cg_routine routine, int output_returns
         
          fprintf(file, "} ;\n") ;
         
+         if ( !routine->is_global ) fprintf(file, "static ") ;
+        
          fprintf(file, "void") ;
     }
     
     if ( !routine->is_external && !output_returns_struct) {
+        
+        if ( !routine->is_global ) fprintf(file, "static ") ;
         
         fprintf(file, "void") ;
     }
@@ -604,9 +612,13 @@ static void output_signature( FILE* file, cg_routine routine, int output_returns
         
         if ( RKList_GetNumOfNodes(routine->return_types) == 0 ) {
             
+            if ( !routine->is_global ) fprintf(file, "static ") ;
+            
             fprintf(file, "void") ;
             
         } else if ( RKList_GetNumOfNodes(routine->return_types) == 1 ) {
+            
+            if ( !routine->is_global ) fprintf(file, "static ") ;
             
             output_type(file, RKList_GetData(RKList_GetFirstNode(routine->return_types)), NULL) ;
             
@@ -640,7 +652,7 @@ static void output_signature( FILE* file, cg_routine routine, int output_returns
     
     while ( node != NULL ) {
         
-        output_variable_definition(file, RKList_GetData(node), c) ;
+        output_variable_definition(file, RKList_GetData(node), 0, c) ;
         
         if ( RKList_GetNextNode(node) != NULL ) fprintf(file, ",") ;
         
@@ -674,7 +686,7 @@ static void output_declarations( FILE* file, RKStore declarations, c_backend c )
                 
                 fprintf(file, "extern ") ;
                 
-                output_variable_definition(file, RKList_GetData(node), c) ;
+                output_variable_definition(file, RKList_GetData(node), 0, c) ;
                 
             } else if ( entity->entity_type == cg_entity_routine ) {
                 
@@ -746,7 +758,7 @@ static void output_module( FILE* file, cg_context context,  c_backend c, cg_modu
         
         while (node != NULL) {
             
-            output_variable_definition(file, RKList_GetData(node), c) ;
+            output_variable_definition(file, RKList_GetData(node), 1, c) ;
             
             fprintf(file, " ;\n") ;
             
