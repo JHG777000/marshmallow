@@ -312,6 +312,7 @@ void mlb_validate_statement( mlb_statement statement ) {
         case mlb_section:
         case mlb_memcpy:
         case mlb_call:
+        case mlb_external_return:
             
             if (statement->A == NULL || statement->B != NULL || statement->C != NULL) {
                 

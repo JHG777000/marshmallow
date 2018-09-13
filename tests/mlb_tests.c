@@ -102,6 +102,24 @@ int main(int argc, const char **argv) {
     
     mlb_add_statement(mlb_return, my_routine, NULL, NULL, NULL) ;
     
+    cg_routine main = cg_new_routine(rkstr("main"), 1) ;
+    
+    cg_add_return_to_returns_in_routine(cg_new_variable(NULL,i32,-1,-1,0,0), main) ;
+    
+    cg_add_routine_to_module(main, my_module) ;
+    
+    main->is_external = 1 ;
+    
+    cg_variable zero = cg_new_variable(rkstr("_zero"), i32, -1, -1, 0, 0) ;
+    
+    zero->value = rkstr("0") ;
+    
+    zero->is_literal = 1 ;
+    
+    cg_add_variable_to_routine(zero, main) ;
+    
+    mlb_add_statement(mlb_external_return, main, zero->name, NULL, NULL) ;
+    
     cg_give_context_to_backend(my_context, backend) ;
     
     cg_destroy_context(my_context) ;

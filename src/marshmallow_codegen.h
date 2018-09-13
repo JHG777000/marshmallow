@@ -125,7 +125,9 @@ mlb_class_access, mlb_if, mlb_endif, mlb_else, mlb_else_if, mlb_while, mlb_endwh
     
 mlb_switch, mlb_endswitch, mlb_case, mlb_endcase, mlb_default, mlb_goto, mlb_section, mlb_equals, mlb_not_equals,
     
-mlb_greaterthan, mlb_lessthan, mlb_greaterthan_or_equals, mlb_lessthan_or_equals, mlb_memcpy, mlb_call, mlb_return } mlb_op_type ;
+mlb_greaterthan, mlb_lessthan, mlb_greaterthan_or_equals, mlb_lessthan_or_equals,
+    
+mlb_memcpy, mlb_call, mlb_return, mlb_external_return } mlb_op_type ;
 
 struct mlb_statement_s { cg_entity_type entity_type ; cg_routine routine ; mlb_op_type op ; cg_variable A ; cg_variable B ; cg_variable C ; } ;
 

@@ -87,13 +87,18 @@ static void output_routine( FILE* file, cg_routine routine, c_backend c ) {
         
         while ( node != NULL ) {
             
-            ((cg_variable)RKList_GetData(node))->is_global = !((cg_variable)RKList_GetData(node))->is_global ;
+            if ( !((cg_variable)RKList_GetData(node))->is_literal ) {
             
-            output_variable_definition(file, RKList_GetData(node), 1, c) ;
+             ((cg_variable)RKList_GetData(node))->is_global = !((cg_variable)RKList_GetData(node))->is_global ;
             
-            if ( ((cg_variable)RKList_GetData(node))->mlb_return_value < 0 && ((cg_variable)RKList_GetData(node))->mlb_get_return_value < 0 )
-                fprintf(file, " ;\n") ;
+             output_variable_definition(file, RKList_GetData(node), 1, c) ;
+             
+             if ( ((cg_variable)RKList_GetData(node))->mlb_return_value < 0 && ((cg_variable)RKList_GetData(node))->mlb_get_return_value < 0 )
+                 
+                 fprintf(file, " ;\n") ;
             
+             }
+                
             node = RKList_GetNextNode(node) ;
         }
     }
@@ -190,10 +195,18 @@ static void output_class( FILE* file, cg_variable class, c_backend c ) {
 static void output_statement( FILE* file, mlb_statement statement ) {
     
     switch (statement->op) {
-          
+            
         case mlb_return:
 
             fprintf(file, "return") ;
+            
+            break;
+            
+        case mlb_external_return:
+            
+            fprintf(file, "return ") ;
+            
+            output_value(file, statement->A, NULL) ;
             
             break;
             

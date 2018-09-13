@@ -31,3 +31,6 @@ A = B + C ;
 _returns->_returns_0 = A ;
 return ;
 }
+_mi32  main() {
+return 0 ;
+}
