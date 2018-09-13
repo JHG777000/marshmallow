@@ -119,7 +119,7 @@ int is_global ; int is_literal ; int is_temporary ; } ;
 
 typedef enum { mlb_set, mlb_add, mlb_sub, mlb_mult, mlb_div, mlb_rem, mlb_rshift, mlb_lshift, mlb_and, mlb_or, mlb_xor,
     
-mlb_not, mlb_logic_and, mlb_logic_or, mlb_logic_not, mlb_deref, mlb_addrof, mlb_sizeof, mlb_cast, mlb_array_index,
+mlb_not, mlb_logic_and, mlb_logic_or, mlb_logic_not, mlb_deref, mlb_addrof, mlb_sizeof, mlb_cast, mlb_array_index, mlb_array_copy,
     
 mlb_class_access, mlb_if, mlb_endif, mlb_else, mlb_else_if, mlb_while, mlb_endwhile, mlb_break, mlb_continue,
     
@@ -127,7 +127,7 @@ mlb_switch, mlb_endswitch, mlb_case, mlb_endcase, mlb_default, mlb_goto, mlb_sec
     
 mlb_greaterthan, mlb_lessthan, mlb_greaterthan_or_equals, mlb_lessthan_or_equals,
     
-mlb_memcpy, mlb_call, mlb_return, mlb_external_return } mlb_op_type ;
+mlb_call, mlb_return, mlb_external_return } mlb_op_type ;
 
 struct mlb_statement_s { cg_entity_type entity_type ; cg_routine routine ; mlb_op_type op ; cg_variable A ; cg_variable B ; cg_variable C ; } ;
 
@@ -189,7 +189,7 @@ void cg_destroy_variable( cg_variable variable ) ;
 
 int cg_variables_are_equal( cg_variable a, cg_variable b ) ;
 
-mlb_statement mlb_add_statement( mlb_op_type op, cg_routine routine, RKString A, RKString B, RKString C ) ;
+mlb_statement mlb_add_statement( mlb_op_type op, cg_routine routine, cg_variable A, cg_variable B, cg_variable C ) ;
 
 void mlb_destroy_statement( mlb_statement statement ) ;
 

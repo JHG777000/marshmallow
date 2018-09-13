@@ -27,7 +27,7 @@ static cg_variable mlb_get_variable( cg_routine routine, RKString var ) {
     return variable ;
 }
 
-mlb_statement mlb_add_statement( mlb_op_type op, cg_routine routine, RKString A, RKString B, RKString C ) {
+mlb_statement mlb_add_statement( mlb_op_type op, cg_routine routine, cg_variable A, cg_variable B, cg_variable C ) {
     
     mlb_statement statement = RKMem_NewMemOfType(struct mlb_statement_s) ;
     
@@ -35,11 +35,11 @@ mlb_statement mlb_add_statement( mlb_op_type op, cg_routine routine, RKString A,
     
     statement->entity_type = cg_entity_mlb_statement ;
     
-    statement->A = ( A != NULL ) ? mlb_get_variable(routine, A) : NULL ;
+    statement->A = ( A != NULL ) ? (A->is_literal) ? A : mlb_get_variable(routine, A->name) : NULL ;
     
-    statement->B = ( B != NULL ) ? mlb_get_variable(routine, B) : NULL ;
+    statement->B = ( B != NULL ) ? (B->is_literal) ? B : mlb_get_variable(routine, B->name) : NULL ;
     
-    statement->C = ( C != NULL ) ? mlb_get_variable(routine, C) : NULL ;
+    statement->C = ( C != NULL ) ? (C->is_literal) ? C : mlb_get_variable(routine, C->name) : NULL ;
     
     if ( routine->mlb_code == NULL ) routine->mlb_code = RKList_NewList() ;
     
@@ -294,6 +294,7 @@ void mlb_validate_statement( mlb_statement statement ) {
             
             
         case mlb_set:
+        case mlb_array_copy:
             
             if (statement->A == NULL || statement->B == NULL || statement->A->type != statement->B->type || statement->C != NULL) {
                 
@@ -310,7 +311,6 @@ void mlb_validate_statement( mlb_statement statement ) {
         case mlb_switch:
         case mlb_goto:
         case mlb_section:
-        case mlb_memcpy:
         case mlb_call:
         case mlb_external_return:
             

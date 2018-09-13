@@ -611,14 +611,14 @@ static void output_signature( FILE* file, cg_routine routine, int output_returns
         
          if ( !routine->is_global ) fprintf(file, "static ") ;
         
-         fprintf(file, "void") ;
+         fprintf(file, "void ") ;
     }
     
     if ( !routine->is_external && !output_returns_struct) {
         
         if ( !routine->is_global ) fprintf(file, "static ") ;
         
-        fprintf(file, "void") ;
+        fprintf(file, "void ") ;
     }
     
     if ( routine->is_external ) {
@@ -627,7 +627,7 @@ static void output_signature( FILE* file, cg_routine routine, int output_returns
             
             if ( !routine->is_global ) fprintf(file, "static ") ;
             
-            fprintf(file, "void") ;
+            fprintf(file, "void ") ;
             
         } else if ( RKList_GetNumOfNodes(routine->return_types) == 1 ) {
             
@@ -643,8 +643,6 @@ static void output_signature( FILE* file, cg_routine routine, int output_returns
         }
         
     }
-    
-    fprintf(file, " ") ;
     
     fprintf(file, "%s",RKString_GetString(routine->name)) ;
     

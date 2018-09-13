@@ -82,9 +82,15 @@ int main(int argc, const char **argv) {
     
     cg_variable A = cg_new_variable(rkstr("A"), i32, -1, -1, 0, 0) ;
     
+    A->value = rkstr("0") ;
+    
     cg_variable B = cg_new_variable(rkstr("B"), i32, -1, -1, 0, 0) ;
     
+    B->value = rkstr("0") ;
+    
     cg_variable C = cg_new_variable(rkstr("C"), i32, -1, -1, 0, 0) ;
+    
+    C->value = rkstr("0") ;
     
     cg_variable R0 = cg_new_variable(rkstr("R0"), i32, 0, -1, 0, 0) ;
     
@@ -96,9 +102,9 @@ int main(int argc, const char **argv) {
     
     cg_add_variable_to_routine(R0, my_routine) ;
     
-    mlb_add_statement(mlb_add, my_routine, A->name, B->name, C->name) ;
+    mlb_add_statement(mlb_add, my_routine, A, B, C) ;
     
-    mlb_add_statement(mlb_set, my_routine, R0->name, A->name, NULL) ;
+    mlb_add_statement(mlb_set, my_routine, R0, A, NULL) ;
     
     mlb_add_statement(mlb_return, my_routine, NULL, NULL, NULL) ;
     
@@ -110,15 +116,13 @@ int main(int argc, const char **argv) {
     
     main->is_external = 1 ;
     
-    cg_variable zero = cg_new_variable(rkstr("_zero"), i32, -1, -1, 0, 0) ;
+    cg_variable zero = cg_new_variable(NULL, i32, -1, -1, 0, 0) ;
     
     zero->value = rkstr("0") ;
     
     zero->is_literal = 1 ;
     
-    cg_add_variable_to_routine(zero, main) ;
-    
-    mlb_add_statement(mlb_external_return, main, zero->name, NULL, NULL) ;
+    mlb_add_statement(mlb_external_return, main, zero, NULL, NULL) ;
     
     cg_give_context_to_backend(my_context, backend) ;
     
