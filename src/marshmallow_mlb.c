@@ -27,6 +27,25 @@ static cg_variable mlb_get_variable( cg_routine routine, RKString var ) {
     return variable ;
 }
 
+static void mlb_add_call_to_routine( cg_variable call, cg_routine routine ) {
+    
+    RKList list = NULL ;
+    
+    cg_routine routine_to_call = NULL ;
+    
+    list = call->values ;
+    
+    if ( list != NULL ) {
+        
+        routine_to_call = RKList_GetData(RKList_GetFirstNode(list)) ;
+    }
+    
+    if ( routine_to_call != NULL ) {
+        
+        RKStore_AddItem(routine->calls, routine_to_call, RKString_GetString(routine_to_call->name)) ;
+    }
+}
+
 mlb_statement mlb_add_statement( mlb_op_type op, cg_routine routine, cg_variable A, cg_variable B, cg_variable C ) {
     
     mlb_statement statement = RKMem_NewMemOfType(struct mlb_statement_s) ;
@@ -42,6 +61,8 @@ mlb_statement mlb_add_statement( mlb_op_type op, cg_routine routine, cg_variable
     statement->C = ( C != NULL ) ? (C->is_literal) ? C : mlb_get_variable(routine, C->name) : NULL ;
     
     if ( routine->mlb_code == NULL ) routine->mlb_code = RKList_NewList() ;
+    
+    if ( statement->op == mlb_call ) mlb_add_call_to_routine(statement->A, routine) ;
     
     RKList_AddToList(routine->mlb_code, statement) ;
     

@@ -1806,6 +1806,8 @@ cg_routine cg_new_routine( RKString name, int is_global ) {
     
     routine->variables = RKStore_NewStore() ;
     
+    routine->calls = RKStore_NewStore() ;
+    
     routine->mib_code = RKList_NewList() ;
     
     routine->mob_code = RKList_NewList() ;
@@ -1864,6 +1866,8 @@ void cg_destroy_routine( cg_routine routine ) {
         
         RKList_DeleteList(routine->mlb_code) ;
     }
+    
+    RKStore_DestroyStore(routine->calls) ;
     
     RKStack_DestroyStack(routine->data_stack) ;
     

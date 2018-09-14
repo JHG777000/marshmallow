@@ -194,6 +194,8 @@ static void output_class( FILE* file, cg_variable class, c_backend c ) {
 
 static void output_statement( FILE* file, mlb_statement statement ) {
     
+    cg_routine last_routine_to_be_called = NULL ;
+    
     switch (statement->op) {
             
         case mlb_return:
