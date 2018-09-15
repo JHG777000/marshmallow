@@ -194,6 +194,10 @@ static void output_class( FILE* file, cg_variable class, c_backend c ) {
 
 static void output_statement( FILE* file, mlb_statement statement ) {
     
+    RKList list = NULL ;
+    
+    RKList_node node = NULL ;
+    
     cg_routine last_routine_to_be_called = NULL ;
     
     switch (statement->op) {
@@ -209,6 +213,34 @@ static void output_statement( FILE* file, mlb_statement statement ) {
             fprintf(file, "return ") ;
             
             output_value(file, statement->A, NULL) ;
+            
+            break;
+            
+        case mlb_call:
+
+            list = statement->A->values ;
+            
+            if ( list != NULL ) {
+                
+              node = RKList_GetFirstNode(statement->A->values) ;
+                
+              last_routine_to_be_called = RKList_GetData(node) ;
+            
+              fprintf(file, "%s(",RKString_GetString(last_routine_to_be_called->name)) ;
+            
+              node = RKList_GetNextNode(node) ;
+                
+              while ( node != NULL ) {
+                
+                 output_value(file, RKList_GetData(node), NULL) ;
+                
+                 if ( RKList_GetNextNode(node) != NULL ) fprintf(file, ",") ;
+                  
+                 node = RKList_GetNextNode(node) ;
+              }
+                
+                fprintf(file, ")") ;
+            }
             
             break;
             
