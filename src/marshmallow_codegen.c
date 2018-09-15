@@ -1614,6 +1614,8 @@ static void DeleteMlbStatementInListOrStore(void* data) {
 
 static void DeleteVariableInListOrStore(void* data) {
     
+    if ( ((cg_variable)data)->entity_type != cg_entity_variable ) return ;
+    
     cg_destroy_variable(data) ;
 }
 
@@ -1893,6 +1895,20 @@ void cg_add_return_to_returns_in_routine( cg_variable return_type, cg_routine ro
 void cg_add_variable_to_routine( cg_variable variable, cg_routine routine ) {
     
     if ( routine->variables == NULL ) routine->variables = RKStore_NewStore() ;
+    
+    if ( variable->name == NULL && variable->is_literal ) {
+        
+        RKStore_AddItemToList(routine->variables, variable) ;
+        
+        return ;
+    }
+    
+    if ( variable->name == NULL && !variable->is_literal ) {
+        
+        printf("codegen error: variable has no name.\n") ;
+        
+        exit(EXIT_FAILURE) ;
+    }
     
     RKStore_AddItem(routine->variables, variable, RKString_GetString(variable->name)) ;
 }

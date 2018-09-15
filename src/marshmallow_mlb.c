@@ -177,6 +177,8 @@ void mlb_validate_routine( cg_routine routine ) {
 
 void mlb_validate_variable( cg_variable variable ) {
     
+    if ( variable->entity_type != cg_entity_variable ) return ;
+    
     if ( (variable->mlb_return_value > 0 && variable->mlb_get_return_value > 0) ) {
         
         printf("codegen error: failed to validate a cg variable.\n") ;
@@ -185,6 +187,20 @@ void mlb_validate_variable( cg_variable variable ) {
     }
     
     if ( variable->ptr != NULL && variable->type != ptr && variable->type != array && variable->type != class ) {
+        
+        printf("codegen error: failed to validate a cg variable.\n") ;
+        
+        exit(EXIT_FAILURE) ;
+    }
+    
+    if ( variable->values != NULL && variable->type != array && variable->type != collection ) {
+        
+        printf("codegen error: failed to validate a cg variable.\n") ;
+        
+        exit(EXIT_FAILURE) ;
+    }
+    
+    if ( variable->class_values != NULL && variable->type != class ) {
         
         printf("codegen error: failed to validate a cg variable.\n") ;
         

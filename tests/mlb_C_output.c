@@ -32,5 +32,7 @@ _returns->_returns_0 = A ;
 return ;
 }
 _mi32 main() {
-return 0 ;
+struct _myroutine_returns _myroutine_get_returns ;
+myroutine(&_myroutine_get_returns) ;
+return _myroutine_get_returns._returns_0 ;
 }

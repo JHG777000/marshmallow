@@ -39,6 +39,8 @@ return_pointer_size(C) {
     return 8 ;
 }
 
+static RKString get_struct_name_for_routines_returns( RKString routine_name )  ;
+
 static RKString get_routines_returns_name_from_index( RKInt index ) ;
 
 static void output_routine( FILE* file, cg_routine routine, c_backend c ) ;
@@ -51,7 +53,7 @@ static void output_statement( FILE* file, mlb_statement statement ) ;
 
 static void output_declarations( FILE* file, RKStore declarations, c_backend c ) ;
 
-static void output_value( FILE* file, cg_variable value, void* static_assignment ) ;
+static void output_value( FILE* file, cg_variable value, void* static_assignment, cg_routine routine ) ;
 
 static void output_collection( FILE* file, cg_variable value ) ;
 
@@ -78,6 +80,32 @@ static void output_routine( FILE* file, cg_routine routine, c_backend c ) {
     output_signature(file, routine, 0, c) ;
     
     fprintf(file, " {\n") ;
+    
+    list = RKStore_GetList(routine->calls) ;
+    
+    if ( list != NULL ) {
+        
+        node = RKList_GetFirstNode(list) ;
+        
+        while ( node != NULL ) {
+            
+            fprintf(file, "struct _") ;
+            
+            RKString returns_type_name = get_struct_name_for_routines_returns(((cg_routine)RKList_GetData(node))->name) ;
+            
+            fprintf(file, "%s ", RKString_GetString(returns_type_name)) ;
+            
+            RKString_GetString(returns_type_name) ;
+            
+            fprintf(file, "_%s",RKString_GetString(((cg_routine)RKList_GetData(node))->name)) ;
+            
+            fprintf(file, "_get_returns") ;
+            
+            fprintf(file, " ;\n") ;
+            
+            node = RKList_GetNextNode(node) ;
+        }
+    }
     
     list = RKStore_GetList(routine->variables) ;
     
@@ -198,7 +226,7 @@ static void output_statement( FILE* file, mlb_statement statement ) {
     
     RKList_node node = NULL ;
     
-    cg_routine last_routine_to_be_called = NULL ;
+    static cg_routine last_routine_to_be_called = NULL ;
     
     switch (statement->op) {
             
@@ -212,7 +240,7 @@ static void output_statement( FILE* file, mlb_statement statement ) {
             
             fprintf(file, "return ") ;
             
-            output_value(file, statement->A, NULL) ;
+            output_value(file, statement->A, NULL, last_routine_to_be_called) ;
             
             break;
             
@@ -229,10 +257,19 @@ static void output_statement( FILE* file, mlb_statement statement ) {
               fprintf(file, "%s(",RKString_GetString(last_routine_to_be_called->name)) ;
             
               node = RKList_GetNextNode(node) ;
+              
+              if ( !last_routine_to_be_called->is_external ) {
+                  
+                  fprintf(file, "&_%s",RKString_GetString(last_routine_to_be_called->name)) ;
+                  
+                  fprintf(file, "_get_returns") ;
+                  
+                  if ( RKStore_GetNumOfItems(last_routine_to_be_called->parameters) > 0 ) fprintf(file, ",") ;
+              }
                 
               while ( node != NULL ) {
                 
-                 output_value(file, RKList_GetData(node), NULL) ;
+                 output_value(file, RKList_GetData(node), NULL, NULL) ;
                 
                  if ( RKList_GetNextNode(node) != NULL ) fprintf(file, ",") ;
                   
@@ -246,25 +283,25 @@ static void output_statement( FILE* file, mlb_statement statement ) {
             
         case mlb_set:
             
-            output_value(file, statement->A, NULL) ;
+            output_value(file, statement->A, NULL, last_routine_to_be_called) ;
             
             fprintf(file, " = ") ;
             
-            output_value(file, statement->B, NULL) ;
+            output_value(file, statement->B, NULL, last_routine_to_be_called) ;
             
             break;
             
         case mlb_add:
             
-            output_value(file, statement->A, NULL) ;
+            output_value(file, statement->A, NULL, last_routine_to_be_called) ;
             
             fprintf(file, " = ") ;
             
-            output_value(file, statement->B, NULL) ;
+            output_value(file, statement->B, NULL, last_routine_to_be_called) ;
             
             fprintf(file, " + ") ;
             
-            output_value(file, statement->C, NULL) ;
+            output_value(file, statement->C, NULL, last_routine_to_be_called) ;
             
             break;
             
@@ -275,7 +312,7 @@ static void output_statement( FILE* file, mlb_statement statement ) {
     fprintf(file, " ;\n") ;
 }
 
-static void output_value( FILE* file, cg_variable value, void* static_assignment ) {
+static void output_value( FILE* file, cg_variable value, void* static_assignment, cg_routine routine ) {
     
     if ( value == NULL ) return ;
     
@@ -291,7 +328,33 @@ static void output_value( FILE* file, cg_variable value, void* static_assignment
     
     if ( !value->is_literal && value->name != NULL && static_assignment == NULL && value->mlb_return_value >= 0 ) {
         
-        fprintf(file, "_returns->%s", RKString_GetString(get_routines_returns_name_from_index(value->mlb_return_value))) ;
+        RKString returns_index_string = get_routines_returns_name_from_index(value->mlb_return_value) ;
+        
+        fprintf(file, "_returns->%s", RKString_GetString(returns_index_string)) ;
+        
+        RKString_DestroyString(returns_index_string) ;
+        
+        return ;
+    }
+    
+    if ( !value->is_literal && value->name != NULL && static_assignment == NULL && value->mlb_get_return_value >= 0 ) {
+        
+        if ( routine == NULL ) {
+            
+            printf("codegen error: used a get_return before a routine is called.\n") ;
+            
+            exit(EXIT_FAILURE) ;
+        }
+        
+        RKString get_returns_index_string = get_routines_returns_name_from_index(value->mlb_get_return_value) ;
+        
+        fprintf(file, "_%s",RKString_GetString(routine->name)) ;
+        
+        fprintf(file, "_get_returns") ;
+        
+        fprintf(file, ".%s", RKString_GetString(get_returns_index_string)) ;
+        
+        RKString_DestroyString(get_returns_index_string) ;
         
         return ;
     }
@@ -344,7 +407,7 @@ static void output_collection( FILE* file, cg_variable value ) {
             
             while (node != NULL) {
                 
-                output_value(file, RKList_GetData(node), NULL) ;
+                output_value(file, RKList_GetData(node), NULL, NULL) ;
                 
                 if ( RKList_GetNextNode(node) != NULL ) fprintf(file, ",") ;
                 
@@ -574,7 +637,7 @@ static void output_variable_definition( FILE* file, cg_variable variable, int ca
         
         fprintf(file, " ") ;
         
-        output_value(file, variable, get_static_assignment(variable)) ;
+        output_value(file, variable, get_static_assignment(variable), NULL) ;
     }
 }
 
@@ -595,7 +658,7 @@ static RKString get_routines_returns_name_from_index( RKInt index ) {
     
     marshmallow_itoa(index, string) ;
     
-    RKString string_index =  RKString_NewStringFromCString(string) ;
+    RKString string_index = RKString_NewStringFromCString(string) ;
     
     RKString returns_index = RKString_AppendString(rkstr("_returns_"),string_index) ;
     

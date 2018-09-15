@@ -122,7 +122,25 @@ int main(int argc, const char **argv) {
     
     zero->is_literal = 1 ;
     
-    mlb_add_statement(mlb_external_return, main, zero, NULL, NULL) ;
+    cg_variable call = cg_new_variable(NULL, collection, -1, -1, 0, 0) ;
+    
+    call->values = RKList_NewList() ;
+    
+    call->is_literal = 1 ;
+    
+    RKList_AddToList(call->values, my_routine) ;
+    
+    cg_variable GR0 = cg_new_variable(rkstr("GR0"), i32, -1, 0, 0, 0) ;
+    
+    cg_add_variable_to_routine(call, main) ;
+    
+    cg_add_variable_to_routine(zero, main) ;
+    
+    cg_add_variable_to_routine(GR0, main) ;
+    
+    mlb_add_statement(mlb_call,main,call,NULL,NULL) ;
+    
+    mlb_add_statement(mlb_external_return, main, GR0, NULL, NULL) ;
     
     cg_give_context_to_backend(my_context, backend) ;
     
