@@ -49,7 +49,7 @@ static void output_classes( FILE* file, cg_module module, c_backend c ) ;
 
 static void output_class( FILE* file, cg_variable class, c_backend c ) ;
 
-static void output_statement( FILE* file, mlb_statement statement ) ;
+static void output_statement( FILE* file, mlb_statement statement, cg_routine* last_routine_to_be_called_ptr ) ;
 
 static void output_declarations( FILE* file, RKStore declarations, c_backend c ) ;
 
@@ -76,6 +76,8 @@ static void output_routine( FILE* file, cg_routine routine, c_backend c ) {
     RKList list = NULL ;
     
     RKList_node node = NULL ;
+    
+    cg_routine last_routine_to_be_called = NULL ;
     
     output_signature(file, routine, 0, c) ;
     
@@ -139,7 +141,7 @@ static void output_routine( FILE* file, cg_routine routine, c_backend c ) {
         
         while ( node != NULL ) {
            
-            output_statement(file, RKList_GetData(node)) ;
+            output_statement(file, RKList_GetData(node),&last_routine_to_be_called) ;
             
             node = RKList_GetNextNode(node) ;
         }
@@ -220,13 +222,11 @@ static void output_class( FILE* file, cg_variable class, c_backend c ) {
     }
 }
 
-static void output_statement( FILE* file, mlb_statement statement ) {
+static void output_statement( FILE* file, mlb_statement statement, cg_routine* last_routine_to_be_called_ptr ) {
     
     RKList list = NULL ;
     
     RKList_node node = NULL ;
-    
-    static cg_routine last_routine_to_be_called = NULL ;
     
     switch (statement->op) {
             
@@ -240,7 +240,7 @@ static void output_statement( FILE* file, mlb_statement statement ) {
             
             fprintf(file, "return ") ;
             
-            output_value(file, statement->A, NULL, last_routine_to_be_called) ;
+            output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
             
             break;
             
@@ -252,19 +252,19 @@ static void output_statement( FILE* file, mlb_statement statement ) {
                 
               node = RKList_GetFirstNode(statement->A->values) ;
                 
-              last_routine_to_be_called = RKList_GetData(node) ;
+              *last_routine_to_be_called_ptr = RKList_GetData(node) ;
             
-              fprintf(file, "%s(",RKString_GetString(last_routine_to_be_called->name)) ;
+              fprintf(file, "%s(",RKString_GetString((*last_routine_to_be_called_ptr)->name)) ;
             
               node = RKList_GetNextNode(node) ;
               
-              if ( !last_routine_to_be_called->is_external ) {
+              if ( !(*last_routine_to_be_called_ptr)->is_external ) {
                   
-                  fprintf(file, "&_%s",RKString_GetString(last_routine_to_be_called->name)) ;
+                  fprintf(file, "&_%s",RKString_GetString((*last_routine_to_be_called_ptr)->name)) ;
                   
                   fprintf(file, "_get_returns") ;
                   
-                  if ( RKStore_GetNumOfItems(last_routine_to_be_called->parameters) > 0 ) fprintf(file, ",") ;
+                  if ( RKStore_GetNumOfItems((*last_routine_to_be_called_ptr)->parameters) > 0 ) fprintf(file, ",") ;
               }
                 
               while ( node != NULL ) {
@@ -283,25 +283,25 @@ static void output_statement( FILE* file, mlb_statement statement ) {
             
         case mlb_set:
             
-            output_value(file, statement->A, NULL, last_routine_to_be_called) ;
+            output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
             
             fprintf(file, " = ") ;
             
-            output_value(file, statement->B, NULL, last_routine_to_be_called) ;
+            output_value(file, statement->B, NULL, *last_routine_to_be_called_ptr) ;
             
             break;
             
         case mlb_add:
             
-            output_value(file, statement->A, NULL, last_routine_to_be_called) ;
+            output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
             
             fprintf(file, " = ") ;
             
-            output_value(file, statement->B, NULL, last_routine_to_be_called) ;
+            output_value(file, statement->B, NULL, *last_routine_to_be_called_ptr) ;
             
             fprintf(file, " + ") ;
             
-            output_value(file, statement->C, NULL, last_routine_to_be_called) ;
+            output_value(file, statement->C, NULL, *last_routine_to_be_called_ptr) ;
             
             break;
             
