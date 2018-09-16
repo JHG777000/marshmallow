@@ -1716,9 +1716,9 @@ parse_cast:
         m_advanceN(2) ;
     }
     
-    if ( m_peek(0)->keyword == mgk(end_of_line) ) {
+    if ( m_peek(0)->keyword != mgk(pright) ) {
         
-        while ( m_peek(0)->keyword == mgk(end_of_line) ) {
+        while ( m_peek(0)->keyword != mgk(pright) ) {
             
             m_retreatN(1) ;
         }
