@@ -22,6 +22,8 @@ static cg_variable mlb_get_variable( cg_routine routine, RKString var ) {
     
     cg_variable variable = RKStore_GetItem(routine->variables, RKString_GetString(var)) ;
     
+    if ( variable == NULL ) variable = RKStore_GetItem(routine->parameters, RKString_GetString(var)) ;
+    
     if ( variable == NULL ) variable = RKStore_GetItem(routine->module->variables, RKString_GetString(var)) ;
     
     return variable ;

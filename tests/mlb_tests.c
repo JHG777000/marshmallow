@@ -92,7 +92,13 @@ int main(int argc, const char **argv) {
     
     C->value = rkstr("0") ;
     
+    cg_variable D = cg_new_variable(rkstr("D"), i32, -1, -1, 0, 0) ;
+    
+    D->value = rkstr("0") ;
+    
     cg_variable R0 = cg_new_variable(rkstr("R0"), i32, 0, -1, 0, 0) ;
+    
+    RKStore_AddItem(my_routine->parameters, D, "D") ;
     
     cg_add_variable_to_routine(A, my_routine) ;
     
@@ -108,6 +114,28 @@ int main(int argc, const char **argv) {
     
     mlb_add_statement(mlb_return, my_routine, NULL, NULL, NULL) ;
     
+    cg_variable A2 = cg_new_variable(rkstr("A"), i32, -1, -1, 0, 0) ;
+    
+    A2->value = rkstr("0") ;
+    
+    cg_variable zero2 = cg_new_variable(NULL, i32, -1, -1, 0, 0) ;
+    
+    zero2->value = rkstr("0") ;
+    
+    zero2->is_literal = 1 ;
+    
+    cg_routine main2 = cg_new_routine(rkstr("main2"), 1) ;
+    
+    cg_add_return_to_returns_in_routine(cg_new_variable(NULL,i32,-1,-1,0,0), main2) ;
+    
+    cg_add_routine_to_module(main2, my_module) ;
+    
+    main2->is_external = 1 ;
+    
+    cg_add_variable_to_routine(zero2, main2) ;
+    
+    mlb_add_statement(mlb_external_return, main2, zero2, NULL, NULL) ;
+    
     cg_routine main = cg_new_routine(rkstr("main"), 1) ;
     
     cg_add_return_to_returns_in_routine(cg_new_variable(NULL,i32,-1,-1,0,0), main) ;
@@ -116,11 +144,9 @@ int main(int argc, const char **argv) {
     
     main->is_external = 1 ;
     
-    cg_variable zero = cg_new_variable(NULL, i32, -1, -1, 0, 0) ;
+    cg_variable GR0 = cg_new_variable(rkstr("GR0"), i32, -1, 0, 0, 0) ;
     
-    zero->value = rkstr("0") ;
-    
-    zero->is_literal = 1 ;
+    cg_variable GR02 = cg_new_variable(rkstr("GR0"), i32, -1, 0, 0, 0) ;
     
     cg_variable call = cg_new_variable(NULL, collection, -1, -1, 0, 0) ;
     
@@ -130,13 +156,35 @@ int main(int argc, const char **argv) {
     
     RKList_AddToList(call->values, my_routine) ;
     
-    cg_variable GR0 = cg_new_variable(rkstr("GR0"), i32, -1, 0, 0, 0) ;
+    RKList_AddToList(call->values, GR02) ;
+    
+    cg_variable call2 = cg_new_variable(NULL, collection, -1, -1, 0, 0) ;
+    
+    call2->values = RKList_NewList() ;
+    
+    call2->is_literal = 1 ;
+    
+    RKList_AddToList(call2->values, main2) ;
+    
+    cg_variable zero = cg_new_variable(NULL, i32, -1, -1, 0, 0) ;
+    
+    zero->value = rkstr("0") ;
+    
+    zero->is_literal = 1 ;
     
     cg_add_variable_to_routine(call, main) ;
+    
+    cg_add_variable_to_routine(call2, main) ;
     
     cg_add_variable_to_routine(zero, main) ;
     
     cg_add_variable_to_routine(GR0, main) ;
+    
+    cg_add_variable_to_routine(A2, main) ;
+    
+    mlb_add_statement(mlb_call,main,call2,NULL,NULL) ;
+    
+    mlb_add_statement(mlb_set,main,A2,GR0,NULL) ;
     
     mlb_add_statement(mlb_call,main,call,NULL,NULL) ;
     
