@@ -91,6 +91,8 @@ static void output_routine( FILE* file, cg_routine routine, c_backend c ) {
         
         while ( node != NULL ) {
             
+            if ( !((cg_routine)RKList_GetData(node))->is_external ) {
+            
             fprintf(file, "struct _") ;
             
             RKString returns_type_name = get_struct_name_for_routines_returns(((cg_routine)RKList_GetData(node))->name) ;
@@ -104,6 +106,17 @@ static void output_routine( FILE* file, cg_routine routine, c_backend c ) {
             fprintf(file, "_get_returns") ;
             
             fprintf(file, " ;\n") ;
+                
+            } else if ( RKList_GetNumOfNodes(((cg_routine)RKList_GetData(node))->return_types) > 0 ) {
+                
+                output_type(file, RKList_GetData(RKList_GetFirstNode(((cg_routine)RKList_GetData(node))->return_types)), NULL) ;
+                
+                fprintf(file, "_%s",RKString_GetString(((cg_routine)RKList_GetData(node))->name)) ;
+                
+                fprintf(file, "_get_returns") ;
+                
+                fprintf(file, " ;\n") ;
+            }
             
             node = RKList_GetNextNode(node) ;
         }
@@ -253,7 +266,18 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
               node = RKList_GetFirstNode(statement->A->values) ;
                 
               *last_routine_to_be_called_ptr = RKList_GetData(node) ;
-            
+              
+              if ( (*last_routine_to_be_called_ptr)->is_external ) {
+                  
+                  if ( RKList_GetNumOfNodes((*last_routine_to_be_called_ptr)->return_types) > 0 ) {
+                      
+                      fprintf(file, "_%s",RKString_GetString((*last_routine_to_be_called_ptr)->name)) ;
+                      
+                      fprintf(file, "_get_returns = ") ;
+                      
+                  }
+              }
+                
               fprintf(file, "%s(",RKString_GetString((*last_routine_to_be_called_ptr)->name)) ;
             
               node = RKList_GetNextNode(node) ;
