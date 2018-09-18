@@ -73,13 +73,13 @@ The following is an example of what marshmallow aims to be:
 
      end function.
 
-     function template alloc(type_to_alloc) returns blank*.
+     template function alloc(type_to_alloc) returns blank*.
 
        if ( _is_ptr(type_to_alloc) ) return _init(malloc(_sizeof(_typeofptr(type_to_alloc)))).
 
        return _init(malloc(_sizeof(type_to_alloc))).
 
-     end function.
+     end template.
 
      function freer free(blank* ptr).
 

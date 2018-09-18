@@ -31,14 +31,15 @@ A = B + C ;
 _returns->_returns_0 = A ;
 return ;
 }
-_mi32 main2() {
-return 0 ;
+_mi32 main2(_mi32 B) {
+B = B + 0 ;
+return B ;
 }
 _mi32 main() {
 _mi32 _main2_get_returns ;
 struct _myroutine_returns _myroutine_get_returns ;
 _mi32 A = 0 ;
-_main2_get_returns = main2() ;
+_main2_get_returns = main2(0) ;
 A = _main2_get_returns ;
 myroutine(&_myroutine_get_returns,_main2_get_returns) ;
 return _myroutine_get_returns._returns_0 ;

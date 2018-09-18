@@ -118,6 +118,10 @@ int main(int argc, const char **argv) {
     
     A2->value = rkstr("0") ;
     
+    cg_variable B2 = cg_new_variable(rkstr("B"), i32, -1, -1, 0, 0) ;
+    
+    B2->value = rkstr("0") ;
+    
     cg_variable zero2 = cg_new_variable(NULL, i32, -1, -1, 0, 0) ;
     
     zero2->value = rkstr("0") ;
@@ -132,9 +136,13 @@ int main(int argc, const char **argv) {
     
     main2->is_external = 1 ;
     
+    RKStore_AddItem(main2->parameters, B2, "B") ;
+    
     cg_add_variable_to_routine(zero2, main2) ;
     
-    mlb_add_statement(mlb_external_return, main2, zero2, NULL, NULL) ;
+    mlb_add_statement(mlb_add, main2, B2, B2, zero2) ;
+    
+    mlb_add_statement(mlb_external_return, main2, B2, NULL, NULL) ;
     
     cg_routine main = cg_new_routine(rkstr("main"), 1) ;
     
@@ -172,11 +180,11 @@ int main(int argc, const char **argv) {
     
     zero->is_literal = 1 ;
     
+    RKList_AddToList(call2->values, zero) ;
+    
     cg_add_variable_to_routine(call, main) ;
     
     cg_add_variable_to_routine(call2, main) ;
-    
-    cg_add_variable_to_routine(zero, main) ;
     
     cg_add_variable_to_routine(GR0, main) ;
     
