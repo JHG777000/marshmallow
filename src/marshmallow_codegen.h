@@ -22,13 +22,19 @@
  
  The marshmallow codegen infrastructure will consist of:
  
- marshmallow_codegen.c -- Manage the codegen process, and provide any needed codegen APIs to the rest of the compiler.
+ marshmallow_codegen.c -- Manage the codegen process, provide support and infrastructure that are common to the intermediates,
+ provide any needed codegen APIs to the rest of the compiler, and transform the marshmallow ast to mib.
  
- marshmallow_mib.c -- Transform the marshmallow ast to mib.
+ marshmallow_mib.c -- Transform mib into mob, provide support and infrastructure for mib.
  
- marshmallow_mob.c -- Transform mib into mob, then optimize, in a high-level and platform neutral manner.
+ marshmallow_mob.c -- Optimize mob per routine, transform mob into mlb, provide support and infrastructure for mob.
  
- marshmallow_mlb.c -- Transform mob into mlb, and then transform mlb into C code, or other backend.
+ marshmallow_mlb.c -- Validate mlb, optimize mlb context wide, send mlb and the cg_context to a backend,
+ provide support and infrastructure for mlb.
+ 
+  Backend files:
+ 
+   *marshmallow_C_backend.c -- Transform mlb into C.
  
  -- marshmallow intermediate "bytecode" --
  
@@ -42,7 +48,7 @@
  
  Will also be a stack based intermediate, will be taking inspiration from WebAssembly.
  
- Will allow for high-level optimization.
+ Will allow for per routine optimization.
  
  -- marshmallow low-level bytecode --
  
@@ -97,7 +103,7 @@ typedef struct mlb_statement_s* mlb_statement ;
 
 typedef marshmallow_root_type cg_root_type ; //mib and the other intermediates will only use a subset
 
-typedef enum {cg_entity_variable,cg_entity_mlb_statement,cg_entity_statement,cg_entity_routine,cg_entity_module,cg_entity_context} cg_entity_type;
+typedef enum {cg_entity_variable,cg_entity_mlb_statement,cg_entity_statement,cg_entity_routine,cg_entity_module,cg_entity_context} cg_entity_type ;
 
 struct cg_context_s { cg_entity_type entity_type ; RKStore modules ; RKStore definitions ; } ;
 
@@ -145,7 +151,7 @@ typedef enum { marshmallow_C_backend } codegen_backend_type ;
 
 struct codegen_backend_s { void* backend_ptr ; FILE* output_file ; cg_callback_for_pointer_size size_callback ;
     
-cg_callback_for_context context_callback ; cg_callback_for_builder builder_callback ; cg_callback_for_destroyer destroyer_callback ; };
+cg_callback_for_context context_callback ; cg_callback_for_builder builder_callback ; cg_callback_for_destroyer destroyer_callback ; } ;
 
 codegen_backend codegen_new_backend( codegen_backend_type backend_type, FILE* out_file ) ;
 

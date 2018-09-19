@@ -333,6 +333,244 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
+        case mlb_sub:
+            
+            output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " = ") ;
+            
+            output_value(file, statement->B, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " - ") ;
+            
+            output_value(file, statement->C, NULL, *last_routine_to_be_called_ptr) ;
+            
+            break;
+            
+        case mlb_mult:
+            
+            output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " = ") ;
+            
+            output_value(file, statement->B, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " * ") ;
+            
+            output_value(file, statement->C, NULL, *last_routine_to_be_called_ptr) ;
+            
+            break;
+            
+        case mlb_div:
+            
+            output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " = ") ;
+            
+            output_value(file, statement->B, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " / ") ;
+            
+            output_value(file, statement->C, NULL, *last_routine_to_be_called_ptr) ;
+            
+            break;
+            
+        case mlb_rem:
+            
+            output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " = ") ;
+            
+            output_value(file, statement->B, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " %% ") ;
+            
+            output_value(file, statement->C, NULL, *last_routine_to_be_called_ptr) ;
+            
+            break;
+            
+        case mlb_rshift:
+            
+            output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " = ") ;
+            
+            output_value(file, statement->B, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " >> ") ;
+            
+            output_value(file, statement->C, NULL, *last_routine_to_be_called_ptr) ;
+            
+            break;
+            
+        case mlb_lshift:
+            
+            output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " = ") ;
+            
+            output_value(file, statement->B, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " << ") ;
+            
+            output_value(file, statement->C, NULL, *last_routine_to_be_called_ptr) ;
+            
+            break;
+            
+        case mlb_and:
+            
+            output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " = ") ;
+            
+            output_value(file, statement->B, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " & ") ;
+            
+            output_value(file, statement->C, NULL, *last_routine_to_be_called_ptr) ;
+            
+            break;
+            
+        case mlb_or:
+            
+            output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " = ") ;
+            
+            output_value(file, statement->B, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " | ") ;
+            
+            output_value(file, statement->C, NULL, *last_routine_to_be_called_ptr) ;
+            
+            break;
+            
+        case mlb_xor:
+            
+            output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " = ") ;
+            
+            output_value(file, statement->B, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " ^ ") ;
+            
+            output_value(file, statement->C, NULL, *last_routine_to_be_called_ptr) ;
+            
+            break;
+            
+        case mlb_logic_and:
+            
+            output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " = ") ;
+            
+            output_value(file, statement->B, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " && ") ;
+            
+            output_value(file, statement->C, NULL, *last_routine_to_be_called_ptr) ;
+            
+            break;
+            
+        case mlb_logic_or:
+            
+            output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " = ") ;
+            
+            output_value(file, statement->B, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " || ") ;
+            
+            output_value(file, statement->C, NULL, *last_routine_to_be_called_ptr) ;
+            
+            break;
+            
+        case mlb_equals:
+            
+            output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " = ") ;
+            
+            output_value(file, statement->B, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " == ") ;
+            
+            output_value(file, statement->C, NULL, *last_routine_to_be_called_ptr) ;
+            
+            break;
+            
+        case mlb_not_equals:
+            
+            output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " = ") ;
+            
+            output_value(file, statement->B, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " != ") ;
+            
+            output_value(file, statement->C, NULL, *last_routine_to_be_called_ptr) ;
+            
+            break;
+            
+        case mlb_greaterthan:
+            
+            output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " = ") ;
+            
+            output_value(file, statement->B, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " > ") ;
+            
+            output_value(file, statement->C, NULL, *last_routine_to_be_called_ptr) ;
+            
+            break;
+            
+        case mlb_lessthan:
+            
+            output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " = ") ;
+            
+            output_value(file, statement->B, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " < ") ;
+            
+            output_value(file, statement->C, NULL, *last_routine_to_be_called_ptr) ;
+            
+            break;
+            
+        case mlb_greaterthan_or_equals:
+            
+            output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " = ") ;
+            
+            output_value(file, statement->B, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " >= ") ;
+            
+            output_value(file, statement->C, NULL, *last_routine_to_be_called_ptr) ;
+            
+            break;
+            
+        case mlb_lessthan_or_equals:
+            
+            output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " = ") ;
+            
+            output_value(file, statement->B, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " <= ") ;
+            
+            output_value(file, statement->C, NULL, *last_routine_to_be_called_ptr) ;
+            
+            break;
+            
         default:
             break;
     }
