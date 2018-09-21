@@ -287,7 +287,7 @@ void mlb_validate_statement( mlb_statement statement ) {
             
        case mlb_cast:
             
-            if (statement->A == NULL || statement->B == NULL || statement->C != NULL) {
+            if (statement->A == NULL || statement->B == NULL || statement->C == NULL) {
                 
                 printf("codegen error: failed to validate a mlb statement.\n") ;
                 

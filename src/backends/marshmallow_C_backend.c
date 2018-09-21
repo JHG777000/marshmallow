@@ -319,6 +319,42 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
+        case mlb_deref:
+            
+            output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " = *") ;
+            
+            output_value(file, statement->B, NULL, *last_routine_to_be_called_ptr) ;
+            
+            break;
+            
+        case mlb_addrof:
+            
+            output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " = &") ;
+            
+            output_value(file, statement->B, NULL, *last_routine_to_be_called_ptr) ;
+            
+            break;
+            
+        case mlb_cast:
+            
+            output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " = ") ;
+            
+            fprintf(file, " ( ") ;
+            
+            output_value(file, statement->B, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " ) ") ;
+            
+            output_value(file, statement->C, NULL, *last_routine_to_be_called_ptr) ;
+            
+            break;
+            
         case mlb_add:
             
             output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
