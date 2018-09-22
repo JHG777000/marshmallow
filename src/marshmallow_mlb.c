@@ -333,6 +333,8 @@ void mlb_validate_statement( mlb_statement statement ) {
             
             
         case mlb_set:
+        case mlb_not:
+        case mlb_logic_not:
         case mlb_array_copy:
             
             if (statement->A == NULL || statement->B == NULL || statement->A->type != statement->B->type || statement->C != NULL) {
