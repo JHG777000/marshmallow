@@ -284,6 +284,20 @@ void mlb_validate_statement( mlb_statement statement ) {
             }
             
       break;
+       
+        case mlb_array_copy:
+            
+            if (statement->A == NULL || statement->B == NULL || statement->A->type != statement->B->type
+                || statement->A->type != array || statement->A->ptr == NULL || statement->B->ptr == NULL
+                || statement->A->num_of_elements <= 0 || statement->A->num_of_elements != statement->B->num_of_elements
+                || statement->C != NULL) {
+                
+                printf("codegen error: failed to validate a mlb statement.\n") ;
+                
+                exit(EXIT_FAILURE) ;
+            }
+            
+            break;
             
        case mlb_cast:
             
@@ -298,7 +312,7 @@ void mlb_validate_statement( mlb_statement statement ) {
             
        case mlb_sizeof:
             
-            if (statement->A == NULL || statement->B == NULL || statement->A->type != pointer || statement->C != NULL) {
+            if (statement->A == NULL || statement->B == NULL || statement->A->type != ptrsize || statement->C != NULL) {
                 
                 printf("codegen error: failed to validate a mlb statement.\n") ;
                 
@@ -335,7 +349,6 @@ void mlb_validate_statement( mlb_statement statement ) {
         case mlb_set:
         case mlb_not:
         case mlb_logic_not:
-        case mlb_array_copy:
             
             if (statement->A == NULL || statement->B == NULL || statement->A->type != statement->B->type || statement->C != NULL) {
                 
@@ -346,6 +359,17 @@ void mlb_validate_statement( mlb_statement statement ) {
             
         break;
         
+        case mlb_external_return:
+            
+            if (statement->A == NULL || statement->B != NULL || statement->C != NULL || !statement->routine->is_external) {
+                
+                printf("codegen error: failed to validate a mlb statement.\n") ;
+                
+                exit(EXIT_FAILURE) ;
+            }
+            
+            break;
+            
         case mlb_if:
         case mlb_else_if:
         case mlb_while:
@@ -353,7 +377,6 @@ void mlb_validate_statement( mlb_statement statement ) {
         case mlb_goto:
         case mlb_section:
         case mlb_call:
-        case mlb_external_return:
             
             if (statement->A == NULL || statement->B != NULL || statement->C != NULL) {
                 

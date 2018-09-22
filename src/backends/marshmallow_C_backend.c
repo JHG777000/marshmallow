@@ -284,6 +284,72 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
+        case mlb_if:
+            
+            fprintf(file, "if (") ;
+            
+            output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, ") {") ;
+            
+            break;
+            
+        case mlb_else_if:
+            
+            fprintf(file, "} else if (") ;
+            
+            output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, ") {") ;
+            
+            break;
+            
+        case mlb_while:
+            
+            fprintf(file, "while (") ;
+            
+            output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, ") {") ;
+            
+            break;
+            
+        case mlb_switch:
+            
+            fprintf(file, "switch (") ;
+            
+            output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, ") {") ;
+            
+            break;
+            
+        case mlb_case:
+            
+            fprintf(file, "case") ;
+            
+            output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, ":") ;
+            
+            break;
+            
+        case mlb_section:
+            
+            output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, ":") ;
+            
+            break;
+            
+        case mlb_goto:
+            
+            fprintf(file, "goto ") ;
+            
+            output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
+            
+            break;
+            
         case mlb_external_return:
             
             fprintf(file, "return ") ;
@@ -352,6 +418,18 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
+        case mlb_sizeof:
+            
+            output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, " = sizeof(") ;
+            
+            output_value(file, statement->B, NULL, *last_routine_to_be_called_ptr) ;
+            
+            fprintf(file, ")") ;
+            
+            break;
+            
         case mlb_not:
             
             output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
@@ -400,7 +478,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             fprintf(file, " ( ") ;
             
-            output_value(file, statement->B, NULL, *last_routine_to_be_called_ptr) ;
+            output_type(file, statement->B, NULL) ;
             
             fprintf(file, " ) ") ;
             
@@ -880,7 +958,7 @@ loop:
                 
                 break;
                 
-            case pointer:
+            case ptrsize:
                 
                 fprintf(file, "_mu64 ") ;
                 
@@ -1330,7 +1408,7 @@ new_backend(C) {
     
     src->ptr = cg_new_variable(rkstr(""), blank, -1, -1, 0, 0) ;
     
-    cg_variable n = cg_new_variable(rkstr("n"), pointer, -1, -1, 0, 0) ;
+    cg_variable n = cg_new_variable(rkstr("n"), ptrsize, -1, -1, 0, 0) ;
     
     cg_add_parameter_to_routine(dest, memcpy_routine) ;
     
