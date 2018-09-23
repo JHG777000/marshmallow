@@ -261,9 +261,9 @@ void mlb_validate_statement( mlb_statement statement ) {
       case mlb_class_access:
       
             if (statement->A == NULL || statement->B == NULL || statement->C == NULL || statement->C->value == NULL || statement->B->type != class
-                || statement->B->class_values == NULL
-                || RKStore_GetItem(statement->B->class_values, RKString_GetString(statement->C->value)) == NULL
-                || statement->A->type != ((cg_variable)RKStore_GetItem(statement->B->class_values, RKString_GetString(statement->C->value)))->type) {
+                || statement->B->ptr == NULL || statement->B->ptr->class_values == NULL
+                || RKStore_GetItem(statement->B->ptr->class_values, RKString_GetString(statement->C->value)) == NULL
+                || statement->A->type != ((cg_variable)RKStore_GetItem(statement->B->ptr->class_values, RKString_GetString(statement->C->value)))->type) {
                 
                 printf("codegen error: failed to validate a mlb statement.\n") ;
                 

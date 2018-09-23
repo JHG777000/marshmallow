@@ -73,7 +73,7 @@ void marshmallow_##name##_backend_func(codegen_backend backend) ;\
 marshmallow_##name##_backend_func(backend) ;\
 }
 
-#define get_backend_type(name) marshmallow_##name##_backend
+#define get_backend(name) marshmallow_##name##_backend
 
 #define new_backend(name) void marshmallow_##name##_backend_func(codegen_backend backend)
 

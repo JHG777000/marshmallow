@@ -22,7 +22,7 @@ int main(int argc, const char **argv) {
 
     FILE* output_file = fopen(argv[2], "w") ;
     
-    codegen_backend backend = codegen_new_backend(get_backend_type(C),output_file) ;
+    codegen_backend backend = codegen_new_backend(get_backend(C),output_file) ;
     
     cg_context my_context = cg_new_context() ;
     
@@ -107,6 +107,14 @@ int main(int argc, const char **argv) {
     cg_add_variable_to_routine(C, my_routine) ;
     
     cg_add_variable_to_routine(R0, my_routine) ;
+    
+    cg_variable class_element = cg_new_variable(NULL, i8, -1, -1, 0, 0) ;
+    
+    class_element->value = rkstr("var_a") ;
+    
+    class_element->is_literal = 1 ;
+    
+    mlb_add_statement(mlb_class_access, my_routine, B, F, class_element) ;
     
     mlb_add_statement(mlb_add, my_routine, A, B, C) ;
     

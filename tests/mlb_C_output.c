@@ -27,6 +27,7 @@ void myroutine(struct _myroutine_returns* _returns,_mi32 D) {
 _mi32 A = 0 ;
 _mi32 B = 0 ;
 _mi32 C = 0 ;
+B = F.var_a ;
 A = B + C ;
 _returns->_returns_0 = A ;
 return ;
