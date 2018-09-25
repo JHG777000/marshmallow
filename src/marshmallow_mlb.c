@@ -258,7 +258,7 @@ void mlb_validate_statement( mlb_statement statement ) {
     
     switch (statement->op) {
        
-      case mlb_class_access:
+      case mlb_class_access_get:
       
             if (statement->A == NULL || statement->B == NULL || statement->C == NULL || statement->C->value == NULL || statement->B->type != class
                 || statement->B->ptr == NULL || statement->B->ptr->class_values == NULL
@@ -272,7 +272,7 @@ void mlb_validate_statement( mlb_statement statement ) {
             
       break;
             
-      case mlb_array_index:
+      case mlb_array_index_get:
             
             if (statement->A == NULL || statement->B == NULL || statement->C == NULL || statement->B->type != array || statement->B->ptr == NULL
                 || statement->A->type != ((cg_variable)statement->B->ptr)->type

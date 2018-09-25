@@ -114,7 +114,7 @@ int main(int argc, const char **argv) {
     
     class_element->is_literal = 1 ;
     
-    mlb_add_statement(mlb_class_access, my_routine, B, F, class_element) ;
+    mlb_add_statement(mlb_class_access_get, my_routine, B, F, class_element) ;
     
     mlb_add_statement(mlb_add, my_routine, A, B, C) ;
     
