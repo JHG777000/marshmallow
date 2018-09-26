@@ -807,6 +807,15 @@ static void output_value( FILE* file, cg_variable value, void* static_assignment
     
     if ( value->type == character ) fprintf(file, "L\'") ;
     
+    if ( value->class_element != NULL ) {
+        
+        output_value(file, value->ptr, NULL, routine) ;
+        
+        fprintf(file, ".") ;
+        
+        fprintf(file, "%s", RKString_GetString(value->class_element)) ;
+    }
+ 
     if ( !value->is_literal && value->name != NULL && static_assignment == NULL && value->mlb_return_value >= 0 ) {
         
         RKString returns_index_string = get_routines_returns_name_from_index(value->mlb_return_value) ;

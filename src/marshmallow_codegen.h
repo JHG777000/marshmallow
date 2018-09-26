@@ -119,7 +119,7 @@ RKList mlb_code ; RKStack data_stack ; RKStack op_stack ; cg_module module ; }  
 
 struct cg_variable_s { cg_entity_type entity_type ; RKString name ; cg_root_type type ; RKString value ; RKList values ; RKStore class_values ;
 
-int mlb_return_value ; int mlb_get_return_value ; cg_variable ptr ; RKULong num_of_elements ;
+int mlb_return_value ; int mlb_get_return_value ; cg_variable ptr ; RKULong num_of_elements ; int index ; RKString class_element ;
     
 int is_global ; int is_literal ; int is_temporary ; } ;
 

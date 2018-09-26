@@ -110,11 +110,13 @@ int main(int argc, const char **argv) {
     
     cg_variable class_element = cg_new_variable(NULL, i8, -1, -1, 0, 0) ;
     
-    class_element->value = rkstr("var_a") ;
+    class_element->class_element = rkstr("var_a") ;
     
     class_element->is_literal = 1 ;
     
-    mlb_add_statement(mlb_class_access_get, my_routine, B, F, class_element) ;
+    class_element->ptr = F ;
+    
+    mlb_add_statement(mlb_set, my_routine, B, class_element, NULL) ;
     
     mlb_add_statement(mlb_add, my_routine, A, B, C) ;
     

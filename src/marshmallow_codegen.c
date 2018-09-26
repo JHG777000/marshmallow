@@ -1943,6 +1943,10 @@ cg_variable cg_new_variable( RKString name, cg_root_type type, int mlb_return_va
     
     variable->ptr = NULL ;
     
+    variable->class_element = NULL ;
+    
+    variable->index = -1 ;
+    
     return variable ;
 }
 
