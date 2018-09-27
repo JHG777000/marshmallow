@@ -125,9 +125,9 @@ int is_global ; int is_literal ; int is_temporary ; } ;
 
 typedef enum { mlb_set, mlb_add, mlb_sub, mlb_mult, mlb_div, mlb_rem, mlb_rshift, mlb_lshift, mlb_and, mlb_or, mlb_xor,
     
-mlb_not, mlb_logic_and, mlb_logic_or, mlb_logic_not, mlb_deref, mlb_addrof, mlb_sizeof, mlb_cast, mlb_array_index_set, mlb_array_index_get,
+mlb_not, mlb_logic_and, mlb_logic_or, mlb_logic_not, mlb_deref, mlb_addrof, mlb_sizeof, mlb_cast, mlb_array_copy, mlb_if,
     
-mlb_array_copy, mlb_class_access_set, mlb_class_access_get, mlb_if, mlb_endif, mlb_else, mlb_else_if, mlb_while, mlb_endwhile, mlb_break, mlb_continue,
+mlb_endif, mlb_else, mlb_else_if, mlb_while, mlb_endwhile, mlb_break, mlb_continue,
     
 mlb_switch, mlb_endswitch, mlb_case, mlb_endcase, mlb_default, mlb_goto, mlb_section, mlb_equals, mlb_not_equals,
     

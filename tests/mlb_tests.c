@@ -46,7 +46,7 @@ int main(int argc, const char **argv) {
     
     cg_variable var_d = cg_new_variable(rkstr("var_d"), array, -1, -1, 10, 0) ;
     
-    var_d->ptr = cg_new_variable(NULL, u32, -1, -1, 0, 0) ;
+    var_d->ptr = cg_new_variable(NULL, i32, -1, -1, 0, 0) ;
     
     RKStore_AddItem(my_class->class_values, var_a, RKString_GetString(var_a->name)) ;
     
@@ -110,13 +110,21 @@ int main(int argc, const char **argv) {
     
     cg_variable class_element = cg_new_variable(NULL, i8, -1, -1, 0, 0) ;
     
-    class_element->class_element = rkstr("var_a") ;
+    class_element->class_element = rkstr("var_d") ;
     
     class_element->is_literal = 1 ;
     
     class_element->ptr = F ;
     
-    mlb_add_statement(mlb_set, my_routine, B, class_element, NULL) ;
+    cg_variable array_element = cg_new_variable(NULL, i8, -1, -1, 0, 0) ;
+    
+    array_element->index = 1 ;
+    
+    array_element->is_literal = 1 ;
+    
+    array_element->ptr = class_element ;
+    
+    mlb_add_statement(mlb_set, my_routine, B, array_element, NULL) ;
     
     mlb_add_statement(mlb_add, my_routine, A, B, C) ;
     

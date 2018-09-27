@@ -15,7 +15,7 @@ typedef unsigned long _mu64 ;
 #endif
 
 struct myclass ; 
-struct myclass { _mi32 var_a ; _mi64 var_b ; _mu64 var_c ; _mu32 var_d[10] ; } ;
+struct myclass { _mi32 var_a ; _mi64 var_b ; _mu64 var_c ; _mi32 var_d[10] ; } ;
 extern _mi32 E ;
 extern struct myclass F ;
 struct _myroutine_returns { _mi32 _returns_0 ; _mi32 _returns_1 ; } ;
@@ -27,7 +27,7 @@ void myroutine(struct _myroutine_returns* _returns,_mi32 D) {
 _mi32 A = 0 ;
 _mi32 B = 0 ;
 _mi32 C = 0 ;
-B = F.var_a ;
+B = F.var_d[1] ;
 A = B + C ;
 _returns->_returns_0 = A ;
 return ;

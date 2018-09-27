@@ -181,7 +181,22 @@ void mlb_validate_variable( cg_variable variable ) {
     
     if ( variable->entity_type != cg_entity_variable ) return ;
     
-    if ( (variable->mlb_return_value > 0 && variable->mlb_get_return_value > 0) ) {
+    if ( variable->class_element != NULL && variable->index >= 0 ) {
+        
+        printf("codegen error: failed to validate a cg variable.\n") ;
+        
+        exit(EXIT_FAILURE) ;
+    }
+    
+    if ( (variable->mlb_return_value >= 0 && variable->mlb_get_return_value >= 0) ) {
+        
+        printf("codegen error: failed to validate a cg variable.\n") ;
+        
+        exit(EXIT_FAILURE) ;
+    }
+    
+    if ( variable->ptr == NULL && (variable->type == ptr || variable->type == array || variable->type == class
+        || variable->class_element != NULL || variable->index >= 0)) {
         
         printf("codegen error: failed to validate a cg variable.\n") ;
         
@@ -249,6 +264,31 @@ void mlb_validate_variable( cg_variable variable ) {
     }
 }
 
+static cg_variable mlb_get_var( cg_variable variable ) {
+    
+    if ( variable->class_element != NULL ) {
+        
+        return mlb_get_var(((cg_variable)RKStore_GetItem(variable->ptr->ptr->class_values, RKString_GetString(variable->class_element)))) ;
+    }
+    
+    if ( variable->index >= 0 ) {
+        
+        return mlb_get_var(variable->ptr) ;
+    }
+    
+    return variable ;
+}
+
+static cg_variable mlb_get_array( cg_variable variable ) {
+    
+    if ( variable->type == array ) {
+        
+        return variable->ptr ;
+    }
+    
+    return variable ;
+}
+
 void mlb_validate_statement( mlb_statement statement ) {
     
     if ( statement->A != NULL ) mlb_validate_variable(statement->A) ;
@@ -259,38 +299,12 @@ void mlb_validate_statement( mlb_statement statement ) {
     
     switch (statement->op) {
        
-      case mlb_class_access_get:
-      
-            if (statement->A == NULL || statement->B == NULL || statement->C == NULL || statement->C->value == NULL || statement->B->type != class
-                || statement->B->ptr == NULL || statement->B->ptr->class_values == NULL
-                || RKStore_GetItem(statement->B->ptr->class_values, RKString_GetString(statement->C->value)) == NULL
-                || statement->A->type != ((cg_variable)RKStore_GetItem(statement->B->ptr->class_values, RKString_GetString(statement->C->value)))->type) {
-                
-                printf("codegen error: failed to validate a mlb statement.\n") ;
-                
-                exit(EXIT_FAILURE) ;
-            }
-            
-      break;
-            
-      case mlb_array_index_get:
-            
-            if (statement->A == NULL || statement->B == NULL || statement->C == NULL || statement->B->type != array || statement->B->ptr == NULL
-                || statement->A->type != ((cg_variable)statement->B->ptr)->type
-                || !(statement->C->type == u32 || statement->C->type == u64) ) {
-                
-                printf("codegen error: failed to validate a mlb statement.\n") ;
-                
-                exit(EXIT_FAILURE) ;
-            }
-            
-      break;
-       
         case mlb_array_copy:
             
-            if (statement->A == NULL || statement->B == NULL || statement->A->type != statement->B->type
-                || statement->A->type != array || statement->A->ptr == NULL || statement->B->ptr == NULL
-                || statement->A->num_of_elements <= 0 || statement->A->num_of_elements != statement->B->num_of_elements
+            if (statement->A == NULL || statement->B == NULL || mlb_get_var(statement->A)->type != mlb_get_var(statement->B)->type
+                || mlb_get_var(statement->A)->type != array || mlb_get_var(statement->A)->ptr == NULL || mlb_get_var(statement->B)->ptr == NULL
+                || mlb_get_var(statement->A)->num_of_elements <= 0
+                || mlb_get_var(statement->A)->num_of_elements != mlb_get_var(statement->B)->num_of_elements
                 || statement->C != NULL) {
                 
                 printf("codegen error: failed to validate a mlb statement.\n") ;
@@ -313,7 +327,7 @@ void mlb_validate_statement( mlb_statement statement ) {
             
        case mlb_sizeof:
             
-            if (statement->A == NULL || statement->B == NULL || statement->A->type != ptrsize || statement->C != NULL) {
+            if (statement->A == NULL || statement->B == NULL || mlb_get_var(statement->A)->type != ptrsize || statement->C != NULL) {
                 
                 printf("codegen error: failed to validate a mlb statement.\n") ;
                 
@@ -324,8 +338,8 @@ void mlb_validate_statement( mlb_statement statement ) {
             
         case mlb_deref:
             
-            if (statement->A == NULL || statement->B == NULL || statement->B->type != ptr || statement->B->ptr == NULL
-                || statement->A->type != ((cg_variable)statement->B->ptr)->type || statement->C != NULL) {
+            if (statement->A == NULL || statement->B == NULL || mlb_get_var(statement->B)->type != ptr || mlb_get_var(statement->B)->ptr == NULL
+                || mlb_get_var(statement->A)->type != ((cg_variable)mlb_get_var(statement->B)->ptr)->type || statement->C != NULL) {
                 
                 printf("codegen error: failed to validate a mlb statement.\n") ;
                 
@@ -336,8 +350,8 @@ void mlb_validate_statement( mlb_statement statement ) {
             
         case mlb_addrof:
             
-            if (statement->A == NULL || statement->B == NULL || statement->A->ptr == NULL || statement->A->type != ptr
-                || ((cg_variable)statement->A->ptr)->type != statement->B->type || statement->C != NULL) {
+            if (statement->A == NULL || statement->B == NULL || mlb_get_var(statement->A)->ptr == NULL || mlb_get_var(statement->A)->type != ptr
+                || ((cg_variable)mlb_get_var(statement->A)->ptr)->type != mlb_get_var(statement->B)->type || statement->C != NULL) {
                 
                 printf("codegen error: failed to validate a mlb statement.\n") ;
                 
@@ -351,11 +365,13 @@ void mlb_validate_statement( mlb_statement statement ) {
         case mlb_not:
         case mlb_logic_not:
             
-            if (statement->A == NULL || statement->B == NULL || statement->A->type != statement->B->type || statement->C != NULL) {
+            if (statement->A == NULL || statement->B == NULL
+                || mlb_get_array(mlb_get_var(statement->A))->type != mlb_get_array(mlb_get_var(statement->B))->type
+                || statement->C != NULL) {
                 
-                //printf("codegen error: failed to validate a mlb statement.\n") ;
+                printf("codegen error: failed to validate a mlb statement.\n") ;
                 
-                //exit(EXIT_FAILURE) ;
+                exit(EXIT_FAILURE) ;
             }
             
         break;
@@ -411,7 +427,8 @@ void mlb_validate_statement( mlb_statement statement ) {
         default:
             
             if (statement->A == NULL || statement->B == NULL || statement->C == NULL
-                || statement->A->type != statement->B->type || statement->A->type != statement->C->type) {
+                || mlb_get_var(statement->A)->type != mlb_get_var(statement->B)->type
+                || mlb_get_var(statement->A)->type != mlb_get_var(statement->C)->type) {
                 
                 printf("codegen error: failed to validate a mlb statement.\n") ;
                 

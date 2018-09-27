@@ -488,7 +488,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case mlb_array_index_get:
+        /*case mlb_array_index_get:
             
             output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
             
@@ -502,21 +502,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             fprintf(file, "]") ;
             
-            break;
-            
-        case mlb_class_access_get:
-            
-            output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
-            
-            fprintf(file, " = ") ;
-            
-            output_value(file, statement->B, NULL, *last_routine_to_be_called_ptr) ;
-            
-            fprintf(file, ".") ;
-            
-            output_value(file, statement->C, NULL, *last_routine_to_be_called_ptr) ;
-            
-            break;
+            break;*/
             
         case mlb_cast:
             
@@ -795,6 +781,8 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
 
 static void output_value( FILE* file, cg_variable value, void* static_assignment, cg_routine routine ) {
     
+    char val[100] ;
+    
     if ( value == NULL ) return ;
     
     if ( value->type == string ) fprintf(file, "u8\"") ;
@@ -814,6 +802,19 @@ static void output_value( FILE* file, cg_variable value, void* static_assignment
         fprintf(file, ".") ;
         
         fprintf(file, "%s", RKString_GetString(value->class_element)) ;
+    }
+    
+    if ( value->index >= 0 ) {
+        
+        output_value(file, value->ptr, NULL, routine) ;
+        
+        marshmallow_uitoa(value->index, val) ;
+        
+        fprintf(file, "[") ;
+        
+        fprintf(file, "%s", val) ;
+        
+        fprintf(file, "]") ;
     }
  
     if ( !value->is_literal && value->name != NULL && static_assignment == NULL && value->mlb_return_value >= 0 ) {
