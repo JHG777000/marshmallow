@@ -2035,3 +2035,21 @@ loop:
     
     return 1 ;
 }
+
+cg_variable cg_new_class( RKString class_name, cg_module module ) {
+    
+    cg_variable new_class = cg_new_variable(class_name, class, -1, -1, 0, 0) ;
+    
+    new_class->value = rkstr("myclass") ;
+    
+    new_class->class_values = RKStore_NewStore() ;
+    
+    cg_add_class_to_module(new_class, module) ;
+    
+    return new_class ;
+}
+
+void cg_add_class_element( cg_variable element, cg_variable class ) {
+    
+    RKStore_AddItem(class->class_values, element, RKString_GetString(element->name)) ;
+}

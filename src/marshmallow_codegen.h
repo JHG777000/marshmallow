@@ -195,6 +195,10 @@ void cg_destroy_variable( cg_variable variable ) ;
 
 int cg_variables_are_equal( cg_variable a, cg_variable b ) ;
 
+cg_variable cg_new_class( RKString class_name, cg_module module ) ;
+
+void cg_add_class_element( cg_variable element, cg_variable class ) ;
+
 mlb_statement mlb_add_statement( mlb_op_type op, cg_routine routine, cg_variable A, cg_variable B, cg_variable C ) ;
 
 void mlb_destroy_statement( mlb_statement statement ) ;
