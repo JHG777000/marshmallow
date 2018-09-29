@@ -2053,3 +2053,29 @@ void cg_add_class_element( cg_variable element, cg_variable class ) {
     
     RKStore_AddItem(class->class_values, element, RKString_GetString(element->name)) ;
 }
+
+cg_variable cg_get_class_element( RKString element, cg_variable class_var ) {
+    
+    cg_variable class_element = cg_new_variable(NULL, i8, -1, -1, 0, 0) ;
+    
+    class_element->class_element = element ;
+    
+    class_element->is_literal = 1 ;
+    
+    class_element->ptr = class_var ;
+    
+    return class_element ;
+}
+
+cg_variable cg_get_array_index( int index, cg_variable array_var ) {
+    
+    cg_variable array_index = cg_new_variable(NULL, i8, -1, -1, 0, 0) ;
+    
+    array_index->index = index ;
+    
+    array_index->is_literal = 1 ;
+    
+    array_index->ptr = array_var ;
+    
+    return array_index ;
+}

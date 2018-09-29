@@ -199,6 +199,10 @@ cg_variable cg_new_class( RKString class_name, cg_module module ) ;
 
 void cg_add_class_element( cg_variable element, cg_variable class ) ;
 
+cg_variable cg_get_class_element( RKString element, cg_variable class_var ) ;
+
+cg_variable cg_get_array_index( int index, cg_variable array_var ) ;
+
 mlb_statement mlb_add_statement( mlb_op_type op, cg_routine routine, cg_variable A, cg_variable B, cg_variable C ) ;
 
 void mlb_destroy_statement( mlb_statement statement ) ;
