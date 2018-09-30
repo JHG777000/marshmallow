@@ -1341,10 +1341,14 @@ static void output_module( FILE* file, cg_context context,  c_backend c, cg_modu
         
         while (node != NULL) {
             
-            output_variable_definition(file, RKList_GetData(node), 1, c, 0) ;
+            if ( !((cg_variable)RKList_GetData(node))->is_literal ) {
             
-            fprintf(file, " ;\n") ;
+             output_variable_definition(file, RKList_GetData(node), 1, c, 0) ;
             
+             fprintf(file, " ;\n") ;
+            
+            }
+                
             node = RKList_GetNextNode(node) ;
             
         }

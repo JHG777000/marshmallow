@@ -27,6 +27,14 @@ void myroutine(struct _myroutine_returns* _returns,_mi32 D) {
 _mi32 A = 0 ;
 _mi32 B = 0 ;
 _mi32 C = 0 ;
+_mu32 X = 0 ;
+_mu64 Y = 0 ;
+_mi32 Z[10] ;
+X =  ( _mu32  ) A ;
+Y = sizeof(A) ;
+B =  ( _mi32  ) Y ;
+Z[1] = A ;
+memcpy(F.var_d,Z,sizeof(Z)) ;
 B = F.var_d[1] ;
 A = B + C ;
 _returns->_returns_0 = A ;

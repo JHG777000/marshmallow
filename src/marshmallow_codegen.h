@@ -113,7 +113,7 @@ RKStore variable_declarations ; RKStore routine_declarations ; RKStore classes ;
 
 struct cg_routine_s { cg_entity_type entity_type ; RKString name ; int is_global ; int is_external ;
     
-RKList return_types ; RKStore parameters ; RKStore variables ; RKStore calls ; RKList mib_code ; RKList mob_code ;
+RKList return_types ; RKStore parameters ; RKStore variables ; RKStore calls ; RKList mib_code ; RKList mob_code ; RKList preoptimized_mlb_code ;
     
 RKList mlb_code ; RKStack data_stack ; RKStack op_stack ; cg_module module ; }  ;
 
@@ -122,6 +122,20 @@ struct cg_variable_s { cg_entity_type entity_type ; RKString name ; cg_root_type
 int mlb_return_value ; int mlb_get_return_value ; cg_variable ptr ; RKULong num_of_elements ; int index ; RKString class_element ;
     
 int is_global ; int is_literal ; int is_temporary ; } ;
+
+typedef enum { mib_group, mib_endgroup, mib_var, mib_const, cg_assignment, mob_push,
+    
+cg_add, cg_sub, cg_mult, cg_div, cg_rem, cg_rshift, cg_lshift, cg_and, cg_or, cg_xor,
+    
+cg_not, cg_logic_and, cg_logic_or, cg_logic_not, cg_deref, cg_addrof, cg_sizeof, cg_cast, cg_array_copy, cg_if,
+    
+cg_endif, cg_else, cg_else_if, cg_while, cg_endwhile, cg_break, cg_continue,
+    
+cg_switch, cg_endswitch, cg_case, cg_endcase, cg_default, cg_goto, cg_section, cg_equals, cg_not_equals,
+    
+cg_greaterthan, cg_lessthan, cg_greaterthan_or_equals, cg_lessthan_or_equals,
+    
+cg_call, cg_return } cg_op_type ;
 
 typedef enum { mlb_set, mlb_add, mlb_sub, mlb_mult, mlb_div, mlb_rem, mlb_rshift, mlb_lshift, mlb_and, mlb_or, mlb_xor,
     
@@ -134,6 +148,8 @@ mlb_switch, mlb_endswitch, mlb_case, mlb_endcase, mlb_default, mlb_goto, mlb_sec
 mlb_greaterthan, mlb_lessthan, mlb_greaterthan_or_equals, mlb_lessthan_or_equals,
     
 mlb_call, mlb_return, mlb_external_return } mlb_op_type ;
+
+struct cg_statement_s { cg_entity_type entity_type ; cg_routine routine ; cg_op_type op ; cg_variable var ; } ;
 
 struct mlb_statement_s { cg_entity_type entity_type ; cg_routine routine ; mlb_op_type op ; cg_variable A ; cg_variable B ; cg_variable C ; } ;
 
@@ -188,6 +204,10 @@ void cg_add_parameter_to_routine( cg_variable parameter, cg_routine routine ) ;
 void cg_add_return_to_returns_in_routine( cg_variable return_type, cg_routine routine ) ;
 
 void cg_add_variable_to_routine( cg_variable variable, cg_routine routine ) ;
+
+cg_statement cg_add_statement( cg_op_type op, cg_routine routine, cg_variable var, int mib_or_mob ) ;
+
+void cg_destroy_statement( cg_statement statement ) ;
 
 cg_variable cg_new_variable( RKString name, cg_root_type type, int mlb_return_value, int mlb_get_return_value, int num_of_items, int is_global ) ;
 

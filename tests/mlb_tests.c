@@ -90,7 +90,27 @@ int main(int argc, const char **argv) {
     
     D->value = rkstr("0") ;
     
+    cg_variable X = cg_new_variable(rkstr("X"), u32, -1, -1, 0, 0) ;
+    
+    X->value = rkstr("0") ;
+    
+    cg_variable Y = cg_new_variable(rkstr("Y"), ptrsize, -1, -1, 0, 0) ;
+    
+    Y->value = rkstr("0") ;
+    
+    cg_variable Z = cg_new_variable(rkstr("Z"), array, -1, -1, 10, 0) ;
+    
+    Z->ptr = cg_new_variable(NULL, i32, -1, -1, 0, 0) ;
+    
     cg_variable R0 = cg_new_variable(rkstr("R0"), i32, 0, -1, 0, 0) ;
+    
+    cg_variable typeu32 = cg_new_variable(NULL, u32, -1, -1, 0, 0) ;
+    
+    typeu32->is_literal = 1 ;
+    
+    cg_variable typei32 = cg_new_variable(NULL, i32, -1, -1, 0, 0) ;
+    
+    typei32->is_literal = 1 ;
     
     RKStore_AddItem(my_routine->parameters, D, "D") ;
     
@@ -100,13 +120,35 @@ int main(int argc, const char **argv) {
     
     cg_add_variable_to_routine(C, my_routine) ;
     
+    cg_add_variable_to_routine(X, my_routine) ;
+    
+    cg_add_variable_to_routine(Y, my_routine) ;
+    
+    cg_add_variable_to_routine(Z, my_routine) ;
+    
     cg_add_variable_to_routine(R0, my_routine) ;
+    
+    cg_add_variable_to_routine(typeu32, my_routine) ;
+    
+    cg_add_variable_to_routine(typei32, my_routine) ;
     
     cg_variable class_element = cg_get_class_element(rkstr("var_d"), F) ;
     
     cg_variable array_index = cg_get_array_index(1, class_element) ;
     
+    cg_variable array_index2 = cg_get_array_index(1, Z) ;
+    
     cg_add_variable_to_routine(array_index, my_routine) ;
+    
+    mlb_add_statement(mlb_cast, my_routine, X, typeu32, A) ;
+    
+    mlb_add_statement(mlb_sizeof, my_routine, Y, A, NULL) ;
+    
+    mlb_add_statement(mlb_cast, my_routine, B, typei32, Y) ;
+    
+    mlb_add_statement(mlb_set, my_routine, array_index2, A, NULL) ;
+    
+    mlb_add_statement(mlb_array_copy, my_routine, class_element, Z, NULL) ;
     
     mlb_add_statement(mlb_set, my_routine, B, array_index, NULL) ;
     

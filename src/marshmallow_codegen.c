@@ -1816,6 +1816,8 @@ cg_routine cg_new_routine( RKString name, int is_global ) {
     
     routine->mlb_code = RKList_NewList() ;
     
+    routine->preoptimized_mlb_code = NULL ;
+    
     routine->data_stack = RKStack_NewStack() ;
     
     routine->op_stack = RKStack_NewStack() ;
@@ -1911,6 +1913,45 @@ void cg_add_variable_to_routine( cg_variable variable, cg_routine routine ) {
     }
     
     RKStore_AddItem(routine->variables, variable, RKString_GetString(variable->name)) ;
+}
+
+static cg_variable cg_get_variable( cg_routine routine, RKString var ) {
+    
+    cg_variable variable = RKStore_GetItem(routine->variables, RKString_GetString(var)) ;
+    
+    if ( variable == NULL ) variable = RKStore_GetItem(routine->parameters, RKString_GetString(var)) ;
+    
+    if ( variable == NULL ) variable = RKStore_GetItem(routine->module->variables, RKString_GetString(var)) ;
+    
+    return variable ;
+}
+
+cg_statement cg_add_statement( cg_op_type op, cg_routine routine, cg_variable var, int mib_or_mob ) {
+    
+    cg_statement statement = RKMem_NewMemOfType(struct cg_statement_s) ;
+    
+    statement->op = op ;
+    
+    statement->entity_type = cg_entity_statement ;
+    
+    statement->var = ( var != NULL ) ? (var->is_literal) ? var : cg_get_variable(routine, var->name) : NULL ;
+    
+    if ( !mib_or_mob && routine->mib_code == NULL ) routine->mib_code = RKList_NewList() ;
+    
+    if ( mib_or_mob && routine->mob_code == NULL ) routine->mob_code = RKList_NewList() ;
+    
+    if ( !mib_or_mob ) RKList_AddToList(routine->mib_code, statement) ;
+    
+    if ( mib_or_mob ) RKList_AddToList(routine->mob_code, statement) ;
+    
+    statement->routine = routine ;
+    
+    return statement ;
+}
+
+void cg_destroy_statement( cg_statement statement ) {
+    
+    free(statement) ;
 }
 
 cg_variable cg_new_variable( RKString name, cg_root_type type, int mlb_return_value, int mlb_get_return_value, int num_of_items, int is_global ) {
