@@ -119,11 +119,11 @@ RKList mlb_code ; RKStack data_stack ; RKStack op_stack ; cg_module module ; }  
 
 struct cg_variable_s { cg_entity_type entity_type ; RKString name ; cg_root_type type ; RKString value ; RKList values ; RKStore class_values ;
 
-int mlb_return_value ; int mlb_get_return_value ; cg_variable ptr ; RKULong num_of_elements ; int index ; RKString class_element ;
+int mlb_return_value ; int mlb_get_return_value ; int delete_ptr ; cg_variable ptr ; RKULong num_of_elements ; int index ; RKString class_element ;
     
 int is_global ; int is_literal ; int is_temporary ; } ;
 
-typedef enum { mib_group, mib_endgroup, mib_var, mib_const, cg_assignment, mob_push,
+typedef enum { mib_group, mib_endgroup, mib_var, mib_const, mob_push, cg_assignment,
     
 cg_add, cg_sub, cg_mult, cg_div, cg_rem, cg_rshift, cg_lshift, cg_and, cg_or, cg_xor,
     
@@ -222,6 +222,8 @@ void cg_add_class_element( cg_variable element, cg_variable class ) ;
 cg_variable cg_get_class_element( RKString element, cg_variable class_var ) ;
 
 cg_variable cg_get_array_index( int index, cg_variable array_var ) ;
+
+void mib_generate_mob( cg_routine routine ) ;
 
 mlb_statement mlb_add_statement( mlb_op_type op, cg_routine routine, cg_variable A, cg_variable B, cg_variable C ) ;
 

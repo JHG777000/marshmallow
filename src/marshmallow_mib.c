@@ -17,3 +17,8 @@
 
 #include "marshmallow.h"
 #include "marshmallow_codegen.h"
+
+void mib_generate_mob( cg_routine routine ) {
+    
+    
+}

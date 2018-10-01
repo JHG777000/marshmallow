@@ -1982,6 +1982,8 @@ cg_variable cg_new_variable( RKString name, cg_root_type type, int mlb_return_va
     
     variable->name = name ;
     
+    variable->delete_ptr = 1 ;
+    
     variable->ptr = NULL ;
     
     variable->class_element = NULL ;
@@ -2005,7 +2007,9 @@ void cg_destroy_variable( cg_variable variable ) {
     
     if ( variable->class_values != NULL ) RKStore_DestroyStore(variable->class_values) ;
     
-    if ( variable->ptr != NULL && variable->ptr->type != class ) cg_destroy_variable(variable->ptr) ;
+    if ( variable->class_element != NULL ) RKString_DestroyString(variable->class_element) ;
+    
+    if ( variable->ptr != NULL && variable->ptr->type != class && variable->delete_ptr ) cg_destroy_variable(variable->ptr) ;
     
     free(variable) ;
 }
@@ -2103,6 +2107,8 @@ cg_variable cg_get_class_element( RKString element, cg_variable class_var ) {
     
     class_element->is_literal = 1 ;
     
+    class_element->delete_ptr = 0 ;
+    
     class_element->ptr = class_var ;
     
     return class_element ;
@@ -2115,6 +2121,8 @@ cg_variable cg_get_array_index( int index, cg_variable array_var ) {
     array_index->index = index ;
     
     array_index->is_literal = 1 ;
+    
+    array_index->delete_ptr = 0 ;
     
     array_index->ptr = array_var ;
     

@@ -99,7 +99,7 @@ static void output_routine( FILE* file, cg_routine routine, c_backend c ) {
             
             fprintf(file, "%s ", RKString_GetString(returns_type_name)) ;
             
-            RKString_GetString(returns_type_name) ;
+            RKString_DestroyString(returns_type_name) ;
             
             fprintf(file, "_%s",RKString_GetString(((cg_routine)RKList_GetData(node))->name)) ;
             

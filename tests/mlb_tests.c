@@ -138,7 +138,11 @@ int main(int argc, const char **argv) {
     
     cg_variable array_index2 = cg_get_array_index(1, Z) ;
     
+    cg_add_variable_to_routine(class_element, my_routine) ;
+    
     cg_add_variable_to_routine(array_index, my_routine) ;
+    
+    cg_add_variable_to_routine(array_index2, my_routine) ;
     
     mlb_add_statement(mlb_cast, my_routine, X, typeu32, A) ;
     
