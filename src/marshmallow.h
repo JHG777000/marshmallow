@@ -36,7 +36,7 @@ typedef enum { noop, assignment, array_assignment, is_equal, is_not_equal, is_gr
     
 add, sub, negate, mult, mdiv, rem, not, and, or, bnot, band, bor, xor, lshift, rshift, deref, addrof, msizeof, itemsof, inc, dec, call,
     
-slifop, ifop, elseop, whileop, breakop, continueop, switchop, caseop, endcaseop, defaultop, section, gotoop, ret,
+slifop, ifop, elseop, ifelseop, whileop, breakop, continueop, switchop, caseop, endcaseop, defaultop, section, gotoop, ret,
     
 castop, reinterpretop, convertop } marshmallow_op_type ;
 

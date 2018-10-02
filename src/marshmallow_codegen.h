@@ -115,7 +115,7 @@ struct cg_routine_s { cg_entity_type entity_type ; RKString name ; int is_global
     
 RKList return_types ; RKStore parameters ; RKStore variables ; RKStore calls ; RKList mib_code ; RKList mob_code ; RKList preoptimized_mlb_code ;
     
-RKList mlb_code ; RKStack data_stack ; RKStack op_stack ; cg_module module ; }  ;
+RKList mlb_code ; cg_module module ; }  ;
 
 struct cg_variable_s { cg_entity_type entity_type ; RKString name ; cg_root_type type ; RKString value ; RKList values ; RKStore class_values ;
 
@@ -205,7 +205,7 @@ void cg_add_return_to_returns_in_routine( cg_variable return_type, cg_routine ro
 
 void cg_add_variable_to_routine( cg_variable variable, cg_routine routine ) ;
 
-cg_statement cg_add_statement( cg_op_type op, cg_routine routine, cg_variable var, int mib_or_mob ) ;
+cg_variable cg_get_variable( cg_routine routine, RKString var ) ;
 
 void cg_destroy_statement( cg_statement statement ) ;
 
@@ -224,6 +224,8 @@ cg_variable cg_get_class_element( RKString element, cg_variable class_var ) ;
 cg_variable cg_get_array_index( int index, cg_variable array_var ) ;
 
 void mib_generate_mob( cg_routine routine ) ;
+
+cg_statement mib_add_statement( cg_op_type op, cg_routine routine, cg_variable var ) ;
 
 mlb_statement mlb_add_statement( mlb_op_type op, cg_routine routine, cg_variable A, cg_variable B, cg_variable C ) ;
 

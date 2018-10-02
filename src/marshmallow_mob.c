@@ -18,51 +18,8 @@
 #include "marshmallow.h"
 #include "marshmallow_codegen.h"
 
-static void mib_process_statement( cg_routine routine, cg_statement statement, RKStack group_stack ) {
-    
-    switch (statement->op) {
-            
-        case mib_group:
-            
-            break;
-            
-        case mib_endgroup:
-            
-            break;
-            
-        case mib_var:
-        case mib_const:
-            
-            break;
-            
-        default:
-            break;
-    }
-}
 
-void mib_generate_mob( cg_routine routine ) {
-    
-    RKStack group_stack = RKStack_NewStack() ;
-    
-    RKList list = routine->mib_code ;
-    
-    RKList_node node = NULL ;
-    
-    if ( list != NULL ) {
-        
-        node = RKList_GetFirstNode(list) ;
-        
-        while ( node != NULL ) {
-            
-         mib_process_statement(routine,RKList_GetData(node),group_stack) ;
-            
-         node = RKList_GetNextNode(node) ;
-            
-        }
-    }
-}
-
-cg_statement mib_add_statement( cg_op_type op, cg_routine routine, cg_variable var ) {
+cg_statement mob_add_statement( cg_op_type op, cg_routine routine, cg_variable var ) {
     
     cg_statement statement = RKMem_NewMemOfType(struct cg_statement_s) ;
     
@@ -72,29 +29,36 @@ cg_statement mib_add_statement( cg_op_type op, cg_routine routine, cg_variable v
     
     statement->var = ( var != NULL ) ? (var->is_literal) ? var : cg_get_variable(routine, var->name) : NULL ;
     
-    if ( routine->mib_code == NULL ) routine->mib_code = RKList_NewList() ;
+    if ( routine->mib_code == NULL ) routine->mob_code = RKList_NewList() ;
     
-    RKList_AddToList(routine->mib_code, statement) ;
+    RKList_AddToList(routine->mob_code, statement) ;
     
     statement->routine = routine ;
     
-    if ( op == mib_var && var->is_literal ) {
+    if ( op == mib_group ) {
         
-        printf("codegen error: failed to validate a mib statement.\n") ;
-        
-        exit(EXIT_FAILURE) ;
-    }
-    
-    if ( op == mib_const && !var->is_literal ) {
-        
-        printf("codegen error: failed to validate a mib statement.\n") ;
+        printf("codegen error: failed to validate a mob statement.\n") ;
         
         exit(EXIT_FAILURE) ;
     }
     
-    if ( op == mob_push ) {
+    if ( op == mib_endgroup ) {
         
-        printf("codegen error: failed to validate a mib statement.\n") ;
+        printf("codegen error: failed to validate a mob statement.\n") ;
+        
+        exit(EXIT_FAILURE) ;
+    }
+    
+    if ( op == mib_var ) {
+        
+        printf("codegen error: failed to validate a mob statement.\n") ;
+        
+        exit(EXIT_FAILURE) ;
+    }
+    
+    if ( op == mib_const ) {
+        
+        printf("codegen error: failed to validate a mob statement.\n") ;
         
         exit(EXIT_FAILURE) ;
     }
