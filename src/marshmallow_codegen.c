@@ -1607,6 +1607,11 @@ static void name_mangle( cg_module module, cg_variable variable ) {
     RKString_DestroyString(name) ;
 }
 
+static void DeleteStatementInListOrStore(void* data) {
+    
+    cg_destroy_statement(data) ;
+}
+
 static void DeleteMlbStatementInListOrStore(void* data) {
     
     mlb_destroy_statement(data) ;
@@ -1816,7 +1821,9 @@ cg_routine cg_new_routine( RKString name, int is_global ) {
     
     routine->mlb_code = RKList_NewList() ;
     
-    routine->preoptimized_mlb_code = NULL ;
+    routine->optimized_mlb_code = NULL ;
+    
+    routine->mob_stack = RKStack_NewStack() ;
     
     return routine ;
 }
@@ -1848,14 +1855,14 @@ void cg_destroy_routine( cg_routine routine ) {
     
     if ( routine->mib_code != NULL ) {
         
-        //RKList_IterateListWith(DeleteStatementInListOrStore, routine->mib_code) ;
+        RKList_IterateListWith(DeleteStatementInListOrStore, routine->mib_code) ;
         
         RKList_DeleteList(routine->mib_code) ;
     }
     
     if ( routine->mob_code != NULL ) {
         
-        //RKList_IterateListWith(DeleteStatementInListOrStore, routine->mob_code) ;
+        RKList_IterateListWith(DeleteStatementInListOrStore, routine->mob_code) ;
         
         RKList_DeleteList(routine->mob_code) ;
     }
@@ -1866,6 +1873,15 @@ void cg_destroy_routine( cg_routine routine ) {
         
         RKList_DeleteList(routine->mlb_code) ;
     }
+    
+    if ( routine->optimized_mlb_code != NULL ) {
+        
+        RKList_IterateListWith(DeleteMlbStatementInListOrStore, routine->optimized_mlb_code) ;
+        
+        RKList_DeleteList(routine->optimized_mlb_code) ;
+    }
+    
+    RKStack_DestroyStack(routine->mob_stack) ;
     
     RKStore_DestroyStore(routine->calls) ;
     

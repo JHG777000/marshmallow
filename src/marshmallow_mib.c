@@ -37,8 +37,11 @@ static RKList_node mib_process_statement( cg_routine routine, RKList_node node )
                 break;
                 
             case mib_endgroup:
-                //op
+                
+                mob_add_statement(operator_for_group, routine, NULL) ;
+                
                 return node ;
+                
                 break;
                 
             case mib_var:
@@ -48,7 +51,29 @@ static RKList_node mib_process_statement( cg_routine routine, RKList_node node )
                 
                 break;
                 
+            case cg_noop:
+                    
+                    printf("codegen error: failed to validate a mib statement. Their should be no noop.\n") ;
+                    
+                    exit(EXIT_FAILURE) ;
+                
+                break;
+                
+            case cg_else:
+            case cg_endif:
+            case cg_endwhile:
+            case cg_default:
+            case cg_endcase:
+            case cg_endswitch:
+                
+                mob_add_statement(statement->op, routine, NULL) ;
+                
+                break;
+                
             default:
+                
+                operator_for_group = statement->op ;
+                
                 break;
         }
         
@@ -63,13 +88,10 @@ void mib_generate_mob( cg_routine routine ) {
     
     RKList list = routine->mib_code ;
     
-    RKList_node node = NULL ;
-    
     if ( list != NULL ) {
         
-        node = RKList_GetFirstNode(list) ;
+        mib_process_statement(routine,RKList_GetFirstNode(list)) ;
         
-        mib_process_statement(routine,node) ;
     }
 }
 

@@ -18,7 +18,23 @@
 #include "marshmallow.h"
 #include "marshmallow_codegen.h"
 
+static void mob_process_statement( cg_routine routine, RKList_node node ) {
+    
+    
+}
 
+void mob_generate_mlb( cg_routine routine ) {
+    
+    RKList list = routine->mob_code ;
+    
+    if ( list != NULL ) {
+        
+        mob_process_statement(routine,RKList_GetFirstNode(list)) ;
+        
+    }
+
+}
+    
 cg_statement mob_add_statement( cg_op_type op, cg_routine routine, cg_variable var ) {
     
     cg_statement statement = RKMem_NewMemOfType(struct cg_statement_s) ;
