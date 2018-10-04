@@ -123,7 +123,7 @@ int mlb_return_value ; int mlb_get_return_value ; int delete_ptr ; cg_variable p
     
 int is_global ; int is_literal ; int is_temporary ; } ;
 
-typedef enum { mib_group, mib_endgroup, mib_var, mib_const, mob_push, cg_assignment,
+typedef enum { cg_noop, mib_group, mib_endgroup, mib_var, mib_const, mob_push, cg_assignment,
     
 cg_add, cg_sub, cg_mult, cg_div, cg_rem, cg_rshift, cg_lshift, cg_and, cg_or, cg_xor,
     
@@ -137,7 +137,7 @@ cg_greaterthan, cg_lessthan, cg_greaterthan_or_equals, cg_lessthan_or_equals,
     
 cg_call, cg_return } cg_op_type ;
 
-typedef enum { mlb_set, mlb_add, mlb_sub, mlb_mult, mlb_div, mlb_rem, mlb_rshift, mlb_lshift, mlb_and, mlb_or, mlb_xor,
+typedef enum { mlb_noop, mlb_set, mlb_add, mlb_sub, mlb_mult, mlb_div, mlb_rem, mlb_rshift, mlb_lshift, mlb_and, mlb_or, mlb_xor,
     
 mlb_not, mlb_logic_and, mlb_logic_or, mlb_logic_not, mlb_deref, mlb_addrof, mlb_sizeof, mlb_cast, mlb_array_copy, mlb_if,
     
@@ -226,6 +226,8 @@ cg_variable cg_get_array_index( int index, cg_variable array_var ) ;
 void mib_generate_mob( cg_routine routine ) ;
 
 cg_statement mib_add_statement( cg_op_type op, cg_routine routine, cg_variable var ) ;
+
+cg_statement mob_add_statement( cg_op_type op, cg_routine routine, cg_variable var ) ;
 
 mlb_statement mlb_add_statement( mlb_op_type op, cg_routine routine, cg_variable A, cg_variable B, cg_variable C ) ;
 

@@ -18,31 +18,48 @@
 #include "marshmallow.h"
 #include "marshmallow_codegen.h"
 
-static void mib_process_statement( cg_routine routine, cg_statement statement, RKStack group_stack ) {
+static RKList_node mib_process_statement( cg_routine routine, RKList_node node ) {
     
-    switch (statement->op) {
-            
-        case mib_group:
-            
-            break;
-            
-        case mib_endgroup:
-            
-            break;
-            
-        case mib_var:
-        case mib_const:
-            
-            break;
-            
-        default:
-            break;
+    cg_statement statement = NULL ;
+    
+    cg_op_type operator_for_group = cg_noop ;
+    
+    while ( node != NULL ) {
+        
+        statement = RKList_GetData(node) ;
+        
+        switch (statement->op) {
+                
+            case mib_group:
+                
+                node = mib_process_statement(routine, RKList_GetNextNode(node)) ;
+                
+                break;
+                
+            case mib_endgroup:
+                //op
+                return node ;
+                break;
+                
+            case mib_var:
+            case mib_const:
+                
+                mob_add_statement(mob_push, routine, statement->var) ;
+                
+                break;
+                
+            default:
+                break;
+        }
+        
+        if ( node != NULL )  node = RKList_GetNextNode(node) ;
+        
     }
+    
+    return NULL ;
 }
 
 void mib_generate_mob( cg_routine routine ) {
-    
-    RKStack group_stack = RKStack_NewStack() ;
     
     RKList list = routine->mib_code ;
     
@@ -52,13 +69,7 @@ void mib_generate_mob( cg_routine routine ) {
         
         node = RKList_GetFirstNode(list) ;
         
-        while ( node != NULL ) {
-            
-         mib_process_statement(routine,RKList_GetData(node),group_stack) ;
-            
-         node = RKList_GetNextNode(node) ;
-            
-        }
+        mib_process_statement(routine,node) ;
     }
 }
 
