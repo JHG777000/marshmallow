@@ -144,23 +144,23 @@ int main(int argc, const char **argv) {
     
     cg_add_variable_to_routine(array_index2, my_routine) ;
     
-    mlb_add_statement(mlb_cast, my_routine, X, typeu32, A) ;
+    mlb_add_statement(cg_cast, my_routine, X, typeu32, A) ;
     
-    mlb_add_statement(mlb_sizeof, my_routine, Y, A, NULL) ;
+    mlb_add_statement(cg_sizeof, my_routine, Y, A, NULL) ;
     
-    mlb_add_statement(mlb_cast, my_routine, B, typei32, Y) ;
+    mlb_add_statement(cg_cast, my_routine, B, typei32, Y) ;
     
     mlb_add_statement(mlb_set, my_routine, array_index2, A, NULL) ;
     
-    mlb_add_statement(mlb_array_copy, my_routine, class_element, Z, NULL) ;
+    mlb_add_statement(cg_array_copy, my_routine, class_element, Z, NULL) ;
     
     mlb_add_statement(mlb_set, my_routine, B, array_index, NULL) ;
     
-    mlb_add_statement(mlb_add, my_routine, A, B, C) ;
+    mlb_add_statement(cg_add, my_routine, A, B, C) ;
     
     mlb_add_statement(mlb_set, my_routine, R0, A, NULL) ;
     
-    mlb_add_statement(mlb_return, my_routine, NULL, NULL, NULL) ;
+    mlb_add_statement(cg_return, my_routine, NULL, NULL, NULL) ;
     
     cg_variable A2 = cg_new_variable(rkstr("A"), i32, -1, -1, 0, 0) ;
     
@@ -188,7 +188,7 @@ int main(int argc, const char **argv) {
     
     cg_add_variable_to_routine(zero2, main2) ;
     
-    mlb_add_statement(mlb_add, main2, B2, B2, zero2) ;
+    mlb_add_statement(cg_add, main2, B2, B2, zero2) ;
     
     mlb_add_statement(mlb_external_return, main2, B2, NULL, NULL) ;
     
@@ -238,11 +238,11 @@ int main(int argc, const char **argv) {
     
     cg_add_variable_to_routine(A2, main) ;
     
-    mlb_add_statement(mlb_call,main,call2,NULL,NULL) ;
+    mlb_add_statement(cg_call,main,call2,NULL,NULL) ;
     
     mlb_add_statement(mlb_set,main,A2,GR0,NULL) ;
     
-    mlb_add_statement(mlb_call,main,call,NULL,NULL) ;
+    mlb_add_statement(cg_call,main,call,NULL,NULL) ;
     
     mlb_add_statement(mlb_external_return, main, GR0, NULL, NULL) ;
     

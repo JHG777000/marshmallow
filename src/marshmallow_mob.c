@@ -18,18 +18,112 @@
 #include "marshmallow.h"
 #include "marshmallow_codegen.h"
 
-static void mob_process_statement( cg_routine routine, RKList_node node ) {
+static RKString get_name_for_tempvar( int tempvars ) {
     
+    char string[100] ;
     
+    marshmallow_uitoa(tempvars, string) ;
+    
+    RKString name = rkstr(string) ;
+    
+    RKString retname = RKString_AppendString(rkstr("V"), name) ;
+    
+    RKString_DestroyString(name) ;
+    
+    return retname ;
+}
+
+static RKString get_name_for_retvar( int retvars ) {
+    
+    char string[100] ;
+    
+    marshmallow_uitoa(retvars, string) ;
+    
+    RKString name = rkstr(string) ;
+    
+    RKString retname = RKString_AppendString(rkstr("R"), name) ;
+    
+    RKString_DestroyString(name) ;
+    
+    return retname ;
+}
+
+static RKString get_name_for_getretvar( int retvars ) {
+    
+    char string[100] ;
+    
+    marshmallow_uitoa(retvars, string) ;
+    
+    RKString name = rkstr(string) ;
+    
+    RKString retname = RKString_AppendString(rkstr("GR"), name) ;
+    
+    RKString_DestroyString(name) ;
+    
+    return retname ;
+}
+
+static void mob_process_statement( cg_routine routine, RKList_node node, int* tempvars ) {
+    
+    cg_statement statement = NULL ;
+    
+    cg_variable variable = NULL ;
+    
+    if ( node != NULL ) statement = RKList_GetData(node) ;
+    
+    switch (statement->op) {
+            
+        case cg_else:
+        case cg_endif:
+        case cg_endwhile:
+        case cg_default:
+        case cg_endcase:
+        case cg_endswitch:
+            
+            mlb_add_statement(statement->op, routine, NULL, NULL, NULL) ;
+            
+            break;
+            
+        case mob_push:
+            
+            RKStack_Push(routine->mob_stack, statement->var) ;
+            
+            break;
+            
+        case cg_call:
+            
+            mlb_add_statement(statement->op, routine, RKStack_Pop(routine->mob_stack), NULL, NULL) ;
+            
+            break;
+            
+        case cg_add:
+            
+            variable = cg_new_variable(get_name_for_tempvar(*tempvars), ((cg_variable)RKStack_Peek(routine->mob_stack))->type, -1, -1, 0, 0) ;
+            
+            variable->is_temporary = 1 ;
+            
+            cg_add_variable_to_routine(variable, routine) ;
+            
+            mlb_add_statement(statement->op, routine, variable, RKStack_Peek(routine->mob_stack), RKStack_Peek(routine->mob_stack)) ;
+            
+            RKStack_Push(routine->mob_stack, variable) ;
+            
+            break;
+            
+        default:
+            break;
+    }
 }
 
 void mob_generate_mlb( cg_routine routine ) {
     
     RKList list = routine->mob_code ;
     
+    int tempvars = 0 ;
+    
     if ( list != NULL ) {
         
-        mob_process_statement(routine,RKList_GetFirstNode(list)) ;
+        mob_process_statement(routine,RKList_GetFirstNode(list),&tempvars) ;
         
     }
 

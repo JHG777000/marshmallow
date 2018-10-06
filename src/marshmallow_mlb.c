@@ -48,7 +48,7 @@ static void mlb_add_call_to_routine( cg_variable call, cg_routine routine ) {
     }
 }
 
-mlb_statement mlb_add_statement( mlb_op_type op, cg_routine routine, cg_variable A, cg_variable B, cg_variable C ) {
+mlb_statement mlb_add_statement( cg_op_type op, cg_routine routine, cg_variable A, cg_variable B, cg_variable C ) {
     
     mlb_statement statement = RKMem_NewMemOfType(struct mlb_statement_s) ;
     
@@ -64,7 +64,7 @@ mlb_statement mlb_add_statement( mlb_op_type op, cg_routine routine, cg_variable
     
     if ( routine->mlb_code == NULL ) routine->mlb_code = RKList_NewList() ;
     
-    if ( statement->op == mlb_call ) mlb_add_call_to_routine(statement->A, routine) ;
+    if ( statement->op == cg_call ) mlb_add_call_to_routine(statement->A, routine) ;
     
     RKList_AddToList(routine->mlb_code, statement) ;
     
@@ -299,7 +299,7 @@ void mlb_validate_statement( mlb_statement statement ) {
     
     switch (statement->op) {
        
-        case mlb_array_copy:
+        case cg_array_copy:
             
             if (statement->A == NULL || statement->B == NULL || mlb_get_var(statement->A)->type != mlb_get_var(statement->B)->type
                 || mlb_get_var(statement->A)->type != array || mlb_get_var(statement->A)->ptr == NULL || mlb_get_var(statement->B)->ptr == NULL
@@ -314,7 +314,7 @@ void mlb_validate_statement( mlb_statement statement ) {
             
             break;
             
-       case mlb_cast:
+       case cg_cast:
             
             if (statement->A == NULL || statement->B == NULL || statement->C == NULL) {
                 
@@ -325,7 +325,7 @@ void mlb_validate_statement( mlb_statement statement ) {
             
        break;
             
-       case mlb_sizeof:
+       case cg_sizeof:
             
             if (statement->A == NULL || statement->B == NULL || mlb_get_var(statement->A)->type != ptrsize || statement->C != NULL) {
                 
@@ -336,7 +336,7 @@ void mlb_validate_statement( mlb_statement statement ) {
             
         break;
             
-        case mlb_deref:
+        case cg_deref:
             
             if (statement->A == NULL || statement->B == NULL || mlb_get_var(statement->B)->type != ptr || mlb_get_var(statement->B)->ptr == NULL
                 || mlb_get_var(statement->A)->type != ((cg_variable)mlb_get_var(statement->B)->ptr)->type || statement->C != NULL) {
@@ -348,7 +348,7 @@ void mlb_validate_statement( mlb_statement statement ) {
             
         break;
             
-        case mlb_addrof:
+        case cg_addrof:
             
             if (statement->A == NULL || statement->B == NULL || mlb_get_var(statement->A)->ptr == NULL || mlb_get_var(statement->A)->type != ptr
                 || ((cg_variable)mlb_get_var(statement->A)->ptr)->type != mlb_get_var(statement->B)->type || statement->C != NULL) {
@@ -362,8 +362,8 @@ void mlb_validate_statement( mlb_statement statement ) {
             
             
         case mlb_set:
-        case mlb_not:
-        case mlb_logic_not:
+        case cg_not:
+        case cg_logic_not:
             
             if (statement->A == NULL || statement->B == NULL
                 || mlb_get_array(mlb_get_var(statement->A))->type != mlb_get_array(mlb_get_var(statement->B))->type
@@ -387,13 +387,13 @@ void mlb_validate_statement( mlb_statement statement ) {
             
             break;
             
-        case mlb_if:
-        case mlb_else_if:
-        case mlb_while:
-        case mlb_switch:
-        case mlb_goto:
-        case mlb_section:
-        case mlb_call:
+        case cg_if:
+        case cg_else_if:
+        case cg_while:
+        case cg_switch:
+        case cg_goto:
+        case cg_section:
+        case cg_call:
             
             if (statement->A == NULL || statement->B != NULL || statement->C != NULL) {
                 
@@ -404,15 +404,15 @@ void mlb_validate_statement( mlb_statement statement ) {
             
         break;
             
-        case mlb_else:
-        case mlb_endif:
-        case mlb_endwhile:
-        case mlb_endswitch:
-        case mlb_endcase:
-        case mlb_default:
-        case mlb_break:
-        case mlb_continue:
-        case mlb_return:
+        case cg_else:
+        case cg_endif:
+        case cg_endwhile:
+        case cg_endswitch:
+        case cg_endcase:
+        case cg_default:
+        case cg_break:
+        case cg_continue:
+        case cg_return:
             
             if (statement->A != NULL || statement->B != NULL || statement->C != NULL) {
                 

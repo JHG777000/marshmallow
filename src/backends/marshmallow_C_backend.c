@@ -245,46 +245,46 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
     
     switch (statement->op) {
          
-        case mlb_endif:
-        case mlb_endwhile:
-        case mlb_endswitch:
+        case cg_endif:
+        case cg_endwhile:
+        case cg_endswitch:
             
             fprintf(file, "}") ;
             
             break;
             
-        case mlb_else:
+        case cg_else:
             
             fprintf(file, "else") ;
             
             break;
             
-        case mlb_break:
-        case mlb_endcase:
+        case cg_break:
+        case cg_endcase:
             
             fprintf(file, "break") ;
             
             break;
             
-        case mlb_continue:
+        case cg_continue:
             
             fprintf(file, "continue") ;
             
             break;
             
-        case mlb_default:
+        case cg_default:
             
             fprintf(file, "default:") ;
             
             break;
             
-        case mlb_return:
+        case cg_return:
 
             fprintf(file, "return") ;
             
             break;
             
-        case mlb_if:
+        case cg_if:
             
             fprintf(file, "if (") ;
             
@@ -294,7 +294,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case mlb_else_if:
+        case cg_else_if:
             
             fprintf(file, "} else if (") ;
             
@@ -304,7 +304,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case mlb_while:
+        case cg_while:
             
             fprintf(file, "while (") ;
             
@@ -314,7 +314,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case mlb_switch:
+        case cg_switch:
             
             fprintf(file, "switch (") ;
             
@@ -324,7 +324,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case mlb_case:
+        case cg_case:
             
             fprintf(file, "case") ;
             
@@ -334,7 +334,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case mlb_section:
+        case cg_section:
             
             output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
             
@@ -342,7 +342,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case mlb_goto:
+        case cg_goto:
             
             fprintf(file, "goto ") ;
             
@@ -358,7 +358,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case mlb_call:
+        case cg_call:
 
             list = statement->A->values ;
             
@@ -418,7 +418,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case mlb_sizeof:
+        case cg_sizeof:
             
             output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
             
@@ -430,7 +430,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case mlb_not:
+        case cg_not:
             
             output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
             
@@ -440,7 +440,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case mlb_logic_not:
+        case cg_logic_not:
             
             output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
             
@@ -450,7 +450,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case mlb_deref:
+        case cg_deref:
             
             output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
             
@@ -460,7 +460,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case mlb_addrof:
+        case cg_addrof:
             
             output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
             
@@ -470,7 +470,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case mlb_array_copy:
+        case cg_array_copy:
             
             fprintf(file, "memcpy(") ;
             
@@ -488,7 +488,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case mlb_cast:
+        case cg_cast:
             
             output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
             
@@ -504,7 +504,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case mlb_add:
+        case cg_add:
             
             output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
             
@@ -518,7 +518,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case mlb_sub:
+        case cg_sub:
             
             output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
             
@@ -532,7 +532,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case mlb_mult:
+        case cg_mult:
             
             output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
             
@@ -546,7 +546,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case mlb_div:
+        case cg_div:
             
             output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
             
@@ -560,7 +560,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case mlb_rem:
+        case cg_rem:
             
             output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
             
@@ -574,7 +574,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case mlb_rshift:
+        case cg_rshift:
             
             output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
             
@@ -588,7 +588,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case mlb_lshift:
+        case cg_lshift:
             
             output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
             
@@ -602,7 +602,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case mlb_and:
+        case cg_and:
             
             output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
             
@@ -616,7 +616,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case mlb_or:
+        case cg_or:
             
             output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
             
@@ -630,7 +630,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case mlb_xor:
+        case cg_xor:
             
             output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
             
@@ -644,7 +644,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case mlb_logic_and:
+        case cg_logic_and:
             
             output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
             
@@ -658,7 +658,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case mlb_logic_or:
+        case cg_logic_or:
             
             output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
             
@@ -672,7 +672,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case mlb_equals:
+        case cg_equals:
             
             output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
             
@@ -686,7 +686,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case mlb_not_equals:
+        case cg_not_equals:
             
             output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
             
@@ -700,7 +700,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case mlb_greaterthan:
+        case cg_greaterthan:
             
             output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
             
@@ -714,7 +714,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case mlb_lessthan:
+        case cg_lessthan:
             
             output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
             
@@ -728,7 +728,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case mlb_greaterthan_or_equals:
+        case cg_greaterthan_or_equals:
             
             output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
             
@@ -742,7 +742,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case mlb_lessthan_or_equals:
+        case cg_lessthan_or_equals:
             
             output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
             
