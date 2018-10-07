@@ -69,9 +69,23 @@ static RKString get_name_for_getretvar( int* getretvars ) {
     return retname ;
 }
 
-static void mob_process_statement( cg_routine routine, RKList_node node, int* tempvars, int* getretvar) {
+static int is_var_array( cg_variable var ) {
     
-    cg_statement statement = NULL ;
+loop:
+    
+    if ( var->type == array ) return 1 ;
+    
+    if ( var->class_element != NULL || var->index >= 0 ) {
+        
+        var = var->ptr ;
+        
+        goto loop ;
+    }
+    
+    return 0 ;
+}
+
+static void mob_process_statement( cg_routine routine, cg_statement statement, int* tempvars, int* getretvar) {
     
     cg_variable variable = NULL ;
     
@@ -79,11 +93,9 @@ static void mob_process_statement( cg_routine routine, RKList_node node, int* te
     
     RKList list = NULL ;
     
-    RKList_node list_node = NULL ;
+    RKList_node node = NULL ;
     
     int retvar = 0 ;
-    
-    if ( node != NULL ) statement = RKList_GetData(node) ;
     
     switch (statement->op) {
             
@@ -127,23 +139,29 @@ static void mob_process_statement( cg_routine routine, RKList_node node, int* te
                     
                     retvar = 0 ;
                     
-                    list_node = RKList_GetFirstNode(list) ;
+                    node = RKList_GetFirstNode(list) ;
                     
-                    while ( list_node != NULL ) {
+                    while ( node != NULL ) {
                     
-                        type = RKStack_Peek(routine->mob_stack) ;
+                        type = RKList_GetData(node) ;
                         
-                        variable = cg_new_variable(get_name_for_retvar(&retvar), type->type, type->mlb_return_value, -1, type->num_of_elements, 0) ;
+                        variable = cg_new_variable(get_name_for_retvar(&retvar), type->type, retvar, -1, type->num_of_elements, 0) ;
                         
                         variable->is_temporary = 1 ;
                         
-                        mlb_add_statement(mlb_set, routine, variable, RKList_GetData(node), NULL) ;
+                        if (!is_var_array(type)) mlb_add_statement(mlb_set, routine, variable, RKList_GetData(node), NULL) ;
                         
-                        list_node = RKList_GetNextNode(list_node) ;
+                        if (is_var_array(type)) mlb_add_statement(cg_array_copy, routine, variable, RKList_GetData(node), NULL) ;
+                        
+                        cg_add_variable_to_routine(variable, routine) ;
+                        
+                        node = RKList_GetNextNode(node) ;
                     }
                     
                     RKList_DeleteAllNodesInList(list) ;
                 }
+                
+                mlb_add_statement(cg_return, routine, NULL, NULL, NULL) ;
                 
             } else {
                 
@@ -156,10 +174,12 @@ static void mob_process_statement( cg_routine routine, RKList_node node, int* te
         
            type = ((cg_variable)RKList_GetData(RKList_GetNode(((cg_routine)RKStack_Pop(routine->mob_stack))->return_types, *getretvar+1))) ;
         
-           variable = cg_new_variable(get_name_for_getretvar(getretvar), type->type, -1, type->mlb_get_return_value, type->num_of_elements, 0) ;
+           variable = cg_new_variable(get_name_for_getretvar(getretvar), type->type, -1, *getretvar, type->num_of_elements, 0) ;
         
            variable->is_temporary = 1 ;
         
+           cg_add_variable_to_routine(variable, routine) ;
+            
            RKStack_Push(routine->mob_stack, variable) ;
         
            break;
@@ -194,6 +214,8 @@ static void mob_process_statement( cg_routine routine, RKList_node node, int* te
             
             if ( statement->op == cg_assignment ) mlb_add_statement(mlb_set, routine, variable, RKStack_Pop(routine->mob_stack),NULL) ;
             
+            cg_add_variable_to_routine(variable, routine) ;
+            
             RKStack_Push(routine->mob_stack, variable) ;
             
             break;
@@ -224,6 +246,8 @@ static void mob_process_statement( cg_routine routine, RKList_node node, int* te
             
             mlb_add_statement(statement->op, routine, variable, RKStack_Pop(routine->mob_stack), RKStack_Pop(routine->mob_stack)) ;
             
+            cg_add_variable_to_routine(variable, routine) ;
+            
             RKStack_Push(routine->mob_stack, variable) ;
             
             break;
@@ -237,16 +261,21 @@ void mob_generate_mlb( cg_routine routine ) {
     
     RKList list = routine->mob_code ;
     
+    RKList_node node = RKList_GetFirstNode(list) ;
+    
     int tempvars = 0 ;
     
     int getretvar = 0 ;
     
     if ( list != NULL ) {
         
-        mob_process_statement(routine,RKList_GetFirstNode(list),&tempvars,&getretvar) ;
-        
+        while ( node != NULL ) {
+            
+            mob_process_statement(routine,RKList_GetData(node),&tempvars,&getretvar) ;
+            
+            node = RKList_GetNextNode(node) ;
+        }
     }
-
 }
     
 cg_statement mob_add_statement( cg_op_type op, cg_routine routine, cg_variable var ) {

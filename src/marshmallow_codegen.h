@@ -213,6 +213,8 @@ cg_variable cg_get_array_index( int index, cg_variable array_var ) ;
 
 void mib_generate_mob( cg_routine routine ) ;
 
+void mob_generate_mlb( cg_routine routine ) ;
+
 cg_statement mib_add_statement( cg_op_type op, cg_routine routine, cg_variable var ) ;
 
 cg_statement mob_add_statement( cg_op_type op, cg_routine routine, cg_variable var ) ;

@@ -20,7 +20,7 @@
 
 int main(int argc, const char **argv) {
 
-    FILE* output_file = fopen(argv[2], "w") ;
+    FILE* output_file = fopen(argv[1], "w") ;
     
     codegen_backend backend = codegen_new_backend(get_backend(C),output_file) ;
     
