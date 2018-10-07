@@ -387,12 +387,23 @@ void mlb_validate_statement( mlb_statement statement ) {
             
             break;
             
+        case cg_case:
+        case cg_goto:
+        case cg_section:
+            
+            if (statement->A == NULL || !statement->A->is_literal || statement->B != NULL || statement->C != NULL) {
+                
+                printf("codegen error: failed to validate a mlb statement.\n") ;
+                
+                exit(EXIT_FAILURE) ;
+            }
+            
+           break;
+            
         case cg_if:
         case cg_else_if:
         case cg_while:
         case cg_switch:
-        case cg_goto:
-        case cg_section:
         case cg_call:
             
             if (statement->A == NULL || statement->B != NULL || statement->C != NULL) {
@@ -402,7 +413,7 @@ void mlb_validate_statement( mlb_statement statement ) {
                 exit(EXIT_FAILURE) ;
             }
             
-        break;
+           break;
             
         case cg_else:
         case cg_endif:
@@ -421,7 +432,7 @@ void mlb_validate_statement( mlb_statement statement ) {
                 exit(EXIT_FAILURE) ;
             }
             
-        break;
+           break;
             
             
         default:
@@ -435,6 +446,6 @@ void mlb_validate_statement( mlb_statement statement ) {
                 exit(EXIT_FAILURE) ;
             }
             
-            break;
+           break;
     }
 }

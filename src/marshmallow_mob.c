@@ -76,6 +76,8 @@ static void mob_process_statement( cg_routine routine, RKList_node node, int* te
         case cg_else:
         case cg_endif:
         case cg_endwhile:
+        case cg_break:
+        case cg_continue:
         case cg_default:
         case cg_endcase:
         case cg_endswitch:
@@ -91,12 +93,26 @@ static void mob_process_statement( cg_routine routine, RKList_node node, int* te
             break;
             
         case cg_call:
+        case cg_if:
+        case cg_else_if:
+        case cg_while:
+        case cg_switch:
+        case cg_case:
+        case cg_goto:
+        case cg_section:
             
             mlb_add_statement(statement->op, routine, RKStack_Pop(routine->mob_stack), NULL, NULL) ;
             
             break;
+         
             
-        case cg_add:
+        case cg_assignment:
+        case cg_array_copy:
+        case cg_sizeof:
+        case cg_deref:
+        case cg_addrof:
+        case cg_not:
+        case cg_logic_not:
             
             variable = cg_new_variable(get_name_for_tempvar(*tempvars), ((cg_variable)RKStack_Peek(routine->mob_stack))->type, -1, -1, 0, 0) ;
             
@@ -104,7 +120,39 @@ static void mob_process_statement( cg_routine routine, RKList_node node, int* te
             
             cg_add_variable_to_routine(variable, routine) ;
             
-            mlb_add_statement(statement->op, routine, variable, RKStack_Peek(routine->mob_stack), RKStack_Peek(routine->mob_stack)) ;
+            if ( statement->op != cg_assignment ) mlb_add_statement(statement->op, routine, variable, RKStack_Pop(routine->mob_stack),NULL) ;
+            
+            if ( statement->op == cg_assignment ) mlb_add_statement(mlb_set, routine, variable, RKStack_Pop(routine->mob_stack),NULL) ;
+            
+            RKStack_Push(routine->mob_stack, variable) ;
+            
+            break;
+            
+        case cg_add:
+        case cg_sub:
+        case cg_mult:
+        case cg_div:
+        case cg_rem:
+        case cg_rshift:
+        case cg_lshift:
+        case cg_and:
+        case cg_or:
+        case cg_xor:
+        case cg_cast:
+        case cg_equals:
+        case cg_not_equals:
+        case cg_lessthan:
+        case cg_greaterthan:
+        case cg_lessthan_or_equals:
+        case cg_greaterthan_or_equals:
+            
+            variable = cg_new_variable(get_name_for_tempvar(*tempvars), ((cg_variable)RKStack_Peek(routine->mob_stack))->type, -1, -1, 0, 0) ;
+            
+            variable->is_temporary = 1 ;
+            
+            cg_add_variable_to_routine(variable, routine) ;
+            
+            mlb_add_statement(statement->op, routine, variable, RKStack_Pop(routine->mob_stack), RKStack_Pop(routine->mob_stack)) ;
             
             RKStack_Push(routine->mob_stack, variable) ;
             
