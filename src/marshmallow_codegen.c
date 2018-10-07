@@ -1939,7 +1939,7 @@ void cg_destroy_statement( cg_statement statement ) {
     free(statement) ;
 }
 
-cg_variable cg_new_variable( RKString name, cg_root_type type, int mlb_return_value, int mlb_get_return_value, int num_of_items, int is_global ) {
+cg_variable cg_new_variable( RKString name, cg_root_type type, int mlb_return_value, int mlb_get_return_value, RKULong num_of_elements, int is_global ) {
     
     cg_variable variable = RKMem_NewMemOfType(struct cg_variable_s) ;
     
@@ -1947,7 +1947,7 @@ cg_variable cg_new_variable( RKString name, cg_root_type type, int mlb_return_va
     
     variable->mlb_return_value = mlb_return_value ;
     
-    variable->num_of_elements = num_of_items ;
+    variable->num_of_elements = num_of_elements ;
     
     variable->entity_type = cg_entity_variable ;
     

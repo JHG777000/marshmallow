@@ -135,7 +135,7 @@ cg_switch, cg_endswitch, cg_case, cg_endcase, cg_default, cg_goto, cg_section, c
     
 cg_greaterthan, cg_lessthan, cg_greaterthan_or_equals, cg_lessthan_or_equals,
     
-cg_call, cg_return } cg_op_type ;
+cg_call, cg_get_return, cg_return } cg_op_type ;
 
 struct cg_statement_s { cg_entity_type entity_type ; cg_routine routine ; cg_op_type op ; cg_variable var ; } ;
 
@@ -197,7 +197,7 @@ cg_variable cg_get_variable( cg_routine routine, RKString var ) ;
 
 void cg_destroy_statement( cg_statement statement ) ;
 
-cg_variable cg_new_variable( RKString name, cg_root_type type, int mlb_return_value, int mlb_get_return_value, int num_of_items, int is_global ) ;
+cg_variable cg_new_variable( RKString name, cg_root_type type, int mlb_return_value, int mlb_get_return_value, RKULong num_of_elements, int is_global ) ;
 
 void cg_destroy_variable( cg_variable variable ) ;
 

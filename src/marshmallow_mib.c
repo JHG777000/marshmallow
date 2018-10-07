@@ -50,6 +50,12 @@ static RKList_node mib_process_statement( cg_routine routine, RKList_node node )
                 mob_add_statement(mob_push, routine, statement->var) ;
                 
                 break;
+            
+            case cg_call:
+            
+                 mob_add_statement(statement->op, routine, statement->var) ;
+            
+                break;
                 
             case cg_noop:
                     
@@ -67,6 +73,7 @@ static RKList_node mib_process_statement( cg_routine routine, RKList_node node )
             case cg_default:
             case cg_endcase:
             case cg_endswitch:
+            case cg_get_return:
                 
                 mob_add_statement(statement->op, routine, NULL) ;
                 

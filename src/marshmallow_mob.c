@@ -18,11 +18,11 @@
 #include "marshmallow.h"
 #include "marshmallow_codegen.h"
 
-static RKString get_name_for_tempvar( int tempvars ) {
+static RKString get_name_for_tempvar( int* tempvars ) {
     
     char string[100] ;
     
-    marshmallow_uitoa(tempvars, string) ;
+    marshmallow_uitoa(*tempvars, string) ;
     
     RKString name = rkstr(string) ;
     
@@ -30,14 +30,16 @@ static RKString get_name_for_tempvar( int tempvars ) {
     
     RKString_DestroyString(name) ;
     
+    (*tempvars)++ ;
+    
     return retname ;
 }
 
-static RKString get_name_for_retvar( int retvars ) {
+static RKString get_name_for_retvar( int* retvars ) {
     
     char string[100] ;
     
-    marshmallow_uitoa(retvars, string) ;
+    marshmallow_uitoa(*retvars, string) ;
     
     RKString name = rkstr(string) ;
     
@@ -45,14 +47,16 @@ static RKString get_name_for_retvar( int retvars ) {
     
     RKString_DestroyString(name) ;
     
+    (*retvars)++ ;
+    
     return retname ;
 }
 
-static RKString get_name_for_getretvar( int retvars ) {
+static RKString get_name_for_getretvar( int* getretvars ) {
     
     char string[100] ;
     
-    marshmallow_uitoa(retvars, string) ;
+    marshmallow_uitoa(*getretvars, string) ;
     
     RKString name = rkstr(string) ;
     
@@ -60,14 +64,24 @@ static RKString get_name_for_getretvar( int retvars ) {
     
     RKString_DestroyString(name) ;
     
+    (*getretvars)++ ;
+    
     return retname ;
 }
 
-static void mob_process_statement( cg_routine routine, RKList_node node, int* tempvars ) {
+static void mob_process_statement( cg_routine routine, RKList_node node, int* tempvars, int* getretvar) {
     
     cg_statement statement = NULL ;
     
     cg_variable variable = NULL ;
+    
+    cg_variable type = NULL ;
+    
+    RKList list = NULL ;
+    
+    RKList_node list_node = NULL ;
+    
+    int retvar = 0 ;
     
     if ( node != NULL ) statement = RKList_GetData(node) ;
     
@@ -93,6 +107,63 @@ static void mob_process_statement( cg_routine routine, RKList_node node, int* te
             break;
             
         case cg_call:
+        
+           mlb_add_statement(statement->op, routine, statement->var, NULL, NULL) ;
+        
+           RKStack_Push(routine->mob_stack, RKStore_GetItem(routine->module->routines,
+                                                            RKString_GetString(RKList_GetData(RKList_GetFirstNode(statement->var->values))))) ;
+            
+           *getretvar = 0 ;
+        
+           break;
+            
+        case cg_return:
+            
+            if ( !routine->is_external ) {
+                
+                list = RKStack_GetList(routine->mob_stack) ;
+                
+                if ( list != NULL ) {
+                    
+                    retvar = 0 ;
+                    
+                    list_node = RKList_GetFirstNode(list) ;
+                    
+                    while ( list_node != NULL ) {
+                    
+                        type = RKStack_Peek(routine->mob_stack) ;
+                        
+                        variable = cg_new_variable(get_name_for_retvar(&retvar), type->type, type->mlb_return_value, -1, type->num_of_elements, 0) ;
+                        
+                        variable->is_temporary = 1 ;
+                        
+                        mlb_add_statement(mlb_set, routine, variable, RKList_GetData(node), NULL) ;
+                        
+                        list_node = RKList_GetNextNode(list_node) ;
+                    }
+                    
+                    RKList_DeleteAllNodesInList(list) ;
+                }
+                
+            } else {
+                
+                mlb_add_statement(mlb_external_return, routine, RKStack_Pop(routine->mob_stack), NULL, NULL) ;
+            }
+            
+             break;
+        
+        case cg_get_return:
+        
+           type = ((cg_variable)RKList_GetData(RKList_GetNode(((cg_routine)RKStack_Pop(routine->mob_stack))->return_types, *getretvar+1))) ;
+        
+           variable = cg_new_variable(get_name_for_getretvar(getretvar), type->type, -1, type->mlb_get_return_value, type->num_of_elements, 0) ;
+        
+           variable->is_temporary = 1 ;
+        
+           RKStack_Push(routine->mob_stack, variable) ;
+        
+           break;
+        
         case cg_if:
         case cg_else_if:
         case cg_while:
@@ -104,8 +175,7 @@ static void mob_process_statement( cg_routine routine, RKList_node node, int* te
             mlb_add_statement(statement->op, routine, RKStack_Pop(routine->mob_stack), NULL, NULL) ;
             
             break;
-         
-            
+        
         case cg_assignment:
         case cg_array_copy:
         case cg_sizeof:
@@ -114,7 +184,7 @@ static void mob_process_statement( cg_routine routine, RKList_node node, int* te
         case cg_not:
         case cg_logic_not:
             
-            variable = cg_new_variable(get_name_for_tempvar(*tempvars), ((cg_variable)RKStack_Peek(routine->mob_stack))->type, -1, -1, 0, 0) ;
+            variable = cg_new_variable(get_name_for_tempvar(tempvars), ((cg_variable)RKStack_Peek(routine->mob_stack))->type, -1, -1, 0, 0) ;
             
             variable->is_temporary = 1 ;
             
@@ -146,7 +216,7 @@ static void mob_process_statement( cg_routine routine, RKList_node node, int* te
         case cg_lessthan_or_equals:
         case cg_greaterthan_or_equals:
             
-            variable = cg_new_variable(get_name_for_tempvar(*tempvars), ((cg_variable)RKStack_Peek(routine->mob_stack))->type, -1, -1, 0, 0) ;
+            variable = cg_new_variable(get_name_for_tempvar(tempvars), ((cg_variable)RKStack_Peek(routine->mob_stack))->type, -1, -1, 0, 0) ;
             
             variable->is_temporary = 1 ;
             
@@ -169,9 +239,11 @@ void mob_generate_mlb( cg_routine routine ) {
     
     int tempvars = 0 ;
     
+    int getretvar = 0 ;
+    
     if ( list != NULL ) {
         
-        mob_process_statement(routine,RKList_GetFirstNode(list),&tempvars) ;
+        mob_process_statement(routine,RKList_GetFirstNode(list),&tempvars,&getretvar) ;
         
     }
 
