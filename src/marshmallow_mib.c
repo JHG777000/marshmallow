@@ -44,6 +44,16 @@ static RKList_node mib_process_statement( cg_routine routine, RKList_node node )
                 
                 break;
                 
+            case mib_exitgroup:
+                
+                mob_add_statement(operator_for_group, routine, NULL) ;
+                
+                mob_add_statement(mob_drop, routine, NULL) ;
+                
+                return node ;
+                
+                break;
+                
             case mib_var:
             case mib_const:
                 

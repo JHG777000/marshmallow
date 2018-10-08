@@ -255,7 +255,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
         case cg_else:
             
-            fprintf(file, "else") ;
+            fprintf(file, "} else {") ;
             
             break;
             

@@ -25,18 +25,15 @@ _mi32 y ;
 _mi32 V0 ;
 _mi32 V1 ;
 _mi32 V2 ;
-_mi32 V3 ;
-V0 = x + 1 ;
-V1 = V0 + y ;
-V2 = V1 ;
-V3 = y > x ;
-if (V3) { ;
-else ;
+V0 = 1 + x ;
+V1 = y + V0 ;
+x = V1 ;
+V2 = x > y ;
+if (V2) { ;
+} else { ;
 } ;
- = x ;
- = V2 ;
- = 2 ;
- = 2 ;
+_returns->_returns_0 = 1 ;
+_returns->_returns_1 = 2 ;
 return ;
 }
 _mi32 main() {

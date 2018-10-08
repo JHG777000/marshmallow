@@ -123,7 +123,7 @@ int mlb_return_value ; int mlb_get_return_value ; int delete_ptr ; cg_variable p
     
 int is_global ; int is_literal ; int is_temporary ; } ;
 
-typedef enum { cg_noop, mib_group, mib_endgroup, mib_var, mib_const, mob_push, mlb_set, mlb_external_return, cg_assignment,
+typedef enum { cg_noop, mib_group, mib_endgroup, mib_exitgroup, mib_var, mib_const, mob_push, mob_drop, mlb_set, mlb_external_return, cg_assignment,
     
 cg_add, cg_sub, cg_mult, cg_div, cg_rem, cg_rshift, cg_lshift, cg_and, cg_or, cg_xor,
     

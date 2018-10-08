@@ -112,7 +112,7 @@ int main(int argc, const char **argv) {
     
     mib_add_statement(mib_endgroup, my_routine, NULL) ;
     
-    mib_add_statement(mib_endgroup, my_routine, NULL) ;
+    mib_add_statement(mib_exitgroup, my_routine, NULL) ;
     
     mib_add_statement(mib_group, my_routine, NULL) ;
     
@@ -146,7 +146,7 @@ int main(int argc, const char **argv) {
     
     mib_add_statement(cg_return, my_routine, NULL) ;
     
-    mib_add_statement(mib_const, my_routine, two) ;
+    mib_add_statement(mib_const, my_routine, one) ;
     
     mib_add_statement(mib_const, my_routine, two) ;
     
