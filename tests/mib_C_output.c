@@ -33,16 +33,22 @@ struct _other_routine_returns _other_routine_get_returns ;
 _mi32 x = 0 ;
 _mi32 y = 0 ;
 _mi32 z = 0 ;
-_mi32 V0 ;
-_mi32 V1 ;
-_mi32 V2 ;
+_mi32 z2 = 0 ;
+_mi32 z3 = 0 ;
+_mi32 z4 = 0 ;
+_mi32 _V0 ;
+_mi32 _V1 ;
+_mi32 _V2 ;
 other_routine(&_other_routine_get_returns,1,2,x,y) ;
 z = _other_routine_get_returns._returns_0 ;
-V0 = 1 + x ;
-V1 = y + V0 ;
-x = V1 ;
-V2 = x > y ;
-if (V2) { ;
+z2 = _other_routine_get_returns._returns_1 ;
+z3 = _other_routine_get_returns._returns_2 ;
+z4 = _other_routine_get_returns._returns_3 ;
+_V0 = 1 + x ;
+_V1 = y + _V0 ;
+x = _V1 ;
+_V2 = x > y ;
+if (_V2) { ;
 } else { ;
 } ;
 _returns->_returns_0 = 1 ;
@@ -50,5 +56,7 @@ _returns->_returns_1 = 2 ;
 return ;
 }
 _mi32 main() {
+struct _myroutine_returns _myroutine_get_returns ;
+myroutine(&_myroutine_get_returns) ;
 return 0 ;
 }

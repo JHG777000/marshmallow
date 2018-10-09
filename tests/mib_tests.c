@@ -122,6 +122,18 @@ int main(int argc, const char **argv) {
     
     z->value = rkstr("0") ;
     
+    cg_variable z2 = cg_new_variable(rkstr("z2"), i32, -1, -1, 0, 0) ;
+    
+    z2->value = rkstr("0") ;
+    
+    cg_variable z3 = cg_new_variable(rkstr("z3"), i32, -1, -1, 0, 0) ;
+    
+    z3->value = rkstr("0") ;
+    
+    cg_variable z4 = cg_new_variable(rkstr("z4"), i32, -1, -1, 0, 0) ;
+    
+    z4->value = rkstr("0") ;
+    
     cg_variable call = cg_new_variable(NULL, collection, -1, -1, 0, 0) ;
     
     call->values = RKList_NewList() ;
@@ -147,6 +159,12 @@ int main(int argc, const char **argv) {
     
     cg_add_variable_to_routine(z, my_routine) ;
     
+    cg_add_variable_to_routine(z2, my_routine) ;
+    
+    cg_add_variable_to_routine(z3, my_routine) ;
+    
+    cg_add_variable_to_routine(z4, my_routine) ;
+    
     cg_add_variable_to_routine(call, my_routine) ;
     
     cg_add_variable_to_routine(one, my_routine) ;
@@ -164,6 +182,7 @@ int main(int argc, const char **argv) {
     
     RKList_AddToList(call->values, y) ;
     
+    
     mib_add_statement(cg_call, my_routine, call) ;
     
     mib_add_statement(mib_group, my_routine, NULL) ;
@@ -175,6 +194,40 @@ int main(int argc, const char **argv) {
     mib_add_statement(cg_get_return, my_routine, NULL) ;
     
     mib_add_statement(mib_exitgroup, my_routine, NULL) ;
+    
+    
+    mib_add_statement(mib_group, my_routine, NULL) ;
+    
+    mib_add_statement(mib_var, my_routine, z2) ;
+    
+    mib_add_statement(cg_assignment, my_routine, NULL) ;
+    
+    mib_add_statement(cg_get_return, my_routine, NULL) ;
+    
+    mib_add_statement(mib_exitgroup, my_routine, NULL) ;
+    
+    
+    mib_add_statement(mib_group, my_routine, NULL) ;
+    
+    mib_add_statement(mib_var, my_routine, z3) ;
+    
+    mib_add_statement(cg_assignment, my_routine, NULL) ;
+    
+    mib_add_statement(cg_get_return, my_routine, NULL) ;
+    
+    mib_add_statement(mib_exitgroup, my_routine, NULL) ;
+    
+    
+    mib_add_statement(mib_group, my_routine, NULL) ;
+    
+    mib_add_statement(mib_var, my_routine, z4) ;
+    
+    mib_add_statement(cg_assignment, my_routine, NULL) ;
+    
+    mib_add_statement(cg_get_return, my_routine, NULL) ;
+    
+    mib_add_statement(mib_exitgroup, my_routine, NULL) ;
+    
     
     mib_add_statement(mib_group, my_routine, NULL) ;
     
@@ -259,7 +312,19 @@ int main(int argc, const char **argv) {
     
     zero->is_literal = 1 ;
     
+    cg_variable call2 = cg_new_variable(NULL, collection, -1, -1, 0, 0) ;
+    
+    call2->values = RKList_NewList() ;
+    
+    call2->is_literal = 1 ;
+    
+    RKList_AddToList(call2->values, my_routine) ;
+    
     cg_add_variable_to_routine(zero, main) ;
+    
+    cg_add_variable_to_routine(call2, main) ;
+    
+    mib_add_statement(cg_call, main, call2) ;
     
     mib_add_statement(mib_group, main, NULL) ;
     

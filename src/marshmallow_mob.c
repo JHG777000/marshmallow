@@ -26,7 +26,7 @@ static RKString get_name_for_tempvar( int* tempvars ) {
     
     RKString name = rkstr(string) ;
     
-    RKString retname = RKString_AppendString(rkstr("V"), name) ;
+    RKString retname = RKString_AppendString(rkstr("_V"), name) ;
     
     RKString_DestroyString(name) ;
     
@@ -43,7 +43,7 @@ static RKString get_name_for_retvar( int* retvars ) {
     
     RKString name = rkstr(string) ;
     
-    RKString retname = RKString_AppendString(rkstr("R"), name) ;
+    RKString retname = RKString_AppendString(rkstr("_R"), name) ;
     
     RKString_DestroyString(name) ;
     
@@ -60,7 +60,7 @@ static RKString get_name_for_getretvar( int* getretvars ) {
     
     RKString name = rkstr(string) ;
     
-    RKString retname = RKString_AppendString(rkstr("GR"), name) ;
+    RKString retname = RKString_AppendString(rkstr("_GR"), name) ;
     
     RKString_DestroyString(name) ;
     
@@ -94,8 +94,6 @@ static void mob_process_statement( cg_routine routine, cg_statement statement, i
     cg_variable A = NULL ;
     
     cg_variable B = NULL ;
-    
-    cg_variable C = NULL ;
     
     RKList list = NULL ;
     
@@ -183,7 +181,7 @@ static void mob_process_statement( cg_routine routine, cg_statement statement, i
         
         case cg_get_return:
         
-           type = ((cg_variable)RKList_GetData(RKList_GetNode(((cg_routine)RKStack_Pop(routine->mob_call_stack))->return_types, *getretvar))) ;
+           type = ((cg_variable)RKList_GetData(RKList_GetNode(((cg_routine)RKStack_Peek(routine->mob_call_stack))->return_types, *getretvar))) ;
         
            variable = cg_new_variable(get_name_for_getretvar(getretvar), type->type, -1, *getretvar-1, type->num_of_elements, 0) ;
         
@@ -213,9 +211,9 @@ static void mob_process_statement( cg_routine routine, cg_statement statement, i
             
             A = RKStack_Pop(routine->mob_stack) ;
             
-            mlb_add_statement(mlb_set, routine, A, B,NULL) ;
+            mlb_add_statement(mlb_set, routine, A, B, NULL) ;
             
-            RKStack_Push(routine->mob_stack, variable) ;
+            RKStack_Push(routine->mob_stack, A) ;
             
             break;
             
