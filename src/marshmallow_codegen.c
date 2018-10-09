@@ -1825,6 +1825,8 @@ cg_routine cg_new_routine( RKString name, int is_global ) {
     
     routine->mob_stack = RKStack_NewStack() ;
     
+    routine->mob_call_stack = RKStack_NewStack() ;
+    
     return routine ;
 }
 
@@ -1882,6 +1884,8 @@ void cg_destroy_routine( cg_routine routine ) {
     }
     
     RKStack_DestroyStack(routine->mob_stack) ;
+    
+    RKStack_DestroyStack(routine->mob_call_stack) ;
     
     RKStore_DestroyStore(routine->calls) ;
     
@@ -1983,8 +1987,6 @@ void cg_destroy_variable( cg_variable variable ) {
     RKString_DestroyString(variable->name) ;
     
     if ( variable->value != NULL ) RKString_DestroyString(variable->value) ;
-    
-    if ( variable->values != NULL ) RKList_IterateListWith(DeleteVariableInListOrStore, variable->values) ;
     
     if ( variable->values != NULL ) RKList_DeleteList(variable->values) ;
     

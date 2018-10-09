@@ -115,7 +115,7 @@ struct cg_routine_s { cg_entity_type entity_type ; RKString name ; int is_global
     
 RKList return_types ; RKStore parameters ; RKStore variables ; RKStore calls ; RKList mib_code ; RKList mob_code ; RKList optimized_mlb_code ;
     
-RKList mlb_code ; RKStack mob_stack ; cg_module module ; }  ;
+RKList mlb_code ; RKStack mob_stack ; RKStack mob_call_stack ; cg_module module ; }  ;
 
 struct cg_variable_s { cg_entity_type entity_type ; RKString name ; cg_root_type type ; RKString value ; RKList values ; RKStore class_values ;
 

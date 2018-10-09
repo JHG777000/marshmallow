@@ -134,8 +134,7 @@ static void mob_process_statement( cg_routine routine, cg_statement statement, i
         
            mlb_add_statement(statement->op, routine, statement->var, NULL, NULL) ;
         
-           RKStack_Push(routine->mob_stack, RKStore_GetItem(routine->module->routines,
-                                                            RKString_GetString(RKList_GetData(RKList_GetFirstNode(statement->var->values))))) ;
+           RKStack_Push(routine->mob_call_stack, RKList_GetData(RKList_GetFirstNode(statement->var->values))) ;
             
            *getretvar = 0 ;
         
@@ -184,9 +183,9 @@ static void mob_process_statement( cg_routine routine, cg_statement statement, i
         
         case cg_get_return:
         
-           type = ((cg_variable)RKList_GetData(RKList_GetNode(((cg_routine)RKStack_Pop(routine->mob_stack))->return_types, *getretvar+1))) ;
+           type = ((cg_variable)RKList_GetData(RKList_GetNode(((cg_routine)RKStack_Pop(routine->mob_call_stack))->return_types, *getretvar))) ;
         
-           variable = cg_new_variable(get_name_for_getretvar(getretvar), type->type, -1, *getretvar, type->num_of_elements, 0) ;
+           variable = cg_new_variable(get_name_for_getretvar(getretvar), type->type, -1, *getretvar-1, type->num_of_elements, 0) ;
         
            variable->is_temporary = 1 ;
         

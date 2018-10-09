@@ -51,6 +51,55 @@ int main(int argc, const char **argv) {
     cg_add_class_element(var_d, my_class) ;
     
     
+    cg_routine other_routine = cg_new_routine(rkstr("other_routine"), 1) ;
+    
+    cg_add_routine_declaration_to_module(other_routine, my_module) ;
+    
+    cg_variable A = cg_new_variable(rkstr("A"), i32, -1, -1, 0, 0) ;
+    
+    cg_variable B = cg_new_variable(rkstr("B"), i32, -1, -1, 0, 0) ;
+    
+    cg_variable C = cg_new_variable(rkstr("C"), i32, -1, -1, 0, 0) ;
+    
+    cg_variable D = cg_new_variable(rkstr("D"), i32, -1, -1, 0, 0) ;
+    
+    RKStore_AddItem(other_routine->parameters, A, "A") ;
+    
+    RKStore_AddItem(other_routine->parameters, B, "B") ;
+    
+    RKStore_AddItem(other_routine->parameters, C, "C") ;
+    
+    RKStore_AddItem(other_routine->parameters, D, "D") ;
+    
+    cg_add_return_to_returns_in_routine(cg_new_variable(NULL,i32,-1,-1,0,0), other_routine) ;
+    
+    cg_add_return_to_returns_in_routine(cg_new_variable(NULL,i32,-1,-1,0,0), other_routine) ;
+    
+    cg_add_return_to_returns_in_routine(cg_new_variable(NULL,i32,-1,-1,0,0), other_routine) ;
+    
+    cg_add_return_to_returns_in_routine(cg_new_variable(NULL,i32,-1,-1,0,0), other_routine) ;
+    
+    cg_add_routine_to_module(other_routine, my_module) ;
+    
+    mib_add_statement(mib_group, other_routine, NULL) ;
+    
+    mib_add_statement(cg_return, other_routine, NULL) ;
+    
+    mib_add_statement(mib_var, other_routine, A) ;
+    
+    mib_add_statement(mib_var, other_routine, B) ;
+    
+    mib_add_statement(mib_var, other_routine, C) ;
+    
+    mib_add_statement(mib_var, other_routine, D) ;
+    
+    mib_add_statement(mib_endgroup, other_routine, NULL) ;
+    
+    mib_generate_mob(other_routine) ;
+    
+    mob_generate_mlb(other_routine) ;
+    
+    
     cg_routine my_routine = cg_new_routine(rkstr("myroutine"), 1) ;
     
     cg_add_routine_declaration_to_module(my_routine, my_module) ;
@@ -63,8 +112,21 @@ int main(int argc, const char **argv) {
     
     cg_variable x = cg_new_variable(rkstr("x"), i32, -1, -1, 0, 0) ;
     
+    x->value = rkstr("0") ;
+    
     cg_variable y = cg_new_variable(rkstr("y"), i32, -1, -1, 0, 0) ;
     
+    y->value = rkstr("0") ;
+    
+    cg_variable z = cg_new_variable(rkstr("z"), i32, -1, -1, 0, 0) ;
+    
+    z->value = rkstr("0") ;
+    
+    cg_variable call = cg_new_variable(NULL, collection, -1, -1, 0, 0) ;
+    
+    call->values = RKList_NewList() ;
+    
+    call->is_literal = 1 ;
     
     cg_variable one = cg_new_variable(NULL, i32, -1, -1, 0, 0) ;
     
@@ -83,10 +145,36 @@ int main(int argc, const char **argv) {
     
     cg_add_variable_to_routine(y, my_routine) ;
     
+    cg_add_variable_to_routine(z, my_routine) ;
+    
+    cg_add_variable_to_routine(call, my_routine) ;
+    
     cg_add_variable_to_routine(one, my_routine) ;
     
     cg_add_variable_to_routine(two, my_routine) ;
     
+    
+    RKList_AddToList(call->values, other_routine) ;
+    
+    RKList_AddToList(call->values, one) ;
+    
+    RKList_AddToList(call->values, two) ;
+    
+    RKList_AddToList(call->values, x) ;
+    
+    RKList_AddToList(call->values, y) ;
+    
+    mib_add_statement(cg_call, my_routine, call) ;
+    
+    mib_add_statement(mib_group, my_routine, NULL) ;
+    
+    mib_add_statement(mib_var, my_routine, z) ;
+    
+    mib_add_statement(cg_assignment, my_routine, NULL) ;
+    
+    mib_add_statement(cg_get_return, my_routine, NULL) ;
+    
+    mib_add_statement(mib_exitgroup, my_routine, NULL) ;
     
     mib_add_statement(mib_group, my_routine, NULL) ;
     
@@ -184,6 +272,7 @@ int main(int argc, const char **argv) {
     mib_generate_mob(main) ;
     
     mob_generate_mlb(main) ;
+    
     
     cg_give_context_to_backend(my_context, backend) ;
     
