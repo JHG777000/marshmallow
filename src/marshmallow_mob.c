@@ -242,18 +242,20 @@ static void mob_process_statement( cg_routine routine, cg_statement statement, i
             break;
         
         case cg_assignment:
+        case cg_array_copy:
             
             B = RKStack_Pop(routine->mob_stack) ;
             
             A = RKStack_Pop(routine->mob_stack) ;
             
-            mlb_add_statement(mlb_set, routine, A, B, NULL) ;
+            if ( statement->op == cg_assignment ) mlb_add_statement(mlb_set, routine, A, B, NULL) ;
+            
+            if ( statement->op == cg_array_copy ) mlb_add_statement(cg_array_copy, routine, A, B, NULL) ;
             
             RKStack_Push(routine->mob_stack, A) ;
             
             break;
-            
-        case cg_array_copy:
+        
         case cg_sizeof:
         case cg_deref:
         case cg_addrof:
@@ -266,9 +268,7 @@ static void mob_process_statement( cg_routine routine, cg_statement statement, i
             
             cg_add_variable_to_routine(variable, routine) ;
             
-            mlb_add_statement(statement->op, routine, variable, RKStack_Pop(routine->mob_stack),NULL) ;
-            
-            cg_add_variable_to_routine(variable, routine) ;
+            mlb_add_statement(statement->op, routine, variable, RKStack_Pop(routine->mob_stack), NULL) ;
             
             RKStack_Push(routine->mob_stack, variable) ;
             
@@ -302,9 +302,9 @@ static void mob_process_statement( cg_routine routine, cg_statement statement, i
             
             A = RKStack_Pop(routine->mob_stack) ;
             
-            mlb_add_statement(statement->op, routine, variable, A, B) ;
-            
             cg_add_variable_to_routine(variable, routine) ;
+            
+            mlb_add_statement(statement->op, routine, variable, A, B) ;
             
             RKStack_Push(routine->mob_stack, variable) ;
             
