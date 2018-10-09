@@ -63,6 +63,10 @@ int main(int argc, const char **argv) {
     
     cg_variable D = cg_new_variable(rkstr("D"), i32, -1, -1, 0, 0) ;
     
+    cg_variable E = cg_new_variable(rkstr("E"), array, -1, -1, 10, 0) ;
+    
+    E->ptr = cg_new_variable(NULL, i32, -1, -1, 0, 0) ;
+    
     RKStore_AddItem(other_routine->parameters, A, "A") ;
     
     RKStore_AddItem(other_routine->parameters, B, "B") ;
@@ -71,13 +75,21 @@ int main(int argc, const char **argv) {
     
     RKStore_AddItem(other_routine->parameters, D, "D") ;
     
-    cg_add_return_to_returns_in_routine(cg_new_variable(NULL,i32,-1,-1,0,0), other_routine) ;
+    cg_add_variable_to_routine(E, other_routine) ;
     
     cg_add_return_to_returns_in_routine(cg_new_variable(NULL,i32,-1,-1,0,0), other_routine) ;
     
     cg_add_return_to_returns_in_routine(cg_new_variable(NULL,i32,-1,-1,0,0), other_routine) ;
     
     cg_add_return_to_returns_in_routine(cg_new_variable(NULL,i32,-1,-1,0,0), other_routine) ;
+    
+    cg_add_return_to_returns_in_routine(cg_new_variable(NULL,i32,-1,-1,0,0), other_routine) ;
+    
+    cg_variable ERet = cg_new_variable(NULL, array, -1, -1, 10, 0) ;
+    
+    ERet->ptr = cg_new_variable(NULL, i32, -1, -1, 0, 0) ;
+    
+    cg_add_return_to_returns_in_routine(ERet, other_routine) ;
     
     cg_add_routine_to_module(other_routine, my_module) ;
     
@@ -92,6 +104,8 @@ int main(int argc, const char **argv) {
     mib_add_statement(mib_var, other_routine, C) ;
     
     mib_add_statement(mib_var, other_routine, D) ;
+    
+    mib_add_statement(mib_var, other_routine, E) ;
     
     mib_add_statement(mib_endgroup, other_routine, NULL) ;
     

@@ -85,6 +85,42 @@ loop:
     return 0 ;
 }
 
+static cg_variable make_tempvar( cg_variable var, cg_variable type ) {
+    
+    cg_variable t = type ;
+    
+    cg_variable v = var ;
+    
+    var->is_temporary = 1 ;
+    
+loop:
+    
+    if ( t->index >= 0 || t->class_element != NULL ) {
+    
+        t = t->ptr ;
+        
+        goto loop ;
+    }
+    
+    if ( t->type == array ) {
+        
+        v->num_of_elements = t->num_of_elements ;
+    }
+    
+    if ( t->type == ptr || t->type == array || t->type == class ) {
+        
+        v->ptr = cg_new_variable(NULL, t->ptr->type, -1, -1, 0, 0) ;
+        
+        t = t->ptr ;
+        
+        v = v->ptr ;
+        
+        goto loop ;
+    }
+    
+    return var ;
+}
+
 static void mob_process_statement( cg_routine routine, cg_statement statement, int* tempvars, int* getretvar) {
     
     cg_variable variable = NULL ;
@@ -154,9 +190,9 @@ static void mob_process_statement( cg_routine routine, cg_statement statement, i
                     
                         type = RKList_GetData(node) ;
                         
-                        variable = cg_new_variable(get_name_for_retvar(&retvar), type->type, retvar-1, -1, type->num_of_elements, 0) ;
+                        variable = cg_new_variable(get_name_for_retvar(&retvar), type->type, retvar-1, -1, 0, 0) ;
                         
-                        variable->is_temporary = 1 ;
+                        make_tempvar(variable, type) ;
                         
                         cg_add_variable_to_routine(variable, routine) ;
                         
@@ -183,9 +219,9 @@ static void mob_process_statement( cg_routine routine, cg_statement statement, i
         
            type = ((cg_variable)RKList_GetData(RKList_GetNode(((cg_routine)RKStack_Peek(routine->mob_call_stack))->return_types, *getretvar))) ;
         
-           variable = cg_new_variable(get_name_for_getretvar(getretvar), type->type, -1, *getretvar-1, type->num_of_elements, 0) ;
+           variable = cg_new_variable(get_name_for_getretvar(getretvar), type->type, -1, *getretvar-1, 0, 0) ;
         
-           variable->is_temporary = 1 ;
+           make_tempvar(variable, type) ;
         
            cg_add_variable_to_routine(variable, routine) ;
             
@@ -226,7 +262,7 @@ static void mob_process_statement( cg_routine routine, cg_statement statement, i
             
             variable = cg_new_variable(get_name_for_tempvar(tempvars), ((cg_variable)RKStack_Peek(routine->mob_stack))->type, -1, -1, 0, 0) ;
             
-            variable->is_temporary = 1 ;
+            make_tempvar(variable, ((cg_variable)RKStack_Peek(routine->mob_stack))) ;
             
             cg_add_variable_to_routine(variable, routine) ;
             
@@ -258,7 +294,7 @@ static void mob_process_statement( cg_routine routine, cg_statement statement, i
             
             variable = cg_new_variable(get_name_for_tempvar(tempvars), ((cg_variable)RKStack_Peek(routine->mob_stack))->type, -1, -1, 0, 0) ;
             
-            variable->is_temporary = 1 ;
+            make_tempvar(variable, ((cg_variable)RKStack_Peek(routine->mob_stack))) ;
             
             cg_add_variable_to_routine(variable, routine) ;
             

@@ -16,16 +16,18 @@ typedef unsigned long _mu64 ;
 
 struct myclass ; 
 struct myclass { _mi32 var_a ; _mi64 var_b ; _mu64 var_c ; _mi32 var_d[10] ; } ;
-struct _other_routine_returns { _mi32 _returns_0 ; _mi32 _returns_1 ; _mi32 _returns_2 ; _mi32 _returns_3 ; } ;
+struct _other_routine_returns { _mi32 _returns_0 ; _mi32 _returns_1 ; _mi32 _returns_2 ; _mi32 _returns_3 ; _mi32 _returns_4[10] ; } ;
 void other_routine(struct _other_routine_returns* _returns,_mi32 A,_mi32 B,_mi32 C,_mi32 D) ;
 struct _myroutine_returns { _mi32 _returns_0 ; _mi32 _returns_1 ; } ;
 void myroutine(struct _myroutine_returns* _returns) ;
 void memcpy(void *dest,void *src,_mu64 n) ;
 void other_routine(struct _other_routine_returns* _returns,_mi32 A,_mi32 B,_mi32 C,_mi32 D) {
+_mi32 E[10] ;
 _returns->_returns_0 = A ;
 _returns->_returns_1 = B ;
 _returns->_returns_2 = C ;
 _returns->_returns_3 = D ;
+memcpy(_returns->_returns_4,E,sizeof(E)) ;
 return ;
 }
 void myroutine(struct _myroutine_returns* _returns) {

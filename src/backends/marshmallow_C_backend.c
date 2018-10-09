@@ -779,6 +779,23 @@ static void output_value( FILE* file, cg_variable value, void* static_assignment
     
     if ( value->type == character ) fprintf(file, "L\'") ;
     
+    if ( value->type == ptr ) {
+        
+        if ( value->ptr->type == nulltype && value->is_literal ) {
+            
+            fprintf(file, "%s", "((void*)0)") ;
+            
+            return ;
+        }
+        
+        if ( value->ptr->type == nulltype && !value->is_literal ) {
+            
+            printf("codegen error: null must be a literal.\n") ;
+            
+            exit(EXIT_FAILURE) ;
+        }
+    }
+    
     if ( value->class_element != NULL ) {
         
         output_value(file, value->ptr, NULL, routine) ;
@@ -1168,9 +1185,11 @@ static void output_signature( FILE* file, cg_routine routine, int output_returns
             
             returns_index = get_routines_returns_name_from_index(i) ;
             
-            fprintf(file, "%s",RKString_GetString(returns_index)) ;
+            fprintf(file, "%s", RKString_GetString(returns_index)) ;
             
             RKString_DestroyString(returns_index) ;
+            
+            output_array(file, RKList_GetData(node), NULL) ;
             
             fprintf(file, " ; ") ;
             

@@ -1569,6 +1569,8 @@ static void validate_definition( cg_context context, cg_routine routine, cg_vari
                 if ( !cg_variables_are_equal(RKList_GetData(node),RKList_GetData(node2)) ) goto error ;
                 
                 node = RKList_GetNextNode(node) ;
+                
+                node2 = RKList_GetNextNode(node2) ;
             }
             
         }
