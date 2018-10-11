@@ -196,7 +196,7 @@ void mlb_validate_variable( cg_variable variable ) {
     }
     
     if ( variable->ptr == NULL && (variable->mlb_return_value < 0 && variable->mlb_get_return_value < 0) &&
-        (variable->type == ptr || variable->type == array || variable->type == class
+        (variable->type == ptr || variable->type == array || (variable->type == class && variable->class_values == NULL) 
         || variable->class_element != NULL || variable->index >= 0)) {
         
         printf("codegen error: failed to validate a cg variable. C.\n") ;
@@ -393,7 +393,6 @@ void mlb_validate_statement( mlb_statement statement ) {
             
         case cg_if:
         case cg_else_if:
-        case cg_while:
         case cg_switch:
         case cg_call:
             
@@ -408,12 +407,9 @@ void mlb_validate_statement( mlb_statement statement ) {
             
         case cg_else:
         case cg_endif:
-        case cg_endwhile:
         case cg_endswitch:
         case cg_endcase:
         case cg_default:
-        case cg_break:
-        case cg_continue:
         case cg_return:
             
             if (statement->A != NULL || statement->B != NULL || statement->C != NULL) {

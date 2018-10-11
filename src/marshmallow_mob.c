@@ -141,9 +141,6 @@ static void mob_process_statement( cg_routine routine, cg_statement statement, i
             
         case cg_else:
         case cg_endif:
-        case cg_endwhile:
-        case cg_break:
-        case cg_continue:
         case cg_default:
         case cg_endcase:
         case cg_endswitch:
@@ -229,13 +226,17 @@ static void mob_process_statement( cg_routine routine, cg_statement statement, i
         
            break;
         
-        case cg_if:
-        case cg_else_if:
-        case cg_while:
-        case cg_switch:
         case cg_case:
         case cg_goto:
         case cg_section:
+            
+            mlb_add_statement(statement->op, routine, statement->var, NULL, NULL) ;
+            
+            break;
+            
+        case cg_if:
+        case cg_else_if:
+        case cg_switch:
             
             mlb_add_statement(statement->op, routine, RKStack_Pop(routine->mob_stack), NULL, NULL) ;
             

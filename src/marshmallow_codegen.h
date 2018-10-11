@@ -129,9 +129,7 @@ cg_add, cg_sub, cg_mult, cg_div, cg_rem, cg_rshift, cg_lshift, cg_and, cg_or, cg
     
 cg_not, cg_logic_and, cg_logic_or, cg_logic_not, cg_deref, cg_addrof, cg_sizeof, cg_cast, cg_array_copy, cg_if,
     
-cg_endif, cg_else, cg_else_if, cg_while, cg_endwhile, cg_break, cg_continue,
-    
-cg_switch, cg_endswitch, cg_case, cg_endcase, cg_default, cg_goto, cg_section, cg_equals, cg_not_equals,
+cg_endif, cg_else, cg_else_if, cg_switch, cg_endswitch, cg_case, cg_endcase, cg_default, cg_goto, cg_section, cg_equals, cg_not_equals,
     
 cg_greaterthan, cg_lessthan, cg_greaterthan_or_equals, cg_lessthan_or_equals,
     

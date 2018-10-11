@@ -62,7 +62,10 @@ static RKList_node mib_process_statement( cg_routine routine, RKList_node node )
                 break;
             
             case cg_call:
-            
+            case cg_case:
+            case cg_goto:
+            case cg_section:
+                
                  mob_add_statement(statement->op, routine, statement->var) ;
             
                 break;
@@ -77,9 +80,6 @@ static RKList_node mib_process_statement( cg_routine routine, RKList_node node )
                 
             case cg_else:
             case cg_endif:
-            case cg_endwhile:
-            case cg_break:
-            case cg_continue:
             case cg_default:
             case cg_endcase:
             case cg_endswitch:

@@ -244,9 +244,8 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
     cg_routine last_routine_to_be_called = NULL ;
     
     switch (statement->op) {
-         
+            
         case cg_endif:
-        case cg_endwhile:
         case cg_endswitch:
             
             fprintf(file, "}") ;
@@ -259,16 +258,9 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
             break;
             
-        case cg_break:
         case cg_endcase:
             
             fprintf(file, "break") ;
-            
-            break;
-            
-        case cg_continue:
-            
-            fprintf(file, "continue") ;
             
             break;
             
@@ -297,16 +289,6 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
         case cg_else_if:
             
             fprintf(file, "} else if (") ;
-            
-            output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
-            
-            fprintf(file, ") {") ;
-            
-            break;
-            
-        case cg_while:
-            
-            fprintf(file, "while (") ;
             
             output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
             

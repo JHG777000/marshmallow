@@ -23,6 +23,17 @@ void myroutine(struct _myroutine_returns* _returns) ;
 void memcpy(void *dest,void *src,_mu64 n) ;
 void other_routine(struct _other_routine_returns* _returns,_mi32 A,_mi32 B,_mi32 C,_mi32 D) {
 _mi32 E[10] ;
+_mi32 _V0 ;
+_mi32 _V1 ;
+if (A) { ;
+loop: ;
+_V0 = A < B ;
+if (_V0) { ;
+_V1 = A + B ;
+A = _V1 ;
+goto loop ;
+} ;
+} ;
 _returns->_returns_0 = A ;
 _returns->_returns_1 = B ;
 _returns->_returns_2 = C ;

@@ -93,7 +93,69 @@ int main(int argc, const char **argv) {
     
     cg_add_routine_to_module(other_routine, my_module) ;
     
+    cg_variable section_var = cg_new_variable(NULL, i8, -1, -1, 0, 0) ;
+    
+    section_var->is_literal = 1 ;
+    
+    section_var->value = rkstr("loop") ;
+    
+    cg_add_variable_to_routine(section_var, other_routine) ;
+    
     mib_add_statement(mib_group, other_routine, NULL) ;
+    
+    mib_add_statement(cg_if, other_routine, NULL) ;
+    
+    mib_add_statement(mib_var, other_routine, A) ;
+    
+    mib_add_statement(mib_endgroup, other_routine, NULL) ;
+    
+    mib_add_statement(mib_group, other_routine, NULL) ;
+    
+    mib_add_statement(mib_group, other_routine, NULL) ;
+    
+    mib_add_statement(cg_section, other_routine, section_var) ;
+    
+    mib_add_statement(cg_if, other_routine, NULL) ;
+    
+    mib_add_statement(mib_group, other_routine, NULL) ;
+    
+    mib_add_statement(mib_var, other_routine, A) ;
+    
+    mib_add_statement(cg_lessthan, other_routine, NULL) ;
+    
+    mib_add_statement(mib_var, other_routine, B) ;
+    
+    mib_add_statement(mib_endgroup, other_routine, NULL) ;
+    
+    mib_add_statement(mib_endgroup, other_routine, NULL) ;
+    
+    
+    mib_add_statement(mib_group, other_routine, NULL) ;
+    
+    mib_add_statement(mib_var, other_routine, A) ;
+    
+    mib_add_statement(cg_assignment, other_routine, NULL) ;
+    
+    mib_add_statement(mib_group, other_routine, NULL) ;
+    
+    mib_add_statement(mib_var, other_routine, A) ;
+    
+    mib_add_statement(cg_add, other_routine, NULL) ;
+    
+    mib_add_statement(mib_var, other_routine, B) ;
+    
+    mib_add_statement(mib_endgroup, other_routine, NULL) ;
+    
+    mib_add_statement(mib_exitgroup, other_routine, NULL) ;
+    
+    
+    mib_add_statement(cg_goto, other_routine, section_var) ;
+    
+    
+    mib_add_statement(cg_endif, other_routine, NULL) ;
+    
+    mib_add_statement(cg_endif, other_routine, NULL) ;
+    
     
     mib_add_statement(cg_return, other_routine, NULL) ;
     
