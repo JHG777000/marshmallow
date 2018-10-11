@@ -109,6 +109,7 @@ int main(int argc, const char **argv) {
     
     mib_add_statement(mib_endgroup, other_routine, NULL) ;
     
+    
     mib_add_statement(mib_group, other_routine, NULL) ;
     
     mib_add_statement(mib_group, other_routine, NULL) ;
@@ -149,6 +150,8 @@ int main(int argc, const char **argv) {
     mib_add_statement(mib_exitgroup, other_routine, NULL) ;
     
     
+    mib_add_statement(mib_endgroup, other_routine, NULL) ;
+    
     mib_add_statement(cg_goto, other_routine, section_var) ;
     
     
@@ -156,6 +159,8 @@ int main(int argc, const char **argv) {
     
     mib_add_statement(cg_endif, other_routine, NULL) ;
     
+    
+    mib_add_statement(mib_group, other_routine, NULL) ;
     
     mib_add_statement(cg_return, other_routine, NULL) ;
     
@@ -304,6 +309,62 @@ int main(int argc, const char **argv) {
     
     mib_add_statement(mib_exitgroup, my_routine, NULL) ;
     
+    
+    mib_add_statement(mib_group, my_routine, NULL) ;
+    
+    mib_add_statement(cg_switch, my_routine, NULL) ;
+    
+    mib_add_statement(mib_var, my_routine, z) ;
+    
+    mib_add_statement(mib_endgroup, my_routine, NULL) ;
+    
+    
+    mib_add_statement(cg_case, my_routine, one) ;
+    
+    mib_add_statement(mib_group, my_routine, NULL) ;
+    
+    mib_add_statement(mib_var, my_routine, z2) ;
+    
+    mib_add_statement(cg_mult, my_routine, NULL) ;
+    
+    mib_add_statement(mib_var, my_routine, z) ;
+    
+    mib_add_statement(mib_endgroup, my_routine, NULL) ;
+    
+    mib_add_statement(cg_endcase, my_routine, NULL) ;
+    
+    
+    mib_add_statement(cg_case, my_routine, two) ;
+    
+    mib_add_statement(mib_group, my_routine, NULL) ;
+    
+    mib_add_statement(mib_var, my_routine, z2) ;
+    
+    mib_add_statement(cg_div, my_routine, NULL) ;
+    
+    mib_add_statement(mib_var, my_routine, z) ;
+    
+    mib_add_statement(mib_endgroup, my_routine, NULL) ;
+    
+    mib_add_statement(cg_endcase, my_routine, NULL) ;
+    
+    
+    mib_add_statement(cg_default, my_routine, NULL) ;
+    
+    mib_add_statement(mib_group, my_routine, NULL) ;
+    
+    mib_add_statement(mib_var, my_routine, z2) ;
+    
+    mib_add_statement(cg_rem, my_routine, NULL) ;
+    
+    mib_add_statement(mib_var, my_routine, z) ;
+    
+    mib_add_statement(mib_endgroup, my_routine, NULL) ;
+    
+    mib_add_statement(cg_endcase, my_routine, NULL) ;
+    
+    
+    mib_add_statement(cg_endswitch, my_routine, NULL) ;
     
     mib_add_statement(mib_group, my_routine, NULL) ;
     

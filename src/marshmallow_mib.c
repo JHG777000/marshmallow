@@ -18,7 +18,7 @@
 #include "marshmallow.h"
 #include "marshmallow_codegen.h"
 
-static RKList_node mib_process_statement( cg_routine routine, RKList_node node ) {
+static RKList_node mib_process_statement( cg_routine routine, RKList_node node, int* group_balance ) {
     
     cg_statement statement = NULL ;
     
@@ -32,11 +32,15 @@ static RKList_node mib_process_statement( cg_routine routine, RKList_node node )
                 
             case mib_group:
                 
-                node = mib_process_statement(routine, RKList_GetNextNode(node)) ;
+                (*group_balance)++ ;
+                
+                node = mib_process_statement(routine, RKList_GetNextNode(node),group_balance) ;
                 
                 break;
                 
             case mib_endgroup:
+                
+                (*group_balance)-- ;
                 
                 mob_add_statement(operator_for_group, routine, NULL) ;
                 
@@ -45,6 +49,8 @@ static RKList_node mib_process_statement( cg_routine routine, RKList_node node )
                 break;
                 
             case mib_exitgroup:
+                
+                (*group_balance)-- ;
                 
                 mob_add_statement(operator_for_group, routine, NULL) ;
                 
@@ -105,12 +111,21 @@ static RKList_node mib_process_statement( cg_routine routine, RKList_node node )
 
 void mib_generate_mob( cg_routine routine ) {
     
+    int group_balance = 0 ;
+    
     RKList list = routine->mib_code ;
     
     if ( list != NULL ) {
         
-        mib_process_statement(routine,RKList_GetFirstNode(list)) ;
+        mib_process_statement(routine,RKList_GetFirstNode(list),&group_balance) ;
         
+    }
+    
+    if ( group_balance != 0  ) {
+        
+        printf("codegen error: failed to validate a mib statement. Groups are not balanced.\n") ;
+        
+        exit(EXIT_FAILURE) ;
     }
 }
 

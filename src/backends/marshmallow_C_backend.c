@@ -308,7 +308,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
             
         case cg_case:
             
-            fprintf(file, "case") ;
+            fprintf(file, "case ") ;
             
             output_value(file, statement->A, NULL, *last_routine_to_be_called_ptr) ;
             
