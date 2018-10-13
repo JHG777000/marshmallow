@@ -142,3 +142,14 @@ token(external,"external")
 token(typedef,"typedef")
 
 token(readonly,"readonly")
+
+token(publish,"publish")
+
+token(public,"public")
+
+token(private,"private")
+
+token(protected,"protected")
+
+token(inherit,"inherit")
+

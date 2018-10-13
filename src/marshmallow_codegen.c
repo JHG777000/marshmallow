@@ -1462,6 +1462,8 @@ static void output_app( marshmallow_context context, FILE* file ) {
     }
 }
 
+static void cg_output_app( marshmallow_context context, FILE* file ) ;
+
 void marshmallow_codegen( marshmallow_context context, FILE* out_file ) {
     
     RKStore_AddItem(context->symbols, rkstr("item"), "memcpy") ;
@@ -1492,10 +1494,91 @@ void marshmallow_codegen( marshmallow_context context, FILE* out_file ) {
     
     #undef token
     
-    output_app(context, out_file) ;
+    #if 1
+    
+     output_app(context, out_file) ;
+    
+    #else
+    
+     cg_output_app(context, out_file) ;
+    
+    #endif
 }
 
 //////////////////NEW CODEGEN//////////////////////////////////////////////////
+
+static cg_variable cg_output_new_variable( marshmallow_variable variable ) {
+    
+    cg_variable var = cg_new_variable(RKString_CopyString(variable->name),
+                                      variable->type->root_type, -1, -1, variable->type->num_of_elements, variable->is_global) ;
+    
+    return NULL ;
+}
+
+static void cg_output_module( marshmallow_context context, FILE* file, marshmallow_module module ) {
+    
+    RKList list = NULL ;
+    
+    RKList_node node = NULL ;
+    
+    //output_declarations(context, file, module->declarations, module, 1) ;
+    
+    list = RKStore_GetList(module->variables) ;
+    
+    if ( list != NULL ) {
+        
+        node = RKList_GetFirstNode(list) ;
+        
+        while (node != NULL) {
+            
+            output_variable(context, file, RKList_GetData(node), module, 1, 0) ;
+            
+            fprintf(file, " ;\n") ;
+            
+            node = RKList_GetNextNode(node) ;
+            
+        }
+        
+    }
+    
+    list = RKStore_GetList(module->functions_and_methods) ;
+    
+    if ( list != NULL ) {
+        
+        node = RKList_GetFirstNode(list) ;
+        
+        while (node != NULL) {
+            
+            output_function(context, file, RKList_GetData(node), module) ;
+            
+            node = RKList_GetNextNode(node) ;
+            
+        }
+        
+    }
+}
+
+static void cg_output_app( marshmallow_context context, FILE* file ) {
+    
+    RKList list = NULL ;
+    
+    RKList_node node = NULL ;
+    
+    list = RKStore_GetList(context->modules) ;
+    
+    if ( list != NULL ) {
+        
+        node = RKList_GetFirstNode(list) ;
+        
+        while (node != NULL) {
+            
+            cg_output_module(context, file, RKList_GetData(node)) ;
+            
+            node = RKList_GetNextNode(node) ;
+        }
+        
+    }
+}
 
 static void validate_definition( cg_context context, cg_routine routine, cg_variable variable ) {
     

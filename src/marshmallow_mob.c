@@ -187,20 +187,16 @@ static void mob_process_statement( cg_routine routine, cg_statement statement, i
                     
                         type = RKList_GetData(node) ;
                         
-                        if ( !type->is_temporary ) {
+                        variable = cg_new_variable(get_name_for_retvar(&retvar), type->type, retvar-1, -1, 0, 0) ;
                         
-                         variable = cg_new_variable(get_name_for_retvar(&retvar), type->type, retvar-1, -1, 0, 0) ;
+                        make_tempvar(variable, type) ;
                         
-                         make_tempvar(variable, type) ;
+                        cg_add_variable_to_routine(variable, routine) ;
                         
-                         cg_add_variable_to_routine(variable, routine) ;
+                        if (!is_var_array(type)) mlb_add_statement(mlb_set, routine, variable, RKList_GetData(node), NULL) ;
                         
-                         if (!is_var_array(type)) mlb_add_statement(mlb_set, routine, variable, RKList_GetData(node), NULL) ;
+                        if (is_var_array(type)) mlb_add_statement(cg_array_copy, routine, variable, RKList_GetData(node), NULL) ;
                         
-                         if (is_var_array(type)) mlb_add_statement(cg_array_copy, routine, variable, RKList_GetData(node), NULL) ;
-                        
-                        }
-                            
                         node = RKList_GetNextNode(node) ;
                     }
                     

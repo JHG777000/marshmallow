@@ -329,7 +329,7 @@ int main(int argc, const char **argv) {
     
     mib_add_statement(mib_var, my_routine, z) ;
     
-    mib_add_statement(mib_endgroup, my_routine, NULL) ;
+    mib_add_statement(mib_exitgroup, my_routine, NULL) ;
     
     mib_add_statement(cg_endcase, my_routine, NULL) ;
     
@@ -344,7 +344,7 @@ int main(int argc, const char **argv) {
     
     mib_add_statement(mib_var, my_routine, z) ;
     
-    mib_add_statement(mib_endgroup, my_routine, NULL) ;
+    mib_add_statement(mib_exitgroup, my_routine, NULL) ;
     
     mib_add_statement(cg_endcase, my_routine, NULL) ;
     
@@ -359,7 +359,7 @@ int main(int argc, const char **argv) {
     
     mib_add_statement(mib_var, my_routine, z) ;
     
-    mib_add_statement(mib_endgroup, my_routine, NULL) ;
+    mib_add_statement(mib_exitgroup, my_routine, NULL) ;
     
     mib_add_statement(cg_endcase, my_routine, NULL) ;
     
