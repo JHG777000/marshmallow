@@ -1510,7 +1510,7 @@ void marshmallow_codegen( marshmallow_context context, FILE* out_file ) {
 static cg_variable cg_output_new_variable( marshmallow_variable variable ) {
     
     cg_variable var = cg_new_variable(RKString_CopyString(variable->name),
-                                      variable->type->root_type, -1, -1, variable->type->num_of_elements, variable->is_global) ;
+                                      variable->type->root_type, -1, -1, 0, 0) ;
     
     return NULL ;
 }

@@ -391,14 +391,26 @@ void mlb_validate_statement( mlb_statement statement ) {
             
            break;
             
+            
+        case cg_call:
+            
+            if (statement->A == NULL || !statement->A->is_literal || statement->A->type != collection
+                || statement->B != NULL || statement->C != NULL) {
+                
+                printf("codegen error: failed to validate a mlb statement. I.\n") ;
+                
+                exit(EXIT_FAILURE) ;
+            }
+            
+            break;
+            
         case cg_if:
         case cg_else_if:
         case cg_switch:
-        case cg_call:
-            
+        
             if (statement->A == NULL || statement->B != NULL || statement->C != NULL) {
                 
-                printf("codegen error: failed to validate a mlb statement.\n") ;
+                printf("codegen error: failed to validate a mlb statement. J.\n") ;
                 
                 exit(EXIT_FAILURE) ;
             }
@@ -414,7 +426,7 @@ void mlb_validate_statement( mlb_statement statement ) {
             
             if (statement->A != NULL || statement->B != NULL || statement->C != NULL) {
                 
-                printf("codegen error: failed to validate a mlb statement.\n") ;
+                printf("codegen error: failed to validate a mlb statement. K.\n") ;
                 
                 exit(EXIT_FAILURE) ;
             }
@@ -428,7 +440,7 @@ void mlb_validate_statement( mlb_statement statement ) {
                 || mlb_get_var(statement->A)->type != mlb_get_var(statement->B)->type
                 || mlb_get_var(statement->A)->type != mlb_get_var(statement->C)->type) {
                 
-                printf("codegen error: failed to validate a mlb statement.\n") ;
+                printf("codegen error: failed to validate a mlb statement. L.\n") ;
                 
                 exit(EXIT_FAILURE) ;
             }

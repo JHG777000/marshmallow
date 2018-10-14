@@ -23,6 +23,7 @@ void myroutine(struct _myroutine_returns* _returns) ;
 void memcpy(void *dest,void *src,_mu64 n) ;
 void other_routine(struct _other_routine_returns* _returns,_mi32 A,_mi32 B,_mi32 C,_mi32 D) {
 _mi32 E[10] ;
+_mi32 F[10][22] ;
 _mi32 _V0 ;
 _mi32 _V1 ;
 if (A) { ;

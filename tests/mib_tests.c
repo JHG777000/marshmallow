@@ -67,6 +67,12 @@ int main(int argc, const char **argv) {
     
     E->ptr = cg_new_variable(NULL, i32, -1, -1, 0, 0) ;
     
+    cg_variable F = cg_new_variable(rkstr("F"), array, -1, -1, 10, 0) ;
+    
+    F->ptr = cg_new_variable(NULL, array, -1, -1, 22, 0) ;
+    
+    F->ptr->ptr = cg_new_variable(NULL, i32, -1, -1, 0, 0) ;
+    
     RKStore_AddItem(other_routine->parameters, A, "A") ;
     
     RKStore_AddItem(other_routine->parameters, B, "B") ;
@@ -76,6 +82,8 @@ int main(int argc, const char **argv) {
     RKStore_AddItem(other_routine->parameters, D, "D") ;
     
     cg_add_variable_to_routine(E, other_routine) ;
+    
+    cg_add_variable_to_routine(F, other_routine) ;
     
     cg_add_return_to_returns_in_routine(cg_new_variable(NULL,i32,-1,-1,0,0), other_routine) ;
     

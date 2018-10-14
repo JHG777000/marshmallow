@@ -1009,9 +1009,9 @@ loop:
                 
                 fprintf(file, "struct ") ;
                 
-                if ( type->ptr == NULL ) fprintf(file, "%s ", RKString_GetString(type->value)) ;
+                if ( t->ptr == NULL ) fprintf(file, "%s ", RKString_GetString(t->value)) ;
                 
-                if ( type->ptr != NULL ) fprintf(file, "%s ", RKString_GetString(type->ptr->value)) ;
+                if ( t->ptr != NULL ) fprintf(file, "%s ", RKString_GetString(t->ptr->value)) ;
                 
                 break;
                 
