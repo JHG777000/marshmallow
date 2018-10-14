@@ -1509,10 +1509,40 @@ void marshmallow_codegen( marshmallow_context context, FILE* out_file ) {
 
 static cg_variable cg_output_new_variable( marshmallow_variable variable ) {
     
-    cg_variable var = cg_new_variable(RKString_CopyString(variable->name),
-                                      variable->type->root_type, -1, -1, 0, 0) ;
+    marshmallow_type t = NULL ;
     
-    return NULL ;
+    cg_variable v = NULL ;
+    
+    marshmallow_type type = variable->type ;
+    
+    cg_variable var = cg_new_variable(RKString_CopyString(variable->name),
+                                      variable->type->root_type, -1, -1, variable->type->num_of_elements, 0) ;
+    
+    if ( variable->is_global && (variable->access_control == public || variable->access_control == publish || variable->is_external) ) var->is_global = 1 ;
+    
+    if ( !variable->is_global && variable->is_persistent ) var->is_global = 1 ;
+    
+    if ( (type->root_type == ptr) || (type->root_type == array) ) {
+        
+        v = var ;
+        
+        t = type ;
+        
+    loop:
+        
+        if ( t != NULL ) {
+            
+            v->ptr = cg_new_variable(NULL, t->root_type, -1, -1, t->num_of_elements, 0) ;
+            
+            v = v->ptr ;
+            
+            t = t->base_type ;
+            
+            goto loop ;
+        }
+    }
+    
+    return var ;
 }
 
 static void cg_output_module( marshmallow_context context, FILE* file, marshmallow_module module ) {
