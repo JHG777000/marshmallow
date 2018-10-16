@@ -1507,6 +1507,98 @@ void marshmallow_codegen( marshmallow_context context, FILE* out_file ) {
 
 //////////////////NEW CODEGEN//////////////////////////////////////////////////
 
+static void cg_output_enum( marshmallow_context context, FILE* file, marshmallow_variable value, marshmallow_module module ) {
+    
+    char string[100] ;
+    
+    if ( !RKStore_ItemExists(((marshmallow_enum)(value->type->base_type))->enums, RKString_GetString(value->name)) ) {
+        
+        output_symbol(context, file, value->name, module, value->is_global, 0) ;
+        
+        return ;
+    }
+    
+    fprintf(file, "%s",marshmallow_itoa(*((int*)(RKStore_GetItem(((marshmallow_enum)(value->type->base_type))->enums, RKString_GetString(value->name)))), string)) ;
+}
+
+static void cg_output_value( marshmallow_context context, FILE* file, marshmallow_variable value, marshmallow_module module ) {
+    
+    if ( value == NULL ) return ;
+    
+    if ( value->type->root_type == string ) fprintf(file, "u8\"") ;
+    
+    if ( value->type->root_type == string8 && value->type->is_literal ) fprintf(file, "u8\"") ;
+    
+    if ( value->type->root_type == string16 && value->type->is_literal ) fprintf(file, "u\"") ;
+    
+    if ( value->type->root_type == string32 && value->type->is_literal ) fprintf(file, "U\"") ;
+    
+    if ( value->type->root_type == character ) fprintf(file, "L\'") ;
+    
+    if ( value->type->root_type == enum_type ) {
+        
+        output_enum(context, file, value, module) ;
+        
+        return ;
+    }
+    
+    if ( value->type->root_type == ptr ) {
+        
+        if ( ((marshmallow_type)(value->type->base_type))->root_type == nulltype ) {
+            
+            fprintf(file, "%s", "((void*)0)") ;
+            
+            return ;
+        }
+    }
+    
+    if ( value->type->root_type == array ) {
+        
+        if ( ((marshmallow_type)(value->type->base_type))->root_type == inittype ) {
+            
+            fprintf(file, "%s", "{0}") ;
+            
+            return ;
+        }
+    }
+    
+    if ( value->type->root_type == expression ) {
+        
+        output_statement(context, file, value->data, module) ;
+        
+        return ;
+    }
+    
+    if ( value->type->root_type == metacollection ) {
+        
+        output_collection(context, file, value->data, module) ;
+        
+        return ;
+    }
+    
+    if ( !value->type->is_literal && value->name != NULL ) {
+        
+        output_symbol(context, file, value->name, module, value->is_global, 0) ;
+        
+        return ;
+    }
+    
+    if ( value->data != NULL ) {
+        
+        fprintf(file, "%s", RKString_GetString(((marshmallow_value)value->data)->value)) ;
+    }
+    
+    if ( value->type->root_type == string ) fprintf(file, "\"") ;
+    
+    if ( value->type->root_type == string8 && value->type->is_literal ) fprintf(file, "\"") ;
+    
+    if ( value->type->root_type == string16 && value->type->is_literal ) fprintf(file, "\"") ;
+    
+    if ( value->type->root_type == string32 && value->type->is_literal ) fprintf(file, "\"") ;
+    
+    if ( value->type->root_type == character ) fprintf(file, "\'") ;
+}
+
 static cg_variable cg_output_new_variable( marshmallow_variable variable ) {
     
     marshmallow_type t = NULL ;
@@ -1540,6 +1632,11 @@ static cg_variable cg_output_new_variable( marshmallow_variable variable ) {
             
             goto loop ;
         }
+    }
+    
+    if ( variable->static_assignment != NULL ) {
+        
+        
     }
     
     return var ;
