@@ -484,6 +484,8 @@ marshmallow_function_signature marshmallow_new_function_signature( RKString name
     
     signature->func_name = RKString_CopyString(name) ;
     
+    signature->access_control = public ;
+    
     signature->is_method = is_method ;
     
     signature->returns = RKList_NewList() ;

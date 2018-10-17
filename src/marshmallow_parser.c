@@ -506,6 +506,15 @@ m_processor(function) {
     
     marshmallow_variable variable = NULL ;
     
+    if ( m_gettoken->keyword == mgk(publish) ) {
+        
+        signature->access_control = publish ;
+        
+        signature->is_external = 1 ;
+        
+        m_advanceN(1) ;
+    }
+    
     if ( m_gettoken->keyword == mgk(external) ) {
         
         signature->is_external = 1 ;
@@ -2269,6 +2278,23 @@ m_processor(variable) {
     
     //type***[] varname = ().
     
+    if ( m_gettoken->keyword == mgk(publish) ) {
+        
+        if ( m_peek(1)->keyword == mgk(function) ) {
+            
+            return m_process(function) ;
+        }
+        
+        if ( m_peek(1)->keyword == mgk(identifier) || marshmallow_is_token_root_type(m_peek(1)) ) {
+            
+            variable->access_control = publish ;
+            
+            variable->is_external = 1 ;
+            
+            m_advanceN(1) ;
+        }
+    }
+    
     if ( m_gettoken->keyword == mgk(external) ) {
         
         if ( m_peek(1)->keyword == mgk(function) ) {
@@ -2479,6 +2505,14 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
         
         switch (symbol->keyword) {
                
+            case mgk(publish):
+                
+                entity = m_process(variable) ;
+                
+                entity_type = entity->entity_type ;
+                
+                break;
+                
             case mgk(return):
                 
                 entity = m_process(return) ;
@@ -2897,7 +2931,8 @@ static void marshmallow_parse_line( marshmallow_context context, RKList symbol_l
                 }
                 
                 if ( ((marshmallow_function_body)entity)->signature->is_declared ||
-                    ((marshmallow_function_body)entity)->signature->is_external ) {
+                    (((marshmallow_function_body)entity)->signature->is_external
+                     && ((marshmallow_function_body)entity)->signature->access_control != publish) ) {
                     
                     marshmallow_add_function_to_module_declarations((marshmallow_function_body)entity, RKStack_Peek(scope_stack)) ;
                     

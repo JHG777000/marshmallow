@@ -56,7 +56,9 @@ typedef struct marshmallow_function_body_s* marshmallow_function_body ;
 
 #define marshmallow_scope_protocol /*for alignment*/RKList statements ; RKStore variables ;
 
-typedef struct marshmallow_class_s { marshmallow_entity_type entity_type ; RKStore variables ; marshmallow_function_body init_function ; } *marshmallow_class ;
+typedef struct marshmallow_class_s { marshmallow_entity_type entity_type ; marshmallow_access_control access_control ;
+    
+RKStore variables ; marshmallow_function_body init_function ; } *marshmallow_class ;
 
 typedef struct marshmallow_enum_s { RKList enum_names ; RKStore enums ; } *marshmallow_enum ;
 
@@ -72,7 +74,7 @@ marshmallow_access_control access_control ; marshmallow_variable static_assignme
 
 typedef struct marshmallow_value_s { marshmallow_type type ; RKString value ; RKList array_value ; } *marshmallow_value ;
 
-typedef struct marshmallow_function_signature_s { int is_method ; int is_overridable ; int is_override ;
+typedef struct marshmallow_function_signature_s { marshmallow_access_control access_control ; int is_method ; int is_overridable ; int is_override ;
     
 int is_declared ; int is_external ; RKString func_name ; marshmallow_class class ;
     

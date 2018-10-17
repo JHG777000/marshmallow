@@ -782,13 +782,22 @@ static void output_statement( marshmallow_context context, FILE* file, marshmall
                 
             } else {
                 
-                output_a_return(context, file, RKList_GetData(RKList_GetFirstNode(statement->function->signature->returns)), 0, statement->function->signature, module, 0) ;
+                if ( statement->function->signature->is_external )  {
+                    
+                    fprintf(file, "return ") ;
+                    
+                    output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+                    
+                } else {
                 
-                fprintf(file, "=") ;
+                 output_a_return(context, file, RKList_GetData(RKList_GetFirstNode(statement->function->signature->returns)), 0, statement->function->signature, module, 0) ;
                 
-                output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
-            }
+                 fprintf(file, "=") ;
+                
+                 output_value(context, file, (marshmallow_variable)statement->var_a, module) ;
+             }
             
+            }
             break;
             
         case breakop:
@@ -1131,7 +1140,10 @@ static void output_signature( marshmallow_context context, FILE* file, marshmall
     
     RKList_node node = NULL ;
     
-    fprintf(file, "void") ;
+    if ( !signature->is_external || (signature->is_external && (RKList_GetNumOfNodes(signature->returns) == 0))) fprintf(file, "void") ;
+    
+    if ( signature->is_external && (RKList_GetNumOfNodes(signature->returns) == 1))
+        output_type(context, file, ((marshmallow_variable)RKList_GetData(RKList_GetFirstNode(signature->returns)))->type, NULL, module) ;
     
     fprintf(file, " ") ;
     
@@ -1166,6 +1178,8 @@ static void output_signature( marshmallow_context context, FILE* file, marshmall
         
     }
 
+    if ( signature->is_external ) return ;
+    
     list = signature->returns ;
     
     if ( list != NULL ) {
@@ -1311,51 +1325,6 @@ static void output_function( marshmallow_context context, FILE* file, marshmallo
     fprintf(file, "\n") ;
 }
 
-static void output_main( marshmallow_context context, FILE* file, marshmallow_module module ) {
-    
-    if ( !RKStore_ItemExists(module->functions_and_methods, "main") ) return ;
-    
-    if ( context->program_has_main ) {
-        
-        printf("Multiple main functions. Only one main function can exist in a marshmallow program.\n") ;
-        
-        exit(EXIT_FAILURE) ;
-    }
-    
-    if ( !context->program_has_main ) context->program_has_main++ ;
-    
-    fprintf(file, "int main(int argc, const char **argv) {\n") ;
-    
-    RKString str0 = rkstr("returns_marshmallow_") ;
-    
-    RKString str1 = RKString_AppendString(str0, module->name) ;
-    
-    RKString str2 = RKString_AppendString(str1, rkstr("_main_0")) ;
-    
-    fprintf(file, "mi32 ") ;
-    
-    fprintf(file, "%s", RKString_GetString(str2)) ;
-    
-    fprintf(file, " = 0 ;\n") ;
-    
-    output_symbol(context, file, rkstr("main"), module, 1, 0) ;
-    
-    fprintf(file, "(&") ;
-    
-    fprintf(file, "%s", RKString_GetString(str2)) ;
-    
-    fprintf(file, ") ;\n") ;
-    
-    fprintf(file, "return ") ;
-    
-    fprintf(file, "%s", RKString_GetString(str2)) ;
-    
-    fprintf(file, "; \n") ;
-    
-    fprintf(file, "} \n") ;
-    
-}
-
 static void output_module( marshmallow_context context, FILE* file, marshmallow_module module ) {
     
     RKList list = NULL ;
@@ -1363,8 +1332,6 @@ static void output_module( marshmallow_context context, FILE* file, marshmallow_
     RKList_node node = NULL ;
     
     output_declarations(context, file, module->declarations, module, 1) ;
-    
-    output_main(context, file, module) ;
     
     list = RKStore_GetList(module->variables) ;
     

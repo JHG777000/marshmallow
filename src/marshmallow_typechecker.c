@@ -1204,6 +1204,14 @@ static void typecheck_function_signature( marshmallow_function_signature signatu
         
     }
     
+    if ( signature->is_external && (RKList_GetNumOfNodes(signature->returns) > 1) ) {
+        
+        printf("External function or method: '%s', has more than one return. An external function or method can not have more than one return.\n",RKString_GetString(signature->func_name)) ;
+        
+        exit(EXIT_FAILURE) ;
+        
+    }
+    
     list = RKStore_GetList(signature->parameters) ;
     
     if ( list != NULL ) {

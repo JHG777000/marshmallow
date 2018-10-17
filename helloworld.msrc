@@ -63,7 +63,7 @@ module mymod.
 
  u32[3][3] myarray42 := {{7,7,7},{7,7,7},{7,7,7}}.
 
- function main() returns i32.
+ publish function main() returns i32.
 
   u32[3][3] myarray43 := myarray42.
 
