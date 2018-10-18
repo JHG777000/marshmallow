@@ -1325,11 +1325,15 @@ static void output_function( marshmallow_context context, FILE* file, marshmallo
     fprintf(file, "\n") ;
 }
 
+static void output_runtime( marshmallow_context context, FILE* file ) ;
+
 static void output_module( marshmallow_context context, FILE* file, marshmallow_module module ) {
     
     RKList list = NULL ;
     
     RKList_node node = NULL ;
+    
+    output_runtime(context, file) ;
     
     output_declarations(context, file, module->declarations, module, 1) ;
     
@@ -1405,6 +1409,21 @@ static void output_runtime( marshmallow_context context, FILE* file ) {
     fprintf(file, "\n") ;
 }
 
+static FILE* output_get_module_file( RKString output_dir, marshmallow_module module ) {
+    
+    RKString name = rkstr("module_") ;
+    
+    RKString ext = rkstr(".c") ;
+    
+    RKString_AppendString(RKString_AppendString(RKString_AppendString(output_dir,name), module->name), ext) ;
+    
+    RKString_DestroyString(name) ;
+    
+    RKString_DestroyString(ext) ;
+    
+    return fopen(NULL, "w") ;
+}
+
 static void output_app( marshmallow_context context, FILE* file ) {
     
     RKList list = NULL ;
@@ -1416,8 +1435,6 @@ static void output_app( marshmallow_context context, FILE* file ) {
     if ( list != NULL ) {
     
      node = RKList_GetFirstNode(list) ;
-    
-     output_runtime(context, file) ;
     
      while (node != NULL) {
         
