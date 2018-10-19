@@ -1411,24 +1411,30 @@ static void output_runtime( marshmallow_context context, FILE* file ) {
 
 static FILE* output_get_module_file( RKString output_dir, marshmallow_module module ) {
     
-    RKString name = rkstr("module_") ;
+    RKString name = rkstr("/module_") ;
     
     RKString ext = rkstr(".c") ;
     
-    RKString_AppendString(RKString_AppendString(RKString_AppendString(output_dir,name), module->name), ext) ;
+    RKString mod_out_file_path = RKString_AppendString(RKString_AppendString(RKString_AppendString(output_dir,name), module->name), ext) ;
     
     RKString_DestroyString(name) ;
     
     RKString_DestroyString(ext) ;
     
-    return fopen(NULL, "w") ;
+    FILE* mod_out_file = fopen(RKString_GetString(mod_out_file_path), "w") ;
+    
+    RKString_DestroyString(mod_out_file_path) ;
+    
+    return mod_out_file ;
 }
 
-static void output_app( marshmallow_context context, FILE* file ) {
+static void output_app( marshmallow_context context, const char* out_directory ) {
     
     RKList list = NULL ;
     
     RKList_node node = NULL ;
+    
+    FILE* file = NULL ;
     
     list = RKStore_GetList(context->modules) ;
     
@@ -1438,8 +1444,12 @@ static void output_app( marshmallow_context context, FILE* file ) {
     
      while (node != NULL) {
         
+         file = output_get_module_file(RKString_NewStringFromCString(out_directory), RKList_GetData(node)) ;
+         
          output_module(context, file, RKList_GetData(node)) ;
         
+         fclose(file) ;
+         
          node = RKList_GetNextNode(node) ;
      }
         
@@ -1448,7 +1458,7 @@ static void output_app( marshmallow_context context, FILE* file ) {
 
 static void cg_output_app( marshmallow_context context, FILE* file ) ;
 
-void marshmallow_codegen( marshmallow_context context, FILE* out_file ) {
+void marshmallow_codegen( marshmallow_context context, const char* out_directory ) {
     
     RKStore_AddItem(context->symbols, rkstr("item"), "memcpy") ;
     
@@ -1480,7 +1490,7 @@ void marshmallow_codegen( marshmallow_context context, FILE* out_file ) {
     
     #if 1
     
-     output_app(context, out_file) ;
+     output_app(context, out_directory ) ;
     
     #else
     

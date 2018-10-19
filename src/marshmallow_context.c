@@ -38,21 +38,17 @@ static void marshmallow_words( RKStore words ) {
     #undef token
 }
 
-void marshmallow_compile_file( marshmallow_context context, const char* in_file, const char* out_file ) {
+void marshmallow_compile_file( marshmallow_context context, const char* in_file, const char* out_directory ) {
     
     RKFile file = RKFile_OpenFile(in_file, rk_read_mode) ;
-    
-    FILE* output_file = fopen(out_file, "w") ;
     
     marshmallow_lex_and_parse_file(context, file) ;
     
     marshmallow_typecheck(context) ;
     
-    marshmallow_codegen(context, output_file) ;
+    marshmallow_codegen(context, out_directory) ;
     
     RKFile_CloseFile(file) ;
-    
-    fclose(output_file) ;
 }
 
 marshmallow_context marshmallow_new_context( void ) {

@@ -124,7 +124,7 @@ void func( void* data ) ;
 
 marshmallow_context marshmallow_new_context( void ) ;
 
-void marshmallow_compile_file( marshmallow_context context, const char* in_file, const char* out_file ) ;
+void marshmallow_compile_file( marshmallow_context context, const char* in_file, const char* out_directory ) ;
 
 //ast
 
@@ -220,6 +220,6 @@ const char* marshmallow_ftoa( float val, char* string ) ;
 
 const char* marshmallow_dtoa( double val, char* string ) ;
 
-void marshmallow_codegen( marshmallow_context context, FILE* out_file ) ;
+void marshmallow_codegen( marshmallow_context context, const char* out_directory) ;
 
 #endif /* marshmallow_h */
