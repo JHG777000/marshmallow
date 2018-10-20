@@ -1840,11 +1840,11 @@ static void DeleteModuleInListOrStore(void* data) {
     cg_destroy_module(data) ;
 }
 
-codegen_backend codegen_new_backend( codegen_backend_type backend_type, FILE* out_file ) {
+codegen_backend codegen_new_backend( codegen_backend_type backend_type, const char* out_directory ) {
     
     codegen_backend backend = RKMem_NewMemOfType(struct codegen_backend_s) ;
     
-    backend->output_file = out_file ;
+    backend->output_dir = RKString_NewStringFromCString(out_directory) ;
     
     init_backend(C) ;
     
@@ -1854,6 +1854,8 @@ codegen_backend codegen_new_backend( codegen_backend_type backend_type, FILE* ou
 void codegen_destroy_backend( codegen_backend backend ) {
     
     backend->destroyer_callback(backend) ;
+    
+    RKString_DestroyString(backend->output_dir) ;
     
     free(backend) ;
 }

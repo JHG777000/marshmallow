@@ -151,11 +151,11 @@ typedef void (*cg_callback_for_destroyer) (codegen_backend backend);
 
 typedef enum { marshmallow_C_backend } codegen_backend_type ;
 
-struct codegen_backend_s { void* backend_ptr ; FILE* output_file ; cg_callback_for_pointer_size size_callback ;
+struct codegen_backend_s { void* backend_ptr ; RKString output_dir ; cg_callback_for_pointer_size size_callback ;
     
 cg_callback_for_context context_callback ; cg_callback_for_builder builder_callback ; cg_callback_for_destroyer destroyer_callback ; } ;
 
-codegen_backend codegen_new_backend( codegen_backend_type backend_type, FILE* out_file ) ;
+codegen_backend codegen_new_backend( codegen_backend_type backend_type, const char* out_directory ) ;
 
 void codegen_destroy_backend( codegen_backend backend ) ;
 

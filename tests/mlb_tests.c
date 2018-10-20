@@ -19,14 +19,12 @@
 #include "marshmallow_codegen.h"
 
 int main(int argc, const char **argv) {
-
-    FILE* output_file = fopen(argv[1], "w") ;
     
-    codegen_backend backend = codegen_new_backend(get_backend(C),output_file) ;
+    codegen_backend backend = codegen_new_backend(get_backend(C),argv[1]) ;
     
     cg_context my_context = cg_new_context() ;
     
-    cg_module my_module = cg_new_module(rkstr("mymod")) ;
+    cg_module my_module = cg_new_module(rkstr("mymod_mlb")) ;
     
     cg_add_module_to_context(my_module, my_context) ;
     
@@ -251,8 +249,6 @@ int main(int argc, const char **argv) {
     cg_destroy_context(my_context) ;
     
     codegen_destroy_backend(backend) ;
-    
-    fclose(output_file) ;
     
     return 0 ;
 }

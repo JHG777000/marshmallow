@@ -78,7 +78,7 @@ static RKList_node mib_process_statement( cg_routine routine, RKList_node node, 
                 
             case cg_noop:
                     
-                    printf("codegen error: failed to validate a mib statement. Their should be no noop.\n") ;
+                    printf("codegen error: failed to validate a mib statement. There should be no noop.\n") ;
                     
                     exit(EXIT_FAILURE) ;
                 

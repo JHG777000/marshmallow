@@ -1328,6 +1328,8 @@ static void output_module( FILE* file, cg_context context,  c_backend c, cg_modu
     
     RKList_node node = NULL ;
     
+    output_runtime(file) ;
+    
     output_classes(file, module, c) ;
     
     output_declarations(file, module->variable_declarations, c) ;
@@ -1373,7 +1375,26 @@ static void output_module( FILE* file, cg_context context,  c_backend c, cg_modu
     }
 }
 
-static void output_app( FILE* file, cg_context context, c_backend c ) {
+static FILE* output_get_module_file( RKString output_dir, cg_module module ) {
+    
+    RKString name = rkstr("/module_") ;
+    
+    RKString ext = rkstr(".c") ;
+    
+    RKString mod_out_file_path = RKString_AppendString(RKString_AppendString(RKString_AddStrings(output_dir,name), module->name), ext) ;
+    
+    RKString_DestroyString(name) ;
+    
+    RKString_DestroyString(ext) ;
+    
+    FILE* mod_out_file = fopen(RKString_GetString(mod_out_file_path), "w") ;
+    
+    RKString_DestroyString(mod_out_file_path) ;
+    
+    return mod_out_file ;
+}
+
+static void output_app( RKString output_dir, cg_context context, c_backend c ) {
     
     int i = 0 ;
     
@@ -1381,19 +1402,23 @@ static void output_app( FILE* file, cg_context context, c_backend c ) {
     
     RKList_node node = NULL ;
     
+    FILE* file = NULL ;
+    
     list = RKStore_GetList(context->modules) ;
     
     if ( list != NULL ) {
         
         node = RKList_GetFirstNode(list) ;
         
-        output_runtime(file) ;
-        
         while (node != NULL) {
+            
+            file = output_get_module_file(output_dir, RKList_GetData(node)) ;
             
             if ( i == 0 ) cg_add_routine_declaration_to_module(c->memcpy_routine, RKList_GetData(node)) ;
             
             output_module(file, context, c, RKList_GetData(node)) ;
+            
+            fclose(file) ;
             
             node = RKList_GetNextNode(node) ;
             
@@ -1405,7 +1430,7 @@ static void output_app( FILE* file, cg_context context, c_backend c ) {
 
 get_context(C) {
     
-    output_app(backend->output_file, context, backend->backend_ptr) ;
+    output_app(backend->output_dir, context, backend->backend_ptr) ;
 }
 
 get_builder(C) {
