@@ -1490,7 +1490,7 @@ void marshmallow_codegen( marshmallow_context context, const char* out_directory
     
     #if 1
     
-     output_app(context, out_directory ) ;
+     output_app(context, out_directory) ;
     
     #else
     
@@ -1500,6 +1500,60 @@ void marshmallow_codegen( marshmallow_context context, const char* out_directory
 }
 
 //////////////////NEW CODEGEN//////////////////////////////////////////////////
+
+static cg_variable cg_output_new_literal( RKString value, cg_root_type type ) {
+    
+    cg_variable literal = cg_new_variable(NULL, type, -1, -1, 0, 0) ;
+    
+    literal->value = value ;
+    
+    literal->is_literal = 1 ;
+    
+    return literal ;
+}
+
+static cg_variable cg_output_new_variable( marshmallow_variable variable ) {
+    
+    marshmallow_type t = NULL ;
+    
+    cg_variable v = NULL ;
+    
+    marshmallow_type type = variable->type ;
+    
+    cg_variable var = cg_new_variable(RKString_CopyString(variable->name),
+                                      variable->type->root_type, -1, -1, variable->type->num_of_elements, 0) ;
+    
+    if ( variable->is_global && (variable->access_control == public || variable->access_control == publish || variable->is_external) ) var->is_global = 1 ;
+    
+    if ( !variable->is_global && variable->is_persistent ) var->is_global = 1 ;
+    
+    if ( (type->root_type == ptr) || (type->root_type == array) ) {
+        
+        v = var ;
+        
+        t = type ;
+        
+    loop:
+        
+        if ( t != NULL ) {
+            
+            v->ptr = cg_new_variable(NULL, t->root_type, -1, -1, t->num_of_elements, 0) ;
+            
+            v = v->ptr ;
+            
+            t = t->base_type ;
+            
+            goto loop ;
+        }
+    }
+    
+    if ( variable->static_assignment != NULL ) {
+        
+        
+    }
+    
+    return var ;
+}
 
 static void cg_output_enum( marshmallow_context context, FILE* file, marshmallow_variable value, marshmallow_module module ) {
     
@@ -1591,49 +1645,6 @@ static void cg_output_value( marshmallow_context context, FILE* file, marshmallo
     if ( value->type->root_type == string32 && value->type->is_literal ) fprintf(file, "\"") ;
     
     if ( value->type->root_type == character ) fprintf(file, "\'") ;
-}
-
-static cg_variable cg_output_new_variable( marshmallow_variable variable ) {
-    
-    marshmallow_type t = NULL ;
-    
-    cg_variable v = NULL ;
-    
-    marshmallow_type type = variable->type ;
-    
-    cg_variable var = cg_new_variable(RKString_CopyString(variable->name),
-                                      variable->type->root_type, -1, -1, variable->type->num_of_elements, 0) ;
-    
-    if ( variable->is_global && (variable->access_control == public || variable->access_control == publish || variable->is_external) ) var->is_global = 1 ;
-    
-    if ( !variable->is_global && variable->is_persistent ) var->is_global = 1 ;
-    
-    if ( (type->root_type == ptr) || (type->root_type == array) ) {
-        
-        v = var ;
-        
-        t = type ;
-        
-    loop:
-        
-        if ( t != NULL ) {
-            
-            v->ptr = cg_new_variable(NULL, t->root_type, -1, -1, t->num_of_elements, 0) ;
-            
-            v = v->ptr ;
-            
-            t = t->base_type ;
-            
-            goto loop ;
-        }
-    }
-    
-    if ( variable->static_assignment != NULL ) {
-        
-        
-    }
-    
-    return var ;
 }
 
 static void cg_output_module( marshmallow_context context, FILE* file, marshmallow_module module ) {
