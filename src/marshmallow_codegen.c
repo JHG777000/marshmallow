@@ -1501,18 +1501,26 @@ void marshmallow_codegen( marshmallow_context context, const char* out_directory
 
 //////////////////NEW CODEGEN//////////////////////////////////////////////////
 
-static cg_variable cg_output_new_literal( RKString value, cg_root_type type ) {
+static void name_mangle( cg_module module, cg_variable variable ) {
     
-    cg_variable literal = cg_new_variable(NULL, type, -1, -1, 0, 0) ;
+    RKString name = variable->name ;
     
-    literal->value = value ;
+    RKString underscore = rkstr("_") ;
     
-    literal->is_literal = 1 ;
+    RKString str0 = RKString_AppendString(rkstr("marshmallow_"), module->name) ;
     
-    return literal ;
+    RKString str1  = RKString_AppendString(str0, underscore) ;
+    
+    RKString str2 = RKString_AppendString(str1, name) ;
+    
+    variable->name = str2 ;
+    
+    RKString_DestroyString(underscore) ;
+    
+    RKString_DestroyString(name) ;
 }
 
-static cg_variable cg_output_new_variable( marshmallow_variable variable ) {
+static cg_variable cg_output_variable( marshmallow_variable variable, cg_routine routine, cg_module module ) {
     
     marshmallow_type t = NULL ;
     
@@ -1552,21 +1560,44 @@ static cg_variable cg_output_new_variable( marshmallow_variable variable ) {
         
     }
     
+    name_mangle(module, var) ;
+    
+    cg_add_variable_to_routine(var, routine) ;
+    
     return var ;
 }
 
-static void cg_output_enum( marshmallow_context context, FILE* file, marshmallow_variable value, marshmallow_module module ) {
+static cg_variable cg_output_literal( RKString value, cg_root_type type, cg_routine routine ) {
+    
+    cg_variable literal = cg_new_variable(NULL, type, -1, -1, 0, 0) ;
+    
+    literal->value = value ;
+    
+    literal->is_literal = 1 ;
+    
+    cg_add_variable_to_routine(literal, routine) ;
+    
+    return literal ;
+}
+ 
+static cg_variable cg_output_enum( marshmallow_variable value, cg_routine routine ) {
     
     char string[100] ;
     
-    if ( !RKStore_ItemExists(((marshmallow_enum)(value->type->base_type))->enums, RKString_GetString(value->name)) ) {
-        
-        output_symbol(context, file, value->name, module, value->is_global, 0) ;
-        
-        return ;
-    }
+    return cg_output_literal(RKString_NewStringFromCString(marshmallow_itoa(*((int*)(RKStore_GetItem(((marshmallow_enum)(value->type->base_type))->enums, RKString_GetString(value->name)))), string)), i32, routine) ;
+}
+
+static cg_variable cg_output_null( cg_routine routine ) {
     
-    fprintf(file, "%s",marshmallow_itoa(*((int*)(RKStore_GetItem(((marshmallow_enum)(value->type->base_type))->enums, RKString_GetString(value->name)))), string)) ;
+    cg_variable null = cg_new_variable(NULL, i8, -1, -1, 0, 0) ;
+    
+    null->ptr = cg_new_variable(NULL, nulltype, -1, -1, 0, 0) ;
+    
+    null->is_literal = 1 ;
+    
+    cg_add_variable_to_routine(null, routine) ;
+    
+    return null ;
 }
 
 static void cg_output_value( marshmallow_context context, FILE* file, marshmallow_variable value, marshmallow_module module ) {
@@ -1636,15 +1667,6 @@ static void cg_output_value( marshmallow_context context, FILE* file, marshmallo
         fprintf(file, "%s", RKString_GetString(((marshmallow_value)value->data)->value)) ;
     }
     
-    if ( value->type->root_type == string ) fprintf(file, "\"") ;
-    
-    if ( value->type->root_type == string8 && value->type->is_literal ) fprintf(file, "\"") ;
-    
-    if ( value->type->root_type == string16 && value->type->is_literal ) fprintf(file, "\"") ;
-    
-    if ( value->type->root_type == string32 && value->type->is_literal ) fprintf(file, "\"") ;
-    
-    if ( value->type->root_type == character ) fprintf(file, "\'") ;
 }
 
 static void cg_output_module( marshmallow_context context, FILE* file, marshmallow_module module ) {
@@ -1803,25 +1825,6 @@ static void validate_definition( cg_context context, cg_routine routine, cg_vari
     
     RKStore_AddItem(context->definitions, definition, RKString_GetString(definition_name)) ;
     
-}
-
-static void name_mangle( cg_module module, cg_variable variable ) {
-    
-    RKString name = variable->name ;
-    
-    RKString underscore = rkstr("_") ;
-    
-    RKString str0 = RKString_AppendString(rkstr("marshmallow_"), module->name) ;
-    
-    RKString str1  = RKString_AppendString(str0, underscore) ;
-    
-    RKString str2 = RKString_AppendString(str1, name) ;
-    
-    variable->name = str2 ;
-    
-    RKString_DestroyString(underscore) ;
-    
-    RKString_DestroyString(name) ;
 }
 
 static void DeleteStatementInListOrStore(void* data) {
