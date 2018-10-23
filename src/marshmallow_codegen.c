@@ -1589,7 +1589,7 @@ static cg_variable cg_output_enum( marshmallow_variable value, cg_routine routin
 
 static cg_variable cg_output_null( cg_routine routine ) {
     
-    cg_variable null = cg_new_variable(NULL, i8, -1, -1, 0, 0) ;
+    cg_variable null = cg_new_variable(NULL, ptr, -1, -1, 0, 0) ;
     
     null->ptr = cg_new_variable(NULL, nulltype, -1, -1, 0, 0) ;
     
@@ -1604,15 +1604,35 @@ static void cg_output_value( marshmallow_context context, FILE* file, marshmallo
     
     if ( value == NULL ) return ;
     
-    if ( value->type->root_type == string ) fprintf(file, "u8\"") ;
+    if ( value->type->root_type == string ) {
     
-    if ( value->type->root_type == string8 && value->type->is_literal ) fprintf(file, "u8\"") ;
+        cg_output_literal(((marshmallow_value)value->data)->value, string, NULL) ;
+        
+    }
     
-    if ( value->type->root_type == string16 && value->type->is_literal ) fprintf(file, "u\"") ;
+    if ( value->type->root_type == string8 && value->type->is_literal ) {
+        
+        cg_output_literal(((marshmallow_value)value->data)->value, string8, NULL) ;
+        
+    }
     
-    if ( value->type->root_type == string32 && value->type->is_literal ) fprintf(file, "U\"") ;
+    if ( value->type->root_type == string16 && value->type->is_literal ) {
+        
+        cg_output_literal(((marshmallow_value)value->data)->value, string16, NULL) ;
+        
+    }
     
-    if ( value->type->root_type == character ) fprintf(file, "L\'") ;
+    if ( value->type->root_type == string32 && value->type->is_literal ) {
+        
+        cg_output_literal(((marshmallow_value)value->data)->value, string32, NULL) ;
+        
+    }
+    
+    if ( value->type->root_type == character ) {
+        
+        cg_output_literal(((marshmallow_value)value->data)->value, character, NULL) ;
+        
+    }
     
     if ( value->type->root_type == enum_type ) {
         
