@@ -29,11 +29,13 @@ module mymod.
 *                                                             *
 ************************************************************///
 
+ typedef u32 uint.
+
  typedef int myint.
 
- typedef u32 int.
+ typedef i32 int.
 
- typedef u64 int64.
+ typedef i64 int64.
 
  int64 var64 := 64.
 
@@ -53,7 +55,7 @@ module mymod.
 
  int* var301 := null.
 
- myint myvar1 := 07.
+ uint myvar1 := 07.
 
  i32 myvar3 := ((-0107)+9).
 
@@ -61,11 +63,13 @@ module mymod.
 
  string32 test2.
 
- u32[3][3] myarray42 := {{7,7,7},{7,7,7},{7,7,7}}.
+ i32[3][3] myarray42 := {{7,7,7},{7,7,7},{7,7,7}}.
 
  publish function main() returns i32.
 
-  u32[3][3] myarray43 := myarray42.
+  i32 var999 := ($i32(0)).
+
+  i32[3][3] myarray43 := myarray42.
 
   int* var555 := (&var303).
 
@@ -79,9 +83,9 @@ module mymod.
 
   u64 myvar := 0xff.
 
-  u64 i := 0.
+  i64 i := 0.
 
-  u64 j := 4.
+  i64 j := 4.
 
   f64 x := (0.23).
 
@@ -95,9 +99,9 @@ module mymod.
 
   j := ( j + (i + (2 / 2)) ). //marshmallow forces grouping to avoid order of operations ambiguity
 
-  j := ($u64(myvar3)).
+  j := ($i64(myvar3)).
 
-  j := ($u64(var64)).
+  j := ($i64(var64)).
 
   var64 := ($int64( ($int64( ($int64( ($int64( ($int64(j)) )) )) )) )).
 
@@ -130,11 +134,11 @@ module mymod.
   //because all new languages need to support unicode identifiers
   u64 😀 := '😀'.
 
-  u32[3][3] myarray := {{7,7,7},{7,7,7},{7,7,7}}.
+  i32[3][3] myarray := {{7,7,7},{7,7,7},{7,7,7}}.
 
-  u32[3][3] myarray2.
+  i32[3][3] myarray2.
 
-  u32[3][3] myarray3 := myarray.
+  i32[3][3] myarray3 := myarray.
 
   myarray2 := myarray.
   
@@ -146,9 +150,9 @@ module mymod.
 
   end if.
 
-  ptr := (&j).
+  ptr := ($u64*((&j))).
 
-  i := (*ptr).
+  i := ($i64((*ptr))).
 
   if ( i == j ).
 
@@ -199,9 +203,9 @@ module mymod.
  // you can however use assignment in a conditional
  // also due to functions' unified scope a variable can be used before its defined
 
-  if (myvar2 := myvar) while ( i < 2 ).
+  if (myvar2 := ($i64(myvar))) while ( i < 2 ).
 
-   u64 myvar2 := 52.
+   i64 myvar2 := 52.
 
    myvar := (2+2).
 

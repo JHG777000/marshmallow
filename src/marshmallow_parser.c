@@ -2196,7 +2196,7 @@ m_processor(type) {
                 
                 n++ ;
                 
-                if ( (m_peek(n)->keyword == mgk(u32type)) || (m_peek(n)->keyword == mgk(u64type)) ) {
+                if ( (m_peek(n)->keyword == mgk(i32type)) || (m_peek(n)->keyword == mgk(i64type)) ) {
                     
                     num_of_arrays++ ;
                     
@@ -2339,7 +2339,7 @@ m_processor(variable) {
                 
                 n++ ;
                 
-                if ( (m_peek(n)->keyword == mgk(u32type)) || (m_peek(n)->keyword == mgk(u64type)) ) {
+                if ( (m_peek(n)->keyword == mgk(i32type)) || (m_peek(n)->keyword == mgk(i64type)) ) {
                     
                     num_of_arrays++ ;
                     
@@ -3645,16 +3645,16 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
                         exit(EXIT_FAILURE) ;
                     }
                     
-                    if ( !is_double && !is_float && !is_long ) symbol = mgk(u32type) ;
+                    if ( !is_double && !is_float && !is_long ) symbol = mgk(i32type) ;
                     
-                    if ( !is_double && !is_float && is_long ) symbol = mgk(u64type) ;
+                    if ( !is_double && !is_float && is_long ) symbol = mgk(i64type) ;
                     
                     if ( is_double ) symbol = mgk(doubletype) ;
                     
                     if ( is_float ) symbol = mgk(floattype) ;
                 }
                 
-                if ( word_size > 1 ) if (  (word[0] == '0') && (symbol != mgk(hex)) && (symbol != mgk(floattype) && (symbol != mgk(doubletype))) ) {
+                if ( word_size > 2 ) if (  (word[0] == '0') && (symbol != mgk(hex)) && (symbol != mgk(floattype) && (symbol != mgk(doubletype))) ) {
                     
                     i = 1 ;
                     
