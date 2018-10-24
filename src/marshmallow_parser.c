@@ -60,6 +60,8 @@ static int marshmallow_is_symbol( char c, int balance ) {
     
     if ( c == '|' ) return 1 ;
     
+    if ( c == ':' ) return 1 ;
+    
     if ( c == '=' ) return 1 ;
     
     if ( c == '[' ) return 1 ;

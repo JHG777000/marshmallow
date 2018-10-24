@@ -1560,14 +1560,24 @@ static cg_variable cg_output_variable( marshmallow_variable variable, cg_routine
         
     }
     
-    name_mangle(module, var) ;
+    if ( routine != NULL ) {
+        
+        cg_add_variable_to_routine(var, routine) ;
+        
+    }
     
-    cg_add_variable_to_routine(var, routine) ;
+    if ( routine == NULL ) {
+        
+        name_mangle(module, var) ;
+        
+        cg_add_variable_to_module(var, module) ;
+        
+    }
     
     return var ;
 }
 
-static cg_variable cg_output_literal( RKString value, cg_root_type type, cg_routine routine ) {
+static cg_variable cg_output_literal( RKString value, cg_root_type type, cg_routine routine, cg_module module ) {
     
     cg_variable literal = cg_new_variable(NULL, type, -1, -1, 0, 0) ;
     
@@ -1575,16 +1585,18 @@ static cg_variable cg_output_literal( RKString value, cg_root_type type, cg_rout
     
     literal->is_literal = 1 ;
     
-    cg_add_variable_to_routine(literal, routine) ;
+    if ( routine != NULL ) cg_add_variable_to_routine(literal, routine) ;
+    
+    if ( routine == NULL ) cg_add_variable_to_module(literal, module) ;
     
     return literal ;
 }
  
-static cg_variable cg_output_enum( marshmallow_variable value, cg_routine routine ) {
+static cg_variable cg_output_enum( marshmallow_variable value, cg_routine routine, cg_module module ) {
     
     char string[100] ;
     
-    return cg_output_literal(RKString_NewStringFromCString(marshmallow_itoa(*((int*)(RKStore_GetItem(((marshmallow_enum)(value->type->base_type))->enums, RKString_GetString(value->name)))), string)), i32, routine) ;
+    return cg_output_literal(RKString_NewStringFromCString(marshmallow_itoa(*((int*)(RKStore_GetItem(((marshmallow_enum)(value->type->base_type))->enums, RKString_GetString(value->name)))), string)), i32, routine, module) ;
 }
 
 static cg_variable cg_output_null( cg_routine routine ) {
@@ -1600,45 +1612,38 @@ static cg_variable cg_output_null( cg_routine routine ) {
     return null ;
 }
 
-static void cg_output_value( marshmallow_context context, FILE* file, marshmallow_variable value, marshmallow_module module ) {
+static void cg_output_value( marshmallow_context context, FILE* file, marshmallow_variable value, marshmallow_module module, cg_routine r, cg_module m ) {
     
     if ( value == NULL ) return ;
     
     if ( value->type->root_type == string ) {
     
-        cg_output_literal(((marshmallow_value)value->data)->value, string, NULL) ;
+        cg_output_literal(((marshmallow_value)value->data)->value, string, r, m) ;
         
     }
     
     if ( value->type->root_type == string8 && value->type->is_literal ) {
         
-        cg_output_literal(((marshmallow_value)value->data)->value, string8, NULL) ;
+        cg_output_literal(((marshmallow_value)value->data)->value, string8, r, m) ;
         
     }
     
     if ( value->type->root_type == string16 && value->type->is_literal ) {
         
-        cg_output_literal(((marshmallow_value)value->data)->value, string16, NULL) ;
+        cg_output_literal(((marshmallow_value)value->data)->value, string16, r, m) ;
         
     }
     
     if ( value->type->root_type == string32 && value->type->is_literal ) {
         
-        cg_output_literal(((marshmallow_value)value->data)->value, string32, NULL) ;
+        cg_output_literal(((marshmallow_value)value->data)->value, string32, r, m) ;
         
     }
     
     if ( value->type->root_type == character ) {
         
-        cg_output_literal(((marshmallow_value)value->data)->value, character, NULL) ;
+        cg_output_literal(((marshmallow_value)value->data)->value, character, r, m) ;
         
-    }
-    
-    if ( value->type->root_type == enum_type ) {
-        
-        output_enum(context, file, value, module) ;
-        
-        return ;
     }
     
     if ( value->type->root_type == ptr ) {
