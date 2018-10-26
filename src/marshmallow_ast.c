@@ -578,7 +578,8 @@ loop:
     return RKList_AddToList(function->statements, statement) ;
 }
 
-void marshmallow_insert_statement_before_statement_to_function( marshmallow_statement new_statement, marshmallow_statement old_statement, marshmallow_function_body function ) {
+void marshmallow_insert_statement_before_statement_to_function( marshmallow_statement new_statement,
+                                                               marshmallow_statement old_statement, marshmallow_function_body function ) {
     
     RKList list = NULL ;
     

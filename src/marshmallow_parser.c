@@ -2111,7 +2111,7 @@ m_processor(static_assignment) {
         return variable ;
     }
     
-    if ( m_peek(n+0)->keyword == mgk(pleft) ){
+    if ( m_peek(n+0)->keyword == mgk(pleft) ) {
         
         m_advanceN(1) ;
             
@@ -2434,7 +2434,8 @@ m_processor(variable) {
         
         n+=2 ;
         
-        if ( marshmallow_is_token_root_type(m_peek(n)) || m_peek(n)->keyword == mgk(bleft) || m_peek(n)->keyword == mgk(pleft) || m_peek(n)->keyword == mgk(identifier) ) {
+        if ( marshmallow_is_token_root_type(m_peek(n)) || m_peek(n)->keyword == mgk(bleft)
+            || m_peek(n)->keyword == mgk(pleft) || m_peek(n)->keyword == mgk(identifier) ) {
             
             m_advanceN(n) ;
             
