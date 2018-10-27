@@ -62,7 +62,7 @@ RKStore variables ; marshmallow_function_body init_function ; } *marshmallow_cla
 
 typedef struct marshmallow_enum_s { RKList enum_names ; RKStore enums ; } *marshmallow_enum ;
 
-typedef struct marshmallow_type_s { marshmallow_entity_type entity_type ; RKString type_name ; RKString output_name ; int is_literal ; int is_init ;
+typedef struct marshmallow_type_s { marshmallow_entity_type entity_type ; RKString type_name ; int is_literal ; int is_init ;
     
 int is_typedef ; int is_cast ; int is_readonly ; marshmallow_root_type root_type ; void* base_type ; RKULong num_of_elements ; int pointers ; } *marshmallow_type ;
 

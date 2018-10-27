@@ -113,11 +113,6 @@ loop:
     
     if ( (t->root_type == ptr) || (t->root_type == array) ) goto loop ;
     
-    if ( t->root_type == unknown && t->is_typedef ) {
-        
-        fprintf(file, "%s ", RKString_GetString(t->output_name)) ;
-    }
-    
     if ( t->root_type != unknown ) {
         
         switch (t->root_type) {

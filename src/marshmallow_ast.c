@@ -225,8 +225,6 @@ marshmallow_type marshmallow_new_type( void ) {
     
     type->type_name = rkstr("unknown") ;
     
-    type->output_name = NULL ;
-    
     type->is_literal = 0 ;
     
     type->is_init = 0 ;
@@ -255,8 +253,6 @@ marshmallow_type marshmallow_copy_type( marshmallow_type t ) {
     type->root_type = t->root_type ;
     
     type->type_name = RKString_CopyString(t->type_name) ;
-    
-    type->output_name = RKString_CopyString(t->output_name) ;
     
     //type->is_init should not need to be copied
     

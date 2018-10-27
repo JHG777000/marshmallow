@@ -2733,7 +2733,7 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
              
              if ( rettype_a->is_literal ) {
                  
-                 printf("Can not take the address of a literal.") ;
+                 printf("Can not take the address of a literal.\n") ;
                  
                  exit(EXIT_FAILURE) ;
              }
@@ -3016,8 +3016,6 @@ process:
         if ( t->base_type != NULL && t->root_type != enum_type ) t = t->base_type ;
     
         type->root_type = t->root_type ;
-    
-        type->output_name = RKString_CopyString(t->type_name) ;
     
         type->is_readonly = t->is_readonly ;
         
