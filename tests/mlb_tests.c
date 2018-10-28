@@ -228,11 +228,15 @@ int main(int argc, const char **argv) {
     
     RKList_AddToList(call2->values, zero) ;
     
+    cg_add_variable_to_routine(zero, main) ;
+    
     cg_add_variable_to_routine(call, main) ;
     
     cg_add_variable_to_routine(call2, main) ;
     
     cg_add_variable_to_routine(GR0, main) ;
+    
+    cg_add_variable_to_routine(GR02, main) ;
     
     cg_add_variable_to_routine(A2, main) ;
     

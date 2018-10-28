@@ -20,7 +20,7 @@ extern _mi32 E ;
 extern struct myclass F ;
 struct _myroutine_returns { _mi32 _returns_0 ; _mi32 _returns_1 ; } ;
 void myroutine(struct _myroutine_returns* _returns,_mi32 D) ;
-void memcpy(void *dest,void *src,_mu64 n) ;
+void *memcpy(void *dest,const void *src,_mu64 n) ;
 _mi32 E ;
 struct myclass F ;
 void myroutine(struct _myroutine_returns* _returns,_mi32 D) {

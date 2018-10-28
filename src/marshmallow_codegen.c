@@ -2203,6 +2203,8 @@ cg_variable cg_new_variable( RKString name, cg_root_type type, int mlb_return_va
     
     variable->is_literal = 0 ;
     
+    variable->is_const = 0 ;
+    
     variable->class_values = NULL ;
     
     variable->values = NULL ;

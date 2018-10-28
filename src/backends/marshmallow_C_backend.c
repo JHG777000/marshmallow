@@ -899,9 +899,13 @@ static void output_type( FILE* file, cg_variable type, void* static_assignment )
     
     cg_variable t = type ;
     
+    if ( t->is_const ) fprintf(file, "const ") ;
+    
 loop:
     
     if ( (t->type == ptr) || (t->type == array)  ) t = t->ptr ;
+    
+    if ( t->is_const ) fprintf(file, "const ") ;
     
     if ( (t->type == ptr) || (t->type == array) ) goto loop ;
         
@@ -1472,13 +1476,21 @@ new_backend(C) {
     
     memcpy_routine->is_external = 1 ;
     
+    cg_variable ret = cg_new_variable(NULL, ptr, -1, -1, 0, 0) ;
+    
+    ret->ptr = cg_new_variable(NULL, blank, -1, -1, 0, 0) ;
+    
+    cg_add_return_to_returns_in_routine(ret, memcpy_routine) ;
+    
     cg_variable dest = cg_new_variable(rkstr("dest"), ptr, -1, -1, 0, 0) ;
     
-    dest->ptr = cg_new_variable(rkstr(""), blank, -1, -1, 0, 0) ;
+    dest->ptr = cg_new_variable(NULL, blank, -1, -1, 0, 0) ;
     
     cg_variable src = cg_new_variable(rkstr("src"), ptr, -1, -1, 0, 0) ;
     
-    src->ptr = cg_new_variable(rkstr(""), blank, -1, -1, 0, 0) ;
+    src->ptr = cg_new_variable(NULL, blank, -1, -1, 0, 0) ;
+    
+    src->ptr->is_const = 1 ;
     
     cg_variable n = cg_new_variable(rkstr("n"), ptrsize, -1, -1, 0, 0) ;
     

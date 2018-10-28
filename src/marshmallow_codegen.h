@@ -121,7 +121,7 @@ struct cg_variable_s { cg_entity_type entity_type ; RKString name ; cg_root_type
 
 int mlb_return_value ; int mlb_get_return_value ; int delete_ptr ; cg_variable ptr ; RKULong num_of_elements ; int index ; RKString class_element ;
     
-int is_global ; int is_literal ; int is_temporary ; } ;
+int is_global ; int is_literal ; int is_const ; int is_temporary ; } ;
 
 typedef enum { cg_noop, mib_group, mib_endgroup, mib_exitgroup, mib_var, mib_const, mob_push, mob_drop, mlb_set, mlb_external_return, cg_assignment,
     

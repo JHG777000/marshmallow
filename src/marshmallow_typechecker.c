@@ -2641,7 +2641,7 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
              
              RKStore_AddItem(store, rkstr("item"), RKString_GetString(((marshmallow_value)var_a->data)->value)) ;
              
-             statement->var_a =(marshmallow_entity)var_a ;
+             statement->var_a = (marshmallow_entity)var_a ;
              
              list = statement->statements ;
              
