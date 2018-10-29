@@ -2396,7 +2396,7 @@ static marshmallow_type typecheck_get_type_from_variable( marshmallow_variable v
     return ptrtype ;
 }
 
-type_category typecheck_get_type_category( marshmallow_type type ) {
+marshmallow_type_category typecheck_get_type_category( marshmallow_type type ) {
    
     if ( m_is_type_number(type) || type->root_type == enum_type ) {
         

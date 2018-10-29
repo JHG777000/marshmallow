@@ -28,6 +28,8 @@
 
 typedef enum { public, private, protected, publish, inherit } marshmallow_access_control ;
 
+typedef enum { arithmetic, arrays, pointers, classes, lambdas, strings, unknowns } marshmallow_type_category ;
+
 typedef enum { i8, u8, i16, u16, i32, u32, i64, u64, f32, f64, blank, ptrsize, hex, oct, string, string8, string16, string32, character, class,
     
 enum_type, array, ptr, module, function, method, lambda, expression, unknown, arguments, collection, metacollection, nulltype, inittype } marshmallow_root_type ;
@@ -62,9 +64,11 @@ RKStore variables ; marshmallow_function_body init_function ; } *marshmallow_cla
 
 typedef struct marshmallow_enum_s { RKList enum_names ; RKStore enums ; } *marshmallow_enum ;
 
-typedef struct marshmallow_type_s { marshmallow_entity_type entity_type ; RKString type_name ; int is_literal ; int is_init ;
+typedef struct marshmallow_type_s { marshmallow_entity_type entity_type ; RKString type_name ; marshmallow_type_category type_category ;
     
-int is_typedef ; int is_cast ; int is_readonly ; marshmallow_root_type root_type ; void* base_type ; RKULong num_of_elements ; int pointers ; } *marshmallow_type ;
+RKULong num_of_bytes ; int is_signed ; int is_float ; int is_literal ; int is_init ; int is_typedef ; int is_cast ; int is_readonly ;
+    
+marshmallow_root_type root_type ; void* base_type ; RKULong num_of_elements ; int pointers ; } *marshmallow_type ;
 
 typedef struct marshmallow_variable_s { marshmallow_entity_type entity_type ; marshmallow_type type ;
     
@@ -176,8 +180,6 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
 
 //typecheck
 
-typedef enum { arithmetic, arrays, pointers, classes, lambdas, strings, unknowns } type_category ;
-
 int m_is_type_float( marshmallow_type type ) ;
 
 int m_is_type_signed( marshmallow_type type ) ;
@@ -194,7 +196,7 @@ marshmallow_type typecheck_get_ptr_type_from_type( marshmallow_type type ) ;
 
 marshmallow_type typecheck_get_type_from_root_type( marshmallow_root_type root ) ;
 
-type_category typecheck_get_type_category( marshmallow_type type ) ;
+marshmallow_type_category typecheck_get_type_category( marshmallow_type type ) ;
 
 int m_get_size_of_root_type_in_bytes( marshmallow_type type ) ;
 
