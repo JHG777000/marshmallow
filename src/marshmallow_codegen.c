@@ -208,12 +208,7 @@ loop:
         }
         
         
-    } else if (!t->is_typedef ) {
-        
-        output_symbol(context, file, t->type_name, module, 1, 0) ;
-        
-        fprintf(file, " ") ;
-    }
+    } 
     
     if ( (type->root_type == ptr) || (type->root_type == array) ) {
         
