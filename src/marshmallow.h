@@ -30,7 +30,7 @@ typedef enum { public, private, protected, publish, inherit } marshmallow_access
 
 typedef enum { arithmetic, arrays, pointers, classes, lambdas, strings, unknowns } marshmallow_type_category ;
 
-typedef enum { i8, u8, i16, u16, i32, u32, i64, u64, f32, f64, blank, ptrsize, hex, oct, string, string8, string16, string32, character, class,
+typedef enum { i8, u8, i16, u16, i32, u32, i64, u64, f32, f64, blank, ptrsize, macro, type, hex, oct, string, string8, string16, string32, character, class,
     
 enum_type, array, ptr, module, function, method, lambda, expression, unknown, arguments, collection, metacollection, nulltype, inittype } marshmallow_root_type ;
 
@@ -94,7 +94,7 @@ marshmallow_entity var_a ; marshmallow_entity var_b ; marshmallow_function_body 
 
 typedef struct marshmallow_module_s { marshmallow_entity_type entity_type ; marshmallow_scope_protocol RKStore declarations ;
     
-RKStore types ; RKStore unprocessed_types ; RKStore enums ; RKStore macros ; RKStore templates ; RKStore modules ;
+RKStore types ; RKStore unprocessed_types ; RKStore enums ; RKStore modules ;
     
 RKStore functions_and_methods ; RKString name ; } *marshmallow_module ;
 

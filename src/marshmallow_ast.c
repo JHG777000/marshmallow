@@ -432,8 +432,6 @@ marshmallow_module marshmallow_new_module( RKString name ) {
     
     module->functions_and_methods = RKStore_NewStore() ;
     
-    module->macros = RKStore_NewStore() ;
-    
     module->modules = RKStore_NewStore() ;
     
     module->types = RKStore_NewStore() ;
