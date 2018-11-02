@@ -31,11 +31,19 @@ void marshmallow_parse_type( marshmallow_type type, marshmallow_token token, int
             
             type->root_type = i8 ;
             
+            type->is_signed = 1 ;
+            
+            type->is_float = 0 ;
+            
             break;
             
         case mgk(u8type):
             
             type->root_type = u8 ;
+            
+            type->is_signed = 0 ;
+            
+            type->is_float = 0 ;
             
             break;
             
@@ -43,11 +51,19 @@ void marshmallow_parse_type( marshmallow_type type, marshmallow_token token, int
             
             type->root_type = i16 ;
             
+            type->is_signed = 1 ;
+            
+            type->is_float = 0 ;
+            
             break;
             
         case mgk(u16type):
             
             type->root_type = u16 ;
+            
+            type->is_signed = 0 ;
+            
+            type->is_float = 0 ;
             
             break;
             
@@ -55,11 +71,19 @@ void marshmallow_parse_type( marshmallow_type type, marshmallow_token token, int
             
             type->root_type = i32 ;
             
+            type->is_signed = 1 ;
+            
+            type->is_float = 0 ;
+            
             break;
             
         case mgk(u32type):
             
             type->root_type = u32 ;
+            
+            type->is_signed = 0 ;
+            
+            type->is_float = 0 ;
             
             break;
             
@@ -67,11 +91,19 @@ void marshmallow_parse_type( marshmallow_type type, marshmallow_token token, int
             
             type->root_type = i64 ;
             
+            type->is_signed = 1 ;
+            
+            type->is_float = 0 ;
+            
             break;
             
         case mgk(u64type):
             
             type->root_type = u64 ;
+            
+            type->is_signed = 0 ;
+            
+            type->is_float = 0 ;
             
             break;
             
@@ -79,11 +111,19 @@ void marshmallow_parse_type( marshmallow_type type, marshmallow_token token, int
             
             type->root_type = hex ;
             
+            type->is_signed = 0 ;
+            
+            type->is_float = 0 ;
+            
             break;
             
         case mgk(oct):
             
             type->root_type = oct ;
+            
+            type->is_signed = 0 ;
+            
+            type->is_float = 0 ;
             
             break;
             
@@ -91,11 +131,19 @@ void marshmallow_parse_type( marshmallow_type type, marshmallow_token token, int
             
             type->root_type = string ;
             
+            type->is_signed = 0 ;
+            
+            type->is_float = 0 ;
+            
             break;
             
         case mgk(string8):
             
             type->root_type = string8 ;
+            
+            type->is_signed = 0 ;
+            
+            type->is_float = 0 ;
             
             break;
             
@@ -103,11 +151,19 @@ void marshmallow_parse_type( marshmallow_type type, marshmallow_token token, int
             
             type->root_type = string16 ;
             
+            type->is_signed = 0 ;
+            
+            type->is_float = 0 ;
+            
             break;
             
         case mgk(string32):
             
             type->root_type = string32 ;
+            
+            type->is_signed = 0 ;
+            
+            type->is_float = 0 ;
             
             break;
             
@@ -115,11 +171,19 @@ void marshmallow_parse_type( marshmallow_type type, marshmallow_token token, int
             
             type->root_type = character ;
             
+            type->is_signed = 0 ;
+            
+            type->is_float = 0 ;
+            
             break;
             
         case mgk(floattype):
             
             type->root_type = f32 ;
+            
+            type->is_signed = 1 ;
+            
+            type->is_float = 2 ;
             
             break;
             
@@ -127,11 +191,19 @@ void marshmallow_parse_type( marshmallow_type type, marshmallow_token token, int
             
             type->root_type = f64 ;
             
+            type->is_signed = 1 ;
+            
+            type->is_float = 1 ;
+            
             break;
             
         case mgk(nullptr):
             
             type->root_type = nulltype ;
+            
+            type->is_signed = 0 ;
+            
+            type->is_float = 0 ;
             
             pointers++ ;
             
@@ -143,6 +215,8 @@ void marshmallow_parse_type( marshmallow_type type, marshmallow_token token, int
             
             break;
     }
+    
+    type->category = typecheck_get_type_category(type) ;
     
     while (i < pointers) {
         
@@ -239,6 +313,14 @@ marshmallow_type marshmallow_new_type( void ) {
     
     type->pointers = 0 ;
     
+    type->category = unknowns ;
+    
+    type->num_of_bytes = 0 ;
+    
+    type->is_signed = 0 ;
+    
+    type->is_float = 0 ;
+
     return type ;
 }
 
