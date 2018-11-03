@@ -2398,7 +2398,10 @@ static marshmallow_type typecheck_get_type_from_variable( marshmallow_variable v
 
 marshmallow_type_category typecheck_get_type_category( marshmallow_type type ) {
    
-    if ( m_is_type_number(type) || type->root_type == enum_type ) {
+    if ( type->root_type == i8 || type->root_type == u8 || type->root_type == i16 || type->root_type == u16
+        || type->root_type == i32 || type->root_type == u32 || type->root_type == i64 || type->root_type == u64
+        || type->root_type == hex || type->root_type == oct || type->root_type == character || type->root_type == f32
+        || type->root_type == f64 || type->root_type == enum_type ) {
         
         return arithmetic ;
     }
@@ -2733,7 +2736,7 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
              
              if ( rettype_a->is_literal ) {
                  
-                 printf("Can not take the address of a literal.\n") ;
+                 printf("Can not take the address of a literal or temporary.\n") ;
                  
                  exit(EXIT_FAILURE) ;
              }
