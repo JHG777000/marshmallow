@@ -1309,7 +1309,7 @@ static int is_assignable( marshmallow_variable variable, int* has_assignment, ma
     
     marshmallow_type type = typecheck_get_type_from_variable(variable, has_assignment, module) ;
     
-    if ( ((m_is_type_number(type) && variable->data != NULL) && variable->type->root_type != expression) || type->is_readonly ) {
+    if ( type->is_literal || type->is_readonly ) {
         
         return 0 ;
     }
