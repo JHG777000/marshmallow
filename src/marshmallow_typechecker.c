@@ -19,6 +19,170 @@
 
 #include "marshmallow.h"
 
+static void typecheck_setup_type( marshmallow_type type ) {
+    
+    switch (type->root_type) {
+            
+        case i8:
+            
+            type->root_type = i8 ;
+            
+            type->is_signed = 1 ;
+            
+            type->is_float = 0 ;
+            
+            break;
+            
+        case u8:
+            
+            type->root_type = u8 ;
+            
+            type->is_signed = 0 ;
+            
+            type->is_float = 0 ;
+            
+            break;
+            
+        case i16:
+            
+            type->is_signed = 1 ;
+            
+            type->is_float = 0 ;
+            
+            break;
+            
+        case u16:
+            
+            type->is_signed = 0 ;
+            
+            type->is_float = 0 ;
+            
+            break;
+            
+        case i32:
+            
+            type->is_signed = 1 ;
+            
+            type->is_float = 0 ;
+            
+            break;
+            
+        case u32:
+            
+            type->is_signed = 0 ;
+            
+            type->is_float = 0 ;
+            
+            break;
+            
+        case i64:
+            
+            type->is_signed = 1 ;
+            
+            type->is_float = 0 ;
+            
+            break;
+            
+        case u64:
+            
+            type->is_signed = 0 ;
+            
+            type->is_float = 0 ;
+            
+            break;
+            
+        case hex:
+            
+            type->is_signed = 0 ;
+            
+            type->is_float = 0 ;
+            
+            break;
+            
+        case oct:
+            
+            type->is_signed = 0 ;
+            
+            type->is_float = 0 ;
+            
+            break;
+            
+        case string:
+            
+            type->is_signed = 0 ;
+            
+            type->is_float = 0 ;
+            
+            break;
+            
+        case string8:
+            
+            type->is_signed = 0 ;
+            
+            type->is_float = 0 ;
+            
+            break;
+            
+        case string16:
+            
+            type->is_signed = 0 ;
+            
+            type->is_float = 0 ;
+            
+            break;
+            
+        case string32:
+            
+            type->is_signed = 0 ;
+            
+            type->is_float = 0 ;
+            
+            break;
+            
+        case character:
+            
+            type->is_signed = 0 ;
+            
+            type->is_float = 0 ;
+            
+            break;
+            
+        case f32:
+            
+            type->is_signed = 1 ;
+            
+            type->is_float = 2 ;
+            
+            break;
+            
+        case f64:
+            
+            type->is_signed = 1 ;
+            
+            type->is_float = 1 ;
+            
+            break;
+            
+        case nulltype:
+            
+            type->is_signed = 0 ;
+            
+            type->is_float = 0 ;
+            
+            break;
+            
+        default:
+            
+            type->is_signed = 0 ;
+            
+            type->is_float = 0 ;
+            
+            break;
+    }
+    
+    type->category = typecheck_get_type_category(type) ;
+}
+
  marshmallow_type typecheck_get_type_from_root_type( marshmallow_root_type root ) {
     
     static marshmallow_type unknown_t = NULL ;
@@ -52,6 +216,7 @@ type##_t->is_typedef = 0 ;\
 type##_t->is_readonly = 0 ;\
 type##_t->base_type = NULL ;\
 type##_t->num_of_elements = -1 ;\
+typecheck_setup_type(type##_t) ;\
 return type##_t ;\
 break;
     
@@ -101,6 +266,8 @@ break;
     
     unknown_t->num_of_elements = -1 ;
     
+    typecheck_setup_type(unknown_t) ;
+     
     return unknown_t ;
     
 }
@@ -817,6 +984,8 @@ static void typecheck_type( marshmallow_variable variable, marshmallow_module mo
      t1 = t ;
     
 loop:
+    
+    typecheck_setup_type(t1) ;
         
     if ( t1->root_type == ptr || t1->root_type == array ) {
         
