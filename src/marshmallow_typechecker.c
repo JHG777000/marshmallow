@@ -25,7 +25,7 @@ static void typecheck_setup_type( marshmallow_type type ) {
             
         case i8:
             
-            type->root_type = i8 ;
+            type->num_of_bytes = 1 ;
             
             type->is_signed = 1 ;
             
@@ -35,7 +35,7 @@ static void typecheck_setup_type( marshmallow_type type ) {
             
         case u8:
             
-            type->root_type = u8 ;
+            type->num_of_bytes = 1 ;
             
             type->is_signed = 0 ;
             
@@ -45,6 +45,8 @@ static void typecheck_setup_type( marshmallow_type type ) {
             
         case i16:
             
+            type->num_of_bytes = 2 ;
+            
             type->is_signed = 1 ;
             
             type->is_float = 0 ;
@@ -52,6 +54,8 @@ static void typecheck_setup_type( marshmallow_type type ) {
             break;
             
         case u16:
+            
+            type->num_of_bytes = 2 ;
             
             type->is_signed = 0 ;
             
@@ -61,6 +65,8 @@ static void typecheck_setup_type( marshmallow_type type ) {
             
         case i32:
             
+            type->num_of_bytes = 4 ;
+            
             type->is_signed = 1 ;
             
             type->is_float = 0 ;
@@ -68,6 +74,8 @@ static void typecheck_setup_type( marshmallow_type type ) {
             break;
             
         case u32:
+            
+            type->num_of_bytes = 4 ;
             
             type->is_signed = 0 ;
             
@@ -77,6 +85,8 @@ static void typecheck_setup_type( marshmallow_type type ) {
             
         case i64:
             
+            type->num_of_bytes = 8 ;
+            
             type->is_signed = 1 ;
             
             type->is_float = 0 ;
@@ -84,6 +94,8 @@ static void typecheck_setup_type( marshmallow_type type ) {
             break;
             
         case u64:
+            
+            type->num_of_bytes = 8 ;
             
             type->is_signed = 0 ;
             
@@ -93,6 +105,8 @@ static void typecheck_setup_type( marshmallow_type type ) {
             
         case hex:
             
+            type->num_of_bytes = 8 ;
+            
             type->is_signed = 0 ;
             
             type->is_float = 0 ;
@@ -100,6 +114,8 @@ static void typecheck_setup_type( marshmallow_type type ) {
             break;
             
         case oct:
+            
+            type->num_of_bytes = 4 ;
             
             type->is_signed = 0 ;
             
@@ -109,6 +125,8 @@ static void typecheck_setup_type( marshmallow_type type ) {
             
         case string:
             
+            type->num_of_bytes = 8 ;
+            
             type->is_signed = 0 ;
             
             type->is_float = 0 ;
@@ -116,6 +134,8 @@ static void typecheck_setup_type( marshmallow_type type ) {
             break;
             
         case string8:
+            
+            type->num_of_bytes = 8 ;
             
             type->is_signed = 0 ;
             
@@ -125,6 +145,8 @@ static void typecheck_setup_type( marshmallow_type type ) {
             
         case string16:
             
+            type->num_of_bytes = 8 ;
+            
             type->is_signed = 0 ;
             
             type->is_float = 0 ;
@@ -132,6 +154,8 @@ static void typecheck_setup_type( marshmallow_type type ) {
             break;
             
         case string32:
+            
+            type->num_of_bytes = 8 ;
             
             type->is_signed = 0 ;
             
@@ -141,6 +165,8 @@ static void typecheck_setup_type( marshmallow_type type ) {
             
         case character:
             
+            type->num_of_bytes = 4 ;
+            
             type->is_signed = 0 ;
             
             type->is_float = 0 ;
@@ -148,6 +174,8 @@ static void typecheck_setup_type( marshmallow_type type ) {
             break;
             
         case f32:
+            
+            type->num_of_bytes = 4 ;
             
             type->is_signed = 1 ;
             
@@ -157,6 +185,8 @@ static void typecheck_setup_type( marshmallow_type type ) {
             
         case f64:
             
+            type->num_of_bytes = 8 ;
+            
             type->is_signed = 1 ;
             
             type->is_float = 1 ;
@@ -165,6 +195,18 @@ static void typecheck_setup_type( marshmallow_type type ) {
             
         case nulltype:
             
+            type->num_of_bytes = 8 ;
+            
+            type->is_signed = 0 ;
+            
+            type->is_float = 0 ;
+            
+            break;
+            
+        case ptr:
+            
+            type->num_of_bytes = 8 ;
+            
             type->is_signed = 0 ;
             
             type->is_float = 0 ;
@@ -172,6 +214,8 @@ static void typecheck_setup_type( marshmallow_type type ) {
             break;
             
         default:
+            
+            type->num_of_bytes = 0 ;
             
             type->is_signed = 0 ;
             
