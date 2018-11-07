@@ -19,214 +19,6 @@
 
 #include "marshmallow.h"
 
-static void typecheck_setup_type( marshmallow_type type ) {
-    
-    switch (type->root_type) {
-            
-        case i8:
-            
-            type->num_of_bytes = 1 ;
-            
-            type->is_signed = 1 ;
-            
-            type->is_float = 0 ;
-            
-            break;
-            
-        case u8:
-            
-            type->num_of_bytes = 1 ;
-            
-            type->is_signed = 0 ;
-            
-            type->is_float = 0 ;
-            
-            break;
-            
-        case i16:
-            
-            type->num_of_bytes = 2 ;
-            
-            type->is_signed = 1 ;
-            
-            type->is_float = 0 ;
-            
-            break;
-            
-        case u16:
-            
-            type->num_of_bytes = 2 ;
-            
-            type->is_signed = 0 ;
-            
-            type->is_float = 0 ;
-            
-            break;
-            
-        case i32:
-            
-            type->num_of_bytes = 4 ;
-            
-            type->is_signed = 1 ;
-            
-            type->is_float = 0 ;
-            
-            break;
-            
-        case u32:
-            
-            type->num_of_bytes = 4 ;
-            
-            type->is_signed = 0 ;
-            
-            type->is_float = 0 ;
-            
-            break;
-            
-        case i64:
-            
-            type->num_of_bytes = 8 ;
-            
-            type->is_signed = 1 ;
-            
-            type->is_float = 0 ;
-            
-            break;
-            
-        case u64:
-            
-            type->num_of_bytes = 8 ;
-            
-            type->is_signed = 0 ;
-            
-            type->is_float = 0 ;
-            
-            break;
-            
-        case hex:
-            
-            type->num_of_bytes = 8 ;
-            
-            type->is_signed = 0 ;
-            
-            type->is_float = 0 ;
-            
-            break;
-            
-        case oct:
-            
-            type->num_of_bytes = 4 ;
-            
-            type->is_signed = 0 ;
-            
-            type->is_float = 0 ;
-            
-            break;
-            
-        case string:
-            
-            type->num_of_bytes = 8 ;
-            
-            type->is_signed = 0 ;
-            
-            type->is_float = 0 ;
-            
-            break;
-            
-        case string8:
-            
-            type->num_of_bytes = 8 ;
-            
-            type->is_signed = 0 ;
-            
-            type->is_float = 0 ;
-            
-            break;
-            
-        case string16:
-            
-            type->num_of_bytes = 8 ;
-            
-            type->is_signed = 0 ;
-            
-            type->is_float = 0 ;
-            
-            break;
-            
-        case string32:
-            
-            type->num_of_bytes = 8 ;
-            
-            type->is_signed = 0 ;
-            
-            type->is_float = 0 ;
-            
-            break;
-            
-        case character:
-            
-            type->num_of_bytes = 4 ;
-            
-            type->is_signed = 0 ;
-            
-            type->is_float = 0 ;
-            
-            break;
-            
-        case f32:
-            
-            type->num_of_bytes = 4 ;
-            
-            type->is_signed = 1 ;
-            
-            type->is_float = 2 ;
-            
-            break;
-            
-        case f64:
-            
-            type->num_of_bytes = 8 ;
-            
-            type->is_signed = 1 ;
-            
-            type->is_float = 1 ;
-            
-            break;
-            
-        case nulltype:
-            
-            type->num_of_bytes = 8 ;
-            
-            type->is_signed = 0 ;
-            
-            type->is_float = 0 ;
-            
-            break;
-            
-        case ptr:
-            
-            type->num_of_bytes = 8 ;
-            
-            type->is_signed = 0 ;
-            
-            type->is_float = 0 ;
-            
-            break;
-            
-        default:
-            
-            type->num_of_bytes = 0 ;
-            
-            type->is_signed = 0 ;
-            
-            type->is_float = 0 ;
-            
-            break;
-    }
-    
-    type->category = typecheck_get_type_category(type) ;
-}
-
  marshmallow_type typecheck_get_type_from_root_type( marshmallow_root_type root ) {
     
     static marshmallow_type unknown_t = NULL ;
@@ -260,7 +52,6 @@ type##_t->is_typedef = 0 ;\
 type##_t->is_readonly = 0 ;\
 type##_t->base_type = NULL ;\
 type##_t->num_of_elements = -1 ;\
-typecheck_setup_type(type##_t) ;\
 return type##_t ;\
 break;
     
@@ -309,8 +100,6 @@ break;
     unknown_t->base_type = NULL ;
     
     unknown_t->num_of_elements = -1 ;
-    
-    typecheck_setup_type(unknown_t) ;
      
     return unknown_t ;
     
@@ -466,6 +255,12 @@ int m_is_type_number( marshmallow_type type ) {
         case f64:
             
             return 1 ;
+            
+            break;
+            
+        case enum_type:
+            
+            return 1;
             
             break;
             
@@ -1028,8 +823,6 @@ static void typecheck_type( marshmallow_variable variable, marshmallow_module mo
      t1 = t ;
     
 loop:
-    
-    typecheck_setup_type(t1) ;
         
     if ( t1->root_type == ptr || t1->root_type == array ) {
         
@@ -2611,10 +2404,7 @@ static marshmallow_type typecheck_get_type_from_variable( marshmallow_variable v
 
 marshmallow_type_category typecheck_get_type_category( marshmallow_type type ) {
    
-    if ( type->root_type == i8 || type->root_type == u8 || type->root_type == i16 || type->root_type == u16
-        || type->root_type == i32 || type->root_type == u32 || type->root_type == i64 || type->root_type == u64
-        || type->root_type == hex || type->root_type == oct || type->root_type == character || type->root_type == f32
-        || type->root_type == f64 || type->root_type == enum_type ) {
+    if ( m_is_type_number(type) ) {
         
         return arithmetic ;
     }
@@ -2697,7 +2487,7 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
                 
                 rettype_a = typecheck_get_type_from_variable((marshmallow_variable)statement->var_a, has_assignment, module) ;
                 
-                if (!(m_is_type_number(rettype_a) || rettype_a->root_type == enum_type) || (statement->op == rem && m_is_type_float(rettype_a)) ) {
+                if (!m_is_type_number(rettype_a) || (statement->op == rem && m_is_type_float(rettype_a)) ) {
                     
                     if ( ((marshmallow_variable)statement->var_a)->name != NULL ) printf("Variable: '%s', is wrong type for add,sub,mult,div, or modulus.\n",RKString_GetString(((marshmallow_variable)statement->var_a)->name)) ;
                     
@@ -2708,7 +2498,7 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
                 
                 rettype_b = typecheck_get_type_from_variable((marshmallow_variable)statement->var_b, has_assignment, module) ;
                 
-                if (!(m_is_type_number(rettype_b) || rettype_b->root_type == enum_type) || (statement->op == rem && m_is_type_float(rettype_b)) ) {
+                if (!m_is_type_number(rettype_b) || (statement->op == rem && m_is_type_float(rettype_b)) ) {
                     
                     if ( ((marshmallow_variable)statement->var_b)->name != NULL ) printf("Variable: '%s', is wrong type for add,sub,mult,div, or modulus.\n",RKString_GetString(((marshmallow_variable)statement->var_b)->name)) ;
                     
