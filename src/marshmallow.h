@@ -64,11 +64,11 @@ RKStore variables ; marshmallow_function_body init_function ; } *marshmallow_cla
 
 typedef struct marshmallow_enum_s { RKList enum_names ; RKStore enums ; } *marshmallow_enum ;
 
-typedef struct marshmallow_type_s { marshmallow_entity_type entity_type ; RKString type_name ; marshmallow_type_category category ;
+typedef struct marshmallow_type_s { marshmallow_entity_type entity_type ; RKString type_name ; int is_literal ;
     
-RKULong num_of_bytes ; int is_signed ; int is_float ; int is_literal ; int is_init ; int is_typedef ; int is_cast ; int is_readonly ;
+int is_init ; int is_typedef ; int is_cast ; int is_readonly ; marshmallow_root_type root_type ;
     
-marshmallow_root_type root_type ; void* base_type ; RKULong num_of_elements ; int pointers ; } *marshmallow_type ;
+void* base_type ; RKULong num_of_elements ; int pointers ; } *marshmallow_type ;
 
 typedef struct marshmallow_variable_s { marshmallow_entity_type entity_type ; marshmallow_type type ;
     
@@ -90,7 +90,7 @@ marshmallow_function_signature signature ; RKStore calls ; marshmallow_module mo
 
 typedef struct marshmallow_statement_s { marshmallow_entity_type entity_type ; RKList statements ; int is_expression ; marshmallow_op_type op ;
     
-marshmallow_entity var_a ; marshmallow_entity var_b ; marshmallow_function_body function ; } *marshmallow_statement ;
+marshmallow_entity var_a ; marshmallow_entity var_b ; marshmallow_function_body function ; marshmallow_variable value ; } *marshmallow_statement ;
 
 typedef struct marshmallow_module_s { marshmallow_entity_type entity_type ; marshmallow_scope_protocol RKStore declarations ;
     

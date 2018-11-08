@@ -238,14 +238,6 @@ marshmallow_type marshmallow_new_type( void ) {
     type->num_of_elements = -1 ;
     
     type->pointers = 0 ;
-    
-    type->category = unknowns ;
-    
-    type->num_of_bytes = 0 ;
-    
-    type->is_signed = 0 ;
-    
-    type->is_float = 0 ;
 
     return type ;
 }
