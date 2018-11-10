@@ -90,7 +90,7 @@ marshmallow_function_signature signature ; RKStore calls ; marshmallow_module mo
 
 typedef struct marshmallow_statement_s { marshmallow_entity_type entity_type ; RKList statements ; int is_expression ; marshmallow_op_type op ;
     
-marshmallow_entity var_a ; marshmallow_entity var_b ; marshmallow_function_body function ; marshmallow_variable value ; } *marshmallow_statement ;
+marshmallow_entity var_a ; marshmallow_entity var_b ; marshmallow_function_body function ; } *marshmallow_statement ;
 
 typedef struct marshmallow_module_s { marshmallow_entity_type entity_type ; marshmallow_scope_protocol RKStore declarations ;
     
