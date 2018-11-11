@@ -1692,6 +1692,11 @@ statment_evaluator:
     return retptr ;
 }
 
+marshmallow_variable typecheck_evaluator( marshmallow_statement statement, marshmallow_module module ) {
+    
+    return NULL ;
+}
+
  marshmallow_variable typecheck_integer_evaluator( marshmallow_statement statement, marshmallow_module module ) {
     
     marshmallow_variable var = marshmallow_new_variable() ;
