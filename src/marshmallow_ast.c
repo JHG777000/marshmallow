@@ -227,6 +227,8 @@ marshmallow_type marshmallow_new_type( void ) {
     
     type->is_literal = 0 ;
     
+    type->is_temporary = 0 ;
+    
     type->is_init = 0 ;
     
     type->is_typedef = 0 ;
@@ -257,6 +259,8 @@ marshmallow_type marshmallow_copy_type( marshmallow_type t ) {
     //type->is_init should not need to be copied
     
     type->is_literal = t->is_literal ;
+    
+    type->is_temporary = t->is_temporary ;
     
     type->is_typedef = t->is_typedef ;
     

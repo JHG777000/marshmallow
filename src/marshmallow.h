@@ -66,7 +66,7 @@ typedef struct marshmallow_enum_s { RKList enum_names ; RKStore enums ; } *marsh
 
 typedef struct marshmallow_type_s { marshmallow_entity_type entity_type ; RKString type_name ; int is_literal ;
     
-int is_init ; int is_typedef ; int is_cast ; int is_readonly ; marshmallow_root_type root_type ;
+int is_temporary ; int is_init ; int is_typedef ; int is_cast ; int is_readonly ; marshmallow_root_type root_type ;
     
 void* base_type ; RKULong num_of_elements ; int pointers ; } *marshmallow_type ;
 

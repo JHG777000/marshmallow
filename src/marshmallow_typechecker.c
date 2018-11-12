@@ -1315,7 +1315,7 @@ static int is_assignable( marshmallow_variable variable, int* has_assignment, ma
     
     marshmallow_type type = typecheck_get_type_from_variable(variable, has_assignment, module) ;
     
-    if ( type->is_literal || type->is_readonly ) {
+    if ( type->is_literal || type->is_temporary || type->is_readonly ) {
         
         return 0 ;
     }
@@ -1692,7 +1692,36 @@ statment_evaluator:
     return retptr ;
 }
 
+void typecheck_get_string_for_byte( RKByte val, char* string ) {
+    
+    marshmallow_itoa(val, string) ;
+}
+
+#define evaluator_binary_op(op_type,op)\
+var->type->root_type = i8 ;\
+value->type->root_type = i8 ;\
+typecheck_get_string_for_##op_type(eval_a-> op_type##val op eval_b-> op_type##val, string) ;\
+value->value = RKString_NewStringFromCString(string) ;
+
 marshmallow_variable typecheck_evaluator( marshmallow_statement statement, marshmallow_module module ) {
+    
+    marshmallow_variable var = marshmallow_new_variable() ;
+    
+    var->type = marshmallow_new_type() ;
+    
+    marshmallow_value value = RKMem_NewMemOfType(struct marshmallow_value_s) ;
+    
+    value->type = marshmallow_new_type() ;
+    
+    eval_val eval_a = NULL ;
+    
+    eval_val eval_b = NULL ;
+    
+    char string[100] ;
+    
+    var->data = value ;
+    
+    evaluator_binary_op(byte,+)
     
     return NULL ;
 }
@@ -2252,7 +2281,7 @@ static marshmallow_type typecheck_get_type_from_variable( marshmallow_variable v
     
     ptrtype->root_type = ptr ;
     
-    ptrtype->is_literal = 1 ;
+    ptrtype->is_temporary = 1 ;
     
     RKString_DestroyString(ptrtype->type_name) ;
     
@@ -2611,7 +2640,7 @@ static marshmallow_type typecheck_statment( marshmallow_statement statement, int
              
              rettype_a = typecheck_get_type_from_variable((marshmallow_variable)statement->var_a, has_assignment, module) ;
              
-             if ( rettype_a->is_literal ) {
+             if ( rettype_a->is_literal || rettype_a->is_temporary ) {
                  
                  printf("Can not take the address of a literal or temporary.\n") ;
                  
