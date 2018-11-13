@@ -1452,9 +1452,9 @@ loop:
 
 static marshmallow_type typecheck_statment( marshmallow_statement statement, int* has_assignment, marshmallow_module module, RKStore store ) ;
 
-typedef struct eval_val_s { marshmallow_root_type root_type ; int error ; union { RKByte byteval ; RKShort shortval ;
+typedef struct eval_val_s { marshmallow_root_type root_type ; int error ; union { RKByte val_i8 ; RKShort val_i16 ;
     
-RKInt intval ; RKLong longval ; RKFloat floatval ; RKDouble doubleval ; } ; }* eval_val ;
+RKInt val_i32 ; RKLong val_i64 ; RKFloat val_f32 ; RKDouble val_f64 ; } ; }* eval_val ;
 
 static void typecheck_get_variables_for_evaluator( marshmallow_entity entity, marshmallow_entity* a, marshmallow_entity* b, marshmallow_module module ) {
     
@@ -1500,7 +1500,7 @@ statment_evaluator:
             
             variable = typecheck_integer_evaluator((marshmallow_statement)entity, module) ;
             
-            retptr->intval = atoi(RKString_GetString(((marshmallow_value)variable->data)->value)) ;
+            retptr->val_i32 = atoi(RKString_GetString(((marshmallow_value)variable->data)->value)) ;
             
             retptr->root_type = i32 ;
             
@@ -1510,7 +1510,7 @@ statment_evaluator:
             
             variable = typecheck_float_evaluator((marshmallow_statement)entity, module) ;
             
-            retptr->doubleval = atof(RKString_GetString(((marshmallow_value)variable->data)->value)) ;
+            retptr->val_f64 = atof(RKString_GetString(((marshmallow_value)variable->data)->value)) ;
             
             retptr->root_type = f64 ;
             
@@ -1533,7 +1533,7 @@ statment_evaluator:
             
             if ( RKStore_ItemExists(((marshmallow_enum)(variable->type->base_type))->enums, RKString_GetString(variable->name)) ) {
                 
-                retptr->intval = *((int*)(RKStore_GetItem(((marshmallow_enum)(variable->type->base_type))->enums, RKString_GetString(variable->name)))) ;
+                retptr->val_i32 = *((int*)(RKStore_GetItem(((marshmallow_enum)(variable->type->base_type))->enums, RKString_GetString(variable->name)))) ;
                 
                 retptr->root_type = i32 ;
                 
@@ -1554,7 +1554,7 @@ statment_evaluator:
                        
                    case i8:
                        
-                       retptr->byteval = atoi(RKString_GetString(value)) ;
+                       retptr->val_i8 = atoi(RKString_GetString(value)) ;
                        
                        retptr->root_type = i8 ;
                        
@@ -1564,7 +1564,7 @@ statment_evaluator:
                        
                    case u8:
                        
-                       retptr->byteval = atoi(RKString_GetString(value)) ;
+                       retptr->val_i8 = atoi(RKString_GetString(value)) ;
                        
                        retptr->root_type = u8 ;
                        
@@ -1574,7 +1574,7 @@ statment_evaluator:
                        
                    case i16:
                        
-                       retptr->shortval = atoi(RKString_GetString(value)) ;
+                       retptr->val_i16 = atoi(RKString_GetString(value)) ;
                        
                        retptr->root_type = i16 ;
                        
@@ -1584,7 +1584,7 @@ statment_evaluator:
                        
                    case u16:
                        
-                       retptr->shortval = atoi(RKString_GetString(value)) ;
+                       retptr->val_i16 = atoi(RKString_GetString(value)) ;
                        
                        retptr->root_type = u16 ;
                        
@@ -1594,7 +1594,7 @@ statment_evaluator:
                        
                    case i32:
                        
-                       retptr->intval = atoi(RKString_GetString(value)) ;
+                       retptr->val_i32 = atoi(RKString_GetString(value)) ;
                        
                        retptr->root_type = i32 ;
                        
@@ -1604,7 +1604,7 @@ statment_evaluator:
                        
                    case u32:
                        
-                       retptr->intval = atoi(RKString_GetString(value)) ;
+                       retptr->val_i32 = atoi(RKString_GetString(value)) ;
                        
                        retptr->root_type = u32 ;
                        
@@ -1614,7 +1614,7 @@ statment_evaluator:
                        
                    case i64:
                        
-                       retptr->longval = atol(RKString_GetString(value)) ;
+                       retptr->val_i64 = atol(RKString_GetString(value)) ;
                        
                        retptr->root_type = i64 ;
                        
@@ -1624,7 +1624,7 @@ statment_evaluator:
                        
                    case u64:
                        
-                       retptr->longval = atol(RKString_GetString(value)) ;
+                       retptr->val_i64 = atol(RKString_GetString(value)) ;
                        
                        retptr->root_type = u64 ;
                        
@@ -1640,7 +1640,7 @@ statment_evaluator:
                        
                      #else
                        
-                       retptr->longval = strtol(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value), NULL, 0) ;
+                       retptr->val_i64 = strtol(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value), NULL, 0) ;
                        
                      #endif
                        
@@ -1652,7 +1652,7 @@ statment_evaluator:
                        
                    case oct:
                        
-                       retptr->intval = (RKInt)strtol(RKString_GetString(value), NULL, 0) ;
+                       retptr->val_i32 = (RKInt)strtol(RKString_GetString(value), NULL, 0) ;
                        
                        retptr->root_type = u32 ;
                        
@@ -1662,7 +1662,7 @@ statment_evaluator:
                        
                    case f32:
                        
-                       retptr->floatval = atof(RKString_GetString(value)) ;
+                       retptr->val_f32 = atof(RKString_GetString(value)) ;
                        
                        retptr->root_type = f32 ;
                        
@@ -1672,7 +1672,7 @@ statment_evaluator:
                        
                    case f64:
                        
-                       retptr->doubleval = atof(RKString_GetString(value)) ;
+                       retptr->val_f64 = atof(RKString_GetString(value)) ;
                       
                        retptr->root_type = f64 ;
                        
@@ -1692,16 +1692,33 @@ statment_evaluator:
     return retptr ;
 }
 
-void typecheck_get_string_for_byte( RKByte val, char* string ) {
+void typecheck_get_string_for_i8( RKByte val, char* string ) {
     
     marshmallow_itoa(val, string) ;
 }
 
-#define evaluator_binary_op(op_type,op)\
-var->type->root_type = i8 ;\
-value->type->root_type = i8 ;\
-typecheck_get_string_for_##op_type(eval_a-> op_type##val op eval_b-> op_type##val, string) ;\
-value->value = RKString_NewStringFromCString(string) ;
+void typecheck_get_string_for_i16( RKByte val, char* string ) {
+    
+    marshmallow_itoa(val, string) ;
+}
+
+void typecheck_get_string_for_i32( RKByte val, char* string ) {
+    
+    marshmallow_itoa(val, string) ;
+}
+
+void typecheck_get_string_for_i64( RKByte val, char* string ) {
+    
+    marshmallow_itoa(val, string) ;
+}
+
+#define evaluator_binary_op(op_type,op_,op_name)\
+if (eval_a->root_type == op_type && statement->op == op_name) {\
+var->type->root_type = op_type ;\
+value->type->root_type = op_type ;\
+typecheck_get_string_for_##op_type(eval_a-> val_##op_type op_ eval_b-> val_##op_type, string) ;\
+value->value = RKString_NewStringFromCString(string) ;\
+}
 
 marshmallow_variable typecheck_evaluator( marshmallow_statement statement, marshmallow_module module ) {
     
@@ -1717,11 +1734,21 @@ marshmallow_variable typecheck_evaluator( marshmallow_statement statement, marsh
     
     eval_val eval_b = NULL ;
     
+    marshmallow_entity entity_a = NULL ;
+    
+    marshmallow_entity entity_b = NULL ;
+    
     char string[100] ;
     
     var->data = value ;
     
-    evaluator_binary_op(byte,+)
+    typecheck_get_variables_for_evaluator((marshmallow_entity)statement, &entity_a, &entity_b, module) ;
+    
+    eval_a = typecheck_get_value_for_evaluator(entity_a, module) ;
+    
+    eval_b = typecheck_get_value_for_evaluator(entity_b, module) ;
+    
+    evaluator_binary_op(i8,+,add)
     
     return NULL ;
 }
@@ -1770,61 +1797,61 @@ marshmallow_variable typecheck_evaluator( marshmallow_statement statement, marsh
          
         case i8:
             
-            a = eval_a->byteval ;
+            a = eval_a->val_i8 ;
             
             break;
             
         case u8:
             
-            a = eval_a->byteval ;
+            a = eval_a->val_i8 ;
             
             break;
             
         case i16:
             
-            a = eval_a->shortval ;
+            a = eval_a->val_i16 ;
             
             break;
             
         case u16:
             
-            a = eval_a->shortval ;
+            a = eval_a->val_i16 ;
             
             break;
             
         case i32:
             
-            a = eval_a->intval ;
+            a = eval_a->val_i32 ;
             
             break;
             
         case u32:
             
-            a = eval_a->intval ;
+            a = eval_a->val_i32 ;
             
             break;
             
         case i64:
             
-            a = (RKInt)eval_a->longval ;
+            a = (RKInt)eval_a->val_i64 ;
             
             break;
             
         case u64:
             
-            a = (RKInt)eval_a->longval ;
+            a = (RKInt)eval_a->val_i64 ;
             
             break;
             
         case f32:
             
-            a = roundf(eval_a->floatval) ;
+            a = roundf(eval_a->val_f32) ;
             
             break;
             
         case f64:
             
-            a = round(eval_a->doubleval) ;
+            a = round(eval_a->val_f64) ;
             
             break;
             
@@ -1845,61 +1872,61 @@ marshmallow_variable typecheck_evaluator( marshmallow_statement statement, marsh
             
         case i8:
             
-            b = eval_b->byteval ;
+            b = eval_b->val_i8 ;
             
             break;
             
         case u8:
             
-            b = eval_b->byteval ;
+            b = eval_b->val_i8 ;
             
             break;
             
         case i16:
             
-            b = eval_b->shortval ;
+            b = eval_b->val_i16 ;
             
             break;
             
         case u16:
             
-            b = eval_b->shortval ;
+            b = eval_b->val_i16 ;
             
             break;
             
         case i32:
             
-            b = eval_b->intval ;
+            b = eval_b->val_i32 ;
             
             break;
             
         case u32:
             
-            b = eval_b->intval ;
+            b = eval_b->val_i32 ;
             
             break;
             
         case i64:
             
-            b = (RKInt)eval_b->longval ;
+            b = (RKInt)eval_b->val_i64 ;
             
             break;
             
         case u64:
             
-            b = (RKInt)eval_b->longval ;
+            b = (RKInt)eval_b->val_i64 ;
             
             break;
             
         case f32:
             
-            b = roundf(eval_b->floatval) ;
+            b = roundf(eval_b->val_f32) ;
             
             break;
             
         case f64:
             
-            b = round(eval_b->doubleval) ;
+            b = round(eval_b->val_f64) ;
             
             break;
             
@@ -2049,61 +2076,61 @@ end:
             
         case i8:
             
-            a = eval_a->byteval ;
+            a = eval_a->val_i8 ;
             
             break;
             
         case u8:
             
-            a = eval_a->byteval ;
+            a = eval_a->val_i8 ;
             
             break;
             
         case i16:
             
-            a = eval_a->shortval ;
+            a = eval_a->val_i16 ;
             
             break;
             
         case u16:
             
-            a = eval_a->shortval ;
+            a = eval_a->val_i16 ;
             
             break;
             
         case i32:
             
-            a = eval_a->intval ;
+            a = eval_a->val_i32 ;
             
             break;
             
         case u32:
             
-            a = eval_a->intval ;
+            a = eval_a->val_i32 ;
             
             break;
             
         case i64:
             
-            a = (RKInt)eval_a->longval ;
+            a = (RKInt)eval_a->val_i64 ;
             
             break;
             
         case u64:
             
-            a = (RKInt)eval_a->longval ;
+            a = (RKInt)eval_a->val_i64 ;
             
             break;
             
         case f32:
             
-            a = eval_a->floatval ;
+            a = eval_a->val_f32 ;
             
             break;
             
         case f64:
             
-            a = eval_a->doubleval ;
+            a = eval_a->val_f64 ;
             
             break;
             
@@ -2124,61 +2151,61 @@ end:
             
         case i8:
             
-            b = eval_b->byteval ;
+            b = eval_b->val_i8 ;
             
             break;
             
         case u8:
             
-            b = eval_b->byteval ;
+            b = eval_b->val_i8 ;
             
             break;
             
         case i16:
             
-            b = eval_b->shortval ;
+            b = eval_b->val_i16 ;
             
             break;
             
         case u16:
             
-            b = eval_b->shortval ;
+            b = eval_b->val_i16 ;
             
             break;
             
         case i32:
             
-            b = eval_b->intval ;
+            b = eval_b->val_i32 ;
             
             break;
             
         case u32:
             
-            b = eval_b->intval ;
+            b = eval_b->val_i32 ;
             
             break;
             
         case i64:
             
-            b = eval_b->longval ;
+            b = eval_b->val_i64 ;
             
             break;
             
         case u64:
             
-            b = eval_b->longval ;
+            b = eval_b->val_i64 ;
             
             break;
             
         case f32:
             
-            b = eval_b->floatval ;
+            b = eval_b->val_f32 ;
             
             break;
             
         case f64:
             
-            b = eval_b->doubleval ;
+            b = eval_b->val_f64 ;
             
             break;
             
