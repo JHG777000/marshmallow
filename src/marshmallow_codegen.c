@@ -18,7 +18,23 @@
 #include "marshmallow.h"
 #include "marshmallow_codegen.h"
 
- const char* marshmallow_ltoa( RKULong val, char* string ) {
+ const char* marshmallow_ltoa( RKLong val, char* string ) {
+    
+#ifdef _WIN32
+    
+    snprintf(string, sizeof(string), "%lld", val) ;
+    
+#else
+    
+    snprintf(string, sizeof(string), "%ld", val) ;
+    
+#endif
+    
+    return string ;
+    
+}
+
+const char* marshmallow_ultoa( RKULong val, char* string ) {
     
 #ifdef _WIN32
     

@@ -212,7 +212,9 @@ void marshmallow_typecheck( marshmallow_context context ) ;
 
 //codegen
 
-const char* marshmallow_ltoa( RKULong val, char* string ) ;
+const char* marshmallow_ltoa( RKLong val, char* string ) ;
+
+const char* marshmallow_ultoa( RKULong val, char* string ) ;
 
 const char* marshmallow_itoa( int val, char* string ) ;
 

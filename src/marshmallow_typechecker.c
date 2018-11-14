@@ -1692,41 +1692,32 @@ statment_evaluator:
     return retptr ;
 }
 
-RKString typecheck_get_string_for_i8( RKByte val ) {
-    
-    char string[100] ;
-    
-    marshmallow_itoa(val, string) ;
-    
-    return RKString_NewStringFromCString(string) ;
+#define get_string_for(type_name,type,func)\
+RKString typecheck_get_string_for_##type_name( type val ) {\
+char string[100] ;\
+marshmallow_##func(val, string) ;\
+return RKString_NewStringFromCString(string) ;\
 }
 
-RKString typecheck_get_string_for_i16( RKShort val ) {
-    
-    char string[100] ;
-    
-    marshmallow_itoa(val, string) ;
-    
-    return RKString_NewStringFromCString(string) ;
-}
+get_string_for(i8, RKSByte, itoa)
 
-RKString typecheck_get_string_for_i32( RKInt val ) {
-    
-    char string[100] ;
-    
-    marshmallow_itoa(val, string) ;
-    
-    return RKString_NewStringFromCString(string) ;
-}
+get_string_for(u8, RKByte, uitoa)
 
-RKString typecheck_get_string_for_i64( RKLong val ) {
-    
-    char string[100] ;
-    
-    marshmallow_ltoa(val, string) ;
-    
-    return RKString_NewStringFromCString(string) ;
-}
+get_string_for(i16, RKInt, itoa)
+
+get_string_for(u16, RKUInt, uitoa)
+
+get_string_for(i32, RKInt, itoa)
+
+get_string_for(u32, RKUInt, uitoa)
+
+get_string_for(i64, RKLong, ltoa)
+
+get_string_for(u64, RKULong, ultoa)
+
+get_string_for(f32, RKFloat, ftoa)
+
+get_string_for(f64, RKDouble, dtoa)
 
 #define add_op(a,b) a + b
 #define sub_op(a,b) a - b
