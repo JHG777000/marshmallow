@@ -1692,32 +1692,52 @@ statment_evaluator:
     return retptr ;
 }
 
-void typecheck_get_string_for_i8( RKByte val, char* string ) {
+RKString typecheck_get_string_for_i8( RKByte val ) {
+    
+    char string[100] ;
     
     marshmallow_itoa(val, string) ;
+    
+    return RKString_NewStringFromCString(string) ;
 }
 
-void typecheck_get_string_for_i16( RKByte val, char* string ) {
+RKString typecheck_get_string_for_i16( RKShort val ) {
+    
+    char string[100] ;
     
     marshmallow_itoa(val, string) ;
+    
+    return RKString_NewStringFromCString(string) ;
 }
 
-void typecheck_get_string_for_i32( RKByte val, char* string ) {
+RKString typecheck_get_string_for_i32( RKInt val ) {
+    
+    char string[100] ;
     
     marshmallow_itoa(val, string) ;
-}
-
-void typecheck_get_string_for_i64( RKByte val, char* string ) {
     
-    marshmallow_itoa(val, string) ;
+    return RKString_NewStringFromCString(string) ;
 }
 
-#define evaluator_binary_op(op_type,op_,op_name)\
+RKString typecheck_get_string_for_i64( RKLong val ) {
+    
+    char string[100] ;
+    
+    marshmallow_ltoa(val, string) ;
+    
+    return RKString_NewStringFromCString(string) ;
+}
+
+#define add_op(a,b) a + b
+#define sub_op(a,b) a - b
+#define mult_op(a,b) a * b
+#define div_op(a,b) a / b
+
+#define evaluator_binary_op(op_type,op_name,op_)\
 if (eval_a->root_type == op_type && statement->op == op_name) {\
 var->type->root_type = op_type ;\
 value->type->root_type = op_type ;\
-typecheck_get_string_for_##op_type(eval_a-> val_##op_type op_ eval_b-> val_##op_type, string) ;\
-value->value = RKString_NewStringFromCString(string) ;\
+value->value = typecheck_get_string_for_##op_type(op_(eval_a-> val_##op_type,eval_b-> val_##op_type)) ;\
 }
 
 marshmallow_variable typecheck_evaluator( marshmallow_statement statement, marshmallow_module module ) {
@@ -1738,8 +1758,6 @@ marshmallow_variable typecheck_evaluator( marshmallow_statement statement, marsh
     
     marshmallow_entity entity_b = NULL ;
     
-    char string[100] ;
-    
     var->data = value ;
     
     typecheck_get_variables_for_evaluator((marshmallow_entity)statement, &entity_a, &entity_b, module) ;
@@ -1748,7 +1766,7 @@ marshmallow_variable typecheck_evaluator( marshmallow_statement statement, marsh
     
     eval_b = typecheck_get_value_for_evaluator(entity_b, module) ;
     
-    evaluator_binary_op(i8,+,add)
+    evaluator_binary_op(i8,add,add_op)
     
     return NULL ;
 }
