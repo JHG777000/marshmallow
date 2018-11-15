@@ -1723,6 +1723,18 @@ get_string_for(f64, RKDouble, dtoa)
 #define sub_op(a,b) a - b
 #define mult_op(a,b) a * b
 #define div_op(a,b) a / b
+#define rem_op(a,b) a % b
+#define band_op(a,b) a & b
+#define bor_op(a,b) a | b
+#define xor_op(a,b) a ^ b
+#define rshift_op(a,b) a >> b
+#define lshift_op(a,b) a << b
+#define land_op(a,b) a && b
+#define lor_op(a,b) a || b
+#define grth_op(a,b) a > b
+#define lsth_op(a,b) a < b
+#define grtheq_op(a,b) a >= b
+#define lstheq_op(a,b) a <= b
 
 #define evaluator_binary_op(op_type,op_name,op_)\
 if (eval_a->root_type == op_type && statement->op == op_name) {\
