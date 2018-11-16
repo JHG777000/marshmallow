@@ -1452,9 +1452,9 @@ loop:
 
 static marshmallow_type typecheck_statment( marshmallow_statement statement, int* has_assignment, marshmallow_module module, RKStore store ) ;
 
-typedef struct eval_val_s { marshmallow_root_type root_type ; int error ; union { RKByte val_i8 ; RKShort val_i16 ;
+typedef struct eval_val_s { marshmallow_root_type root_type ; int error ; union { RKString val_string ;
     
-RKInt val_i32 ; RKLong val_i64 ; RKFloat val_f32 ; RKDouble val_f64 ; } ; }* eval_val ;
+RKByte val_i8 ; RKShort val_i16 ; RKInt val_i32 ; RKLong val_i64 ; RKFloat val_f32 ; RKDouble val_f64 ; } ; }* eval_val ;
 
 static void typecheck_get_variables_for_evaluator( marshmallow_entity entity, marshmallow_entity* a, marshmallow_entity* b, marshmallow_module module ) {
     
@@ -1545,12 +1545,22 @@ statment_evaluator:
         if ( m_is_type_number(((marshmallow_variable)entity)->type) &&
             ((marshmallow_variable)entity)->data != NULL ) value = ((marshmallow_value)((marshmallow_variable)entity)->data)->value ;
         
-        if ( m_is_type_number(((marshmallow_variable)entity)->type) && ((marshmallow_variable)entity)->static_assignment != NULL &&
+        if ( (m_is_type_number(((marshmallow_variable)entity)->type) || typecheck_get_type_category(((marshmallow_variable)entity)->type) == strings) && ((marshmallow_variable)entity)->static_assignment != NULL &&
             ((marshmallow_variable)entity)->type->is_readonly) value = ((marshmallow_value)((marshmallow_variable)entity)->static_assignment->data)->value ;
-       
+        
         if ( value != NULL ) {
             
                switch ( ((marshmallow_variable)entity)->type->root_type ) {
+                   
+                  case string:
+                       
+                       retptr->val_string = value ;
+                       
+                       retptr->root_type = string ;
+                       
+                       retptr->error = 0 ;
+                       
+                       break;
                        
                    case i8:
                        
@@ -1692,6 +1702,12 @@ statment_evaluator:
     return retptr ;
 }
 
+
+RKString typecheck_get_string_for_string( RKString val ) {
+   
+    return val ;
+}
+
 #define get_string_for(type_name,type,func)\
 RKString typecheck_get_string_for_##type_name( type val ) {\
 char string[100] ;\
@@ -1768,6 +1784,8 @@ marshmallow_variable typecheck_evaluator( marshmallow_statement statement, marsh
     eval_a = typecheck_get_value_for_evaluator(entity_a, module) ;
     
     eval_b = typecheck_get_value_for_evaluator(entity_b, module) ;
+    
+    evaluator_binary_op(string,add,RKString_AddStrings)
     
     evaluator_binary_op(i8,add,add_op)
     
