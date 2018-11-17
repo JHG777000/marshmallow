@@ -1452,9 +1452,11 @@ loop:
 
 static marshmallow_type typecheck_statment( marshmallow_statement statement, int* has_assignment, marshmallow_module module, RKStore store ) ;
 
-typedef struct eval_val_s { marshmallow_root_type root_type ; int error ; union { RKString val_string ;
+typedef struct eval_val_s { marshmallow_root_type root_type ; int error ; union { RKString val_string ; RKString val_string8 ; RKString val_string16 ;
     
-RKByte val_i8 ; RKShort val_i16 ; RKInt val_i32 ; RKLong val_i64 ; RKFloat val_f32 ; RKDouble val_f64 ; } ; }* eval_val ;
+RKString val_string32 ; RKSByte val_i8 ; RKByte val_u8 ; RKShort val_i16 ; RKUShort val_u16 ; RKInt val_i32 ; RKUInt val_u32 ;
+    
+RKLong val_i64 ; RKULong val_u64 ; RKFloat val_f32 ; RKDouble val_f64 ; } ; }* eval_val ;
 
 static void typecheck_get_variables_for_evaluator( marshmallow_entity entity, marshmallow_entity* a, marshmallow_entity* b, marshmallow_module module ) {
     
@@ -1557,6 +1559,36 @@ statment_evaluator:
                        retptr->val_string = value ;
                        
                        retptr->root_type = string ;
+                       
+                       retptr->error = 0 ;
+                       
+                       break;
+                       
+                   case string8:
+                       
+                       retptr->val_string = value ;
+                       
+                       retptr->root_type = string8 ;
+                       
+                       retptr->error = 0 ;
+                       
+                       break;
+                       
+                   case string16:
+                       
+                       retptr->val_string = value ;
+                       
+                       retptr->root_type = string16 ;
+                       
+                       retptr->error = 0 ;
+                       
+                       break;
+                       
+                   case string32:
+                       
+                       retptr->val_string = value ;
+                       
+                       retptr->root_type = string32 ;
                        
                        retptr->error = 0 ;
                        
@@ -1708,6 +1740,21 @@ RKString typecheck_get_string_for_string( RKString val ) {
     return val ;
 }
 
+RKString typecheck_get_string_for_string8( RKString val ) {
+    
+    return val ;
+}
+
+RKString typecheck_get_string_for_string16( RKString val ) {
+    
+    return val ;
+}
+
+RKString typecheck_get_string_for_string32( RKString val ) {
+    
+    return val ;
+}
+
 #define get_string_for(type_name,type,func)\
 RKString typecheck_get_string_for_##type_name( type val ) {\
 char string[100] ;\
@@ -1786,8 +1833,62 @@ marshmallow_variable typecheck_evaluator( marshmallow_statement statement, marsh
     eval_b = typecheck_get_value_for_evaluator(entity_b, module) ;
     
     evaluator_binary_op(string,add,RKString_AddStrings)
+    evaluator_binary_op(string8,add,RKString_AddStrings)
+    evaluator_binary_op(string16,add,RKString_AddStrings)
+    evaluator_binary_op(string32,add,RKString_AddStrings)
     
     evaluator_binary_op(i8,add,add_op)
+    evaluator_binary_op(u8,add,add_op)
+    evaluator_binary_op(i16,add,add_op)
+    evaluator_binary_op(u16,add,add_op)
+    evaluator_binary_op(i32,add,add_op)
+    evaluator_binary_op(u32,add,add_op)
+    evaluator_binary_op(i64,add,add_op)
+    evaluator_binary_op(u64,add,add_op)
+    evaluator_binary_op(f32,add,add_op)
+    evaluator_binary_op(f64,add,add_op)
+    
+    evaluator_binary_op(i8,sub,sub_op)
+    evaluator_binary_op(u8,sub,sub_op)
+    evaluator_binary_op(i16,sub,sub_op)
+    evaluator_binary_op(u16,sub,sub_op)
+    evaluator_binary_op(i32,sub,sub_op)
+    evaluator_binary_op(u32,sub,sub_op)
+    evaluator_binary_op(i64,sub,sub_op)
+    evaluator_binary_op(u64,sub,sub_op)
+    evaluator_binary_op(f32,sub,sub_op)
+    evaluator_binary_op(f64,sub,sub_op)
+    
+    evaluator_binary_op(i8,mult,mult_op)
+    evaluator_binary_op(u8,mult,mult_op)
+    evaluator_binary_op(i16,mult,mult_op)
+    evaluator_binary_op(u16,mult,mult_op)
+    evaluator_binary_op(i32,mult,mult_op)
+    evaluator_binary_op(u32,mult,mult_op)
+    evaluator_binary_op(i64,mult,mult_op)
+    evaluator_binary_op(u64,mult,mult_op)
+    evaluator_binary_op(f32,mult,mult_op)
+    evaluator_binary_op(f64,mult,mult_op)
+    
+    evaluator_binary_op(i8,mdiv,div_op)
+    evaluator_binary_op(u8,mdiv,div_op)
+    evaluator_binary_op(i16,mdiv,div_op)
+    evaluator_binary_op(u16,mdiv,div_op)
+    evaluator_binary_op(i32,mdiv,div_op)
+    evaluator_binary_op(u32,mdiv,div_op)
+    evaluator_binary_op(i64,mdiv,div_op)
+    evaluator_binary_op(u64,mdiv,div_op)
+    evaluator_binary_op(f32,mdiv,div_op)
+    evaluator_binary_op(f64,mdiv,div_op)
+    
+    evaluator_binary_op(i8,rem,rem_op)
+    evaluator_binary_op(u8,rem,rem_op)
+    evaluator_binary_op(i16,rem,rem_op)
+    evaluator_binary_op(u16,rem,rem_op)
+    evaluator_binary_op(i32,rem,rem_op)
+    evaluator_binary_op(u32,rem,rem_op)
+    evaluator_binary_op(i64,rem,rem_op)
+    evaluator_binary_op(u64,rem,rem_op)
     
     return NULL ;
 }
