@@ -1606,7 +1606,7 @@ statment_evaluator:
                        
                    case u8:
                        
-                       retptr->val_i8 = atoi(RKString_GetString(value)) ;
+                       retptr->val_u8 = atoi(RKString_GetString(value)) ;
                        
                        retptr->root_type = u8 ;
                        
@@ -1626,7 +1626,7 @@ statment_evaluator:
                        
                    case u16:
                        
-                       retptr->val_i16 = atoi(RKString_GetString(value)) ;
+                       retptr->val_u16 = atoi(RKString_GetString(value)) ;
                        
                        retptr->root_type = u16 ;
                        
@@ -1646,7 +1646,7 @@ statment_evaluator:
                        
                    case u32:
                        
-                       retptr->val_i32 = atoi(RKString_GetString(value)) ;
+                       retptr->val_u32 = atoi(RKString_GetString(value)) ;
                        
                        retptr->root_type = u32 ;
                        
@@ -1666,7 +1666,7 @@ statment_evaluator:
                        
                    case u64:
                        
-                       retptr->val_i64 = atol(RKString_GetString(value)) ;
+                       retptr->val_u64 = atol(RKString_GetString(value)) ;
                        
                        retptr->root_type = u64 ;
                        
@@ -1678,11 +1678,11 @@ statment_evaluator:
                        
                      #ifdef WIN32_
                        
-                       retptr->longval = strtoll(RKString_GetString(value), NULL, 0) ;
+                       retptr->val_u64 = strtoll(RKString_GetString(value), NULL, 0) ;
                        
                      #else
                        
-                       retptr->val_i64 = strtol(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value), NULL, 0) ;
+                       retptr->val_u64 = strtol(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value), NULL, 0) ;
                        
                      #endif
                        
@@ -1694,7 +1694,7 @@ statment_evaluator:
                        
                    case oct:
                        
-                       retptr->val_i32 = (RKInt)strtol(RKString_GetString(value), NULL, 0) ;
+                       retptr->val_u32 = (RKInt)strtol(RKString_GetString(value), NULL, 0) ;
                        
                        retptr->root_type = u32 ;
                        
@@ -1798,6 +1798,8 @@ get_string_for(f64, RKDouble, dtoa)
 #define lsth_op(a,b) a < b
 #define grtheq_op(a,b) a >= b
 #define lstheq_op(a,b) a <= b
+#define iseq_op(a,b) a == b
+#define noteq_op(a,b) a != b
 
 #define evaluator_binary_op(op_type,op_name,op_)\
 if (eval_a->root_type == op_type && statement->op == op_name) {\
@@ -1889,6 +1891,139 @@ marshmallow_variable typecheck_evaluator( marshmallow_statement statement, marsh
     evaluator_binary_op(u32,rem,rem_op)
     evaluator_binary_op(i64,rem,rem_op)
     evaluator_binary_op(u64,rem,rem_op)
+    
+    evaluator_binary_op(i8,band,band_op)
+    evaluator_binary_op(u8,band,band_op)
+    evaluator_binary_op(i16,band,band_op)
+    evaluator_binary_op(u16,band,band_op)
+    evaluator_binary_op(i32,band,band_op)
+    evaluator_binary_op(u32,band,band_op)
+    evaluator_binary_op(i64,band,band_op)
+    evaluator_binary_op(u64,band,band_op)
+    
+    evaluator_binary_op(i8,bor,bor_op)
+    evaluator_binary_op(u8,bor,bor_op)
+    evaluator_binary_op(i16,bor,bor_op)
+    evaluator_binary_op(u16,bor,bor_op)
+    evaluator_binary_op(i32,bor,bor_op)
+    evaluator_binary_op(u32,bor,bor_op)
+    evaluator_binary_op(i64,bor,bor_op)
+    evaluator_binary_op(u64,bor,bor_op)
+    
+    evaluator_binary_op(i8,xor,xor_op)
+    evaluator_binary_op(u8,xor,xor_op)
+    evaluator_binary_op(i16,xor,xor_op)
+    evaluator_binary_op(u16,xor,xor_op)
+    evaluator_binary_op(i32,xor,xor_op)
+    evaluator_binary_op(u32,xor,xor_op)
+    evaluator_binary_op(i64,xor,xor_op)
+    evaluator_binary_op(u64,xor,xor_op)
+    
+    evaluator_binary_op(i8,rshift,rshift_op)
+    evaluator_binary_op(u8,rshift,rshift_op)
+    evaluator_binary_op(i16,rshift,rshift_op)
+    evaluator_binary_op(u16,rshift,rshift_op)
+    evaluator_binary_op(i32,rshift,rshift_op)
+    evaluator_binary_op(u32,rshift,rshift_op)
+    evaluator_binary_op(i64,rshift,rshift_op)
+    evaluator_binary_op(u64,rshift,rshift_op)
+    
+    evaluator_binary_op(i8,lshift,lshift_op)
+    evaluator_binary_op(u8,lshift,lshift_op)
+    evaluator_binary_op(i16,lshift,lshift_op)
+    evaluator_binary_op(u16,lshift,lshift_op)
+    evaluator_binary_op(i32,lshift,lshift_op)
+    evaluator_binary_op(u32,lshift,lshift_op)
+    evaluator_binary_op(i64,lshift,lshift_op)
+    evaluator_binary_op(u64,lshift,lshift_op)
+    
+    evaluator_binary_op(i8,and,land_op)
+    evaluator_binary_op(u8,and,land_op)
+    evaluator_binary_op(i16,and,land_op)
+    evaluator_binary_op(u16,and,land_op)
+    evaluator_binary_op(i32,and,land_op)
+    evaluator_binary_op(u32,and,land_op)
+    evaluator_binary_op(i64,and,land_op)
+    evaluator_binary_op(u64,and,land_op)
+    evaluator_binary_op(f32,and,land_op)
+    evaluator_binary_op(f64,and,land_op)
+    
+    evaluator_binary_op(i8,or,lor_op)
+    evaluator_binary_op(u8,or,lor_op)
+    evaluator_binary_op(i16,or,lor_op)
+    evaluator_binary_op(u16,or,lor_op)
+    evaluator_binary_op(i32,or,lor_op)
+    evaluator_binary_op(u32,or,lor_op)
+    evaluator_binary_op(i64,or,lor_op)
+    evaluator_binary_op(u64,or,lor_op)
+    evaluator_binary_op(f32,or,lor_op)
+    evaluator_binary_op(f64,or,lor_op)
+    
+    evaluator_binary_op(i8,is_greaterthan,grth_op)
+    evaluator_binary_op(u8,is_greaterthan,grth_op)
+    evaluator_binary_op(i16,is_greaterthan,grth_op)
+    evaluator_binary_op(u16,is_greaterthan,grth_op)
+    evaluator_binary_op(i32,is_greaterthan,grth_op)
+    evaluator_binary_op(u32,is_greaterthan,grth_op)
+    evaluator_binary_op(i64,is_greaterthan,grth_op)
+    evaluator_binary_op(u64,is_greaterthan,grth_op)
+    evaluator_binary_op(f32,is_greaterthan,grth_op)
+    evaluator_binary_op(f64,is_greaterthan,grth_op)
+    
+    evaluator_binary_op(i8,is_lessthan,lsth_op)
+    evaluator_binary_op(u8,is_lessthan,lsth_op)
+    evaluator_binary_op(i16,is_lessthan,lsth_op)
+    evaluator_binary_op(u16,is_lessthan,lsth_op)
+    evaluator_binary_op(i32,is_lessthan,lsth_op)
+    evaluator_binary_op(u32,is_lessthan,lsth_op)
+    evaluator_binary_op(i64,is_lessthan,lsth_op)
+    evaluator_binary_op(u64,is_lessthan,lsth_op)
+    evaluator_binary_op(f32,is_lessthan,lsth_op)
+    evaluator_binary_op(f64,is_lessthan,lsth_op)
+    
+    evaluator_binary_op(i8,is_greaterthan_or_equal,grtheq_op)
+    evaluator_binary_op(u8,is_greaterthan_or_equal,grtheq_op)
+    evaluator_binary_op(i16,is_greaterthan_or_equal,grtheq_op)
+    evaluator_binary_op(u16,is_greaterthan_or_equal,grtheq_op)
+    evaluator_binary_op(i32,is_greaterthan_or_equal,grtheq_op)
+    evaluator_binary_op(u32,is_greaterthan_or_equal,grtheq_op)
+    evaluator_binary_op(i64,is_greaterthan_or_equal,grtheq_op)
+    evaluator_binary_op(u64,is_greaterthan_or_equal,grtheq_op)
+    evaluator_binary_op(f32,is_greaterthan_or_equal,grtheq_op)
+    evaluator_binary_op(f64,is_greaterthan_or_equal,grtheq_op)
+    
+    evaluator_binary_op(i8,is_lessthan_or_equal,lstheq_op)
+    evaluator_binary_op(u8,is_lessthan_or_equal,lstheq_op)
+    evaluator_binary_op(i16,is_lessthan_or_equal,lstheq_op)
+    evaluator_binary_op(u16,is_lessthan_or_equal,lstheq_op)
+    evaluator_binary_op(i32,is_lessthan_or_equal,lstheq_op)
+    evaluator_binary_op(u32,is_lessthan_or_equal,lstheq_op)
+    evaluator_binary_op(i64,is_lessthan_or_equal,lstheq_op)
+    evaluator_binary_op(u64,is_lessthan_or_equal,lstheq_op)
+    evaluator_binary_op(f32,is_lessthan_or_equal,lstheq_op)
+    evaluator_binary_op(f64,is_lessthan_or_equal,lstheq_op)
+    
+    evaluator_binary_op(i8,is_equal,iseq_op)
+    evaluator_binary_op(u8,is_equal,iseq_op)
+    evaluator_binary_op(i16,is_equal,iseq_op)
+    evaluator_binary_op(u16,is_equal,iseq_op)
+    evaluator_binary_op(i32,is_equal,iseq_op)
+    evaluator_binary_op(u32,is_equal,iseq_op)
+    evaluator_binary_op(i64,is_equal,iseq_op)
+    evaluator_binary_op(u64,is_equal,iseq_op)
+    evaluator_binary_op(f32,is_equal,iseq_op)
+    evaluator_binary_op(f64,is_equal,iseq_op)
+    
+    evaluator_binary_op(i8,is_not_equal,noteq_op)
+    evaluator_binary_op(u8,is_not_equal,noteq_op)
+    evaluator_binary_op(i16,is_not_equal,noteq_op)
+    evaluator_binary_op(u16,is_not_equal,noteq_op)
+    evaluator_binary_op(i32,is_not_equal,noteq_op)
+    evaluator_binary_op(u32,is_not_equal,noteq_op)
+    evaluator_binary_op(i64,is_not_equal,noteq_op)
+    evaluator_binary_op(u64,is_not_equal,noteq_op)
+    evaluator_binary_op(f32,is_not_equal,noteq_op)
+    evaluator_binary_op(f64,is_not_equal,noteq_op)
     
     return NULL ;
 }
