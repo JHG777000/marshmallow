@@ -17,31 +17,57 @@ The following is an example of what marshmallow aims to be:
 
     build.
 
-      @public os(macOS | Windows | Linux).
+      public os(macOS | Windows | Linux).
 
-      @files MyAppSourceFiles(MyOtherFile.msrc, Folder::SourceFile.msrc).
+      files MyAppSourceFiles(MyOtherFile.msrc, Folder::SourceFile.msrc).
 
-      @files MyAppLibraryFiles(libs::libm.a, libs::OtherModule.mmod, libs::SomeMarshmallowLibrary.mpck).
+      files MyAppLibraryFiles(libs::libm.a, libs::OtherModule.mmod, libs::SomeMarshmallowLibrary.mpck).
 
-      @sources MyAppSource(MyAppSourceFiles,MyAppLibraryFiles).
+      sources MyAppSource(MyAppSourceFiles,MyAppLibraryFiles).
 
-      @if ( os == macOS ).
+      if ( os == macOS ).
 
-        @output(app::macOS::x86_64,MyAppSource). // app or pck or mod or lib or obj
+        compiler CompilerFlags("macOS").
 
-      @elseif( os == Windows ).
+      else if ( os == Windows ).
 
-       @output(app::Windows::x86_64,MyAppSource).
+        compiler CompilerFlags("Windows").
 
-      @elseif( os == Linux ).
+      else if ( os == Linux ).
 
-       @output(app::Linux::x86_64,MyAppSource).
+        compiler CompilerFlags("Linux").
 
-      @endif.
+     end if.
+     
+     toolchain ToolChain(c_backend,CompilerFlags).
+
+     output(app,MyAppSource,ToolChain). // app or pck or mod or lib or obj
 
      end build.
+     
+     typedef [int][3][x,y,z] vectype.
 
      function main( args main_args ).
+     
+      [int][3] vector.
+
+      [byte][3][r,g,b][red,green,blue] pixel.
+      
+      vectype vector2.
+ 
+      vector2->x += 1.
+
+      vector2->xy += 1.
+
+      pixel->redblue += 1.
+
+      vector[0] += 1.
+
+      vector[0,1] += 1.
+
+      vector += 1.
+
+      vector += {1,2,3}.
 
       int[64] array.
 
@@ -49,13 +75,15 @@ The following is an example of what marshmallow aims to be:
 
       float y.
 
-      sbyte x := ($i8($$$u64($$$int*($int[](array))))).
+      sbyte x := ($i8($$$u64($$$int*($$int[](array))))).
 
       y := (*($float*(&i))).
 
       y := ($$float(i)).
  
       List list := new().
+      
+      int* ptr := null.
 
       float value := (1.0).
 
@@ -69,17 +97,17 @@ The following is an example of what marshmallow aims to be:
 
        return 1.
 
-      end lambda.
+      end lambda.      
 
      end function.
 
-     template function alloc(type_to_alloc) returns blank*.
+     function alloc(type type_to_alloc) returns blank*.
 
        if ( _is_ptr(type_to_alloc) ) return _init(malloc(_sizeof(_typeofptr(type_to_alloc)))).
 
        return _init(malloc(_sizeof(type_to_alloc))).
 
-     end template.
+     end function.
 
      function freer free(blank* ptr).
 
