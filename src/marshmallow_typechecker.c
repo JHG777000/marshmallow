@@ -1808,6 +1808,17 @@ value->type->root_type = op_type ;\
 value->value = typecheck_get_string_for_##op_type(op_(eval_a-> val_##op_type,eval_b-> val_##op_type)) ;\
 }
 
+#define negate_op(a) -a
+#define not_op(a) !a
+#define bnot_op(a) ~a
+
+#define evaluator_unary_op(op_type,op_name,op_)\
+if (eval_a->root_type == op_type && statement->op == op_name) {\
+var->type->root_type = op_type ;\
+value->type->root_type = op_type ;\
+value->value = typecheck_get_string_for_##op_type(op_(eval_a-> val_##op_type)) ;\
+}
+
 marshmallow_variable typecheck_evaluator( marshmallow_statement statement, marshmallow_module module ) {
     
     marshmallow_variable var = marshmallow_new_variable() ;
@@ -2024,6 +2035,38 @@ marshmallow_variable typecheck_evaluator( marshmallow_statement statement, marsh
     evaluator_binary_op(u64,is_not_equal,noteq_op)
     evaluator_binary_op(f32,is_not_equal,noteq_op)
     evaluator_binary_op(f64,is_not_equal,noteq_op)
+    
+    evaluator_unary_op(i8,negate,negate_op)
+    evaluator_unary_op(u8,negate,negate_op)
+    evaluator_unary_op(i16,negate,negate_op)
+    evaluator_unary_op(u16,negate,negate_op)
+    evaluator_unary_op(i32,negate,negate_op)
+    evaluator_unary_op(u32,negate,negate_op)
+    evaluator_unary_op(i64,negate,negate_op)
+    evaluator_unary_op(u64,negate,negate_op)
+    evaluator_unary_op(f32,negate,negate_op)
+    evaluator_unary_op(f64,negate,negate_op)
+    
+    evaluator_unary_op(i8,not,not_op)
+    evaluator_unary_op(u8,not,not_op)
+    evaluator_unary_op(i16,not,not_op)
+    evaluator_unary_op(u16,not,not_op)
+    evaluator_unary_op(i32,not,not_op)
+    evaluator_unary_op(u32,not,not_op)
+    evaluator_unary_op(i64,not,not_op)
+    evaluator_unary_op(u64,not,not_op)
+    evaluator_unary_op(f32,not,not_op)
+    evaluator_unary_op(f64,not,not_op)
+    
+    evaluator_unary_op(i8,bnot,bnot_op)
+    evaluator_unary_op(u8,bnot,bnot_op)
+    evaluator_unary_op(i16,bnot,bnot_op)
+    evaluator_unary_op(u16,bnot,bnot_op)
+    evaluator_unary_op(i32,bnot,bnot_op)
+    evaluator_unary_op(u32,bnot,bnot_op)
+    evaluator_unary_op(i64,bnot,bnot_op)
+    evaluator_unary_op(u64,bnot,bnot_op)
+    
     
     return NULL ;
 }
