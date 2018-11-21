@@ -2025,6 +2025,7 @@ if (eval_a->root_type == op_type && statement->op == op_name) {\
 var->type->root_type = op_type ;\
 value->type->root_type = op_type ;\
 value->value = typecheck_get_string_for_##op_type(op_(eval_a-> val_##op_type,eval_b-> val_##op_type)) ;\
+return var ;\
 }
 
 #define negate_op(a) -a
@@ -2036,6 +2037,7 @@ if (eval_a->root_type == op_type && statement->op == op_name) {\
 var->type->root_type = op_type ;\
 value->type->root_type = op_type ;\
 value->value = typecheck_get_string_for_##op_type(op_(eval_a-> val_##op_type)) ;\
+return var ;\
 }
 
 marshmallow_variable typecheck_evaluator( marshmallow_statement statement, marshmallow_module module ) {
@@ -2911,6 +2913,10 @@ marshmallow_type_category typecheck_get_type_category( marshmallow_type type ) {
     
     return unknowns ;
 
+}
+
+static void typecheck_statment2( marshmallow_statement statement, int* has_assignment, marshmallow_module module, RKStore store ) {
+    
 }
 
 static marshmallow_type typecheck_statment( marshmallow_statement statement, int* has_assignment, marshmallow_module module, RKStore store ) {
