@@ -1734,6 +1734,225 @@ statment_evaluator:
     return retptr ;
 }
 
+static eval_val typecheck_get_value_for_evaluator2( marshmallow_entity entity ) {
+    
+    RKString value = NULL ;
+    
+    marshmallow_variable variable = NULL ;
+    
+    eval_val retptr = RKMem_NewMemOfType( struct eval_val_s ) ;
+    
+    retptr->error = 1 ;
+    
+    if ( entity == NULL ) return NULL ;
+    
+    if ( entity->entity_type == entity_variable ) {
+        
+        if ( ((marshmallow_variable)entity)->type->root_type == enum_type ) {
+            
+            variable = (marshmallow_variable)entity ;
+            
+            if ( RKStore_ItemExists(((marshmallow_enum)(variable->type->base_type))->enums, RKString_GetString(variable->name)) ) {
+                
+                retptr->val_i32 = *((int*)(RKStore_GetItem(((marshmallow_enum)(variable->type->base_type))->enums, RKString_GetString(variable->name)))) ;
+                
+                retptr->root_type = i32 ;
+                
+                retptr->error = 0 ;
+            }
+            
+        }
+        
+        if ( m_is_type_number(((marshmallow_variable)entity)->type) &&
+            ((marshmallow_variable)entity)->data != NULL ) value = ((marshmallow_value)((marshmallow_variable)entity)->data)->value ;
+        
+        if ( (m_is_type_number(((marshmallow_variable)entity)->type) || typecheck_get_type_category(((marshmallow_variable)entity)->type) == strings) && ((marshmallow_variable)entity)->static_assignment != NULL &&
+            ((marshmallow_variable)entity)->type->is_readonly) value = ((marshmallow_value)((marshmallow_variable)entity)->static_assignment->data)->value ;
+        
+        if ( value != NULL ) {
+            
+            switch ( ((marshmallow_variable)entity)->type->root_type ) {
+                    
+                case string:
+                    
+                    retptr->val_string = value ;
+                    
+                    retptr->root_type = string ;
+                    
+                    retptr->error = 0 ;
+                    
+                    break;
+                    
+                case string8:
+                    
+                    retptr->val_string = value ;
+                    
+                    retptr->root_type = string8 ;
+                    
+                    retptr->error = 0 ;
+                    
+                    break;
+                    
+                case string16:
+                    
+                    retptr->val_string = value ;
+                    
+                    retptr->root_type = string16 ;
+                    
+                    retptr->error = 0 ;
+                    
+                    break;
+                    
+                case string32:
+                    
+                    retptr->val_string = value ;
+                    
+                    retptr->root_type = string32 ;
+                    
+                    retptr->error = 0 ;
+                    
+                    break;
+                    
+                case i8:
+                    
+                    retptr->val_i8 = atoi(RKString_GetString(value)) ;
+                    
+                    retptr->root_type = i8 ;
+                    
+                    retptr->error = 0 ;
+                    
+                    break;
+                    
+                case u8:
+                    
+                    retptr->val_u8 = atoi(RKString_GetString(value)) ;
+                    
+                    retptr->root_type = u8 ;
+                    
+                    retptr->error = 0 ;
+                    
+                    break;
+                    
+                case i16:
+                    
+                    retptr->val_i16 = atoi(RKString_GetString(value)) ;
+                    
+                    retptr->root_type = i16 ;
+                    
+                    retptr->error = 0 ;
+                    
+                    break;
+                    
+                case u16:
+                    
+                    retptr->val_u16 = atoi(RKString_GetString(value)) ;
+                    
+                    retptr->root_type = u16 ;
+                    
+                    retptr->error = 0 ;
+                    
+                    break;
+                    
+                case i32:
+                    
+                    retptr->val_i32 = atoi(RKString_GetString(value)) ;
+                    
+                    retptr->root_type = i32 ;
+                    
+                    retptr->error = 0 ;
+                    
+                    break;
+                    
+                case u32:
+                    
+                    retptr->val_u32 = atoi(RKString_GetString(value)) ;
+                    
+                    retptr->root_type = u32 ;
+                    
+                    retptr->error = 0 ;
+                    
+                    break;
+                    
+                case i64:
+                    
+                    retptr->val_i64 = atol(RKString_GetString(value)) ;
+                    
+                    retptr->root_type = i64 ;
+                    
+                    retptr->error = 0 ;
+                    
+                    break;
+                    
+                case u64:
+                    
+                    retptr->val_u64 = atol(RKString_GetString(value)) ;
+                    
+                    retptr->root_type = u64 ;
+                    
+                    retptr->error = 0 ;
+                    
+                    break;
+                    
+                case hex:
+                    
+                #ifdef WIN32_
+                    
+                    retptr->val_u64 = strtoll(RKString_GetString(value), NULL, 0) ;
+                    
+                  #else
+                    
+                    retptr->val_u64 = strtol(RKString_GetString(((marshmallow_value)((marshmallow_variable)entity)->data)->value), NULL, 0) ;
+                    
+                #endif
+                    
+                    retptr->root_type = u64 ;
+                    
+                    retptr->error = 0 ;
+                    
+                    break;
+                    
+                case oct:
+                    
+                    retptr->val_u32 = (RKInt)strtol(RKString_GetString(value), NULL, 0) ;
+                    
+                    retptr->root_type = u32 ;
+                    
+                    retptr->error = 0 ;
+                    
+                    break;
+                    
+                case f32:
+                    
+                    retptr->val_f32 = atof(RKString_GetString(value)) ;
+                    
+                    retptr->root_type = f32 ;
+                    
+                    retptr->error = 0 ;
+                    
+                    break;
+                    
+                case f64:
+                    
+                    retptr->val_f64 = atof(RKString_GetString(value)) ;
+                    
+                    retptr->root_type = f64 ;
+                    
+                    retptr->error = 0 ;
+                    
+                    break;
+                    
+                default:
+                    break;
+            }
+        }
+        
+    }
+    
+    if ( retptr->error ) return NULL ;
+    
+    return retptr ;
+}
+
 
 RKString typecheck_get_string_for_string( RKString val ) {
    
@@ -1839,11 +2058,18 @@ marshmallow_variable typecheck_evaluator( marshmallow_statement statement, marsh
     
     var->data = value ;
     
-    typecheck_get_variables_for_evaluator((marshmallow_entity)statement, &entity_a, &entity_b, module) ;
+    if ( statement->entity_type == entity_variable ) {
+        
+        statement = marshmallow_new_statement(noop, 0, (marshmallow_entity)statement, NULL) ;
+    }
     
-    eval_a = typecheck_get_value_for_evaluator(entity_a, module) ;
+    entity_a = statement->var_a ;
     
-    eval_b = typecheck_get_value_for_evaluator(entity_b, module) ;
+    entity_b = statement->var_b ;
+    
+    eval_a = typecheck_get_value_for_evaluator2(entity_a) ;
+    
+    eval_b = typecheck_get_value_for_evaluator2(entity_b) ;
     
     evaluator_binary_op(string,add,RKString_AddStrings)
     evaluator_binary_op(string8,add,RKString_AddStrings)
