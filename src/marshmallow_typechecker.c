@@ -2915,7 +2915,45 @@ marshmallow_type_category typecheck_get_type_category( marshmallow_type type ) {
 
 }
 
-static void typecheck_statment2( marshmallow_statement statement, int* has_assignment, marshmallow_module module, RKStore store ) {
+marshmallow_variable typecheck_statment2( marshmallow_statement statement, int* has_assignment, marshmallow_module module, RKStore store ) {
+    
+    marshmallow_type rettype_a = NULL ;
+    
+    marshmallow_type rettype_b = NULL ;
+    
+    marshmallow_variable var_a = NULL ;
+    
+    marshmallow_variable var_b = NULL ;
+    
+    RKList list = NULL ;
+    
+    RKList_node node = NULL ;
+    
+    RKStore switch_store = NULL ;
+    
+    if ( statement->entity_type != entity_variable && statement->op == noop && statement->var_a->entity_type == entity_variable ) {
+        
+        statement = ((marshmallow_variable)statement->var_a)->data ;
+    }
+    
+    if ( statement->entity_type == entity_variable ) {
+        
+        return (marshmallow_variable)typecheck_get_type_from_variable((marshmallow_variable)statement, has_assignment, module) ;
+    }
+    
+    if ( statement->var_a != NULL && (statement->var_a->entity_type == entity_function
+                                      || (statement->var_a->entity_type == entity_variable && ((marshmallow_variable)statement->var_a)->name != NULL)) ) {
+        if (statement->function != NULL && module != NULL)
+            statement->var_a = (marshmallow_entity)marshmallow_lookup_identifier(statement->function, module, statement->var_a) ;
+    }
+    
+    if (  statement->var_b != NULL && (statement->var_b->entity_type == entity_function
+                                       || (statement->var_b->entity_type == entity_variable && ((marshmallow_variable)statement->var_b)->name != NULL)) ) {
+        if (statement->function != NULL && module != NULL)
+            statement->var_b = (marshmallow_entity)marshmallow_lookup_identifier(statement->function, module, statement->var_b) ;
+    }
+    
+    return NULL ;
     
 }
 
