@@ -2073,6 +2073,8 @@ marshmallow_variable typecheck_evaluator( marshmallow_statement statement, marsh
     
     eval_b = typecheck_get_value_for_evaluator2(entity_b) ;
     
+    if ( eval_a == NULL || eval_b == NULL ) return NULL ;
+    
     evaluator_binary_op(string,add,RKString_AddStrings)
     evaluator_binary_op(string8,add,RKString_AddStrings)
     evaluator_binary_op(string16,add,RKString_AddStrings)
@@ -2936,22 +2938,23 @@ marshmallow_variable typecheck_statment2( marshmallow_statement statement, int* 
         statement = ((marshmallow_variable)statement->var_a)->data ;
     }
     
-    if ( statement->entity_type == entity_variable ) {
-        
-        return (marshmallow_variable)typecheck_get_type_from_variable((marshmallow_variable)statement, has_assignment, module) ;
-    }
+    if ( statement->entity_type == entity_variable ) return (marshmallow_variable)statement ;
     
     if ( statement->var_a != NULL && (statement->var_a->entity_type == entity_function
                                       || (statement->var_a->entity_type == entity_variable && ((marshmallow_variable)statement->var_a)->name != NULL)) ) {
         if (statement->function != NULL && module != NULL)
-            statement->var_a = (marshmallow_entity)marshmallow_lookup_identifier(statement->function, module, statement->var_a) ;
+            var_a = (marshmallow_variable)marshmallow_lookup_identifier(statement->function, module, statement->var_a) ;
     }
     
     if (  statement->var_b != NULL && (statement->var_b->entity_type == entity_function
                                        || (statement->var_b->entity_type == entity_variable && ((marshmallow_variable)statement->var_b)->name != NULL)) ) {
         if (statement->function != NULL && module != NULL)
-            statement->var_b = (marshmallow_entity)marshmallow_lookup_identifier(statement->function, module, statement->var_b) ;
+            var_b = (marshmallow_variable)marshmallow_lookup_identifier(statement->function, module, statement->var_b) ;
     }
+    
+    if ( var_a->entity_type == entity_statement ) var_a = typecheck_statment2((marshmallow_statement)var_a, has_assignment, module, store) ;
+    
+    if ( var_b->entity_type == entity_statement ) var_b = typecheck_statment2((marshmallow_statement)var_b, has_assignment, module, store) ;
     
     return NULL ;
     
