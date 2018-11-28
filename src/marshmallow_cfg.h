@@ -25,4 +25,10 @@ int is_temporary ; int is_typedef ; int is_cast ; int is_readonly ; marshmallow_
 void* base_type ; RKULong num_of_elements ; int pointers ; } *cfg_type ;
 
 
+typedef struct cfg_statement_s { marshmallow_entity_type entity_type ; RKList statements ; int is_expression ; marshmallow_op_type op ;
+    
+marshmallow_entity var_a ; marshmallow_entity var_b ; marshmallow_entity var_c ;
+    
+cfg_statement parent ; marshmallow_function_body function ; } *cfg_statement ;
+
 #endif /* marshmallow_cfg_h */
