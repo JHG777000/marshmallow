@@ -18,17 +18,22 @@
 #ifndef marshmallow_cfg_h
 #define marshmallow_cfg_h
 
+typedef  void* cfg_node ;
+
+typedef enum { statement_block, if_block, while_block, switch_block, case_block } cfg_block_type ;
+
 typedef struct cfg_type_s { marshmallow_entity_type entity_type ; RKString type_name ; int is_literal ;
     
 int is_temporary ; int is_typedef ; int is_cast ; int is_readonly ; marshmallow_root_type root_type ;
     
 void* base_type ; RKULong num_of_elements ; int pointers ; } *cfg_type ;
 
-
-typedef struct cfg_statement_s { marshmallow_entity_type entity_type ; RKList statements ; int is_expression ; marshmallow_op_type op ;
+typedef struct cfg_statement_s { marshmallow_entity_type entity_type ; int is_expression ; marshmallow_op_type op ;
     
 marshmallow_entity var_a ; marshmallow_entity var_b ; marshmallow_entity var_c ;
     
-cfg_statement parent ; marshmallow_function_body function ; } *cfg_statement ;
+struct cfg_statement_s* parent ; marshmallow_function_body function ; } *cfg_statement ;
+
+typedef struct cfg_block { cfg_block_type block_type ; cfg_node node ; } *cfg_block ;
 
 #endif /* marshmallow_cfg_h */
