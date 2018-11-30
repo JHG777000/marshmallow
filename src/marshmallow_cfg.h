@@ -18,7 +18,7 @@
 #ifndef marshmallow_cfg_h
 #define marshmallow_cfg_h
 
-typedef  void* cfg_node ;
+typedef void* cfg_node ;
 
 typedef enum { statement_block, if_block, while_block, switch_block, case_block } cfg_block_type ;
 
@@ -35,5 +35,7 @@ marshmallow_entity var_a ; marshmallow_entity var_b ; marshmallow_entity var_c ;
 struct cfg_statement_s* parent ; marshmallow_function_body function ; } *cfg_statement ;
 
 typedef struct cfg_block { cfg_block_type block_type ; cfg_node node ; } *cfg_block ;
+
+typedef struct if_node { cfg_statement conditional ; cfg_block block ; } *if_node ;
 
 #endif /* marshmallow_cfg_h */
