@@ -34,8 +34,16 @@ marshmallow_entity var_a ; marshmallow_entity var_b ; marshmallow_entity var_c ;
     
 struct cfg_statement_s* parent ; marshmallow_function_body function ; } *cfg_statement ;
 
-typedef struct cfg_block { cfg_block_type block_type ; cfg_node node ; } *cfg_block ;
+typedef struct cfg_block { cfg_block_type block_type ; RKList statements ; } *cfg_block ;
 
-typedef struct if_node { cfg_statement conditional ; cfg_block block ; } *if_node ;
+typedef struct cfg_if_block { cfg_block_type block_type ; cfg_statement conditional ; cfg_block block ; } *cfg_if_block ;
+
+typedef struct cfg_while_block { cfg_block_type block_type ; cfg_statement conditional ; cfg_block block ; } *cfg_while_block ;
+
+typedef struct cfg_switch_block { cfg_block_type block_type ; cfg_statement conditional ;
+    
+RKStore switch_store ; cfg_block block ; } *cfg_switch_block ;
+
+typedef struct cfg_case_block { cfg_block_type block_type ; marshmallow_variable var ; cfg_block block ; } *cfg_case_block ;
 
 #endif /* marshmallow_cfg_h */
