@@ -18,8 +18,6 @@
 #ifndef marshmallow_cfg_h
 #define marshmallow_cfg_h
 
-typedef void* cfg_node ;
-
 typedef enum { statement_block, if_block, while_block, switch_block, case_block } cfg_block_type ;
 
 typedef struct cfg_type_s { marshmallow_entity_type entity_type ; RKString type_name ; int is_literal ;
@@ -28,11 +26,11 @@ int is_temporary ; int is_typedef ; int is_cast ; int is_readonly ; marshmallow_
     
 void* base_type ; RKULong num_of_elements ; int pointers ; } *cfg_type ;
 
-typedef struct cfg_statement_s { marshmallow_entity_type entity_type ; int is_expression ; marshmallow_op_type op ;
+typedef struct cfg_statement_s { marshmallow_entity_type entity_type ;
     
-marshmallow_entity var_a ; marshmallow_entity var_b ; marshmallow_entity var_c ;
+int is_expression ; marshmallow_op_type op ; marshmallow_variable var_a ; marshmallow_variable var_b ;
     
-struct cfg_statement_s* parent ; marshmallow_function_body function ; } *cfg_statement ;
+marshmallow_variable retvar ; struct cfg_statement_s* parent ; marshmallow_function_body function ; } *cfg_statement ;
 
 typedef struct cfg_block { cfg_block_type block_type ; RKList statements ; } *cfg_block ;
 
@@ -40,10 +38,10 @@ typedef struct cfg_if_block { cfg_block_type block_type ; cfg_statement conditio
 
 typedef struct cfg_while_block { cfg_block_type block_type ; cfg_statement conditional ; cfg_block block ; } *cfg_while_block ;
 
+typedef struct cfg_case_block { cfg_block_type block_type ; marshmallow_variable var ; cfg_block block ; } *cfg_case_block ;
+
 typedef struct cfg_switch_block { cfg_block_type block_type ; cfg_statement conditional ;
     
 RKStore switch_store ; cfg_block block ; } *cfg_switch_block ;
-
-typedef struct cfg_case_block { cfg_block_type block_type ; marshmallow_variable var ; cfg_block block ; } *cfg_case_block ;
 
 #endif /* marshmallow_cfg_h */
