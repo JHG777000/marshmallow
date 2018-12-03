@@ -20,11 +20,17 @@
 
 typedef enum { statement_block, if_block, while_block, switch_block, case_block } cfg_block_type ;
 
-typedef struct cfg_type_s { marshmallow_entity_type entity_type ; RKString type_name ; int is_literal ;
-    
-int is_temporary ; int is_typedef ; int is_cast ; int is_readonly ; marshmallow_root_type root_type ;
+typedef struct cfg_type_s { marshmallow_entity_type entity_type ; RKString type_name ;
+
+int is_typedef ; int is_readonly ; int is_constexpr ; marshmallow_root_type root_type ;
     
 void* base_type ; RKULong num_of_elements ; int pointers ; } *cfg_type ;
+
+typedef struct cfg_variable_s { marshmallow_entity_type entity_type ; cfg_type type ;
+    
+RKString name ; void* data ; int is_persistent ; int is_declared ; int is_literal ; int is_temporary ; int is_external ; int is_global ;
+
+marshmallow_access_control access_control ; struct cfg_variable_s* static_assignment ; } *cfg_variable ;
 
 typedef struct cfg_statement_s { marshmallow_entity_type entity_type ;
     
