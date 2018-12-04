@@ -34,9 +34,9 @@ marshmallow_access_control access_control ; struct cfg_variable_s* static_assign
 
 typedef struct cfg_statement_s { marshmallow_entity_type entity_type ;
     
-int is_expression ; marshmallow_op_type op ; marshmallow_variable var_a ; marshmallow_variable var_b ;
+int is_expression ; marshmallow_op_type op ; cfg_variable var_a ; cfg_variable var_b ;
     
-marshmallow_variable retvar ; struct cfg_statement_s* parent ; marshmallow_function_body function ; } *cfg_statement ;
+cfg_variable retvar ; struct cfg_statement_s* parent ; marshmallow_function_body function ; } *cfg_statement ;
 
 typedef struct cfg_block { cfg_block_type block_type ; RKList statements ; } *cfg_block ;
 
@@ -44,7 +44,7 @@ typedef struct cfg_if_block { cfg_block_type block_type ; cfg_statement conditio
 
 typedef struct cfg_while_block { cfg_block_type block_type ; cfg_statement conditional ; cfg_block block ; } *cfg_while_block ;
 
-typedef struct cfg_case_block { cfg_block_type block_type ; marshmallow_variable var ; cfg_block block ; } *cfg_case_block ;
+typedef struct cfg_case_block { cfg_block_type block_type ; cfg_variable var ; cfg_block block ; } *cfg_case_block ;
 
 typedef struct cfg_switch_block { cfg_block_type block_type ; cfg_statement conditional ;
     
