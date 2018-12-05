@@ -32,11 +32,21 @@ RKString name ; void* data ; int is_persistent ; int is_declared ; int is_litera
 
 marshmallow_access_control access_control ; struct cfg_variable_s* static_assignment ; } *cfg_variable ;
 
+typedef struct cfg_function_signature_s { marshmallow_access_control access_control ; int is_method ; int is_overridable ; int is_override ;
+    
+int is_declared ; int is_external ; RKString func_name ; marshmallow_class class ;
+    
+RKStore parameters ; RKList returns ; } *cfg_function_signature ;
+
+typedef struct cfg_function_body_s { marshmallow_entity_type entity_type ; RKList statements ; RKStore variables ;
+    
+cfg_function_signature signature ; marshmallow_module module ; } *cfg_function_body ;
+
 typedef struct cfg_statement_s { marshmallow_entity_type entity_type ;
     
 int is_expression ; marshmallow_op_type op ; cfg_variable var_a ; cfg_variable var_b ;
     
-cfg_variable retvar ; struct cfg_statement_s* parent ; marshmallow_function_body function ; } *cfg_statement ;
+cfg_variable retvar ; struct cfg_statement_s* parent ; cfg_function_body function ; } *cfg_statement ;
 
 typedef struct cfg_block { cfg_block_type block_type ; RKList statements ; } *cfg_block ;
 
