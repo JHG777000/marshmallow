@@ -52,14 +52,20 @@ typedef struct cfg_block_s { cfg_block_type block_type ; struct cfg_block_s* blo
 
 typedef struct cfg_statements_block_s { cfg_block_type block_type ; RKList statements ; cfg_block next_block ;  } *cfg_statements_block ;
 
-typedef struct cfg_if_block { cfg_block_type block_type ; cfg_statement conditional ; cfg_block if_block ; cfg_block else_block ; } *cfg_if_block ;
-
-typedef struct cfg_while_block { cfg_block_type block_type ; cfg_statement conditional ; cfg_block while_block ; } *cfg_while_block ;
-
-typedef struct cfg_case_block { cfg_block_type block_type ; cfg_variable var ; cfg_block case_block ; } *cfg_case_block ;
-
-typedef struct cfg_switch_block { cfg_block_type block_type ; cfg_statement conditional ; cfg_block switch_block ;
+typedef struct cfg_if_block { cfg_block_type block_type ; cfg_block conditional ;
     
-RKStore switch_store ; } *cfg_switch_block ;
+cfg_block next_block ; cfg_block then_block ; cfg_block else_block ;  } *cfg_if_block ;
+
+typedef struct cfg_while_block { cfg_block_type block_type ; cfg_block conditional ;
+    
+cfg_block next_block ; cfg_block then_block ;  } *cfg_while_block ;
+
+typedef struct cfg_case_block { cfg_block_type block_type ; cfg_block conditional ;
+    
+cfg_block next_block ; cfg_block then_block ;  } *cfg_case_block ;
+
+typedef struct cfg_switch_block { cfg_block_type block_type ; cfg_block conditional ;
+    
+cfg_block next_block ; cfg_block then_block ; RKStore switch_store ; } *cfg_switch_block ;
 
 #endif /* marshmallow_cfg_h */
