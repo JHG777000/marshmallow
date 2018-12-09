@@ -48,7 +48,13 @@ int is_expression ; marshmallow_op_type op ; cfg_variable var_a ; cfg_variable v
     
 cfg_variable retvar ; struct cfg_statement_s* parent ; cfg_function_body function ; } *cfg_statement ;
 
-typedef struct cfg_block_s { cfg_block_type block_type ; struct cfg_block_s* block ; } *cfg_block ;
+typedef struct cfg_module_s { marshmallow_entity_type entity_type ; RKStore variables ; RKStore declarations ;
+    
+RKStore types ; RKStore unprocessed_types ; RKStore enums ; RKStore modules ;
+    
+RKStore functions_and_methods ; RKString name ; } *cfg_module ;
+
+typedef void* cfg_block ;
 
 typedef struct cfg_statements_block_s { cfg_block_type block_type ; RKList statements ; cfg_block next_block ;  } *cfg_statements_block ;
 
