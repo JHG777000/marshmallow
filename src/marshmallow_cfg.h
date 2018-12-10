@@ -54,6 +54,12 @@ RKStore types ; RKStore unprocessed_types ; RKStore enums ; RKStore modules ;
     
 RKStore functions_and_methods ; RKString name ; } *cfg_module ;
 
+typedef struct cfg_class_s { marshmallow_entity_type entity_type ; marshmallow_access_control access_control ;
+    
+RKStore variables ; cfg_function_body init_function ; } *cfg_class ;
+
+typedef struct cfg_enum_s { RKList enum_names ; RKStore enums ; } *cfg_enum ;
+
 typedef void* cfg_block ;
 
 typedef struct cfg_statements_block_s { cfg_block_type block_type ; RKList statements ; cfg_block next_block ;  } *cfg_statements_block ;
