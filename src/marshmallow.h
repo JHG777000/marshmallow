@@ -42,7 +42,7 @@ slifop, ifop, elseop, ifelseop, whileop, breakop, continueop, switchop, caseop, 
     
 castop, reinterpretop, convertop } marshmallow_op_type ;
 
-typedef enum { entity_module, entity_class, entity_function, entity_variable, entity_data_type, entity_statement, entity_collection,
+typedef enum { entity_module, entity_class, entity_function, entity_variable, entity_data_type, entity_block, entity_statement, entity_collection,
     
 entity_nothing, entity_end } marshmallow_entity_type ;
 

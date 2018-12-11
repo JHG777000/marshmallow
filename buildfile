@@ -1,7 +1,7 @@
 
 project := "MarshmallowProject".
 
-project_version := "0.1.142".
+project_version := "0.1.143".
 
 buildfile_version := "1.0".
 

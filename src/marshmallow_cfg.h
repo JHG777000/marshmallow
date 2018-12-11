@@ -60,23 +60,25 @@ RKStore variables ; cfg_function_body init_function ; } *cfg_class ;
 
 typedef struct cfg_enum_s { RKList enum_names ; RKStore enums ; } *cfg_enum ;
 
-typedef void* cfg_block ;
+typedef struct { marshmallow_entity_type entity_type ; cfg_block_type block_type ; } *cfg_block ;
 
-typedef struct cfg_statements_block_s { cfg_block_type block_type ; RKList statements ; cfg_block next_block ;  } *cfg_statements_block ;
+typedef struct cfg_statements_block_s { marshmallow_entity_type entity_type ; cfg_block_type block_type ; RKList statements ;
 
-typedef struct cfg_if_block { cfg_block_type block_type ; cfg_block conditional ;
+cfg_block next_block ;  } *cfg_statements_block ;
+
+typedef struct cfg_if_block { marshmallow_entity_type entity_type ;  cfg_block_type block_type ; cfg_block conditional ;
     
 cfg_block next_block ; cfg_block then_block ; cfg_block else_block ;  } *cfg_if_block ;
 
-typedef struct cfg_while_block { cfg_block_type block_type ; cfg_block conditional ;
+typedef struct cfg_while_block { marshmallow_entity_type entity_type ; cfg_block_type block_type ; cfg_block conditional ;
     
 cfg_block next_block ; cfg_block then_block ;  } *cfg_while_block ;
 
-typedef struct cfg_case_block { cfg_block_type block_type ; cfg_block conditional ;
+typedef struct cfg_case_block { marshmallow_entity_type entity_type ; cfg_block_type block_type ; cfg_block conditional ;
     
 cfg_block next_block ; cfg_block then_block ;  } *cfg_case_block ;
 
-typedef struct cfg_switch_block { cfg_block_type block_type ; cfg_block conditional ;
+typedef struct cfg_switch_block { marshmallow_entity_type entity_type ; cfg_block_type block_type ; cfg_block conditional ;
     
 cfg_block next_block ; cfg_block then_block ; RKStore switch_store ; } *cfg_switch_block ;
 
