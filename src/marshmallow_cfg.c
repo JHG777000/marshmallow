@@ -17,3 +17,34 @@
 
 #include "marshmallow.h"
 #include "marshmallow_cfg.h"
+
+
+cfg_module cfg_new_module( RKString name ) {
+    
+    cfg_module module = RKMem_NewMemOfType(struct cfg_module_s) ;
+    
+    module->entity_type = entity_module ;
+    
+    module->declarations = RKStore_NewStore() ;
+    
+    module->functions_and_methods = RKStore_NewStore() ;
+    
+    module->modules = RKStore_NewStore() ;
+    
+    module->types = RKStore_NewStore() ;
+    
+    module->unprocessed_types = RKStore_NewStore() ;
+    
+    module->enums = RKStore_NewStore() ;
+    
+    module->variables = RKStore_NewStore() ;
+    
+    module->name = RKString_CopyString(name) ;
+    
+    return module ;
+}
+
+void cfg_destroy_module( cfg_module module ) {
+    
+    free(module) ;
+}
