@@ -46,5 +46,21 @@ cfg_module cfg_new_module( RKString name ) {
 
 void cfg_destroy_module( cfg_module module ) {
     
+    RKStore_DestroyStore(module->declarations) ;
+    
+    RKStore_DestroyStore(module->functions_and_methods) ;
+    
+    RKStore_DestroyStore(module->modules) ;
+    
+    RKStore_DestroyStore(module->types) ;
+    
+    RKStore_DestroyStore(module->unprocessed_types) ;
+    
+    RKStore_DestroyStore(module->enums) ;
+    
+    RKStore_DestroyStore(module->variables) ;
+    
+    RKString_DestroyString(module->name) ;
+    
     free(module) ;
 }
