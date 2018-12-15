@@ -64,3 +64,57 @@ void cfg_destroy_module( cfg_module module ) {
     
     free(module) ;
 }
+
+cfg_function_signature cfg_new_function_signature( RKString name, int is_method ) {
+    
+    cfg_function_signature signature = RKMem_NewMemOfType(struct cfg_function_signature_s) ;
+    
+    signature->parameters = RKStore_NewStore() ;
+    
+    signature->class = NULL ;
+    
+    signature->func_name = RKString_CopyString(name) ;
+    
+    signature->access_control = public ;
+    
+    signature->is_method = is_method ;
+    
+    signature->returns = RKList_NewList() ;
+    
+    signature->is_overridable = 0 ;
+    
+    signature->is_override = 0 ;
+    
+    signature->is_declared = 0 ;
+    
+    signature->is_external = 0 ;
+    
+    return signature ;
+}
+
+void cfg_add_parameter_to_function( cfg_function_signature signature, cfg_variable parameter, int is_first_parameter ) {
+    
+    RKStore_AddItem(signature->parameters, parameter, RKString_GetString(parameter->name)) ;
+}
+
+void cfg_add_return_to_function_return_list( cfg_function_signature signature, cfg_variable a_return ) {
+    
+    RKList_AddToList(signature->returns, a_return) ;
+}
+
+cfg_function_body cfg_new_function_body( cfg_function_signature signature ) {
+    
+    cfg_function_body function = RKMem_NewMemOfType(struct cfg_function_body_s) ;
+    
+    function->entity_type = entity_function ;
+    
+    function->signature = signature ;
+    
+    function->entry_block = NULL ;
+    
+    function->variables = RKStore_NewStore() ;
+    
+    function->module = NULL ;
+    
+    return function ;
+}

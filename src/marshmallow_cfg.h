@@ -20,6 +20,8 @@
 
 typedef enum { statement_block, if_block, while_block, switch_block, case_block } cfg_block_type ;
 
+typedef struct { marshmallow_entity_type entity_type ; cfg_block_type block_type ; } *cfg_block ;
+
 typedef struct cfg_type_s { marshmallow_entity_type entity_type ; RKString type_name ;
 
 int is_typedef ; int is_readonly ; int is_constexpr ; marshmallow_root_type root_type ;
@@ -38,7 +40,7 @@ int is_declared ; int is_external ; RKString func_name ; marshmallow_class class
     
 RKStore parameters ; RKList returns ; } *cfg_function_signature ;
 
-typedef struct cfg_function_body_s { marshmallow_entity_type entity_type ; RKList statements ; RKStore variables ;
+typedef struct cfg_function_body_s { marshmallow_entity_type entity_type ; cfg_block entry_block ; RKStore variables ;
     
 cfg_function_signature signature ; marshmallow_module module ; } *cfg_function_body ;
 
@@ -59,8 +61,6 @@ typedef struct cfg_class_s { marshmallow_entity_type entity_type ; marshmallow_a
 RKStore variables ; cfg_function_body init_function ; } *cfg_class ;
 
 typedef struct cfg_enum_s { RKList enum_names ; RKStore enums ; } *cfg_enum ;
-
-typedef struct { marshmallow_entity_type entity_type ; cfg_block_type block_type ; } *cfg_block ;
 
 typedef struct cfg_statements_block_s { marshmallow_entity_type entity_type ; cfg_block_type block_type ; RKList statements ;
 
