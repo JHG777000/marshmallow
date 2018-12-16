@@ -92,6 +92,17 @@ cfg_function_signature cfg_new_function_signature( RKString name, int is_method 
     return signature ;
 }
 
+void cfg_destroy_function_signature( cfg_function_signature signature ) {
+    
+    RKString_DestroyString(signature->func_name) ;
+    
+    RKStore_DestroyStore(signature->parameters) ;
+    
+    RKList_DeleteList(signature->returns) ;
+    
+    free(signature) ;
+}
+
 void cfg_add_parameter_to_function( cfg_function_signature signature, cfg_variable parameter, int is_first_parameter ) {
     
     RKStore_AddItem(signature->parameters, parameter, RKString_GetString(parameter->name)) ;
@@ -117,4 +128,13 @@ cfg_function_body cfg_new_function_body( cfg_function_signature signature ) {
     function->module = NULL ;
     
     return function ;
+}
+
+void cfg_destroy_function_body( cfg_function_body function ) {
+    
+    cfg_destroy_function_signature(function->signature) ;
+    
+    RKStore_DestroyStore(function->variables) ;
+    
+    free(function) ;
 }
