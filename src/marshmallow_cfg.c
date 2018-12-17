@@ -138,3 +138,43 @@ void cfg_destroy_function_body( cfg_function_body function ) {
     
     free(function) ;
 }
+
+cfg_variable cfg_new_variable( void ) {
+    
+    cfg_variable variable = RKMem_NewMemOfType(struct cfg_variable_s) ;
+    
+    variable->entity_type = entity_variable ;
+    
+    variable->access_control = public ;
+    
+    variable->name = NULL ;
+    
+    variable->data = NULL ;
+    
+    variable->is_declared = 0 ;
+    
+    variable->is_external = 0 ;
+    
+    variable->is_global = 0 ;
+    
+    variable->is_persistent = 0 ;
+    
+    variable->is_literal = 0 ;
+    
+    variable->is_temporary = 0 ;
+    
+    variable->type = NULL ;
+    
+    variable->static_assignment = NULL ;
+    
+    return variable ;
+}
+
+void cfg_destroy_variable( cfg_variable variable ) {
+    
+    if ( variable->name != NULL ) RKString_DestroyString(variable->name) ;
+    
+    if ( variable != NULL ) cfg_destroy_variable(variable->static_assignment) ;
+    
+    free(variable) ;
+}
