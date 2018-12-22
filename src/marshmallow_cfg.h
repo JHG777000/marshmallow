@@ -20,51 +20,67 @@
 
 typedef enum { statement_block, if_block, while_block, switch_block, case_block } cfg_block_type ;
 
-typedef struct { marshmallow_entity_type entity_type ; cfg_block_type block_type ; } *cfg_block ;
+typedef struct cfg_block_s { marshmallow_entity_type entity_type ; cfg_block_type block_type ; } *cfg_block ;
 
-typedef struct cfg_type_s { marshmallow_entity_type entity_type ; RKString type_name ;
+typedef struct cfg_class_s *cfg_class ;
+
+typedef struct cfg_enum_s *cfg_enum ;
+
+typedef struct cfg_type_s *cfg_type ;
+
+typedef struct cfg_variable_s *cfg_variable ;
+
+typedef struct cfg_function_signature_s *cfg_function_signature ;
+
+typedef struct cfg_function_body_s *cfg_function_body ;
+
+typedef struct cfg_statement_s *cfg_statement ;
+
+typedef struct cfg_module_s *cfg_module ;
+
+struct cfg_class_s { marshmallow_entity_type entity_type ; marshmallow_access_control access_control ;
+    
+RKStore variables ; cfg_function_body init_function ; } ;
+
+struct cfg_enum_s { RKList enum_names ; RKStore enums ; } ;
+
+struct cfg_type_s { marshmallow_entity_type entity_type ; RKString type_name ;
 
 int is_typedef ; int is_readonly ; int is_constexpr ; marshmallow_root_type root_type ;
     
-void* base_type ; RKULong num_of_elements ; int pointers ; } *cfg_type ;
+void* base_type ; RKULong num_of_elements ; int pointers ; } ;
 
-typedef struct cfg_variable_s { marshmallow_entity_type entity_type ; cfg_type type ;
+struct cfg_variable_s { marshmallow_entity_type entity_type ; cfg_type type ;
     
 RKString name ; void* data ; int is_persistent ; int is_declared ; int is_literal ; int is_temporary ; int is_external ; int is_global ;
 
-marshmallow_access_control access_control ; struct cfg_variable_s* static_assignment ; } *cfg_variable ;
+marshmallow_access_control access_control ; cfg_variable static_assignment ; } ;
 
-typedef struct cfg_function_signature_s { marshmallow_access_control access_control ; int is_method ; int is_overridable ; int is_override ;
+struct cfg_function_signature_s { marshmallow_access_control access_control ; int is_method ; int is_overridable ; int is_override ;
     
 int is_declared ; int is_external ; RKString func_name ; marshmallow_class class ;
     
-RKStore parameters ; RKList returns ; } *cfg_function_signature ;
+RKStore parameters ; RKList returns ; } ;
 
-typedef struct cfg_function_body_s { marshmallow_entity_type entity_type ; cfg_block entry_block ; RKStore variables ;
+struct cfg_function_body_s { marshmallow_entity_type entity_type ; cfg_block entry_block ; RKStore variables ;
     
-cfg_function_signature signature ; marshmallow_module module ; } *cfg_function_body ;
+cfg_function_signature signature ; marshmallow_module module ; } ;
 
-typedef struct cfg_statement_s { marshmallow_entity_type entity_type ;
+struct cfg_statement_s { marshmallow_entity_type entity_type ;
     
-int is_expression ; marshmallow_op_type op ; cfg_variable var_a ; cfg_variable var_b ;
+int is_expression ; marshmallow_op_type op ; cfg_statement var_a ; cfg_statement var_b ;
     
-cfg_variable retvar ; struct cfg_statement_s* parent ; cfg_function_body function ; } *cfg_statement ;
+cfg_variable retvar ; RKList_node node ; cfg_function_body function ; } ;
 
-typedef struct cfg_module_s { marshmallow_entity_type entity_type ; RKStore variables ; RKStore declarations ;
+struct cfg_module_s { marshmallow_entity_type entity_type ; RKStore variables ; RKStore declarations ;
     
 RKStore types ; RKStore unprocessed_types ; RKStore enums ; RKStore modules ;
     
-RKStore functions_and_methods ; RKString name ; } *cfg_module ;
-
-typedef struct cfg_class_s { marshmallow_entity_type entity_type ; marshmallow_access_control access_control ;
-    
-RKStore variables ; cfg_function_body init_function ; } *cfg_class ;
-
-typedef struct cfg_enum_s { RKList enum_names ; RKStore enums ; } *cfg_enum ;
+RKStore functions_and_methods ; RKString name ; } ;
 
 typedef struct cfg_statements_block_s { marshmallow_entity_type entity_type ; cfg_block_type block_type ; RKList statements ;
 
-cfg_block next_block ;  } *cfg_statements_block ;
+cfg_block next_block ; } *cfg_statements_block ;
 
 typedef struct cfg_if_block { marshmallow_entity_type entity_type ;  cfg_block_type block_type ; cfg_block conditional ;
     
@@ -81,5 +97,25 @@ cfg_block next_block ; cfg_block then_block ;  } *cfg_case_block ;
 typedef struct cfg_switch_block { marshmallow_entity_type entity_type ; cfg_block_type block_type ; cfg_block conditional ;
     
 cfg_block next_block ; cfg_block then_block ; RKStore switch_store ; } *cfg_switch_block ;
+
+cfg_module cfg_new_module( RKString name ) ;
+
+void cfg_destroy_module( cfg_module module ) ;
+
+cfg_function_signature cfg_new_function_signature( RKString name, int is_method ) ;
+
+void cfg_destroy_function_signature( cfg_function_signature signature ) ;
+
+void cfg_add_parameter_to_function( cfg_function_signature signature, cfg_variable parameter, int is_first_parameter ) ;
+
+void cfg_add_return_to_function_return_list( cfg_function_signature signature, cfg_variable a_return ) ;
+
+cfg_function_body cfg_new_function_body( cfg_function_signature signature ) ;
+
+void cfg_destroy_function_body( cfg_function_body function ) ;
+
+cfg_variable cfg_new_variable( void ) ;
+
+void cfg_destroy_variable( cfg_variable variable ) ;
 
 #endif /* marshmallow_cfg_h */
