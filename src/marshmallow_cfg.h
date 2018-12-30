@@ -66,11 +66,11 @@ struct cfg_function_body_s { marshmallow_entity_type entity_type ; cfg_block ent
     
 cfg_function_signature signature ; marshmallow_module module ; } ;
 
-struct cfg_statement_s { marshmallow_entity_type entity_type ;
+struct cfg_statement_s { marshmallow_entity_type entity_type ; int is_expression ; marshmallow_op_type op ;
     
-int is_expression ; marshmallow_op_type op ; cfg_statement var_a ; cfg_statement var_b ;
+cfg_statement var_a ; cfg_statement var_b ; cfg_variable retvar ;
     
-cfg_variable retvar ; RKList_node node ; cfg_function_body function ; } ;
+cfg_statement parent ; cfg_function_body function ; } ;
 
 struct cfg_module_s { marshmallow_entity_type entity_type ; RKStore variables ; RKStore declarations ;
     
