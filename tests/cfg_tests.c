@@ -17,3 +17,9 @@
 
 #include "marshmallow.h"
 #include "marshmallow_cfg.h"
+
+
+int main(int argc, const char **argv) {
+    
+    return 0 ;
+}

@@ -19,6 +19,13 @@
 #include "marshmallow_cfg.h"
 
 
+static void DeleteVariableInListOrStore(void* data) {
+    
+    if ( ((cfg_variable)data)->entity_type != entity_variable ) return ;
+    
+    cfg_destroy_variable(data) ;
+}
+
 cfg_module cfg_new_module( RKString name ) {
     
     cfg_module module = RKMem_NewMemOfType(struct cfg_module_s) ;
@@ -96,7 +103,11 @@ void cfg_destroy_function_signature( cfg_function_signature signature ) {
     
     RKString_DestroyString(signature->func_name) ;
     
+    RKStore_IterateStoreWith(DeleteVariableInListOrStore, signature->parameters) ;
+    
     RKStore_DestroyStore(signature->parameters) ;
+    
+    RKList_IterateStoreWith(DeleteVariableInListOrStore, signature->returns) ;
     
     RKList_DeleteList(signature->returns) ;
     

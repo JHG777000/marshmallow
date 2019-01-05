@@ -18,6 +18,9 @@
 #include "marshmallow.h"
 #include "marshmallow_codegen.h"
 
+//////////////////OLD CODEGEN(still in use)//////////////////////////////////////////////////
+///NEW CODEGEN(line# 1511, see marshmallow_codegen.h)///////////////////////////////////////
+
  const char* marshmallow_ltoa( RKLong val, char* string ) {
     
 #ifdef _WIN32

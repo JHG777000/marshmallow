@@ -303,8 +303,6 @@ static void mob_process_statement( cg_routine routine, cg_statement statement, i
             
             A = RKStack_Pop(routine->mob_stack) ;
             
-            cg_add_variable_to_routine(variable, routine) ;
-            
             mlb_add_statement(statement->op, routine, variable, A, B) ;
             
             RKStack_Push(routine->mob_stack, variable) ;
