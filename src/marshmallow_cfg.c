@@ -107,7 +107,7 @@ void cfg_destroy_function_signature( cfg_function_signature signature ) {
     
     RKStore_DestroyStore(signature->parameters) ;
     
-    RKList_IterateStoreWith(DeleteVariableInListOrStore, signature->returns) ;
+    RKList_IterateListWith(DeleteVariableInListOrStore, signature->returns) ;
     
     RKList_DeleteList(signature->returns) ;
     
