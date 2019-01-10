@@ -20,8 +20,6 @@
 
 typedef enum { statement_block, if_block, while_block, switch_block, case_block } cfg_block_type ;
 
-typedef struct cfg_block_s { marshmallow_entity_type entity_type ; cfg_block_type block_type ; } *cfg_block ;
-
 typedef struct cfg_class_s *cfg_class ;
 
 typedef struct cfg_enum_s *cfg_enum ;
@@ -37,6 +35,10 @@ typedef struct cfg_function_body_s *cfg_function_body ;
 typedef struct cfg_statement_s *cfg_statement ;
 
 typedef struct cfg_module_s *cfg_module ;
+
+typedef struct cfg_block_s { marshmallow_entity_type entity_type ; cfg_block_type block_type ; cfg_statement statement ;
+    
+struct cfg_block_s* input_block ; RKList output_blocks ; } *cfg_block ;
 
 struct cfg_class_s { marshmallow_entity_type entity_type ; marshmallow_access_control access_control ;
     
@@ -68,35 +70,13 @@ cfg_function_signature signature ; marshmallow_module module ; } ;
 
 struct cfg_statement_s { marshmallow_entity_type entity_type ; int is_expression ; marshmallow_op_type op ;
     
-cfg_statement var_a ; cfg_statement var_b ; cfg_variable retvar ;
-    
-cfg_statement parent ; cfg_function_body function ; } ;
+cfg_statement var_a ; cfg_statement var_b ; cfg_variable retvar ; cfg_function_body function ; } ;
 
 struct cfg_module_s { marshmallow_entity_type entity_type ; RKStore variables ; RKStore declarations ;
     
 RKStore types ; RKStore unprocessed_types ; RKStore enums ; RKStore modules ;
     
 RKStore functions_and_methods ; RKString name ; } ;
-
-typedef struct cfg_statements_block_s { marshmallow_entity_type entity_type ; cfg_block_type block_type ; RKList statements ;
-
-cfg_block next_block ; } *cfg_statements_block ;
-
-typedef struct cfg_if_block { marshmallow_entity_type entity_type ;  cfg_block_type block_type ; cfg_block conditional ;
-    
-cfg_block next_block ; cfg_block then_block ; cfg_block else_block ;  } *cfg_if_block ;
-
-typedef struct cfg_while_block { marshmallow_entity_type entity_type ; cfg_block_type block_type ; cfg_block conditional ;
-    
-cfg_block next_block ; cfg_block then_block ;  } *cfg_while_block ;
-
-typedef struct cfg_case_block { marshmallow_entity_type entity_type ; cfg_block_type block_type ; cfg_block conditional ;
-    
-cfg_block next_block ; cfg_block then_block ;  } *cfg_case_block ;
-
-typedef struct cfg_switch_block { marshmallow_entity_type entity_type ; cfg_block_type block_type ; cfg_block conditional ;
-    
-cfg_block next_block ; cfg_block then_block ; RKStore switch_store ; } *cfg_switch_block ;
 
 cfg_module cfg_new_module( RKString name ) ;
 

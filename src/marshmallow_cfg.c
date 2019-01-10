@@ -145,6 +145,8 @@ void cfg_destroy_function_body( cfg_function_body function ) {
     
     cfg_destroy_function_signature(function->signature) ;
     
+    RKStore_IterateStoreWith(DeleteVariableInListOrStore, function->variables) ;
+    
     RKStore_DestroyStore(function->variables) ;
     
     free(function) ;
