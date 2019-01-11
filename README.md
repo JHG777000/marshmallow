@@ -37,11 +37,11 @@ The following is an example of what marshmallow aims to be:
 
         compiler CompilerFlags("Linux").
 
-     end if.
+      end if.
      
-     toolchain ToolChain(c_backend,CompilerFlags).
+      toolchain ToolChain(c_backend,CompilerFlags).
 
-     output(app,MyAppSource,ToolChain). // app or pck or mod or lib or obj
+      output(app,MyAppSource,ToolChain). // app or pck or mod or lib or obj
 
      end build.
      

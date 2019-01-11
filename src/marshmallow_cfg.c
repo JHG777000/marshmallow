@@ -152,6 +152,35 @@ void cfg_destroy_function_body( cfg_function_body function ) {
     free(function) ;
 }
 
+cfg_statement cfg_new_statement( marshmallow_op_type op_type, int is_expression, cfg_statement a, cfg_statement b ) {
+    
+    cfg_statement statement = RKMem_NewMemOfType(struct cfg_statement_s) ;
+    
+    statement->entity_type = entity_statement ;
+    
+    statement->is_expression = is_expression ;
+    
+    statement->function = NULL ;
+    
+    statement->op = op_type ;
+    
+    statement->var_a = a ;
+    
+    statement->var_b = b ;
+    
+    statement->retvar = NULL ;
+    
+    statement->retvar = NULL ;
+    
+    return statement ;
+}
+
+void cfg_destroy_statement( cfg_statement statement ) {
+    
+    free(statement) ;
+}
+
+
 cfg_variable cfg_new_variable( void ) {
     
     cfg_variable variable = RKMem_NewMemOfType(struct cfg_variable_s) ;
