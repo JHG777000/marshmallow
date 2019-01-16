@@ -70,7 +70,7 @@ cfg_function_signature signature ; marshmallow_module module ; } ;
 
 struct cfg_statement_s { marshmallow_entity_type entity_type ; int is_expression ; marshmallow_op_type op ;
     
-cfg_statement var_a ; cfg_statement var_b ; cfg_variable retvar ; cfg_function_body function ; } ;
+cfg_block block ; cfg_variable retvar ; cfg_function_body function ; } ;
 
 struct cfg_module_s { marshmallow_entity_type entity_type ; RKStore variables ; RKStore declarations ;
     
@@ -93,6 +93,10 @@ void cfg_add_return_to_function_return_list( cfg_function_signature signature, c
 cfg_function_body cfg_new_function_body( cfg_function_signature signature ) ;
 
 void cfg_destroy_function_body( cfg_function_body function ) ;
+
+cfg_block cfg_new_block( marshmallow_op_type op_type, int is_expression, cfg_block_type block_type ) ;
+
+void cfg_destroy_block( cfg_block ) ;
 
 cfg_variable cfg_new_variable( void ) ;
 

@@ -152,7 +152,8 @@ void cfg_destroy_function_body( cfg_function_body function ) {
     free(function) ;
 }
 
-cfg_statement cfg_new_statement( marshmallow_op_type op_type, int is_expression, cfg_statement a, cfg_statement b ) {
+
+static cfg_statement cfg_new_statement( marshmallow_op_type op_type, int is_expression, cfg_block block ) {
     
     cfg_statement statement = RKMem_NewMemOfType(struct cfg_statement_s) ;
     
@@ -164,9 +165,7 @@ cfg_statement cfg_new_statement( marshmallow_op_type op_type, int is_expression,
     
     statement->op = op_type ;
     
-    statement->var_a = a ;
-    
-    statement->var_b = b ;
+    statement->block = block ;
     
     statement->retvar = NULL ;
     
@@ -175,11 +174,34 @@ cfg_statement cfg_new_statement( marshmallow_op_type op_type, int is_expression,
     return statement ;
 }
 
-void cfg_destroy_statement( cfg_statement statement ) {
+static void cfg_destroy_statement( cfg_statement statement ) {
     
     free(statement) ;
 }
 
+cfg_block cfg_new_block( marshmallow_op_type op_type, int is_expression, cfg_block_type block_type ) {
+    
+    cfg_block block = RKMem_NewMemOfType(struct cfg_block_s) ;
+
+    block->statement = cfg_new_statement(op_type, is_expression, block) ;
+    
+    block->entity_type = entity_block ;
+    
+    block->block_type = block_type ;
+    
+    block->input_block = NULL ;
+    
+    block->output_blocks = NULL ;
+    
+    return block ;
+}
+
+void cfg_destroy_block( cfg_block block ) {
+    
+    cfg_destroy_statement(block->statement) ;
+    
+    free(block) ;
+}
 
 cfg_variable cfg_new_variable( void ) {
     
