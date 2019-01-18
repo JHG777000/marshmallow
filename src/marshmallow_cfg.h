@@ -32,13 +32,11 @@ typedef struct cfg_function_signature_s *cfg_function_signature ;
 
 typedef struct cfg_function_body_s *cfg_function_body ;
 
-typedef struct cfg_statement_s *cfg_statement ;
-
 typedef struct cfg_module_s *cfg_module ;
 
-typedef struct cfg_block_s { marshmallow_entity_type entity_type ; cfg_block_type block_type ; cfg_statement statement ;
+typedef struct cfg_block_s { marshmallow_entity_type entity_type ; cfg_block_type block_type ; cfg_variable retvar ;
     
-struct cfg_block_s* input_block ; RKList output_blocks ; } *cfg_block ;
+int is_expression ; marshmallow_op_type op ; struct cfg_block_s* input_block ; RKStore output_blocks ; } *cfg_block ;
 
 struct cfg_class_s { marshmallow_entity_type entity_type ; marshmallow_access_control access_control ;
     
@@ -67,10 +65,6 @@ RKStore parameters ; RKList returns ; } ;
 struct cfg_function_body_s { marshmallow_entity_type entity_type ; cfg_block entry_block ; RKStore variables ;
     
 cfg_function_signature signature ; marshmallow_module module ; } ;
-
-struct cfg_statement_s { marshmallow_entity_type entity_type ; int is_expression ; marshmallow_op_type op ;
-    
-cfg_block block ; cfg_variable retvar ; cfg_function_body function ; } ;
 
 struct cfg_module_s { marshmallow_entity_type entity_type ; RKStore variables ; RKStore declarations ;
     
