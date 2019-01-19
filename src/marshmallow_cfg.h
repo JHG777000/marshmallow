@@ -90,7 +90,11 @@ void cfg_destroy_function_body( cfg_function_body function ) ;
 
 cfg_block cfg_new_block( marshmallow_op_type op_type, int is_expression, cfg_block_type block_type ) ;
 
-void cfg_destroy_block( cfg_block ) ;
+void cfg_destroy_block( cfg_block block ) ;
+
+void cfg_set_block_statement( cfg_block block, marshmallow_op_type op_type, int is_expression ) ;
+
+void cfg_add_block_to_block_output( cfg_block block_to_add, cfg_block block, const char* output_name ) ;
 
 cfg_variable cfg_new_variable( void ) ;
 
