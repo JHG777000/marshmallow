@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2018 Jacob Gordon. All rights reserved.
+ Copyright (c) 2018-2019 Jacob Gordon. All rights reserved.
  
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  
@@ -63,6 +63,212 @@
  mib(stack based) -> mob(stack based like WebAssembly, optimization) -> mlb(three-address code, inlining) -> C(or other backend)
  
  -------------------------------------------------------------------------------------------------------------------------------
+ 
+ Example of intermediates(mib_tests.c is based on this example):
+ 
+ mib:
+ 
+    module mymodule ;
+ 
+        class myclass, i32 a, i32 b ;
+ 
+        global routine main, i32 argc, u8** argv : i32, i32 ;
+ 
+            local i32 x ;
+ 
+            local i32 y ;
+ 
+            local i32 z ;
+ 
+            // x := ( y + ( 1 + x ) ) ;
+ 
+            call other_routine {1,1,x,y} ;
+ 
+            group ;
+ 
+            var z ;
+ 
+            assignment ;
+ 
+            get_return ;
+ 
+            exit_group ;
+ 
+            group ;
+ 
+            var x ;
+ 
+            assignment ;
+ 
+            group ;
+ 
+            var y ;
+ 
+            add ;
+ 
+            group ;
+ 
+            const 1.i32 ;
+ 
+            add ;
+ 
+            var x ;
+ 
+            end_group ;
+ 
+            end_group ;
+ 
+            exit_group ;
+ 
+            group ;
+ 
+            if ;
+ 
+            group ;
+ 
+            var x ;
+ 
+            greaterthan ;
+ 
+            var y ;
+ 
+            end_group ;
+ 
+            end_group ;
+ 
+            group ;
+ 
+            //if true
+ 
+            end_group ;
+ 
+            else ;
+ 
+            group ;
+ 
+            //else
+ 
+            end_group ;
+ 
+            end_if ;
+ 
+            group ;
+ 
+            return ;
+ 
+            const 2.i32 ;
+ 
+            const 2.i32 ;
+ 
+            end_group ;
+ 
+        end_routine ;
+ 
+    end_module ;
+ 
+mob:
+ 
+    module mymodule ;
+ 
+        class myclass, i32 a, i32 b ;
+ 
+        global routine main, i32 argc, u8** argv : i32, i32 ;
+ 
+            local i32 x ;
+ 
+            local i32 y ;
+ 
+            local i32 z ;
+ 
+            // x := ( y + ( 1 + x ) ) ;
+ 
+            call other_routine {1,1,x,y} ;
+ 
+            push z ;
+ 
+            get_return ;
+ 
+            assignment ;
+ 
+            push x ;
+ 
+            push y ;
+ 
+            push 1.i32 ;
+ 
+            push x ;
+ 
+            add.i32 ; //adds the last two objects pushed to the stack, then pops them and pushes the result
+ 
+            add.i32 ;
+ 
+            assignment ;
+ 
+            push x ;
+ 
+            push y ;
+ 
+            greaterthan ;
+ 
+            if ; //(x > y)
+ 
+            else ;
+ 
+            end_if ;
+ 
+            push 2.i32
+ 
+            push 2.i32
+ 
+            return ; //everything still on the stack
+ 
+        end_routine ;
+ 
+    end_module ;
+ 
+ mlb:
+ 
+    module mymodule ;
+ 
+        class myclass, i32 a, i32 b ;
+ 
+        global routine main, i32 argc, u8** argv : i32, i32 ;
+ 
+            local i32 x ;
+ 
+            local i32 y ;
+ 
+            local i32 z ;
+ 
+            // x := ( y + ( 1 + x ) ) ;
+ 
+            call other_routine {1,1,x,y} ;
+ 
+            z.var := GR0.i32 ;
+ 
+            V0.i32 := 1.i32 + x ;
+ 
+            V1.i32 := y + V0 ;
+ 
+            x.var := V1 ;
+ 
+            V2.i32 := x > y ;
+ 
+            if (V2) ;
+ 
+            else ;
+ 
+            end_if ;
+ 
+            R0.i32 := 2.i32 ;
+ 
+            R1.i32 := 2.i32 ;
+ 
+            return ;
+ 
+        end_routine ;
+ 
+    end_module ;
  */
 
 #ifndef marshmallow_codegen_h

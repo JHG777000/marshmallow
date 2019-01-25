@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2018 Jacob Gordon. All rights reserved.
+ Copyright (c) 2018-2019 Jacob Gordon. All rights reserved.
  
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  
@@ -188,6 +188,8 @@ void cfg_set_block_statement( cfg_block block, marshmallow_op_type op_type, int 
 }
 
 void cfg_add_block_to_block_output( cfg_block block_to_add, cfg_block block, const char* output_name ) {
+    
+    block_to_add->input_block = block ;
     
     if ( block->output_blocks != NULL ) block->output_blocks = RKStore_NewStore() ;
     
