@@ -18,8 +18,37 @@
 #include "marshmallow.h"
 #include "marshmallow_cfg.h"
 
-
 int main(int argc, const char **argv) {
+    
+    marshmallow_context context = marshmallow_new_context() ;
+    
+    cfg_module my_module = cfg_new_module(rkstr("my_module")) ;
+    
+    cfg_function_signature my_function_signature = cfg_new_function_signature(rkstr("my_function"), 0) ;
+    
+    cfg_function_body my_function = cfg_new_function_body(my_function_signature) ;
+    
+    my_function->entry_block = cfg_new_block(entry_block) ;
+    
+    cfg_type int_type = cfg_new_type() ;
+    
+    int_type->root_type = i32 ;
+    
+    cfg_variable x = cfg_new_variable() ;
+    
+    x->type = int_type ;
+    
+    x->name = rkstr("x") ;
+    
+    cfg_variable y = cfg_new_variable() ;
+    
+    y->type = int_type ;
+    
+    y->name = rkstr("y") ;
+    
+    // x := ( y + ( 1 + x ) ) ;
+    
+    cfg_add_block_to_block_output(my_function->entry_block, NULL, "next") ;
     
     return 0 ;
 }

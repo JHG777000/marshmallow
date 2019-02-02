@@ -152,7 +152,7 @@ void cfg_destroy_function_body( cfg_function_body function ) {
     free(function) ;
 }
 
-cfg_block cfg_new_block( marshmallow_op_type op_type, int is_expression, cfg_block_type block_type ) {
+cfg_block cfg_new_block( cfg_block_type block_type ) {
     
     cfg_block block = RKMem_NewMemOfType(struct cfg_block_s) ;
     
@@ -189,6 +189,8 @@ void cfg_set_block_statement( cfg_block block, marshmallow_op_type op_type, int 
 
 void cfg_add_block_to_block_output( cfg_block block_to_add, cfg_block block, const char* output_name ) {
     
+    if ( block_to_add == NULL ) return ;
+ 
     block_to_add->input_block = block ;
     
     if ( block->output_blocks != NULL ) block->output_blocks = RKStore_NewStore() ;
@@ -234,4 +236,27 @@ void cfg_destroy_variable( cfg_variable variable ) {
     if ( variable != NULL ) cfg_destroy_variable(variable->static_assignment) ;
     
     free(variable) ;
+}
+
+cfg_type cfg_new_type( void ) {
+    
+    cfg_type type = RKMem_NewMemOfType(struct cfg_type_s) ;
+    
+    type->entity_type = entity_data_type ;
+    
+    type->base_type = NULL ;
+    
+    type->root_type = unknown ;
+    
+    type->type_name = rkstr("unknown") ;
+    
+    type->is_typedef = 0 ;
+    
+    type->is_readonly = 0 ;
+    
+    type->num_of_elements = -1 ;
+    
+    type->pointers = 0 ;
+    
+    return type ;
 }

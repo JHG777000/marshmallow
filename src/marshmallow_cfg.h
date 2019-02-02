@@ -18,7 +18,7 @@
 #ifndef marshmallow_cfg_h
 #define marshmallow_cfg_h
 
-typedef enum { statement_block, if_block, while_block, switch_block, case_block } cfg_block_type ;
+typedef enum { entry_block, statement_block, if_block, while_block, switch_block, case_block } cfg_block_type ;
 
 typedef struct cfg_class_s *cfg_class ;
 
@@ -88,7 +88,7 @@ cfg_function_body cfg_new_function_body( cfg_function_signature signature ) ;
 
 void cfg_destroy_function_body( cfg_function_body function ) ;
 
-cfg_block cfg_new_block( marshmallow_op_type op_type, int is_expression, cfg_block_type block_type ) ;
+cfg_block cfg_new_block( cfg_block_type block_type ) ;
 
 void cfg_destroy_block( cfg_block block ) ;
 
@@ -99,5 +99,7 @@ void cfg_add_block_to_block_output( cfg_block block_to_add, cfg_block block, con
 cfg_variable cfg_new_variable( void ) ;
 
 void cfg_destroy_variable( cfg_variable variable ) ;
+
+cfg_type cfg_new_type( void ) ;
 
 #endif /* marshmallow_cfg_h */
