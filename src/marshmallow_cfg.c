@@ -190,6 +190,8 @@ void cfg_set_block_statement( cfg_block block, marshmallow_op_type op_type, int 
 void cfg_add_block_to_block_output( cfg_block block_to_add, cfg_block block, const char* output_name ) {
     
     if ( block_to_add == NULL ) return ;
+    
+    if ( block == NULL ) return ;
  
     block_to_add->input_block = block ;
     
