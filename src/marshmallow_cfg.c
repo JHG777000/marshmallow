@@ -262,3 +262,65 @@ cfg_type cfg_new_type( void ) {
     
     return type ;
 }
+
+void cfg_destroy_type( cfg_type type ) {
+    
+    if ( type->type_name != NULL ) RKString_DestroyString(type->type_name) ;
+    
+    free(type) ;
+}
+
+RKString cfg_get_name_from_entity( marshmallow_entity entity ) {
+ 
+    switch (entity->entity_type) {
+            
+        case entity_variable:
+            
+            return ((cfg_variable)entity)->name ;
+            
+            break;
+            
+        case entity_function:
+            
+            return ((cfg_function_body)entity)->signature->func_name ;
+            
+            break;
+            
+        case entity_data_type:
+            
+            return ((cfg_type)entity)->type_name ;
+            
+            break;
+            
+        case entity_class:
+            
+            return ((cfg_class)entity)->class_name ;
+            
+            break;
+            
+        default:
+            break;
+    }
+    
+    return NULL ;
+}
+
+int cfg_verify_identifier( cfg_function_body function, cfg_module module, marshmallow_entity identifier ) {
+    
+    RKUInt flag = 0 ;
+    
+    if ( function == NULL ) {
+        
+        if ( RKStore_ItemExists(module->variables, RKString_GetString(cfg_get_name_from_entity(identifier))) ) flag |= 0x1 ;
+        
+        if ( RKStore_ItemExists(module->functions_and_methods, RKString_GetString(cfg_get_name_from_entity(identifier))) ) flag |= 0x2 ;
+        
+        if ( RKStore_ItemExists(module->declarations, RKString_GetString(cfg_get_name_from_entity(identifier))) ) flag |= 0x4 ;
+        
+        if ( RKStore_ItemExists(module->types, RKString_GetString(cfg_get_name_from_entity(identifier))) ) flag |= 0x8 ;
+        
+        if ( ( flag == 0x3 || flag == 0x7 ) || flag >= 0x9 ) return 0 ;
+    }
+    
+    return 0 ;
+}

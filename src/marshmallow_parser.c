@@ -3480,8 +3480,8 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
             symtoken->value = rkstr("end_of_line") ;
         }
         
-        if (  marshmallow_is_symbol(c,balance) && c != '.' && ( c != '"' || (is_escape == 2) || is_character ) && !is_string && ( c != '\'' || (is_escape == 2) || is_string )
-            && !is_character) {
+        if (  marshmallow_is_symbol(c,balance) && c != '.' && ( c != '"' || (is_escape == 2) || is_character )
+            && !is_string && ( c != '\'' || (is_escape == 2) || is_string ) && !is_character) {
             
             char symword[2] ;
             
@@ -3506,8 +3506,8 @@ void marshmallow_lex_and_parse_file( marshmallow_context context, RKFile file ) 
             symtoken->value = (symbol != mgk(notoken)) ? RKString_NewStringFromCString(symword) : rkstr("notoken") ;
         }
         
-        if ( ((!(isspace(c) || marshmallow_is_symbol(c,balance))) || is_string || is_character) && ( c != '"' || (is_escape == 2) || is_character )
-            && ( c != '\'' || (is_escape == 2) || is_string ) ) {
+        if ( ((!(isspace(c) || marshmallow_is_symbol(c,balance))) || is_string || is_character) &&
+            ( c != '"' || (is_escape == 2) || is_character ) && ( c != '\'' || (is_escape == 2) || is_string ) ) {
             
             word = RKMem_Realloc(word, word_size+1, word_size, int, 1) ;
             

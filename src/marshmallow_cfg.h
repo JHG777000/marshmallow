@@ -38,7 +38,7 @@ typedef struct cfg_block_s { marshmallow_entity_type entity_type ; cfg_block_typ
     
 int is_expression ; marshmallow_op_type op ; struct cfg_block_s* input_block ; RKStore output_blocks ; } *cfg_block ;
 
-struct cfg_class_s { marshmallow_entity_type entity_type ; marshmallow_access_control access_control ;
+struct cfg_class_s { marshmallow_entity_type entity_type ; RKString class_name ; marshmallow_access_control access_control ;
     
 RKStore variables ; cfg_function_body init_function ; } ;
 
@@ -101,5 +101,9 @@ cfg_variable cfg_new_variable( void ) ;
 void cfg_destroy_variable( cfg_variable variable ) ;
 
 cfg_type cfg_new_type( void ) ;
+
+void cfg_destroy_type( cfg_type type ) ;
+
+RKString cfg_get_name_from_entity( marshmallow_entity entity ) ;
 
 #endif /* marshmallow_cfg_h */

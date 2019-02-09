@@ -397,7 +397,7 @@ marshmallow_entity marshmallow_lookup_identifier( marshmallow_function_body func
                 
                 if ( RKStore_ItemExists(function->variables, RKString_GetString(identifier_name)) ) {
                     
-                    printf("Identifier error: '%s', identifier can not be used for a global or local  variable and an enum.\n",RKString_GetString(identifier_name)) ;
+                    printf("Identifier error: '%s', identifier can not be used for a global or local variable and an enum.\n",RKString_GetString(identifier_name)) ;
                     
                     exit(EXIT_FAILURE) ;
                 }
