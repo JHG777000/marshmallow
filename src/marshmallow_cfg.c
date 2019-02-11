@@ -305,7 +305,7 @@ RKString cfg_get_name_from_entity( marshmallow_entity entity ) {
     return NULL ;
 }
 
-int cfg_verify_identifier( cfg_function_body function, cfg_module module, marshmallow_entity identifier ) {
+static int cfg_verify_identifier( cfg_function_body function, cfg_module module, marshmallow_entity identifier ) {
     
     RKUInt flag = 0 ;
     
@@ -319,8 +319,92 @@ int cfg_verify_identifier( cfg_function_body function, cfg_module module, marshm
         
         if ( RKStore_ItemExists(module->types, RKString_GetString(cfg_get_name_from_entity(identifier))) ) flag |= 0x8 ;
         
-        if ( ( flag == 0x3 || flag == 0x7 ) || flag >= 0x9 ) return 0 ;
+        if ( ( flag == 0x3 || flag == 0x7 ) || flag >= 0x9 ) {
+        
+          if ( flag & 0xFE ) printf("Identifier: %s, already used in this module, as a variable.\n", RKString_GetString(cfg_get_name_from_entity(identifier))) ;
+            
+          if ( flag & 0xFD ) printf("Identifier: %s, already used in this module, as a functions or method.\n",
+                                    RKString_GetString(cfg_get_name_from_entity(identifier))) ;
+            
+          if ( flag & 0xFB ) printf("Identifier: %s, already used in this module, as a declaration.\n", RKString_GetString(cfg_get_name_from_entity(identifier))) ;
+            
+          if ( flag & 0xF7 ) printf("Identifier: %s, already used in this module, as a type.\n", RKString_GetString(cfg_get_name_from_entity(identifier))) ;
+            
+            return 0 ;
+        }
     }
     
-    return 0 ;
+    return 1 ;
+}
+
+void cfg_add_function_to_module( cfg_function_body function, cfg_module module ) {
+    
+    if (!cfg_verify_identifier(NULL, module, (marshmallow_entity)function)) {
+        
+        printf("Attempt to use: %s, as a function name failed, already used in this module.\n", RKString_GetString(function->signature->func_name)) ;
+        
+        exit(EXIT_FAILURE) ;
+    }
+    
+    RKStore_AddItem(module->functions_and_methods, function, RKString_GetString(function->signature->func_name)) ;
+    
+    function->module = module ;
+}
+
+
+void cfg_add_declaration_to_module( marshmallow_entity entity, cfg_module module ) {
+    
+    if (!cfg_verify_identifier(NULL, module, entity)) {
+        
+        printf("Attempt to use: %s, as a declaration name failed, already used in this module.\n", RKString_GetString(cfg_get_name_from_entity(entity))) ;
+        
+        exit(EXIT_FAILURE) ;
+    }
+    
+    RKStore_AddItem(module->declarations, entity, RKString_GetString(cfg_get_name_from_entity(entity))) ;
+    
+}
+
+
+void marshmallow_add_type_to_module( cfg_type type, cfg_module module ) {
+    
+    if (!cfg_verify_identifier(NULL, module, (marshmallow_entity)type)) {
+        
+        printf("Attempt to use: %s, as a type name failed, already used in this module.\n", RKString_GetString(type->type_name)) ;
+        
+        exit(EXIT_FAILURE) ;
+    }
+    
+    RKStore_AddItem(module->declarations, type, RKString_GetString(type->type_name)) ;
+    
+}
+
+void cfg_add_enums_to_module( cfg_type type, cfg_module module ) {
+    
+    RKList list = NULL ;
+    
+    RKList_node node = NULL ;
+    
+    if ( type->root_type != enum_type ) return ;
+    
+    list = ((cfg_enum)type->base_type)->enum_names ;
+    
+    if ( list != NULL ) {
+        
+        node = RKList_GetFirstNode(list) ;
+        
+        while (node != NULL) {
+            
+            if ( RKStore_ItemExists(module->enums, RKString_GetString(RKList_GetData(node))) ) {
+                
+                printf("Enum: %s, already used in this module.\n", RKString_GetString(RKList_GetData(node))) ;
+                
+                exit(EXIT_FAILURE) ;
+            }
+            
+            RKStore_AddItem(module->enums, type, RKString_GetString(RKList_GetData(node))) ;
+            
+            node = RKList_GetNextNode(node) ;
+        }
+    }
 }

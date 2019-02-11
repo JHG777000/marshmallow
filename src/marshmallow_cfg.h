@@ -64,7 +64,7 @@ RKStore parameters ; RKList returns ; } ;
 
 struct cfg_function_body_s { marshmallow_entity_type entity_type ; cfg_block entry_block ; RKStore variables ;
     
-cfg_function_signature signature ; marshmallow_module module ; } ;
+cfg_function_signature signature ; cfg_module module ; } ;
 
 struct cfg_module_s { marshmallow_entity_type entity_type ; RKStore variables ; RKStore declarations ;
     
