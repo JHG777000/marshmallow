@@ -392,7 +392,8 @@ int marshmallow_accept_or_expect( RKList_node startnode, RKString symbol_name, m
     
     if (expect) if ( symbol != token->keyword ) {
         
-        printf("On line: %d, error: expected %s, %s is not %s.\n",line_number,RKString_GetString(symbol_name),RKString_GetString(token->value),RKString_GetString(symbol_name)) ;
+        printf("On line: %d, error: expected %s, %s is not %s.\n",line_number,
+               RKString_GetString(symbol_name),RKString_GetString(token->value),RKString_GetString(symbol_name)) ;
         
         exit(EXIT_FAILURE) ;
     }

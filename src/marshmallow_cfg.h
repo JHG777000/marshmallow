@@ -70,11 +70,13 @@ struct cfg_module_s { marshmallow_entity_type entity_type ; RKStore variables ; 
     
 RKStore types ; RKStore unprocessed_types ; RKStore enums ; RKStore modules ;
     
-RKStore functions_and_methods ; RKString name ; } ;
+RKStore functions_and_methods ; RKString name ; marshmallow_context context ; } ;
 
 cfg_module cfg_new_module( RKString name ) ;
 
 void cfg_destroy_module( cfg_module module ) ;
+
+void cfg_add_module_to_context( cfg_module module, marshmallow_context context ) ;
 
 cfg_function_signature cfg_new_function_signature( RKString name, int is_method ) ;
 

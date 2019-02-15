@@ -72,6 +72,13 @@ void cfg_destroy_module( cfg_module module ) {
     free(module) ;
 }
 
+void cfg_add_module_to_context( cfg_module module, marshmallow_context context ) {
+    
+    module->context = context ;
+    
+    RKStore_AddItem(context->modules, module, RKString_GetString(module->name)) ;
+}
+
 cfg_function_signature cfg_new_function_signature( RKString name, int is_method ) {
     
     cfg_function_signature signature = RKMem_NewMemOfType(struct cfg_function_signature_s) ;
@@ -309,6 +316,15 @@ static int cfg_verify_identifier( cfg_function_body function, cfg_module module,
     
     RKUInt flag = 0 ;
     
+    if ( RKStore_ItemExists(module->context->words, RKString_GetString(cfg_get_name_from_entity(identifier))) ) {
+    
+        printf("Attempt to use: %s, as an identifier failed, is a keyword.\n", RKString_GetString(function->signature->func_name)) ;
+        
+        printf("Keywords can not be used as identifiers.\n") ;
+        
+        return 0 ;
+    }
+    
     if ( function == NULL ) {
         
         if ( RKStore_ItemExists(module->variables, RKString_GetString(cfg_get_name_from_entity(identifier))) ) flag |= 0x1 ;
@@ -351,7 +367,6 @@ void cfg_add_function_to_module( cfg_function_body function, cfg_module module )
     function->module = module ;
 }
 
-
 void cfg_add_declaration_to_module( marshmallow_entity entity, cfg_module module ) {
     
     if (!cfg_verify_identifier(NULL, module, entity)) {
@@ -364,7 +379,6 @@ void cfg_add_declaration_to_module( marshmallow_entity entity, cfg_module module
     RKStore_AddItem(module->declarations, entity, RKString_GetString(cfg_get_name_from_entity(entity))) ;
     
 }
-
 
 void marshmallow_add_type_to_module( cfg_type type, cfg_module module ) {
     
