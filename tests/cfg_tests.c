@@ -24,9 +24,13 @@ int main(int argc, const char **argv) {
     
     cfg_module my_module = cfg_new_module(rkstr("my_module")) ;
     
+    my_module->context = context ;
+    
     cfg_function_signature my_function_signature = cfg_new_function_signature(rkstr("my_function"), 0) ;
     
     cfg_function_body my_function = cfg_new_function_body(my_function_signature) ;
+    
+    cfg_add_function_to_module(my_function, my_module) ;
     
     my_function->entry_block = cfg_new_block(entry_block) ;
     
@@ -40,15 +44,59 @@ int main(int argc, const char **argv) {
     
     x->name = rkstr("x") ;
     
+    cfg_add_variable_to_function(x, my_function) ;
+    
     cfg_variable y = cfg_new_variable() ;
     
     y->type = int_type ;
     
     y->name = rkstr("y") ;
     
+    cfg_add_variable_to_function(y, my_function) ;
+    
+    cfg_variable one = cfg_new_variable() ;
+    
+    one->data = rkstr("1") ;
+    
+    one->type = int_type ;
+    
+    one->is_literal = 1 ;
+    
+    cfg_add_variable_to_function(one, my_function) ;
+    
     // x := ( y + ( 1 + x ) ) ;
     
-    cfg_add_block_to_block_output(my_function->entry_block, NULL, "next") ;
+    cfg_block b0 = cfg_new_block(statement_block) ;
+    
+    b0->is_expression = 1 ;
+    
+    b0->op = assignment ;
+    
+    cfg_add_block_to_block_output((cfg_block)x, b0, "lvalue") ;
+    
+    cfg_add_block_to_block_output(b0, my_function->entry_block, "next") ;
+    
+    cfg_block b1 = cfg_new_block(statement_block) ;
+    
+    b1->is_expression = 1 ;
+    
+    b1->op = add ;
+    
+    cfg_add_block_to_block_output((cfg_block)y, b1, "lvalue") ;
+    
+    cfg_add_block_to_block_output(b1, b0, "rvalue") ;
+    
+    cfg_block b2 = cfg_new_block(statement_block) ;
+    
+    b2->is_expression = 1 ;
+    
+    b2->op = add ;
+    
+    cfg_add_block_to_block_output((cfg_block)one, b2, "lvalue") ;
+    
+    cfg_add_block_to_block_output((cfg_block)x, b2, "rvalue") ;
+    
+    cfg_add_block_to_block_output(b2, b1, "rvalue") ;
     
     return 0 ;
 }

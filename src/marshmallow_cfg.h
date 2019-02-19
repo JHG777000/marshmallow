@@ -90,6 +90,8 @@ cfg_function_body cfg_new_function_body( cfg_function_signature signature ) ;
 
 void cfg_destroy_function_body( cfg_function_body function ) ;
 
+void cfg_add_variable_to_function( cfg_variable variable, cfg_function_body function ) ;
+
 cfg_block cfg_new_block( cfg_block_type block_type ) ;
 
 void cfg_destroy_block( cfg_block block ) ;
@@ -107,5 +109,15 @@ cfg_type cfg_new_type( void ) ;
 void cfg_destroy_type( cfg_type type ) ;
 
 RKString cfg_get_name_from_entity( marshmallow_entity entity ) ;
+
+void cfg_add_variable_to_module( cfg_variable variable, cfg_module module ) ;
+
+void cfg_add_function_to_module( cfg_function_body function, cfg_module module ) ;
+
+void cfg_add_declaration_to_module( marshmallow_entity entity, cfg_module module ) ;
+
+void cfg_add_type_to_module( cfg_type type, cfg_module module ) ;
+
+void cfg_add_enums_to_module( cfg_type type, cfg_module module ) ;
 
 #endif /* marshmallow_cfg_h */

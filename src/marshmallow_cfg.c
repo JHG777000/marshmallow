@@ -18,6 +18,7 @@
 #include "marshmallow.h"
 #include "marshmallow_cfg.h"
 
+static int cfg_verify_identifier( cfg_function_body function, cfg_module module, marshmallow_entity identifier ) ;
 
 static void DeleteVariableInListOrStore(void* data) {
     
@@ -87,7 +88,7 @@ cfg_function_signature cfg_new_function_signature( RKString name, int is_method 
     
     signature->class = NULL ;
     
-    signature->func_name = RKString_CopyString(name) ;
+    signature->func_name = name ;
     
     signature->access_control = public ;
     
@@ -159,6 +160,21 @@ void cfg_destroy_function_body( cfg_function_body function ) {
     free(function) ;
 }
 
+void cfg_add_variable_to_function( cfg_variable variable, cfg_function_body function ) {
+    
+    
+    if ( variable->name != NULL ) if (!cfg_verify_identifier(function, function->module, (marshmallow_entity)variable)) {
+        
+        printf("Attempt to use: %s, as a variable name failed, already used in this module.\n", RKString_GetString(variable->name)) ;
+        
+        exit(EXIT_FAILURE) ;
+    }
+    
+    if ( variable->name != NULL ) RKStore_AddItem(function->variables, variable, RKString_GetString(variable->name)) ;
+    
+    if ( variable->name == NULL ) RKStore_AddItemToList(function->variables, variable) ;
+}
+
 cfg_block cfg_new_block( cfg_block_type block_type ) {
     
     cfg_block block = RKMem_NewMemOfType(struct cfg_block_s) ;
@@ -202,7 +218,7 @@ void cfg_add_block_to_block_output( cfg_block block_to_add, cfg_block block, con
  
     block_to_add->input_block = block ;
     
-    if ( block->output_blocks != NULL ) block->output_blocks = RKStore_NewStore() ;
+    if ( block->output_blocks == NULL ) block->output_blocks = RKStore_NewStore() ;
     
     RKStore_AddItem(block->output_blocks, block_to_add, output_name) ;
 }
@@ -325,6 +341,14 @@ static int cfg_verify_identifier( cfg_function_body function, cfg_module module,
         return 0 ;
     }
     
+    if ( function != NULL ) {
+       
+        if ( RKStore_ItemExists(function->variables, RKString_GetString(cfg_get_name_from_entity(identifier))) ) {
+            
+            printf("Identifier: %s, already used in this function or method, as a variable.\n", RKString_GetString(cfg_get_name_from_entity(identifier))) ;
+        }
+    }
+    
     if ( function == NULL ) {
         
         if ( RKStore_ItemExists(module->variables, RKString_GetString(cfg_get_name_from_entity(identifier))) ) flag |= 0x1 ;
@@ -351,6 +375,18 @@ static int cfg_verify_identifier( cfg_function_body function, cfg_module module,
     }
     
     return 1 ;
+}
+
+void cfg_add_variable_to_module( cfg_variable variable, cfg_module module ) {
+    
+    if (!cfg_verify_identifier(NULL, module, (marshmallow_entity)variable)) {
+        
+        printf("Attempt to use: %s, as a variable name failed, already used in this module.\n", RKString_GetString(variable->name)) ;
+        
+        exit(EXIT_FAILURE) ;
+    }
+    
+    RKStore_AddItem(module->variables, variable, RKString_GetString(variable->name)) ;
 }
 
 void cfg_add_function_to_module( cfg_function_body function, cfg_module module ) {
@@ -380,7 +416,7 @@ void cfg_add_declaration_to_module( marshmallow_entity entity, cfg_module module
     
 }
 
-void marshmallow_add_type_to_module( cfg_type type, cfg_module module ) {
+void cfg_add_type_to_module( cfg_type type, cfg_module module ) {
     
     if (!cfg_verify_identifier(NULL, module, (marshmallow_entity)type)) {
         
