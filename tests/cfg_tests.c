@@ -68,35 +68,29 @@ int main(int argc, const char **argv) {
     
     cfg_block b0 = cfg_new_block(statement_block) ;
     
-    b0->is_expression = 1 ;
-    
     b0->op = assignment ;
     
-    cfg_add_block_to_block_output((cfg_block)x, b0, "lvalue") ;
+    cfg_add_block_to_block_output((cfg_block)x, b0, "lhs") ;
     
     cfg_add_block_to_block_output(b0, my_function->entry_block, "next") ;
     
     cfg_block b1 = cfg_new_block(statement_block) ;
     
-    b1->is_expression = 1 ;
-    
     b1->op = add ;
     
-    cfg_add_block_to_block_output((cfg_block)y, b1, "lvalue") ;
+    cfg_add_block_to_block_output((cfg_block)y, b1, "lhs") ;
     
-    cfg_add_block_to_block_output(b1, b0, "rvalue") ;
+    cfg_add_block_to_block_output(b1, b0, "rhs") ;
     
     cfg_block b2 = cfg_new_block(statement_block) ;
     
-    b2->is_expression = 1 ;
-    
     b2->op = add ;
     
-    cfg_add_block_to_block_output((cfg_block)one, b2, "lvalue") ;
+    cfg_add_block_to_block_output((cfg_block)one, b2, "lhs") ;
     
-    cfg_add_block_to_block_output((cfg_block)x, b2, "rvalue") ;
+    cfg_add_block_to_block_output((cfg_block)x, b2, "rhs") ;
     
-    cfg_add_block_to_block_output(b2, b1, "rvalue") ;
+    cfg_add_block_to_block_output(b2, b1, "rhs") ;
     
     return 0 ;
 }

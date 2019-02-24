@@ -36,7 +36,7 @@ typedef struct cfg_module_s *cfg_module ;
 
 typedef struct cfg_block_s { marshmallow_entity_type entity_type ; cfg_block_type block_type ; cfg_variable retvar ;
     
-int is_expression ; marshmallow_op_type op ; struct cfg_block_s* input_block ; RKStore output_blocks ; } *cfg_block ;
+marshmallow_op_type op ; struct cfg_block_s* input_block ; RKStore output_blocks ; } *cfg_block ;
 
 struct cfg_class_s { marshmallow_entity_type entity_type ; RKString class_name ; marshmallow_access_control access_control ;
     
@@ -96,9 +96,11 @@ cfg_block cfg_new_block( cfg_block_type block_type ) ;
 
 void cfg_destroy_block( cfg_block block ) ;
 
-void cfg_set_block_statement( cfg_block block, marshmallow_op_type op_type, int is_expression ) ;
+void cfg_set_block_statement( cfg_block block, marshmallow_op_type op_type ) ;
 
 void cfg_add_block_to_block_output( cfg_block block_to_add, cfg_block block, const char* output_name ) ;
+
+cfg_block cfg_get_block_from_block_output( cfg_block block, const char* output_name ) ;
 
 cfg_variable cfg_new_variable( void ) ;
 

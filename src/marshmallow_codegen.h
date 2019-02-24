@@ -23,7 +23,7 @@
  The marshmallow codegen infrastructure will consist of:
  
  marshmallow_codegen.c -- Manage the codegen process, provide support and infrastructure that are common to the intermediates,
- provide any needed codegen APIs to the rest of the compiler, and transform the marshmallow ast to mib.
+ provide any needed codegen APIs to the rest of the compiler, and transform the marshmallow cfg(control flow graph) to mib.
  
  marshmallow_mib.c -- Transform mib into mob, provide support and infrastructure for mib.
  
@@ -42,7 +42,7 @@
  
  Will be a stack based intermediate.
  
- Mib's only purpose is to aid the transformation of the marshmallow ast into mob.
+ Mib's only purpose is to aid the transformation of the marshmallow cfg into mob.
  
  -- marshmallow optimizing bytecode --
  

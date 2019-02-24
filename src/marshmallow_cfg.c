@@ -183,8 +183,6 @@ cfg_block cfg_new_block( cfg_block_type block_type ) {
     
     block->block_type = block_type ;
     
-    block->is_expression = 0 ;
-    
     block->retvar = NULL ;
     
     block->op = noop ;
@@ -203,11 +201,9 @@ void cfg_destroy_block( cfg_block block ) {
     free(block) ;
 }
 
-void cfg_set_block_statement( cfg_block block, marshmallow_op_type op_type, int is_expression ) {
+void cfg_set_block_statement( cfg_block block, marshmallow_op_type op_type ) {
     
     block->op = op_type ;
-    
-    block->is_expression = is_expression ;
 }
 
 void cfg_add_block_to_block_output( cfg_block block_to_add, cfg_block block, const char* output_name ) {
@@ -221,6 +217,15 @@ void cfg_add_block_to_block_output( cfg_block block_to_add, cfg_block block, con
     if ( block->output_blocks == NULL ) block->output_blocks = RKStore_NewStore() ;
     
     RKStore_AddItem(block->output_blocks, block_to_add, output_name) ;
+}
+
+cfg_block cfg_get_block_from_block_output( cfg_block block, const char* output_name ) {
+    
+    if ( block == NULL ) return NULL ;
+    
+    if ( block->output_blocks == NULL ) block->output_blocks = RKStore_NewStore() ;
+    
+    return RKStore_GetItem(block->output_blocks, output_name) ;
 }
 
 cfg_variable cfg_new_variable( void ) {
