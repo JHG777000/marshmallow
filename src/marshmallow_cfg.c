@@ -20,11 +20,39 @@
 
 static int cfg_verify_identifier( cfg_function_body function, cfg_module module, marshmallow_entity identifier ) ;
 
-static void DeleteVariableInListOrStore(void* data) {
+static void DeleteFunctionInListOrStore( void* data ) {
+    
+    if ( ((cfg_variable)data)->entity_type != entity_function ) return ;
+    
+    cfg_destroy_function_body(data) ;
+}
+
+static void DeleteVariableInListOrStore( void* data ) {
     
     if ( ((cfg_variable)data)->entity_type != entity_variable ) return ;
     
     cfg_destroy_variable(data) ;
+}
+
+static void DeleteBlockInListOrStore( void* data ) {
+    
+    if ( ((cfg_variable)data)->entity_type != entity_block ) return ;
+    
+    cfg_destroy_block(data) ;
+}
+
+static void DeleteTypeInListOrStore( void* data ) {
+    
+    if ( ((cfg_variable)data)->entity_type != entity_data_type ) return ;
+    
+    cfg_destroy_type(data) ;
+}
+
+static void DeleteDeclarationInListOrStore( void* data ) {
+    
+    if ( ((cfg_variable)data)->entity_type == entity_function ) DeleteFunctionInListOrStore(data) ;
+    
+    if ( ((cfg_variable)data)->entity_type == entity_variable ) DeleteVariableInListOrStore(data) ;
 }
 
 cfg_module cfg_new_module( RKString name ) {
@@ -54,17 +82,25 @@ cfg_module cfg_new_module( RKString name ) {
 
 void cfg_destroy_module( cfg_module module ) {
     
+    RKStore_IterateStoreWith(DeleteDeclarationInListOrStore, module->declarations) ;
+    
     RKStore_DestroyStore(module->declarations) ;
+    
+    RKStore_IterateStoreWith(DeleteFunctionInListOrStore, module->functions_and_methods) ;
     
     RKStore_DestroyStore(module->functions_and_methods) ;
     
     RKStore_DestroyStore(module->modules) ;
+    
+    RKStore_IterateStoreWith(DeleteTypeInListOrStore, module->types) ;
     
     RKStore_DestroyStore(module->types) ;
     
     RKStore_DestroyStore(module->unprocessed_types) ;
     
     RKStore_DestroyStore(module->enums) ;
+    
+    RKStore_IterateStoreWith(DeleteVariableInListOrStore, module->variables) ;
     
     RKStore_DestroyStore(module->variables) ;
     
@@ -157,11 +193,12 @@ void cfg_destroy_function_body( cfg_function_body function ) {
     
     RKStore_DestroyStore(function->variables) ;
     
+    cfg_destroy_block(function->entry_block) ;
+    
     free(function) ;
 }
 
 void cfg_add_variable_to_function( cfg_variable variable, cfg_function_body function ) {
-    
     
     if ( variable->name != NULL ) if (!cfg_verify_identifier(function, function->module, (marshmallow_entity)variable)) {
         
@@ -196,6 +233,12 @@ cfg_block cfg_new_block( cfg_block_type block_type ) {
 
 void cfg_destroy_block( cfg_block block ) {
     
+    if ( block->entity_type == entity_variable ) cfg_destroy_variable((cfg_variable)block) ;
+    
+    if ( block->retvar != NULL ) cfg_destroy_variable(block->retvar) ;
+    
+    if ( block->output_blocks != NULL ) RKStore_IterateStoreWith(DeleteBlockInListOrStore, block->output_blocks) ;
+    
     if ( block->output_blocks != NULL ) RKStore_DestroyStore(block->output_blocks) ;
     
     free(block) ;
@@ -211,8 +254,8 @@ void cfg_add_block_to_block_output( cfg_block block_to_add, cfg_block block, con
     if ( block_to_add == NULL ) return ;
     
     if ( block == NULL ) return ;
- 
-    block_to_add->input_block = block ;
+    
+    if ( block_to_add->entity_type == entity_block ) block_to_add->input_block = block ;
     
     if ( block->output_blocks == NULL ) block->output_blocks = RKStore_NewStore() ;
     
@@ -263,7 +306,7 @@ void cfg_destroy_variable( cfg_variable variable ) {
     
     if ( variable->name != NULL ) RKString_DestroyString(variable->name) ;
     
-    if ( variable != NULL ) cfg_destroy_variable(variable->static_assignment) ;
+    if ( variable->static_assignment != NULL ) cfg_destroy_variable(variable->static_assignment) ;
     
     free(variable) ;
 }
@@ -430,8 +473,8 @@ void cfg_add_type_to_module( cfg_type type, cfg_module module ) {
         exit(EXIT_FAILURE) ;
     }
     
-    RKStore_AddItem(module->declarations, type, RKString_GetString(type->type_name)) ;
-    
+    RKStore_AddItem(module->types, type, RKString_GetString(type->type_name)) ;
+
 }
 
 void cfg_add_enums_to_module( cfg_type type, cfg_module module ) {

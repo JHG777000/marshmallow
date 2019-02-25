@@ -24,7 +24,7 @@ int main(int argc, const char **argv) {
     
     cfg_module my_module = cfg_new_module(rkstr("my_module")) ;
     
-    my_module->context = context ;
+    cfg_add_module_to_context(my_module, context) ;
     
     cfg_function_signature my_function_signature = cfg_new_function_signature(rkstr("my_function"), 0) ;
     
@@ -37,6 +37,8 @@ int main(int argc, const char **argv) {
     cfg_type int_type = cfg_new_type() ;
     
     int_type->root_type = i32 ;
+    
+    cfg_add_type_to_module(int_type, my_module) ;
     
     cfg_variable x = cfg_new_variable() ;
     
@@ -91,6 +93,8 @@ int main(int argc, const char **argv) {
     cfg_add_block_to_block_output((cfg_block)x, b2, "rhs") ;
     
     cfg_add_block_to_block_output(b2, b1, "rhs") ;
+    
+    cfg_destroy_module(my_module) ;
     
     return 0 ;
 }
