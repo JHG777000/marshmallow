@@ -128,6 +128,8 @@ void func( void* data ) ;
 
 marshmallow_context marshmallow_new_context( void ) ;
 
+void marshmallow_destroy_context( marshmallow_context context ) ;
+
 void marshmallow_compile_file( marshmallow_context context, const char* in_file, const char* out_directory ) ;
 
 //ast

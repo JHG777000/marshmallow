@@ -16,6 +16,19 @@
  */
 
 #include "marshmallow.h"
+#include "marshmallow_cfg.h"
+
+static void DeleteModuleInListOrStore( void* data ) {
+    
+    if ( ((cfg_variable)data)->entity_type != entity_module ) return ;
+    
+    cfg_destroy_module(data) ;
+}
+
+static void DeleteWordsInListOrStore( void* data ) {
+    
+    free(data) ;
+}
 
  void func( void* data ) {
     
@@ -66,4 +79,17 @@ marshmallow_context marshmallow_new_context( void ) {
     marshmallow_words(context->words) ;
     
     return context ;
+}
+
+void marshmallow_destroy_context( marshmallow_context context ) {
+    
+    RKStore_IterateStoreWith(DeleteModuleInListOrStore, context->modules) ;
+    
+    RKStore_DestroyStore(context->modules) ;
+    
+    RKStore_DestroyStore(context->symbols) ;
+    
+    RKStore_IterateStoreWith(DeleteWordsInListOrStore, context->words) ;
+    
+    RKStore_DestroyStore(context->words) ;
 }

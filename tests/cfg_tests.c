@@ -94,7 +94,7 @@ int main(int argc, const char **argv) {
     
     cfg_add_block_to_block_output(b2, b1, "rhs") ;
     
-    cfg_destroy_module(my_module) ;
+    marshmallow_destroy_context(context) ;
     
     return 0 ;
 }

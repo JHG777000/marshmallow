@@ -50,7 +50,12 @@ static void DeleteTypeInListOrStore( void* data ) {
 
 static void DeleteDeclarationInListOrStore( void* data ) {
     
-    if ( ((cfg_variable)data)->entity_type == entity_function ) DeleteFunctionInListOrStore(data) ;
+    if ( ((cfg_variable)data)->entity_type == entity_function ) {
+        
+        DeleteFunctionInListOrStore(data) ;
+        
+        return ;
+    }
     
     if ( ((cfg_variable)data)->entity_type == entity_variable ) DeleteVariableInListOrStore(data) ;
 }
@@ -233,7 +238,12 @@ cfg_block cfg_new_block( cfg_block_type block_type ) {
 
 void cfg_destroy_block( cfg_block block ) {
     
-    if ( block->entity_type == entity_variable ) cfg_destroy_variable((cfg_variable)block) ;
+    if ( block->entity_type == entity_variable ) {
+        
+        cfg_destroy_variable((cfg_variable)block) ;
+        
+        return ;
+    }
     
     if ( block->retvar != NULL ) cfg_destroy_variable(block->retvar) ;
     
@@ -305,6 +315,8 @@ cfg_variable cfg_new_variable( void ) {
 void cfg_destroy_variable( cfg_variable variable ) {
     
     if ( variable->name != NULL ) RKString_DestroyString(variable->name) ;
+    
+    if ( variable->data != NULL ) RKString_DestroyString(variable->data) ;
     
     if ( variable->static_assignment != NULL ) cfg_destroy_variable(variable->static_assignment) ;
     
@@ -382,7 +394,7 @@ static int cfg_verify_identifier( cfg_function_body function, cfg_module module,
     
     if ( RKStore_ItemExists(module->context->words, RKString_GetString(cfg_get_name_from_entity(identifier))) ) {
     
-        printf("Attempt to use: %s, as an identifier failed, is a keyword.\n", RKString_GetString(function->signature->func_name)) ;
+        printf("Attempt to use: %s, as an identifier failed, is a keyword.\n", RKString_GetString(cfg_get_name_from_entity(identifier))) ;
         
         printf("Keywords can not be used as identifiers.\n") ;
         
