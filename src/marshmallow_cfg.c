@@ -80,7 +80,7 @@ cfg_module cfg_new_module( RKString name ) {
     
     module->variables = RKStore_NewStore() ;
     
-    module->name = RKString_CopyString(name) ;
+    module->name = name ;
     
     return module ;
 }
