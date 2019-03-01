@@ -60,6 +60,285 @@ static void DeleteDeclarationInListOrStore( void* data ) {
     if ( ((cfg_variable)data)->entity_type == entity_variable ) DeleteVariableInListOrStore(data) ;
 }
 
+int cfg_is_type_float( cfg_type type ) {
+
+    switch ( type->root_type ) {
+
+        case f32:
+
+            return 1 ;
+
+            break;
+
+        case f64:
+
+            return 1 ;
+
+            break;
+
+        default:
+            break;
+    }
+
+    return 0 ;
+}
+
+int cfg_is_type_signed( cfg_type type ) {
+
+    switch ( type->root_type ) {
+
+    case i8:
+
+        return 1 ;
+
+        break;
+
+    case i16:
+
+        return 1 ;
+
+        break;
+
+    case i32:
+
+        return 1 ;
+
+        break;
+
+    case i64:
+
+        return 1 ;
+
+        break;
+
+    case f32:
+
+        return 1 ;
+
+        break;
+
+    case f64:
+
+        return 1 ;
+
+        break;
+
+    default:
+        break;
+    }
+
+    return 0 ;
+}
+
+int cfg_is_type_number( cfg_type type ) {
+
+    switch ( type->root_type ) {
+
+        case i8:
+
+            return 1 ;
+
+            break;
+
+        case u8:
+
+            return 1 ;
+
+            break;
+
+        case i16:
+
+            return 1 ;
+
+            break;
+
+        case u16:
+
+            return 1 ;
+
+            break;
+
+        case i32:
+
+            return 1 ;
+
+            break;
+
+        case u32:
+
+            return 1 ;
+
+            break;
+
+
+        case i64:
+
+            return 1 ;
+
+            break;
+
+        case u64:
+
+            return 1 ;
+
+            break;
+
+        case hex:
+
+            return 1 ;
+
+            break;
+
+        case oct:
+
+            return 1 ;
+
+            break;
+
+        case character:
+
+            return 1 ;
+
+            break;
+
+        case f32:
+
+            return 1 ;
+
+            break;
+
+        case f64:
+
+            return 1 ;
+
+            break;
+
+        case enum_type:
+
+            return 1;
+
+            break;
+
+        default:
+            break;
+    }
+
+    return 0 ;
+}
+
+int cfg_is_root_type( cfg_type type ) {
+
+    switch (type->root_type) {
+
+        case i8:
+
+            return 1 ;
+
+            break;
+
+        case u8:
+
+            return 1 ;
+
+            break;
+
+        case i16:
+
+            return 1 ;
+
+            break;
+
+        case u16:
+
+            return 1 ;
+
+            break;
+
+        case i32:
+
+            return 1 ;
+
+            break;
+
+        case u32:
+
+            return 1 ;
+
+            break;
+
+        case i64:
+
+            return 1 ;
+
+            break;
+
+        case u64:
+
+            return 1 ;
+
+            break;
+
+        case hex:
+
+            return 1 ;
+
+            break;
+
+        case oct:
+
+            return 1 ;
+
+            break;
+
+        case string:
+
+            return 1 ;
+
+            break;
+
+        case string8:
+
+            return 1 ;
+
+            break;
+
+        case string16:
+
+            return 1 ;
+
+            break;
+
+        case string32:
+
+            return 1 ;
+
+            break;
+
+        case character:
+
+            return 1 ;
+
+            break;
+
+        case f32:
+
+            return 1 ;
+
+            break;
+
+        case f64:
+
+            return 1 ;
+
+            break;
+
+        default:
+            break;
+    }
+
+    return 0 ;
+}
+
 cfg_module cfg_new_module( RKString name ) {
 
     cfg_module module = RKMem_NewMemOfType(struct cfg_module_s) ;
@@ -97,6 +376,10 @@ void cfg_destroy_module( cfg_module module ) {
 
     RKStore_DestroyStore(module->modules) ;
 
+    RKStore_IterateStoreWith(DeleteVariableInListOrStore, module->variables) ;
+
+    RKStore_DestroyStore(module->variables) ;
+
     RKStore_IterateStoreWith(DeleteTypeInListOrStore, module->types) ;
 
     RKStore_DestroyStore(module->types) ;
@@ -104,10 +387,6 @@ void cfg_destroy_module( cfg_module module ) {
     RKStore_DestroyStore(module->unprocessed_types) ;
 
     RKStore_DestroyStore(module->enums) ;
-
-    RKStore_IterateStoreWith(DeleteVariableInListOrStore, module->variables) ;
-
-    RKStore_DestroyStore(module->variables) ;
 
     RKString_DestroyString(module->name) ;
 
@@ -312,11 +591,49 @@ cfg_variable cfg_new_variable( void ) {
     return variable ;
 }
 
+static void cfg_destroy_variable_data( cfg_variable variable ) {
+
+  if ( cfg_is_root_type(variable->type) ) {
+
+     RKString_DestroyString(variable->data) ;
+
+  }
+
+  if ( variable->type->root_type == collection ) {
+
+   RKList_DeleteList(variable->data) ;
+
+  }
+
+  if ( variable->type->root_type == class_element_type ) {
+
+     RKString_DestroyString(variable->data) ;
+
+  }
+
+  if ( variable->type->root_type == array_index_type ) {
+
+     free(variable->data) ;
+
+  }
+
+  /*
+
+  if ( variable->class_values != NULL ) RKStore_IterateStoreWith(DeleteVariableInListOrStore, variable->class_values) ;
+
+  if ( variable->class_values != NULL ) RKStore_DestroyStore(variable->class_values) ;
+
+  if ( variable->class_element != NULL ) RKString_DestroyString(variable->class_element) ;
+
+  if ( variable->ptr != NULL && variable->ptr->type != class && variable->delete_ptr ) cg_destroy_variable(variable->ptr) ;*/
+
+}
+
 void cfg_destroy_variable( cfg_variable variable ) {
 
     if ( variable->name != NULL ) RKString_DestroyString(variable->name) ;
 
-    if ( variable->data != NULL ) RKString_DestroyString(variable->data) ;
+    if ( variable->data != NULL ) cfg_destroy_variable_data(variable) ;
 
     if ( variable->static_assignment != NULL ) cfg_destroy_variable(variable->static_assignment) ;
 

@@ -1,13 +1,13 @@
 /*
  Copyright (c) 2017-2019 Jacob Gordon. All rights reserved.
- 
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
- 
+
  1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
- 
+
  2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the
  documentation and/or other materials provided with the distribution.
- 
+
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
@@ -31,19 +31,21 @@ typedef enum { public, private, protected, publish, inherit } marshmallow_access
 typedef enum { arithmetic, arrays, pointers, classes, lambdas, strings, unknowns } marshmallow_type_category ;
 
 typedef enum { i8, u8, i16, u16, i32, u32, i64, u64, f32, f64, blank, ptrsize, macro, type, hex, oct, string, string8, string16, string32, character, class,
-    
-enum_type, array, ptr, module, function, method, lambda, expression, unknown, arguments, collection, metacollection, nulltype, inittype } marshmallow_root_type ;
+
+enum_type, array, ptr, module, function, method, lambda, expression, unknown, arguments, collection, metacollection,
+
+class_element_type, array_index_type, nulltype, inittype } marshmallow_root_type ;
 
 typedef enum { noop, assignment, array_assignment, is_equal, is_not_equal, is_greaterthan, is_greaterthan_or_equal, is_lessthan, is_lessthan_or_equal,
-    
+
 add, sub, negate, mult, mdiv, rem, not, and, or, bnot, band, bor, xor, lshift, rshift, deref, addrof, msizeof, itemsof, inc, dec, call,
-    
+
 slifop, ifop, elseop, ifelseop, whileop, breakop, continueop, switchop, caseop, endcaseop, defaultop, section, gotoop, ret,
-    
+
 castop, reinterpretop, convertop } marshmallow_op_type ;
 
 typedef enum { entity_module, entity_class, entity_function, entity_variable, entity_data_type, entity_block, entity_statement, entity_collection,
-    
+
 entity_nothing, entity_end } marshmallow_entity_type ;
 
 typedef struct marshmallow_entity_s { marshmallow_entity_type entity_type ; } *marshmallow_entity ;
@@ -59,43 +61,43 @@ typedef struct marshmallow_function_body_s* marshmallow_function_body ;
 #define marshmallow_scope_protocol /*for alignment*/RKList statements ; RKStore variables ;
 
 typedef struct marshmallow_class_s { marshmallow_entity_type entity_type ; marshmallow_access_control access_control ;
-    
+
 RKStore variables ; marshmallow_function_body init_function ; } *marshmallow_class ;
 
 typedef struct marshmallow_enum_s { RKList enum_names ; RKStore enums ; } *marshmallow_enum ;
 
 typedef struct marshmallow_type_s { marshmallow_entity_type entity_type ; RKString type_name ; int is_literal ;
-    
+
 int is_temporary ; int is_init ; int is_typedef ; int is_cast ; int is_readonly ; marshmallow_root_type root_type ;
-    
+
 void* base_type ; RKULong num_of_elements ; int pointers ; } *marshmallow_type ;
 
 typedef struct marshmallow_variable_s { marshmallow_entity_type entity_type ; marshmallow_type type ;
-    
+
 RKString name ; void* data ; int is_persistent ; int is_declared ; int is_external ; int is_global ;
-    
+
 marshmallow_access_control access_control ; marshmallow_variable static_assignment ; } *marshmallow_variable ;
 
 typedef struct marshmallow_value_s { marshmallow_type type ; RKString value ; RKList array_value ; } *marshmallow_value ;
 
 typedef struct marshmallow_function_signature_s { marshmallow_access_control access_control ; int is_method ; int is_overridable ; int is_override ;
-    
+
 int is_declared ; int is_external ; RKString func_name ; marshmallow_class class ;
-    
+
 RKStore parameters ; RKList returns ; } *marshmallow_function_signature ;
 
 typedef struct marshmallow_function_body_s { marshmallow_entity_type entity_type ; marshmallow_scope_protocol
-    
+
 marshmallow_function_signature signature ; RKStore calls ; marshmallow_module module ; } *marshmallow_function_body ;
 
 typedef struct marshmallow_statement_s { marshmallow_entity_type entity_type ; RKList statements ; int is_expression ; marshmallow_op_type op ;
-    
+
 marshmallow_entity var_a ; marshmallow_entity var_b ; marshmallow_function_body function ; } *marshmallow_statement ;
 
 typedef struct marshmallow_module_s { marshmallow_entity_type entity_type ; marshmallow_scope_protocol RKStore declarations ;
-    
+
 RKStore types ; RKStore unprocessed_types ; RKStore enums ; RKStore modules ;
-    
+
 RKStore functions_and_methods ; RKString name ; } *marshmallow_module ;
 
 typedef struct marshmallow_scope_s { marshmallow_entity_type entity_type ; marshmallow_scope_protocol } *marshmallow_scope ;
@@ -109,13 +111,13 @@ typedef struct marshmallow_context_s { RKStore modules ; RKStore words ; RKStore
 #define mgk(keyword) marshmallow_get_keyword(keyword)
 
 typedef enum {
-    
+
 #define token(word,string) mgk(word),
-    
+
 #include "marshmallow_tokens.h"
-    
+
 #undef token
-    
+
 } marshmallow_keyword ;
 
 typedef struct marshmallow_token_s { marshmallow_keyword keyword ; RKString value ; } *marshmallow_token ;

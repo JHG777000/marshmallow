@@ -1,7 +1,7 @@
 
 project := "MarshmallowProject".
 
-project_version := "0.1.171".
+project_version := "0.1.172".
 
 buildfile_version := "1.0".
 
@@ -29,6 +29,14 @@ build MarshmallowBuild.
 
  get cfg_test_enable.
 
+ if ( leak_test_enable && !is_mac ).
+
+  message("leak_test is a macOS only feature.").
+
+  bool leak_test_enable := false.
+
+ end if.
+
  if ( toolchain_select == nil ).
 
   var toolchain_select := "clang".
@@ -47,7 +55,7 @@ build MarshmallowBuild.
 
  if ( cfg_test_enable ).
 
-  message("cfg_tests").
+  message("Running marshmallow cfg_tests...").
 
   files Main("tests/cfg_tests.c").
 
@@ -114,7 +122,7 @@ if ( leak_test_enable ).
 
   if ( cfg_test_enable ).
 
-   run("instruments -t \"Leaks\" -D" + " " + trace_file_path + " " + marshmallow_path ).
+   run("instruments -t \"Leaks\" -D" + " " + trace_file_path + " " + marshmallow_path).
 
   end if.
 
