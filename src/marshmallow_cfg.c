@@ -617,16 +617,6 @@ static void cfg_destroy_variable_data( cfg_variable variable ) {
 
   }
 
-  /*
-
-  if ( variable->class_values != NULL ) RKStore_IterateStoreWith(DeleteVariableInListOrStore, variable->class_values) ;
-
-  if ( variable->class_values != NULL ) RKStore_DestroyStore(variable->class_values) ;
-
-  if ( variable->class_element != NULL ) RKString_DestroyString(variable->class_element) ;
-
-  if ( variable->ptr != NULL && variable->ptr->type != class && variable->delete_ptr ) cg_destroy_variable(variable->ptr) ;*/
-
 }
 
 void cfg_destroy_variable( cfg_variable variable ) {
@@ -666,6 +656,28 @@ cfg_type cfg_new_type( void ) {
 void cfg_destroy_type( cfg_type type ) {
 
     if ( type->type_name != NULL ) RKString_DestroyString(type->type_name) ;
+
+    if ( type->root_type == class ) {
+
+      if ( type->base_type != NULL ) RKStore_IterateStoreWith(DeleteVariableInListOrStore, (RKStore)type->base_type) ;
+
+      if ( type->base_type != NULL ) RKStore_DestroyStore((RKStore)type->base_type) ;
+
+    }
+
+    if ( type->root_type == collection ) {
+
+      if ( type->base_type != NULL ) RKList_IterateListWith(DeleteTypeInListOrStore, (RKList)type->base_type) ;
+
+      if ( type->base_type != NULL ) RKList_DeleteList((RKList)type->base_type) ;
+
+    }
+
+    if ( type->root_type == metacollection ) {
+
+      cfg_destroy_type(type->base_type) ;
+
+    }
 
     free(type) ;
 }

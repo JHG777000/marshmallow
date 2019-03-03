@@ -1,13 +1,13 @@
 /*
  Copyright (c) 2018-2019 Jacob Gordon. All rights reserved.
- 
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
- 
+
  1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
- 
+
  2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the
  documentation and/or other materials provided with the distribution.
- 
+
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
@@ -17,257 +17,255 @@
 
 /*
  INTERNAL HEADER FOR MARSHMALLOW'S CODEGEN
- 
+
  Only codegen files should include this file, and after "marshmallow.h".
- 
+
  The marshmallow codegen infrastructure will consist of:
- 
+
  marshmallow_codegen.c -- Manage the codegen process, provide support and infrastructure that are common to the intermediates,
  provide any needed codegen APIs to the rest of the compiler, and transform the marshmallow cfg(control flow graph) to mib.
- 
+
  marshmallow_mib.c -- Transform mib into mob, provide support and infrastructure for mib.
- 
+
  marshmallow_mob.c -- Optimize mob per routine, transform mob into mlb, provide support and infrastructure for mob.
- 
+
  marshmallow_mlb.c -- Validate mlb, optimize mlb context wide, send mlb and the cg_context to a backend,
  provide support and infrastructure for mlb.
- 
+
   Backend files:
- 
+
    *marshmallow_C_backend.c -- Transform mlb into C.
- 
+
  -- marshmallow intermediate "bytecode" --
- 
+
  Will be the first intermediate stage in marshmallow's codegen.
- 
- Will be a stack based intermediate.
- 
+
  Mib's only purpose is to aid the transformation of the marshmallow cfg into mob.
- 
+
  -- marshmallow optimizing bytecode --
- 
- Will also be a stack based intermediate, will be taking inspiration from WebAssembly.
- 
+
+ Will be a stack based intermediate, will be taking inspiration from WebAssembly.
+
  Will allow for per routine optimization.
- 
+
  -- marshmallow low-level bytecode --
- 
+
  Will allow for additional optimization, such as inlining.
- 
+
  Will be three-address code.
- 
+
  Will be transformed into C code, or other backend.
- 
- --- Overview of codegen -------------------------------------------------------------------------------------------------------
- 
- mib(stack based) -> mob(stack based like WebAssembly, optimization) -> mlb(three-address code, inlining) -> C(or other backend)
- 
- -------------------------------------------------------------------------------------------------------------------------------
- 
+
+ --- Overview of codegen ---------------------------------------------------------------------------------------------
+
+ mib(first intermediate) -> mob(stack based, optimization) -> mlb(three-address code, inlining) -> C(or other backend)
+
+ ---------------------------------------------------------------------------------------------------------------------
+
  Example of intermediates(mib_tests.c is based on this example):
- 
+
  mib:
- 
+
     module mymodule ;
- 
+
         class myclass, i32 a, i32 b ;
- 
+
         global routine main, i32 argc, u8** argv : i32, i32 ;
- 
+
             local i32 x ;
- 
+
             local i32 y ;
- 
+
             local i32 z ;
- 
+
             // x := ( y + ( 1 + x ) ) ;
- 
+
             call other_routine {1,1,x,y} ;
- 
+
             group ;
- 
+
             var z ;
- 
+
             assignment ;
- 
+
             get_return ;
- 
+
             exit_group ;
- 
+
             group ;
- 
+
             var x ;
- 
+
             assignment ;
- 
+
             group ;
- 
+
             var y ;
- 
+
             add ;
- 
+
             group ;
- 
+
             const 1.i32 ;
- 
+
             add ;
- 
+
             var x ;
- 
+
             end_group ;
- 
+
             end_group ;
- 
+
             exit_group ;
- 
+
             group ;
- 
+
             if ;
- 
+
             group ;
- 
+
             var x ;
- 
+
             greaterthan ;
- 
+
             var y ;
- 
+
             end_group ;
- 
+
             end_group ;
- 
+
             group ;
- 
-            //if true
- 
+
+            //then
+
             end_group ;
- 
+
             else ;
- 
+
             group ;
- 
+
             //else
- 
+
             end_group ;
- 
+
             end_if ;
- 
+
             group ;
- 
+
             return ;
- 
+
             const 2.i32 ;
- 
+
             const 2.i32 ;
- 
+
             end_group ;
- 
+
         end_routine ;
- 
+
     end_module ;
- 
+
 mob:
- 
+
     module mymodule ;
- 
+
         class myclass, i32 a, i32 b ;
- 
+
         global routine main, i32 argc, u8** argv : i32, i32 ;
- 
+
             local i32 x ;
- 
+
             local i32 y ;
- 
+
             local i32 z ;
- 
+
             // x := ( y + ( 1 + x ) ) ;
- 
+
             call other_routine {1,1,x,y} ;
- 
+
             push z ;
- 
+
             get_return ;
- 
+
             assignment ;
- 
+
             push x ;
- 
+
             push y ;
- 
+
             push 1.i32 ;
- 
+
             push x ;
- 
+
             add.i32 ; //adds the last two objects pushed to the stack, then pops them and pushes the result
- 
+
             add.i32 ;
- 
+
             assignment ;
- 
+
             push x ;
- 
+
             push y ;
- 
+
             greaterthan ;
- 
+
             if ; //(x > y)
- 
+
             else ;
- 
+
             end_if ;
- 
+
             push 2.i32
- 
+
             push 2.i32
- 
+
             return ; //everything still on the stack
- 
+
         end_routine ;
- 
+
     end_module ;
- 
+
  mlb:
- 
+
     module mymodule ;
- 
+
         class myclass, i32 a, i32 b ;
- 
+
         global routine main, i32 argc, u8** argv : i32, i32 ;
- 
+
             local i32 x ;
- 
+
             local i32 y ;
- 
+
             local i32 z ;
- 
+
             // x := ( y + ( 1 + x ) ) ;
- 
+
             call other_routine {1,1,x,y} ;
- 
+
             z.var := GR0.i32 ;
- 
+
             V0.i32 := 1.i32 + x ;
- 
+
             V1.i32 := y + V0 ;
- 
+
             x.var := V1 ;
- 
+
             V2.i32 := x > y ;
- 
+
             if (V2) ;
- 
+
             else ;
- 
+
             end_if ;
- 
+
             R0.i32 := 2.i32 ;
- 
+
             R1.i32 := 2.i32 ;
- 
+
             return ;
- 
+
         end_routine ;
- 
+
     end_module ;
  */
 
@@ -314,31 +312,31 @@ typedef enum {cg_entity_variable,cg_entity_mlb_statement,cg_entity_statement,cg_
 struct cg_context_s { cg_entity_type entity_type ; RKStore modules ; RKStore definitions ; } ;
 
 struct cg_module_s { cg_entity_type entity_type ; RKString name ; RKStore routines ; RKStore variables ;
-    
+
 RKStore variable_declarations ; RKStore routine_declarations ; RKStore classes ; cg_context context ; } ;
 
 struct cg_routine_s { cg_entity_type entity_type ; RKString name ; int is_global ; int is_external ;
-    
+
 RKList return_types ; RKStore parameters ; RKStore variables ; RKStore calls ; RKList mib_code ; RKList mob_code ; RKList optimized_mlb_code ;
-    
+
 RKList mlb_code ; RKStack mob_stack ; RKStack mob_call_stack ; cg_module module ; }  ;
 
 struct cg_variable_s { cg_entity_type entity_type ; RKString name ; cg_root_type type ; RKString value ; RKList values ; RKStore class_values ;
 
 int mlb_return_value ; int mlb_get_return_value ; int delete_ptr ; cg_variable ptr ; RKULong num_of_elements ; int index ; RKString class_element ;
-    
+
 int is_global ; int is_literal ; int is_const ; int is_temporary ; } ;
 
 typedef enum { cg_noop, mib_group, mib_endgroup, mib_exitgroup, mib_var, mib_const, mob_push, mob_drop, mlb_set, mlb_external_return, cg_assignment,
-    
+
 cg_add, cg_sub, cg_mult, cg_div, cg_rem, cg_rshift, cg_lshift, cg_and, cg_or, cg_xor,
-    
+
 cg_not, cg_logic_and, cg_logic_or, cg_logic_not, cg_deref, cg_addrof, cg_sizeof, cg_cast, cg_array_copy, cg_if,
-    
+
 cg_endif, cg_else, cg_else_if, cg_switch, cg_endswitch, cg_case, cg_endcase, cg_default, cg_goto, cg_section, cg_equals, cg_not_equals,
-    
+
 cg_greaterthan, cg_lessthan, cg_greaterthan_or_equals, cg_lessthan_or_equals,
-    
+
 cg_call, cg_get_return, cg_return } cg_op_type ;
 
 struct cg_statement_s { cg_entity_type entity_type ; cg_routine routine ; cg_op_type op ; cg_variable var ; } ;
@@ -358,7 +356,7 @@ typedef void (*cg_callback_for_destroyer) (codegen_backend backend);
 typedef enum { marshmallow_C_backend } codegen_backend_type ;
 
 struct codegen_backend_s { void* backend_ptr ; RKString output_dir ; cg_callback_for_pointer_size size_callback ;
-    
+
 cg_callback_for_context context_callback ; cg_callback_for_builder builder_callback ; cg_callback_for_destroyer destroyer_callback ; } ;
 
 codegen_backend codegen_new_backend( codegen_backend_type backend_type, const char* out_directory ) ;
