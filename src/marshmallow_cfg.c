@@ -659,9 +659,7 @@ void cfg_destroy_type( cfg_type type ) {
 
     if ( type->root_type == class ) {
 
-      if ( type->base_type != NULL ) RKStore_IterateStoreWith(DeleteVariableInListOrStore, (RKStore)type->base_type) ;
-
-      if ( type->base_type != NULL ) RKStore_DestroyStore((RKStore)type->base_type) ;
+      cfg_destroy_class((cfg_class)type->base_type) ;
 
     }
 
@@ -680,6 +678,36 @@ void cfg_destroy_type( cfg_type type ) {
     }
 
     free(type) ;
+}
+
+cfg_class cfg_new_class( RKString class_name ) {
+
+  cfg_class class = RKMem_NewMemOfType(struct cfg_class_s) ;
+
+  class->entity_type = entity_class ;
+
+  class->class_name = class_name ;
+
+  class->access_control = public ;
+
+  class->init_function = NULL ;
+
+  class->variables = RKStore_NewStore() ;
+
+  return class ;
+
+}
+
+void cfg_destroy_class( cfg_class class ) {
+
+  RKStore_IterateStoreWith(DeleteVariableInListOrStore, class->variables) ;
+
+  RKStore_DestroyStore(class->variables) ;
+
+  RKString_DestroyString(class->class_name) ;
+
+  free(class) ;
+
 }
 
 RKString cfg_get_name_from_entity( marshmallow_entity entity ) {
