@@ -34,7 +34,7 @@ int main(int argc, const char **argv) {
 
     my_function->entry_block = cfg_new_block(entry_block) ;
 
-    cfg_type int_type = cfg_new_type() ;
+    cfg_type int_type = cfg_new_type(rkstr("i32")) ;
 
     int_type->root_type = i32 ;
 
@@ -42,7 +42,7 @@ int main(int argc, const char **argv) {
 
     cfg_variable x = cfg_new_variable() ;
 
-    x->type = int_type ;
+    x->type_ptr = cfg_get_type_from_module("i32",my_module) ;
 
     x->name = rkstr("x") ;
 
@@ -50,7 +50,7 @@ int main(int argc, const char **argv) {
 
     cfg_variable y = cfg_new_variable() ;
 
-    y->type = int_type ;
+    y->type_ptr = cfg_get_type_from_module("i32",my_module) ;
 
     y->name = rkstr("y") ;
 
@@ -60,7 +60,7 @@ int main(int argc, const char **argv) {
 
     one->data = rkstr("1") ;
 
-    one->type = int_type ;
+    one->type_ptr = int_type ;
 
     one->is_literal = 1 ;
 

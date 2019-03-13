@@ -50,7 +50,7 @@ int is_typedef ; int is_readonly ; int is_constexpr ; marshmallow_root_type root
 
 void* base_type ; RKULong num_of_elements ; int pointers ; } ;
 
-struct cfg_variable_s { marshmallow_entity_type entity_type ; cfg_type type ;
+struct cfg_variable_s { marshmallow_entity_type entity_type ; RKString type_name ; cfg_type type_ptr ;
 
 RKString name ; void* data ; int is_persistent ; int is_declared ; int is_literal ; int is_temporary ; int is_external ; int is_global ;
 
@@ -106,7 +106,7 @@ cfg_variable cfg_new_variable( void ) ;
 
 void cfg_destroy_variable( cfg_variable variable ) ;
 
-cfg_type cfg_new_type( void ) ;
+cfg_type cfg_new_type( RKString type_name ) ;
 
 void cfg_destroy_type( cfg_type type ) ;
 
@@ -123,6 +123,8 @@ void cfg_add_function_to_module( cfg_function_body function, cfg_module module )
 void cfg_add_declaration_to_module( marshmallow_entity entity, cfg_module module ) ;
 
 void cfg_add_type_to_module( cfg_type type, cfg_module module ) ;
+
+cfg_type cfg_get_type_from_module( const char* type_name, cfg_module module ) ;
 
 void cfg_add_enums_to_module( cfg_type type, cfg_module module ) ;
 

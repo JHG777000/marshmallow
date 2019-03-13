@@ -60,6 +60,97 @@ static void DeleteDeclarationInListOrStore( void* data ) {
     if ( ((cfg_variable)data)->entity_type == entity_variable ) DeleteVariableInListOrStore(data) ;
 }
 
+
+int cfg_is_token_named_root_type( marshmallow_keyword token ) {
+
+ switch (token) {
+
+  case mgk(i8type):
+
+      return 1 ;
+
+      break;
+
+   case mgk(u8type):
+
+      return 1 ;
+
+      break;
+
+   case mgk(i16type):
+
+      return 1 ;
+
+      break;
+
+   case mgk(u16type):
+
+      return 1 ;
+
+      break;
+
+   case mgk(i32type):
+
+      return 1 ;
+
+      break;
+
+   case mgk(u32type):
+
+      return 1 ;
+
+      break;
+
+   case mgk(i64type):
+
+      return 1 ;
+
+      break;
+
+  case mgk(u64type):
+
+      return 1 ;
+
+      break;
+
+   case mgk(string8):
+
+      return 1 ;
+
+      break;
+
+   case mgk(string16):
+
+      return 1 ;
+
+      break;
+
+   case mgk(string32):
+
+      return 1 ;
+
+      break;
+
+   case mgk(floattype):
+
+      return 1 ;
+
+      break;
+
+   case mgk(doubletype):
+
+      return 1 ;
+
+      break;
+
+   default:
+      break;
+
+    }
+
+    return 0 ;
+}
+
 int cfg_is_type_float( cfg_type type ) {
 
     switch ( type->root_type ) {
@@ -584,7 +675,9 @@ cfg_variable cfg_new_variable( void ) {
 
     variable->is_temporary = 0 ;
 
-    variable->type = NULL ;
+    variable->type_name = NULL ;
+
+    variable->type_ptr = NULL ;
 
     variable->static_assignment = NULL ;
 
@@ -593,25 +686,25 @@ cfg_variable cfg_new_variable( void ) {
 
 static void cfg_destroy_variable_data( cfg_variable variable ) {
 
-  if ( cfg_is_root_type(variable->type) ) {
+  if ( cfg_is_root_type(variable->type_ptr) ) {
 
      RKString_DestroyString(variable->data) ;
 
   }
 
-  if ( variable->type->root_type == collection ) {
+  if ( variable->type_ptr->root_type == collection ) {
 
    RKList_DeleteList(variable->data) ;
 
   }
 
-  if ( variable->type->root_type == class_element_type ) {
+  if ( variable->type_ptr->root_type == class_element_type ) {
 
      RKString_DestroyString(variable->data) ;
 
   }
 
-  if ( variable->type->root_type == array_index_type ) {
+  if ( variable->type_ptr->root_type == array_index_type ) {
 
      free(variable->data) ;
 
@@ -630,7 +723,7 @@ void cfg_destroy_variable( cfg_variable variable ) {
     free(variable) ;
 }
 
-cfg_type cfg_new_type( void ) {
+cfg_type cfg_new_type( RKString type_name ) {
 
     cfg_type type = RKMem_NewMemOfType(struct cfg_type_s) ;
 
@@ -640,7 +733,7 @@ cfg_type cfg_new_type( void ) {
 
     type->root_type = unknown ;
 
-    type->type_name = rkstr("unknown") ;
+    type->type_name = type_name ;
 
     type->is_typedef = 0 ;
 
@@ -835,6 +928,14 @@ void cfg_add_declaration_to_module( marshmallow_entity entity, cfg_module module
 
 void cfg_add_type_to_module( cfg_type type, cfg_module module ) {
 
+    if (RKStore_ItemExists(module->context->words,RKString_GetString(type->type_name))) {
+
+      marshmallow_keyword token = rkget(int,RKStore_GetItem(module->context->words,RKString_GetString(type->type_name)));
+
+      if ( cfg_is_token_named_root_type(token) ) goto add_type ;
+
+    }
+
     if (!cfg_verify_identifier(NULL, module, (marshmallow_entity)type)) {
 
         printf("Attempt to use: %s, as a type name failed, already used in this module.\n", RKString_GetString(type->type_name)) ;
@@ -842,7 +943,23 @@ void cfg_add_type_to_module( cfg_type type, cfg_module module ) {
         exit(EXIT_FAILURE) ;
     }
 
+add_type:
+
     RKStore_AddItem(module->types, type, RKString_GetString(type->type_name)) ;
+
+}
+
+cfg_type cfg_get_type_from_module( const char* type_name, cfg_module module ) {
+
+  if (!RKStore_ItemExists(module->types,type_name)) {
+
+    printf("Attempt to get: %s, as a type failed, type name does not exist in this module.\n", type_name) ;
+
+    exit(EXIT_FAILURE) ;
+
+  }
+
+  return RKStore_GetItem(module->types,type_name) ;
 
 }
 

@@ -1,7 +1,7 @@
 
 project := "MarshmallowProject".
 
-project_version := "0.1.174".
+project_version := "0.1.175".
 
 buildfile_version := "1.0".
 
@@ -102,6 +102,12 @@ build MarshmallowBuild.
   message("Ran marshmallow tests.").
 
  end if.
+
+  if ( cfg_test_enable && !leak_test_enable  ).
+
+  launch(marshmallow).
+
+  end if.
 
 if ( leak_test_enable ).
 

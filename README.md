@@ -38,23 +38,23 @@ The following is an example of what marshmallow aims to be:
         compiler CompilerFlags("Linux").
 
       end if.
-     
+
       toolchain ToolChain(c_backend,CompilerFlags).
 
       output(app,MyAppSource,ToolChain). // app or pck or mod or lib or obj
 
      end build.
-     
+
      typedef [int][3][x,y,z] vectype.
 
      function main( args main_args ).
-     
+
       [int][3] vector.
 
       [byte][3][r,g,b][red,green,blue] pixel.
-      
+
       vectype vector2.
- 
+
       vector2->x += 1.
 
       vector2->xy += 1.
@@ -80,9 +80,9 @@ The following is an example of what marshmallow aims to be:
       y := (*($float*(&i))).
 
       y := ($$float(i)).
- 
+
       List list := new().
-      
+
       int* ptr := null.
 
       float value := (1.0).
@@ -180,25 +180,24 @@ Marshmallow defaults to using the clang compiler in its buildfile.
 To download and build use this command:
 
 	builder -u https://raw.githubusercontent.com/JHG777000/marshmallow/master/buildfile
-	
+
 To run tests, add -i __t:
 
-	builder -i __t -u https://raw.githubusercontent.com/JHG777000/marshmallow/master/buildfile 
+	builder -i __t -u https://raw.githubusercontent.com/JHG777000/marshmallow/master/buildfile
 ## License
 
 
  Copyright (c) 2017-2019 Jacob Gordon. All rights reserved.
- 
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
- 
+
  1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
- 
+
  2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the
  documentation and/or other materials provided with the distribution.
- 
+
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- 
