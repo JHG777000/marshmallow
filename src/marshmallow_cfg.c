@@ -873,8 +873,7 @@ static int cfg_verify_identifier( cfg_function_body function, cfg_module module,
 
           if ( flag & 0xFE ) printf("Identifier: %s, already used in this module, as a variable.\n", RKString_GetString(cfg_get_name_from_entity(identifier))) ;
 
-          if ( flag & 0xFD ) printf("Identifier: %s, already used in this module, as a functions or method.\n",
-                                    RKString_GetString(cfg_get_name_from_entity(identifier))) ;
+          if ( flag & 0xFD ) printf("Identifier: %s, already used in this module, as a functions or method.\n", RKString_GetString(cfg_get_name_from_entity(identifier))) ;
 
           if ( flag & 0xFB ) printf("Identifier: %s, already used in this module, as a declaration.\n", RKString_GetString(cfg_get_name_from_entity(identifier))) ;
 

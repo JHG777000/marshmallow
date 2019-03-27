@@ -1,0 +1,63 @@
+project := "tree-sitter-marshmallow".
+
+project_version := "1.0.0".
+
+buildfile_version := "1.0".
+
+url_to_src := "https://github.com/tree-sitter/tree-sitter/archive/cfa474b82a55eca5ba3905c27d9ebbe99fcfb823.zip".
+
+build tree_sitter_marshmallow.
+
+ options.
+
+  on toolchain_select("-s", "--select_toolchain=tool", "Select toolchain.").
+
+ end options.
+
+ get toolchain_select.
+
+ if ( toolchain_select == nil ).
+
+  var toolchain_select := "clang".
+
+ end if.
+
+ make filepath tree_sitter_dep_utf8proc_buildfile_path from "project" to "../MarshmallowProject_src/marshmallow-master/parser/tree-sitter-dep-utf8proc-buildfile".
+
+ files tree_sitter_dep_utf8proc_buildfile(tree_sitter_dep_utf8proc_buildfile_path).
+
+ subproject tree_sitter_dep_utf8proc_project("local",tree_sitter_dep_utf8proc_buildfile,"-d").
+
+ return_output tree_sitter_dep_utf8proc_project.
+
+ files Files("lib/src.directories").
+
+ sources Source(Files).
+
+ make filepath include_path from "resources" to "lib/include".
+
+ make filepath tree_sitter_dep_utf8proc_include from "resources" to "" from tree_sitter_dep_utf8proc_project.
+
+ compiler CompilerFlags("-Wall", "-I " + include_path,"-I " + tree_sitter_dep_utf8proc_include).
+
+ toolchain ToolChain(toolchain_select,CompilerFlags).
+
+ output tree_sitter_marshmallow_parser("library",Source,ToolChain).
+
+end build.
+
+build clean_build.
+
+ make filepath tree_sitter_dep_utf8proc_buildfile_path from "project" to "../MarshmallowProject_src/marshmallow-master/parser/tree-sitter-dep-utf8proc-buildfile".
+
+ files tree_sitter_dep_utf8proc_buildfile(tree_sitter_dep_utf8proc_buildfile_path).
+
+ subproject tree_sitter_dep_utf8proc_project("local",tree_sitter_dep_utf8proc_buildfile,"-b clean_build").
+
+ message("Cleaning tree-sitter-marshmallow...").
+
+ clean("build").
+
+end build.
+
+default tree_sitter_marshmallow.

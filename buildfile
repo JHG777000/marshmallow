@@ -1,7 +1,6 @@
-
 project := "MarshmallowProject".
 
-project_version := "0.1.175".
+project_version := "0.1.176".
 
 buildfile_version := "1.0".
 
@@ -19,6 +18,8 @@ build MarshmallowBuild.
 
   on cfg_test_enable("-c", "--cfg_test", "Enable marshmallow cfg tests.").
 
+  on tree_sitter_enable("-p", "--parser_tree_sitter", "Enable marshmallow tree sitter tests.").
+
  end options.
 
  get test_enable.
@@ -28,6 +29,8 @@ build MarshmallowBuild.
  get leak_test_enable.
 
  get cfg_test_enable.
+
+ get tree_sitter_enable.
 
  if ( leak_test_enable && !is_mac ).
 
@@ -43,15 +46,29 @@ build MarshmallowBuild.
 
  end if.
 
+ make filepath tree_sitter_marshmallow_buildfile_path from "resources" to "parser/tree-sitter-marshmallow-buildfile".
+
+ files tree_sitter_marshmallow_buildfile(tree_sitter_marshmallow_buildfile_path).
+
+ subproject tree_sitter_marshmallow_project("local",tree_sitter_marshmallow_buildfile,"-d").
+
  url URLForRKLib("https://raw.githubusercontent.com/JHG777000/RKLib/master/buildfile").
 
  subproject RKLibProject("local",URLForRKLib,nil).
 
  grab RKLib from RKLibProject.
 
+ grab tree_sitter_marshmallow_parser from tree_sitter_marshmallow_project.
+
+ grab tree_sitter_dep_utf8proc_project from tree_sitter_marshmallow_project.
+
+ grab tree_sitter_dep_utf8proc_lib from tree_sitter_dep_utf8proc_project.
+
  files Files("src.directories").
 
  files Main("main.directories").
+
+ files Parser("parser.directories").
 
  if ( cfg_test_enable ).
 
@@ -61,13 +78,25 @@ build MarshmallowBuild.
 
  end if.
 
- sources Source(Files,Main,RKLib).
+ if ( tree_sitter_enable ).
+
+  sources Source(Files,Main,Parser,tree_sitter_marshmallow_parser,tree_sitter_dep_utf8proc_lib,RKLib).
+
+ end if.
+
+ if ( !tree_sitter_enable ).
+
+  sources Source(Files,Main,RKLib).
+
+ end if.
 
  make filepath include_path from "resources" to "src".
 
  make filepath rklib_include_path from "resources" to "include" from RKLibProject.
 
- compiler CompilerFlags("-Wall", "-I " + include_path, "-I " + rklib_include_path).
+ make filepath tree_sitter_marshmallow_include from "resources" to "lib/include" from tree_sitter_marshmallow_project.
+
+ compiler CompilerFlags("-Wall", "-I " + include_path, "-I " + rklib_include_path, "-I " + tree_sitter_marshmallow_include).
 
  toolchain ToolChain(toolchain_select,CompilerFlags).
 
@@ -103,11 +132,11 @@ build MarshmallowBuild.
 
  end if.
 
-  if ( cfg_test_enable && !leak_test_enable  ).
+if ( cfg_test_enable && !leak_test_enable  ).
 
-  launch(marshmallow).
+ launch(marshmallow).
 
-  end if.
+end if.
 
 if ( leak_test_enable ).
 
@@ -139,6 +168,12 @@ end if.
 end build.
 
 build clean_build.
+
+ make filepath tree_sitter_marshmallow_buildfile_path from "resources" to "parser/tree-sitter-marshmallow-buildfile".
+
+ files tree_sitter_marshmallow_buildfile(tree_sitter_marshmallow_buildfile_path).
+
+ subproject tree_sitter_marshmallow_project("local",tree_sitter_marshmallow_buildfile,"-b clean_build").
 
  url URLForRKLib("https://raw.githubusercontent.com/JHG777000/RKLib/master/buildfile").
 
