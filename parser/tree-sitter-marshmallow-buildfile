@@ -12,9 +12,13 @@ build tree_sitter_marshmallow.
 
   on toolchain_select("-s", "--select_toolchain=tool", "Select toolchain.").
 
+  on get_filepath("-g", "--get_filepath=filepath", "Get filepath(include path).").
+
  end options.
 
  get toolchain_select.
+
+ get get_filepath.
 
  if ( toolchain_select == nil ).
 
@@ -22,23 +26,13 @@ build tree_sitter_marshmallow.
 
  end if.
 
- make filepath tree_sitter_dep_utf8proc_buildfile_path from "project" to "../MarshmallowProject_src/marshmallow-master/parser/tree-sitter-dep-utf8proc-buildfile".
-
- files tree_sitter_dep_utf8proc_buildfile(tree_sitter_dep_utf8proc_buildfile_path).
-
- subproject tree_sitter_dep_utf8proc_project("local",tree_sitter_dep_utf8proc_buildfile,"-d").
-
- return_output tree_sitter_dep_utf8proc_project.
-
  files Files("lib/src.directories").
 
  sources Source(Files).
 
  make filepath include_path from "resources" to "lib/include".
-
- make filepath tree_sitter_dep_utf8proc_include from "resources" to "" from tree_sitter_dep_utf8proc_project.
-
- compiler CompilerFlags("-Wall", "-I " + include_path,"-I " + tree_sitter_dep_utf8proc_include).
+ 
+ compiler CompilerFlags("-Wall", "-I " + include_path,"-I " + get_filepath).
 
  toolchain ToolChain(toolchain_select,CompilerFlags).
 
@@ -47,12 +41,6 @@ build tree_sitter_marshmallow.
 end build.
 
 build clean_build.
-
- make filepath tree_sitter_dep_utf8proc_buildfile_path from "project" to "../MarshmallowProject_src/marshmallow-master/parser/tree-sitter-dep-utf8proc-buildfile".
-
- files tree_sitter_dep_utf8proc_buildfile(tree_sitter_dep_utf8proc_buildfile_path).
-
- subproject tree_sitter_dep_utf8proc_project("local",tree_sitter_dep_utf8proc_buildfile,"-b clean_build").
 
  message("Cleaning tree-sitter-marshmallow...").
 
