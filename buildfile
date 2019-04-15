@@ -1,6 +1,6 @@
 project := "MarshmallowProject".
 
-project_version := "0.1.177".
+project_version := "0.1.178".
 
 buildfile_version := "1.0".
 
@@ -46,21 +46,9 @@ build MarshmallowBuild.
 
  end if.
 
- make filepath tree_sitter_dep_utf8proc_buildfile_path from "resources" to "parser/tree-sitter-dep-utf8proc-buildfile".
+ url tree_sitter_marshmallow_buildfile("https://raw.githubusercontent.com/JHG777000/tree-sitter-marshmallow/master/buildfile").
 
- files tree_sitter_dep_utf8proc_buildfile(tree_sitter_dep_utf8proc_buildfile_path).
-
- subproject tree_sitter_dep_utf8proc_project("local",tree_sitter_dep_utf8proc_buildfile,"-d").
-
- make filepath tree_sitter_marshmallow_buildfile_path from "resources" to "parser/tree-sitter-marshmallow-buildfile".
-
- files tree_sitter_marshmallow_buildfile(tree_sitter_marshmallow_buildfile_path).
-
- make filepath tree_sitter_dep_utf8proc_include from "resources" to "" from tree_sitter_dep_utf8proc_project.
-
- format(tree_sitter_dep_utf8proc_include).
-
- subproject tree_sitter_marshmallow_project("local",tree_sitter_marshmallow_buildfile,"-d -i __g_" + tree_sitter_dep_utf8proc_include).
+ subproject tree_sitter_marshmallow_project("local",tree_sitter_marshmallow_buildfile,nil).
 
  url URLForRKLib("https://raw.githubusercontent.com/JHG777000/RKLib/master/buildfile").
 
@@ -68,15 +56,11 @@ build MarshmallowBuild.
 
  grab RKLib from RKLibProject.
 
- grab tree_sitter_marshmallow_parser from tree_sitter_marshmallow_project.
-
- grab tree_sitter_dep_utf8proc_lib from tree_sitter_dep_utf8proc_project.
+ grab tree_sitter_marshmallow_parser_lib from tree_sitter_marshmallow_project.
 
  files Files("src.directories").
 
  files Main("main.directories").
-
- files Parser("parser.directories").
 
  if ( cfg_test_enable ).
 
@@ -88,7 +72,7 @@ build MarshmallowBuild.
 
  if ( tree_sitter_enable ).
 
-  sources Source(Files,Main,Parser,tree_sitter_marshmallow_parser,tree_sitter_dep_utf8proc_lib,RKLib).
+  sources Source(Files,Main,tree_sitter_marshmallow_parser_lib,RKLib).
 
  end if.
 
@@ -177,15 +161,7 @@ end build.
 
 build clean_build.
 
- make filepath tree_sitter_dep_utf8proc_buildfile_path from "resources" to "parser/tree-sitter-dep-utf8proc-buildfile".
-
- files tree_sitter_dep_utf8proc_buildfile(tree_sitter_dep_utf8proc_buildfile_path).
-
- subproject tree_sitter_dep_utf8proc_project("local",tree_sitter_dep_utf8proc_buildfile,"-b clean_build").
-
- make filepath tree_sitter_marshmallow_buildfile_path from "resources" to "parser/tree-sitter-marshmallow-buildfile".
-
- files tree_sitter_marshmallow_buildfile(tree_sitter_marshmallow_buildfile_path).
+ url tree_sitter_marshmallow_buildfile("https://raw.githubusercontent.com/JHG777000/tree-sitter-marshmallow/master/buildfile").
 
  subproject tree_sitter_marshmallow_project("local",tree_sitter_marshmallow_buildfile,"-b clean_build").
 
