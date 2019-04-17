@@ -105,13 +105,11 @@ module mymod.
 
   var64 := ($int64( ($int64( ($int64( ($int64( ($int64(j)) )) )) )) )).
 
-  //The Quake 3 InvSqrt
+  //Fast inverse square root(Quake III)
 
   f32 root := (2.f).
 
   f32 q := root.
-
-  f32 xhalf := (0.5f * q).
 
   int z := ($$int(q)).
 
@@ -119,7 +117,7 @@ module mymod.
 
   q := ($$f32(z)).
 
-  q := (q * ( 1.5f - ( xhalf * ( q * q ) ) ) ).
+  q := (q * ( 1.5f - ( (0.5f * root) * ( q * q ) ) ) ).
 
   root := (root * q).
 
@@ -141,7 +139,7 @@ module mymod.
   i32[3][3] myarray3 := myarray.
 
   myarray2 := myarray.
-  
+
   section helloworld.
 
   if ( ptr == null ).

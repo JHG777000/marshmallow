@@ -43,7 +43,6 @@ mf64 x = 0.23 ;
 mu64 *ptr = ((void*)0) ;
 mf32 root = 2.f ;
 mf32 q = root ;
-mf32 xhalf = (0.5f*q) ;
 mi32 z = (*(mi32 *)&q) ;
 mu64 😀 = L'😀' ;
 mi32 myarray[3][3] = {{7,7,7},{7,7,7},{7,7,7}} ;
@@ -64,7 +63,7 @@ j=((mi64 )marshmallow_mymod_var64)  ;
 marshmallow_mymod_var64=((mi64 )((mi64 )((mi64 )((mi64 )((mi64 )j)))))  ;
 z=((mi32 )(0x5f3759df-(z>>1)))  ;
 q=(*(mf32 *)&z)  ;
-q=(q*(1.5f-(xhalf*(q*q))))  ;
+q=(q*(1.5f-((0.5f*root)*(q*q))))  ;
 root=(root*q)  ;
 if ((root==1.41386008f)) {
 puts(u8"yes!!!");  ;

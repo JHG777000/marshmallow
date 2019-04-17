@@ -1,6 +1,6 @@
 project := "MarshmallowProject".
 
-project_version := "0.1.178".
+project_version := "0.1.179".
 
 buildfile_version := "1.0".
 
@@ -56,6 +56,8 @@ build MarshmallowBuild.
 
  grab RKLib from RKLibProject.
 
+ grab tree_sitter_project from tree_sitter_marshmallow_project.
+
  grab tree_sitter_marshmallow_parser_lib from tree_sitter_marshmallow_project.
 
  files Files("src.directories").
@@ -72,6 +74,8 @@ build MarshmallowBuild.
 
  if ( tree_sitter_enable ).
 
+  files Main("tests/tree_sitter_tests.c").
+
   sources Source(Files,Main,tree_sitter_marshmallow_parser_lib,RKLib).
 
  end if.
@@ -86,7 +90,7 @@ build MarshmallowBuild.
 
  make filepath rklib_include_path from "resources" to "include" from RKLibProject.
 
- make filepath tree_sitter_marshmallow_include from "resources" to "lib/include" from tree_sitter_marshmallow_project.
+ make filepath tree_sitter_marshmallow_include from "resources" to "lib/include" from tree_sitter_project.
 
  compiler CompilerFlags("-Wall", "-I " + include_path, "-I " + rklib_include_path, "-I " + tree_sitter_marshmallow_include).
 
