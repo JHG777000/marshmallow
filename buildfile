@@ -1,6 +1,6 @@
 project := "MarshmallowProject".
 
-project_version := "0.1.179".
+project_version := "0.1.180".
 
 buildfile_version := "1.0".
 
@@ -58,7 +58,13 @@ build MarshmallowBuild.
 
  grab tree_sitter_project from tree_sitter_marshmallow_project.
 
+ grab tree_sitter_dep_utf8proc_project from tree_sitter_marshmallow_project.
+
  grab tree_sitter_marshmallow_parser_lib from tree_sitter_marshmallow_project.
+
+ grab tree_sitter_lib from tree_sitter_project.
+
+ grab tree_sitter_dep_utf8proc_lib from tree_sitter_dep_utf8proc_project.
 
  files Files("src.directories").
 
@@ -76,7 +82,7 @@ build MarshmallowBuild.
 
   files Main("tests/tree_sitter_tests.c").
 
-  sources Source(Files,Main,tree_sitter_marshmallow_parser_lib,RKLib).
+  sources Source(Files,Main,tree_sitter_marshmallow_parser_lib,tree_sitter_lib,tree_sitter_dep_utf8proc_lib,RKLib).
 
  end if.
 
@@ -125,6 +131,16 @@ build MarshmallowBuild.
   launch(marshmallow_test).
 
   message("Ran marshmallow tests.").
+
+ end if.
+
+ if ( tree_sitter_enable ).
+
+  make filepath marshmallow_path from "project" to "marshmallow".
+
+  make filepath marshmallow_src_path from "resources" to "tests/test.msrc" from tree_sitter_marshmallow_project.
+
+  run(marshmallow_path + " " + marshmallow_src_path).
 
  end if.
 
