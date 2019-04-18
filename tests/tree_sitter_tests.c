@@ -27,7 +27,7 @@ char* readfile_for_tree_sitter( FILE* file ) {
 
   int word_size = 1 ;
 
-  char* word = RKMem_CArray(1, int) ;
+  char* word = RKMem_CArray(1, char) ;
 
   word[word_size-1] = '\0' ;
 
