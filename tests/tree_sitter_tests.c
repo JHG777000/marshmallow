@@ -21,19 +21,19 @@
 
 extern const TSLanguage *tree_sitter_marshmallow() ;
 
-RKString readfile_for_tree_sitter( RKFile file ) {
+char* readfile_for_tree_sitter( FILE* file ) {
 
   int c = 0 ;
 
   int word_size = 1 ;
 
-  int* word = RKMem_CArray(1, int) ;
+  char* word = RKMem_CArray(1, int) ;
 
   word[word_size-1] = '\0' ;
 
-  while ( (c = RKFile_GetUTF32Character(file)) != EOF ) {
+  while ( (c = fgetc(file)) != EOF ) {
 
-    word = RKMem_Realloc(word, word_size+1, word_size, int, 1) ;
+    word = RKMem_Realloc(word, word_size+1, word_size, char, 1) ;
 
     word_size++ ;
 
@@ -43,7 +43,7 @@ RKString readfile_for_tree_sitter( RKFile file ) {
 
   }
 
-  return RKString_NewStringFromUTF32(word,word_size-1) ;
+  return word ;
 
 }
 
@@ -56,7 +56,7 @@ int main(int argc, const char **argv) {
   ts_parser_set_language(parser, tree_sitter_marshmallow());
 
   // Build a syntax tree based on source code stored in a string.
-  char* source_code = RKString_ConvertToCString(readfile_for_tree_sitter(RKFile_OpenFile(argv[1], rk_read_mode)));
+  char* source_code = readfile_for_tree_sitter(fopen(argv[1], "r"));
   //printf("%s\n",source_code) ;
   TSTree *tree = ts_parser_parse_string(
     parser,
