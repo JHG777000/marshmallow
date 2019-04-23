@@ -21,7 +21,7 @@ The following is an example of what marshmallow aims to be:
 
       files MyAppSourceFiles("MyOtherFile.msrc", "Folder/SourceFile.msrc").
 
-    files MyAppLibraryFiles("libs/libm.a", "libs/OtherModule.mmod", "libs/SomeMarshmallowLibrary.mpck").
+      files MyAppLibraryFiles("libs/libm.a", "libs/OtherModule.mmod", "libs/SomeMarshmallowLibrary.mpck").
 
       sources MyAppSource(MyAppSourceFiles,MyAppLibraryFiles).
 
