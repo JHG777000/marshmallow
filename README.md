@@ -17,11 +17,11 @@ The following is an example of what marshmallow aims to be:
 
     build.
 
-      public os(macOS | Windows | Linux).
+      in state os(macOS | Windows | Linux).
 
-      files MyAppSourceFiles(MyOtherFile.msrc, Folder::SourceFile.msrc).
+      files MyAppSourceFiles("MyOtherFile.msrc", "Folder/SourceFile.msrc").
 
-      files MyAppLibraryFiles(libs::libm.a, libs::OtherModule.mmod, libs::SomeMarshmallowLibrary.mpck).
+    files MyAppLibraryFiles("libs/libm.a", "libs/OtherModule.mmod", "libs/SomeMarshmallowLibrary.mpck").
 
       sources MyAppSource(MyAppSourceFiles,MyAppLibraryFiles).
 
@@ -41,8 +41,11 @@ The following is an example of what marshmallow aims to be:
 
       toolchain ToolChain(c_backend,CompilerFlags).
 
-      output(app,MyAppSource,ToolChain). // app or pck or mod or lib or obj
+      output(mod,MyAppSource,ToolChain). // app(executable file) or pck(package file)
+                                     or mod(module file) or lib(archive file) or obj(object file)
 
+      install("mymod","1.0.0",require_install).
+      
      end build.
 
      typedef [int][3][x,y,z] vectype.

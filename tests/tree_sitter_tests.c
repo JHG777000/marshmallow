@@ -50,14 +50,14 @@ char* readfile_for_tree_sitter( FILE* file ) {
 int main(int argc, const char **argv) {
 
   // Create a parser.
-  TSParser *parser = ts_parser_new();
+  TSParser *parser = ts_parser_new() ;
 
 
-  ts_parser_set_language(parser, tree_sitter_marshmallow());
+  ts_parser_set_language(parser, tree_sitter_marshmallow()) ;
 
   // Build a syntax tree based on source code stored in a string.
-  char* source_code = readfile_for_tree_sitter(fopen(argv[1], "r"));
-  //printf("%s\n",source_code) ;
+  char* source_code = readfile_for_tree_sitter(fopen(argv[1], "r")) ;
+  printf("%s\n",source_code) ;
   TSTree *tree = ts_parser_parse_string(
     parser,
     NULL,
@@ -66,7 +66,7 @@ int main(int argc, const char **argv) {
   );
 
   // Get the root node of the syntax tree.
-  TSNode root_node = ts_tree_root_node(tree);
+  TSNode root_node = ts_tree_root_node(tree) ;
 
   // Get some child nodes.
   //TSNode array_node = ts_node_named_child(root_node, 0);
@@ -84,14 +84,12 @@ int main(int argc, const char **argv) {
   //assert(ts_node_child_count(number_node) == 0);
 
   // Print the syntax tree as an S-expression.
-  char *string = ts_node_string(root_node);
-  printf("Syntax tree: %s\n", string);
+  char *string = ts_node_string(root_node) ;
+  printf("Syntax tree: %s\n", string) ;
 
   // Free all of the heap-allocated memory.
-  free(string);
-  free(source_code);
-  ts_tree_delete(tree);
-  ts_parser_delete(parser);
-
-
+  free(string) ;
+  free(source_code) ;
+  ts_tree_delete(tree) ;
+  ts_parser_delete(parser) ;
 }
