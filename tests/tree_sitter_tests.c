@@ -47,6 +47,32 @@ char* readfile_for_tree_sitter( FILE* file ) {
 
 }
 
+char* get_string_value_from_node(TSNode node, char* source_code) {
+
+ int start = ts_node_start_byte(node) ;
+
+ int end = ts_node_end_byte(node) ;
+
+ RKString string = RKString_NewEmptyString((end - start)+1) ;
+
+ char* value = RKString_ConvertToCString(string) ;
+
+ int i = start ;
+
+ int j = 0 ;
+
+ while ( i < end ) {
+
+   value[j] = source_code[i] ;
+
+   i++ ;
+   j++ ;
+ }
+
+  return value ;
+
+}
+
 int main(int argc, const char **argv) {
 
   // Create a parser.
@@ -58,24 +84,26 @@ int main(int argc, const char **argv) {
   // Build a syntax tree based on source code stored in a string.
   char* source_code = readfile_for_tree_sitter(fopen(argv[1], "r")) ;
   printf("%s\n",source_code) ;
-  TSTree *tree = ts_parser_parse_string(
-    parser,
-    NULL,
-    source_code,
-    strlen(source_code)
-  );
+  TSTree *tree = ts_parser_parse_string(parser, NULL, source_code, strlen(source_code));
 
   // Get the root node of the syntax tree.
-  TSNode root_node = ts_tree_root_node(tree) ;
+  TSNode source_file_node = ts_tree_root_node(tree) ;
 
   // Get some child nodes.
-  //TSNode array_node = ts_node_named_child(root_node, 0);
-  //TSNode number_node = ts_node_named_child(array_node, 0);
+  TSNode module_definition_node = ts_node_named_child(source_file_node, 0);
+  TSNode identifier_node = ts_node_named_child(module_definition_node, 0);
 
   // Check that the nodes have the expected types.
-  //assert(strcmp(ts_node_type(root_node), "value") == 0);
-  //assert(strcmp(ts_node_type(array_node), "array") == 0);
-  //assert(strcmp(ts_node_type(number_node), "number") == 0);
+  assert(strcmp(ts_node_type(source_file_node), "source_file") == 0);
+  assert(strcmp(ts_node_type(module_definition_node), "module_definition") == 0);
+  assert(strcmp(ts_node_type(identifier_node), "identifier") == 0);
+
+
+  int c = ts_node_start_byte(identifier_node) ;
+
+  printf("TEST:%c\n",source_code[c]);
+
+  printf("%s\n", get_string_value_from_node(identifier_node,source_code));
 
   // Check that the nodes have the expected child counts.
   //assert(ts_node_child_count(root_node) == 1);
@@ -84,7 +112,7 @@ int main(int argc, const char **argv) {
   //assert(ts_node_child_count(number_node) == 0);
 
   // Print the syntax tree as an S-expression.
-  char *string = ts_node_string(root_node) ;
+  char *string = ts_node_string(source_file_node) ;
   printf("Syntax tree: %s\n", string) ;
 
   // Free all of the heap-allocated memory.
