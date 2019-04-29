@@ -78,8 +78,6 @@
 
             local i32 z ;
 
-            // x := ( y + ( 1 + x ) ) ;
-
             call other_routine {1,1,x,y} ;
 
             group ;
@@ -91,6 +89,8 @@
             get_return ;
 
             exit_group ;
+
+            // x := ( y + ( 1 + x ) ) ;
 
             group ;
 
@@ -178,8 +178,6 @@ mob:
 
             local i32 z ;
 
-            // x := ( y + ( 1 + x ) ) ;
-
             call other_routine {1,1,x,y} ;
 
             push z ;
@@ -187,6 +185,8 @@ mob:
             get_return ;
 
             assignment ;
+
+            // x := ( y + ( 1 + x ) ) ;
 
             push x ;
 
@@ -238,11 +238,11 @@ mob:
 
             local i32 z ;
 
-            // x := ( y + ( 1 + x ) ) ;
-
             call other_routine {1,1,x,y} ;
 
             z.var := GR0.i32 ;
+
+            // x := ( y + ( 1 + x ) ) ;
 
             V0.i32 := 1.i32 + x ;
 

@@ -102,7 +102,9 @@ RKStore functions_and_methods ; RKString name ; } *marshmallow_module ;
 
 typedef struct marshmallow_scope_s { marshmallow_entity_type entity_type ; marshmallow_scope_protocol } *marshmallow_scope ;
 
-typedef struct marshmallow_context_s { RKStore modules ; RKStore words ; RKStore symbols ; int program_has_main ; } *marshmallow_context ;
+typedef struct marshmallow_context_s { RKStore modules ; RKStore words ; RKStore symbols ;
+
+ void* parser ; int program_has_main ; } *marshmallow_context ;
 
 //keywords and tokens
 
