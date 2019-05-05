@@ -1,6 +1,6 @@
 project := "MarshmallowProject".
 
-project_version := "0.1.186".
+project_version := "0.1.187".
 
 buildfile_version := "1.0".
 
@@ -88,7 +88,7 @@ build MarshmallowBuild.
 
  if ( !tree_sitter_enable ).
 
-  sources Source(Files,Main,RKLib).
+  sources Source(Files,Main,tree_sitter_marshmallow_parser_lib,tree_sitter_lib,tree_sitter_dep_utf8proc_lib,RKLib).
 
  end if.
 
