@@ -136,6 +136,10 @@ void marshmallow_destroy_context( marshmallow_context context ) ;
 
 void marshmallow_compile_file( marshmallow_context context, const char* in_file, const char* out_directory ) ;
 
+//cfggen
+
+void marshmallow_parse_file_and_gen_cfg( marshmallow_context context, RKFile file ) ;
+
 //ast
 
 void marshmallow_parse_type( marshmallow_type type, marshmallow_token token, int pointers, int* arrays, int num_of_arrays ) ;

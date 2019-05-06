@@ -77,21 +77,53 @@
 
  }
 
- void cfggen_generate_control_flow_graph( marshmallow_context context, TSNode node ) {
+ #define dispatcher(name)  static void dispatcher_##_##name( marshmallow_context context, TSNode node, cfg_module* module, cfg_function_body* function )
 
-   cfg_module module = NULL ;
+ #define get_dispatcher(name) dispatcher_##_##name(context,node,module,function)
 
-   cfg_function_body function = NULL ;
+ #define dispatch(name) dispatched = 0 ; if ( strcmp(ts_node_type(node), #name) == 0 ) {dispatched = 1 ; get_dispatcher(name);}
+
+ dispatcher(source_file) {
+
+  int i = 0 ;
+
+  while ( i < ts_node_named_child_count(node) ) {
 
 
+    i++ ;
+  }
 
  }
 
- void marshmallow_parse_string_and_gen_cfg( marshmallow_context context, char* string ) {
+ static void cfggen_generate_control_flow_graph( marshmallow_context context, TSNode node ) {
 
-  char* source_code = string ;
+   int dispatched = 0 ;
 
-  if ( context->parser != NULL ) {
+   cfg_module m = NULL ;
+
+   cfg_module* module = &m ;
+
+   cfg_function_body f = NULL ;
+
+   cfg_function_body* function = &f ;
+
+   dispatch(source_file) ;
+
+   if ( !dispatched ) {
+
+     TSPoint point = ts_node_start_point(node) ;
+
+     printf("On line: %d, error parsing source file at root.\n",point.row) ;
+
+     exit(EXIT_FAILURE) ;
+
+   }
+
+ }
+
+ void marshmallow_parse_string_and_gen_cfg( marshmallow_context context, char* source_code ) {
+
+  if ( context->parser == NULL ) {
 
     context->parser = ts_parser_new() ;
 
@@ -112,6 +144,8 @@
  void marshmallow_parse_file_and_gen_cfg( marshmallow_context context, RKFile file ) {
 
   char* source_code = cfggen_readfile_for_tree_sitter(file) ;
+
+  //printf("%s\n",source_code) ;
 
   marshmallow_parse_string_and_gen_cfg(context,source_code) ;
 

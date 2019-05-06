@@ -75,6 +75,18 @@ char* get_string_value_from_node(TSNode node, char* source_code) {
 
 int main(int argc, const char **argv) {
 
+  if ( 1 ) {
+
+    marshmallow_context context = marshmallow_new_context() ;
+
+    marshmallow_parse_file_and_gen_cfg(context,RKFile_OpenFile(argv[1],rk_read_mode)) ;
+
+    marshmallow_destroy_context(context) ;
+    
+
+    return 0 ;
+  }
+
   // Create a parser.
   TSParser *parser = ts_parser_new() ;
 

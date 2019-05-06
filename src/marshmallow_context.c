@@ -17,6 +17,9 @@
 
 #include "marshmallow.h"
 #include "marshmallow_cfg.h"
+#include <tree_sitter/api.h>
+
+extern const TSLanguage *tree_sitter_marshmallow() ;
 
 static void DeleteModuleInListOrStore( void* data ) {
 
