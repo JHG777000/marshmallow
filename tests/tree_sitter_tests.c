@@ -82,7 +82,6 @@ int main(int argc, const char **argv) {
     marshmallow_parse_file_and_gen_cfg(context,RKFile_OpenFile(argv[1],rk_read_mode)) ;
 
     marshmallow_destroy_context(context) ;
-    
 
     return 0 ;
   }
@@ -95,7 +94,9 @@ int main(int argc, const char **argv) {
 
   // Build a syntax tree based on source code stored in a string.
   char* source_code = readfile_for_tree_sitter(fopen(argv[1], "r")) ;
+
   printf("%s\n",source_code) ;
+
   TSTree *tree = ts_parser_parse_string(parser, NULL, source_code, strlen(source_code));
 
   // Get the root node of the syntax tree.

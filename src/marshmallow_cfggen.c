@@ -77,25 +77,97 @@
 
  }
 
- #define dispatcher(name)  static void dispatcher_##_##name( marshmallow_context context, TSNode node, cfg_module* module, cfg_function_body* function )
+ #define dispatcher(name)  static void dispatcher_##_##name( marshmallow_context context, TSNode node, cfg_module* module, cfg_function_body* function, char* source_code )
 
- #define get_dispatcher(name) dispatcher_##_##name(context,node,module,function)
+ #define get_dispatcher(name) dispatcher_##_##name(context,node,module,function,source_code)
 
  #define dispatch(name) dispatched = 0 ; if ( strcmp(ts_node_type(node), #name) == 0 ) {dispatched = 1 ; get_dispatcher(name);}
 
- dispatcher(source_file) {
+ dispatcher(module_definition) {
+
+  int dispatched = 0 ;
+
+  cfg_module new_module ;
+
+  TSNode identifier_node = ts_node_named_child(node, 0);
+
+  if ( strcmp(ts_node_type(identifier_node), "identifier") != 0 ) {
+
+      TSPoint point = ts_node_start_point(node) ;
+
+      printf("On line: %d, %s is not an identifier.\n",point.row+1,cfggen_get_string_value_from_node(identifier_node,source_code)) ;
+
+      exit(EXIT_FAILURE) ;
+  }
+
+  if ( !RKStore_ItemExists(context->modules, cfggen_get_string_value_from_node(identifier_node,source_code)) ) {
+
+      new_module = cfg_new_module(RKString_NewStringFromCString(cfggen_get_string_value_from_node(identifier_node,source_code))) ;
+
+      cfg_add_module_to_context(new_module, context) ;
+  }
+
+  new_module = RKStore_GetItem(context->modules, cfggen_get_string_value_from_node(identifier_node,source_code)) ;
+
+  *module = new_module ;
+
+  printf("%s\n",RKString_GetString((*module)->name));
+
+ }
+
+ dispatcher(definition) {
 
   int i = 0 ;
 
-  while ( i < ts_node_named_child_count(node) ) {
+  int dispatched = 0 ;
 
+  TSNode main_node = node ;
+
+  while ( i < ts_node_named_child_count(main_node) ) {
+
+    node = ts_node_named_child(main_node,i) ;
+
+    dispatch(module_definition) ;
+
+    //dispatch(declaration_definition) ;
+
+    //dispatch(function_definition) ;
+
+    //dispatch(variable_definition) ;
+
+    //dispatch(enum_definition) ;
+
+    //dispatch(compound_macro) ;
+
+    //dispatch(end_compound_macro) ;
 
     i++ ;
   }
 
  }
 
- static void cfggen_generate_control_flow_graph( marshmallow_context context, TSNode node ) {
+ dispatcher(source_file) {
+
+  int i = 0 ;
+
+  int dispatched = 0 ;
+
+  TSNode main_node = node ;
+
+  while ( i < ts_node_named_child_count(main_node) ) {
+
+    node = ts_node_named_child(main_node,i) ;
+
+    printf("%s\n",ts_node_type(node));
+
+    dispatch(definition) ;
+
+    i++ ;
+  }
+
+ }
+
+ static void cfggen_generate_control_flow_graph( marshmallow_context context, TSNode node, char* source_code ) {
 
    int dispatched = 0 ;
 
@@ -113,7 +185,7 @@
 
      TSPoint point = ts_node_start_point(node) ;
 
-     printf("On line: %d, error parsing source file at root.\n",point.row) ;
+     printf("On line: %d, error parsing source file at root.\n",point.row+1) ;
 
      exit(EXIT_FAILURE) ;
 
@@ -135,7 +207,7 @@
 
   TSNode root_node = ts_tree_root_node(tree) ;
 
-  cfggen_generate_control_flow_graph(context,root_node) ;
+  cfggen_generate_control_flow_graph(context,root_node,source_code) ;
 
   ts_tree_delete(tree) ;
 
