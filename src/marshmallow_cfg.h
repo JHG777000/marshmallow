@@ -18,7 +18,7 @@
 #ifndef marshmallow_cfg_h
 #define marshmallow_cfg_h
 
-typedef enum { entry_block, statement_block, if_block, while_block, switch_block, case_block } cfg_block_type ;
+typedef enum { entry_block, terminate_block, statement_block, if_block, while_block, switch_block, case_block } cfg_block_type ;
 
 typedef struct cfg_class_s *cfg_class ;
 

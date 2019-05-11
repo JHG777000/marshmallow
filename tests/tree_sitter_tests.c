@@ -79,7 +79,7 @@ int main(int argc, const char **argv) {
 
     marshmallow_context context = marshmallow_new_context() ;
 
-    marshmallow_parse_file_and_gen_cfg(context,RKFile_OpenFile(argv[1],rk_read_mode)) ;
+    marshmallow_parse_file_and_gen_cfg(context,fopen(argv[1], "r")) ;
 
     marshmallow_destroy_context(context) ;
 

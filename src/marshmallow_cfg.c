@@ -568,7 +568,7 @@ void cfg_destroy_function_body( cfg_function_body function ) {
 
     RKStore_DestroyStore(function->variables) ;
 
-    cfg_destroy_block(function->entry_block) ;
+    if ( function->entry_block != NULL ) cfg_destroy_block(function->entry_block) ;
 
     free(function) ;
 }

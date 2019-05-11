@@ -138,7 +138,9 @@ void marshmallow_compile_file( marshmallow_context context, const char* in_file,
 
 //cfggen
 
-void marshmallow_parse_file_and_gen_cfg( marshmallow_context context, RKFile file ) ;
+void marshmallow_parse_file_and_gen_cfg( marshmallow_context context, FILE* file ) ;
+
+void marshmallow_parse_string_and_gen_cfg( marshmallow_context context, char* source_code ) ;
 
 //ast
 
