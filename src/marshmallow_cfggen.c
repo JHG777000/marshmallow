@@ -83,6 +83,8 @@
 
  #define is_node_type(node,type) (strcmp(ts_node_type(node), #type) == 0)
 
+#define scmp(s0,s1) (strcmp(s0,s1) == 0)
+
  #define get_line (ts_node_start_point(node).row+1)
 
  #define get_node(index) ts_node_named_child(node,index)
@@ -115,30 +117,80 @@
 
  dispatcher(function_definition) {
 
+   marshmallow_access_control access_control  = public ;
+
    int is_function = 0 ;
 
-   char* name = NULL ;
+   char* value = NULL ;
 
-   if ( is_node_type(get_node(0), is_function ) ) is_function = 1 ;
+   TSNode old_node ;
 
-   if ( !is_node_type(get_node(1), identifier) ) {
+   int index = 0 ;
 
-       printf("On line: %d, %s is not an identifier.\n",get_line,cfggen_get_string_value_from_node(get_node(1),source_code)) ;
+   int i = 0 ;
+
+   if ( is_node_type(get_node(index), access_control) ) {
+
+    value = cfggen_get_string_value_from_node(get_node(index),source_code) ;
+
+    if ( scmp(value, "private") ) access_control = private ;
+
+    if ( scmp(value, "protected") ) access_control = protected ;
+
+    if ( scmp(value, "publish") ) access_control = publish ;
+
+    free(value) ;
+
+    index++ ;
+
+   }
+
+   if ( is_node_type(get_node(index), is_function ) ) is_function = 1 ;
+
+  index++ ;
+
+   if ( !is_node_type(get_node(index), identifier) ) {
+
+       printf("On line: %d, %s is not an identifier.\n",get_line,cfggen_get_string_value_from_node(get_node(index),source_code)) ;
 
        exit(EXIT_FAILURE) ;
    }
 
-   name = cfggen_get_string_value_from_node(get_node(1),source_code) ;
+   value = cfggen_get_string_value_from_node(get_node(index),source_code) ;
 
-   cfg_function_signature function_signature = cfg_new_function_signature(RKString_NewStringFromCString(name), is_function) ;
+   cfg_function_signature function_signature = cfg_new_function_signature(RKString_NewStringFromCString(value), is_function) ;
 
    cfg_function_body new_function = cfg_new_function_body(function_signature) ;
 
    cfg_add_function_to_module(new_function, *module) ;
 
+   function_signature->access_control = access_control ;
+
+   index++ ;
+
+   if ( is_node_type(get_node(index), parameter_list) ) {
+
+     old_node = node ;
+
+     node = get_node(index) ;
+
+     while ( i < ts_node_named_child_count(node) ) {
+
+      if ( is_node_type(get_node(i),variable_definition) ) printf("%s\n", ts_node_type(ts_node_named_child(node,i))) ;
+
+      i++ ;
+
+    }
+
+     node = old_node ;
+
+   }
+
    *function = new_function ;
 
-   printf("%s\n",RKString_GetString((*function)->signature->func_name));
+   printf("%s\n",RKString_GetString((*function)->signature->func_name)) ;
+
+   free(value) ;
 
  }
 

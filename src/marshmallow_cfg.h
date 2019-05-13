@@ -38,6 +38,7 @@ typedef struct cfg_block_s { marshmallow_entity_type entity_type ; cfg_block_typ
 
 marshmallow_op_type op ; struct cfg_block_s* input_block ; RKStore output_blocks ; } *cfg_block ;
 
+
 struct cfg_class_s { marshmallow_entity_type entity_type ; RKString class_name ; marshmallow_access_control access_control ;
 
 RKStore variables ; cfg_function_body init_function ; } ;
@@ -50,11 +51,13 @@ int is_typedef ; int is_readonly ; int is_constexpr ; marshmallow_root_type root
 
 void* base_type ; RKULong num_of_elements ; int pointers ; } ;
 
+
 struct cfg_variable_s { marshmallow_entity_type entity_type ; RKString type_name ; cfg_type type_ptr ;
 
-RKString name ; void* data ; int is_persistent ; int is_declared ; int is_literal ; int is_temporary ; int is_external ; int is_global ;
+RKString name ; void* data ; int is_instance ; int is_persistent ; int is_declared ; int is_literal ;
 
-marshmallow_access_control access_control ; cfg_variable static_assignment ; } ;
+int is_temporary ; int is_external ; int is_global ; marshmallow_access_control access_control ; cfg_variable static_assignment ; } ;
+
 
 struct cfg_function_signature_s { marshmallow_access_control access_control ; int is_method ; int is_overridable ; int is_override ;
 
@@ -62,15 +65,18 @@ int is_declared ; int is_external ; RKString func_name ; marshmallow_class class
 
 RKStore parameters ; RKList returns ; } ;
 
+
 struct cfg_function_body_s { marshmallow_entity_type entity_type ; cfg_block entry_block ; RKStore variables ;
 
 cfg_function_signature signature ; cfg_module module ; } ;
+
 
 struct cfg_module_s { marshmallow_entity_type entity_type ; RKStore variables ; RKStore declarations ;
 
 RKStore types ; RKStore unprocessed_types ; RKStore enums ; RKStore modules ;
 
 RKStore functions_and_methods ; RKString name ; marshmallow_context context ; } ;
+
 
 cfg_module cfg_new_module( RKString name ) ;
 
@@ -91,6 +97,8 @@ cfg_function_body cfg_new_function_body( cfg_function_signature signature ) ;
 void cfg_destroy_function_body( cfg_function_body function ) ;
 
 void cfg_add_variable_to_function( cfg_variable variable, cfg_function_body function ) ;
+
+void cfg_add_variable_instance_to_function( cfg_variable variable, cfg_function_body function )  ;
 
 cfg_block cfg_new_block( cfg_block_type block_type ) ;
 

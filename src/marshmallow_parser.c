@@ -613,7 +613,7 @@ add_the_returns:
 
         if ( variable->entity_type != entity_variable ) {
 
-            printf("On line: %d, unknown entity in function or method definition. Not a retunrs in function or method: '%s'.\n",line_number,RKString_GetString(signature->func_name)) ;
+            printf("On line: %d, unknown entity in function or method definition. Not a returns in function or method: '%s'.\n",line_number,RKString_GetString(signature->func_name)) ;
 
             exit(EXIT_FAILURE) ;
         }

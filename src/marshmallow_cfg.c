@@ -587,6 +587,13 @@ void cfg_add_variable_to_function( cfg_variable variable, cfg_function_body func
     if ( variable->name == NULL ) RKStore_AddItemToList(function->variables, variable) ;
 }
 
+void cfg_add_variable_instance_to_function( cfg_variable variable, cfg_function_body function ) {
+
+     variable->is_instance = 1 ;
+
+     RKStore_AddItemToList(function->variables, variable) ;
+}
+
 cfg_block cfg_new_block( cfg_block_type block_type ) {
 
     cfg_block block = RKMem_NewMemOfType(struct cfg_block_s) ;
@@ -662,6 +669,8 @@ cfg_variable cfg_new_variable( void ) {
     variable->name = NULL ;
 
     variable->data = NULL ;
+
+    variable->is_instance = 0 ;
 
     variable->is_declared = 0 ;
 
