@@ -83,11 +83,36 @@
 
  #define is_node_type(node,type) (strcmp(ts_node_type(node), #type) == 0)
 
-#define scmp(s0,s1) (strcmp(s0,s1) == 0)
+ #define scmp(s0,s1) (strcmp(s0,s1) == 0)
 
  #define get_line (ts_node_start_point(node).row+1)
 
  #define get_node(index) ts_node_named_child(node,index)
+
+ static cfg_type type_generator( RKString name, RKULong pointers, RKULong array, int is_readonly ) {
+
+
+ }
+
+ static cfg_type type_instance_generator( RKString name ) {
+
+
+ }
+
+ static cfg_variable variable_generator( RKString name, cfg_type type, cfg_variable static_assignment ) {
+
+
+ }
+
+ static cfg_variable variable_instance_generator( RKString name ) {
+
+
+ }
+
+ static cfg_variable value_generator( TSNode node ) {
+
+
+ }
 
  dispatcher(module_definition) {
 
@@ -117,7 +142,7 @@
 
  dispatcher(function_definition) {
 
-   marshmallow_access_control access_control  = public ;
+   marshmallow_access_control access_control = public ;
 
    int is_function = 0 ;
 

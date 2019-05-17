@@ -1,6 +1,6 @@
 project := "MarshmallowProject".
 
-project_version := "0.1.191".
+project_version := "0.1.192".
 
 buildfile_version := "1.0".
 
@@ -18,6 +18,8 @@ build MarshmallowBuild.
 
   on cfg_test_enable("-c", "--cfg_test", "Enable marshmallow cfg tests.").
 
+  on mib_test_enable("-m", "--mib_test_enable", "Enable marshmallow mib tests.").
+
   on tree_sitter_enable("-p", "--parser_tree_sitter", "Enable marshmallow tree sitter tests.").
 
  end options.
@@ -29,6 +31,8 @@ build MarshmallowBuild.
  get leak_test_enable.
 
  get cfg_test_enable.
+
+ get mib_test_enable.
 
  get tree_sitter_enable.
 
@@ -75,6 +79,14 @@ build MarshmallowBuild.
   message("Running marshmallow cfg_tests...").
 
   files Main("tests/cfg_tests.c").
+
+ end if.
+
+ if ( mib_test_enable ).
+
+  message("Running marshmallow mib_tests...").
+
+  files Main("tests/mib_tests.c").
 
  end if.
 
@@ -131,6 +143,30 @@ build MarshmallowBuild.
   launch(marshmallow_test).
 
   message("Ran marshmallow tests.").
+
+ end if.
+
+ if ( mib_test_enable ).
+
+  make filepath marshmallow_path from "project" to "marshmallow".
+
+  make filepath mib_output_path from "resources" to "tests/mib_C_output".
+
+  run(marshmallow_path + " " + mib_output_path).
+
+  files Files("tests/mib_C_output/module_mymod_mib.c").
+
+  sources Source(Files).
+
+  compiler CompilerFlags("-w").
+
+  toolchain ToolChain(toolchain_select,CompilerFlags).
+
+  output marshmallow_test("application",Source,ToolChain).
+
+  launch(marshmallow_test).
+
+  message("Ran mib tests.").
 
  end if.
 

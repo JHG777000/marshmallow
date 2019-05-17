@@ -39,11 +39,15 @@ typedef struct cfg_block_s { marshmallow_entity_type entity_type ; cfg_block_typ
 marshmallow_op_type op ; struct cfg_block_s* input_block ; RKStore output_blocks ; } *cfg_block ;
 
 
-struct cfg_class_s { marshmallow_entity_type entity_type ; RKString class_name ; marshmallow_access_control access_control ;
+struct cfg_class_s { marshmallow_entity_type entity_type ; RKString class_name ;
 
-RKStore variables ; cfg_function_body init_function ; } ;
+marshmallow_access_control access_control ; RKStore variables ;
+
+cfg_function_body init_function ; } ;
+
 
 struct cfg_enum_s { RKList enum_names ; RKStore enums ; } ;
+
 
 struct cfg_type_s { marshmallow_entity_type entity_type ; RKString type_name ;
 
