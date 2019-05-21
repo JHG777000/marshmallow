@@ -75,12 +75,6 @@
 
  }
 
- #define dispatcher(name)  static void dispatcher_##_##name( marshmallow_context context, TSNode node, cfg_module* module, cfg_function_body* function, char* source_code )
-
- #define get_dispatcher(name) dispatcher_##_##name(context,node,module,function,source_code)
-
- #define dispatch(name) dispatched = 0 ; if ( strcmp(ts_node_type(node), #name) == 0 ) {dispatched = 1 ; get_dispatcher(name);}
-
  #define is_node_type(node,type) (strcmp(ts_node_type(node), #type) == 0)
 
  #define scmp(s0,s1) (strcmp(s0,s1) == 0)
@@ -89,213 +83,164 @@
 
  #define get_node(index) ts_node_named_child(node,index)
 
- static cfg_type type_generator( RKString name, RKULong pointers, RKULong array, int is_readonly ) {
+ static marshmallow_entity cfggen_generate_control_flow_graph( marshmallow_context context,
+  cfg_module module, marshmallow_entity scope, TSNode node, char* source_code ) {
 
+  int i = 0 ;
 
- }
+  int index = 0 ;
 
- static cfg_type type_instance_generator( RKString name ) {
+  TSNode subnode ;
 
+  char* value = NULL ;
 
- }
+  marshmallow_entity entity = NULL ;
 
- static cfg_variable variable_generator( RKString name, cfg_type type, cfg_variable static_assignment ) {
+  static marshmallow_entity no_error = NULL ;
 
+  marshmallow_access_control access_control = public ;
 
- }
+  if ( no_error == NULL ) {
 
- static cfg_variable variable_instance_generator( RKString name ) {
+    no_error = RKMem_NewMemOfType(struct marshmallow_entity_s) ;
 
+    no_error->entity_type = entity_nothing ;
 
- }
-
- static cfg_variable value_generator( TSNode node ) {
-
-
- }
-
- dispatcher(module_definition) {
-
-  cfg_module new_module ;
-
-  if ( !is_node_type(get_node(0),identifier) ) {
-
-      printf("On line: %d, %s is not an identifier.\n",get_line,cfggen_get_string_value_from_node(get_node(0),source_code)) ;
-
-      exit(EXIT_FAILURE) ;
   }
 
-  if ( !RKStore_ItemExists(context->modules, cfggen_get_string_value_from_node(get_node(0),source_code)) ) {
+  if ( is_node_type(node,source_file) || is_node_type(node,definition) ) {
 
-      new_module = cfg_new_module(RKString_NewStringFromCString(cfggen_get_string_value_from_node(get_node(0),source_code))) ;
+    i = 0 ;
 
-      cfg_add_module_to_context(new_module, context) ;
-  }
+    while ( i < ts_node_named_child_count(node) ) {
 
-  new_module = RKStore_GetItem(context->modules, cfggen_get_string_value_from_node(get_node(0),source_code)) ;
+      subnode = ts_node_named_child(node,i) ;
 
-  *module = new_module ;
+      printf("%s\n",ts_node_type(subnode)) ;
 
-  printf("%s\n",RKString_GetString((*module)->name));
+      entity = cfggen_generate_control_flow_graph(context, module, scope, subnode, source_code) ;
 
- }
+      if ( entity == NULL ) return NULL ;
 
- dispatcher(function_definition) {
+      if ( entity->entity_type == entity_module ) module = (cfg_module)entity ;
 
-   marshmallow_access_control access_control = public ;
-
-   int is_function = 0 ;
-
-   char* value = NULL ;
-
-   TSNode old_node ;
-
-   int index = 0 ;
-
-   int i = 0 ;
-
-   if ( is_node_type(get_node(index), access_control) ) {
-
-    value = cfggen_get_string_value_from_node(get_node(index),source_code) ;
-
-    if ( scmp(value, "private") ) access_control = private ;
-
-    if ( scmp(value, "protected") ) access_control = protected ;
-
-    if ( scmp(value, "publish") ) access_control = publish ;
-
-    free(value) ;
-
-    index++ ;
-
-   }
-
-   if ( is_node_type(get_node(index), is_function ) ) is_function = 1 ;
-
-  index++ ;
-
-   if ( !is_node_type(get_node(index), identifier) ) {
-
-       printf("On line: %d, %s is not an identifier.\n",get_line,cfggen_get_string_value_from_node(get_node(index),source_code)) ;
-
-       exit(EXIT_FAILURE) ;
-   }
-
-   value = cfggen_get_string_value_from_node(get_node(index),source_code) ;
-
-   cfg_function_signature function_signature = cfg_new_function_signature(RKString_NewStringFromCString(value), is_function) ;
-
-   cfg_function_body new_function = cfg_new_function_body(function_signature) ;
-
-   cfg_add_function_to_module(new_function, *module) ;
-
-   function_signature->access_control = access_control ;
-
-   index++ ;
-
-   if ( is_node_type(get_node(index), parameter_list) ) {
-
-     old_node = node ;
-
-     node = get_node(index) ;
-
-     while ( i < ts_node_named_child_count(node) ) {
-
-      if ( is_node_type(get_node(i),variable_definition) ) printf("%s\n", ts_node_type(ts_node_named_child(node,i))) ;
+      if ( entity->entity_type == entity_function ) scope = entity ;
 
       i++ ;
 
     }
 
-     node = old_node ;
+    return no_error ;
 
-   }
-
-   *function = new_function ;
-
-   printf("%s\n",RKString_GetString((*function)->signature->func_name)) ;
-
-   free(value) ;
-
- }
-
- dispatcher(definition) {
-
-  int i = 0 ;
-
-  int dispatched = 0 ;
-
-  TSNode main_node = node ;
-
-  while ( i < ts_node_named_child_count(main_node) ) {
-
-    node = ts_node_named_child(main_node,i) ;
-
-    dispatch(module_definition) ;
-
-    //dispatch(declaration_definition) ;
-
-    dispatch(function_definition) ;
-
-    //dispatch(variable_definition) ;
-
-    //dispatch(enum_definition) ;
-
-    //dispatch(compound_macro) ;
-
-    //dispatch(end_compound_macro) ;
-
-    i++ ;
   }
 
- }
+  if ( is_node_type(node,module_definition) ) {
 
- dispatcher(source_file) {
+    cfg_module new_module ;
 
-  int i = 0 ;
+    value = cfggen_get_string_value_from_node(get_node(0),source_code) ;
 
-  int dispatched = 0 ;
+    if ( !is_node_type(get_node(0),identifier) ) {
 
-  TSNode main_node = node ;
+        printf("On line: %d, %s is not an identifier.\n",get_line,value) ;
 
-  while ( i < ts_node_named_child_count(main_node) ) {
+        exit(EXIT_FAILURE) ;
+    }
 
-    node = ts_node_named_child(main_node,i) ;
+    if ( !RKStore_ItemExists(context->modules, value) ) {
 
-    printf("%s\n",ts_node_type(node));
+        new_module = cfg_new_module(RKString_NewStringFromCString(value)) ;
 
-    dispatch(definition) ;
+        cfg_add_module_to_context(new_module, context) ;
+    }
 
-    i++ ;
+    new_module = RKStore_GetItem(context->modules, value) ;
+
+    printf("%s\n",RKString_GetString(new_module->name));
+
+    free(value) ;
+
+    return (marshmallow_entity)new_module ;
+
   }
 
+  if ( is_node_type(node,function_definition) ) {
+
+    index = 0 ;
+
+    int is_function = 0 ;
+
+    access_control = public ;
+
+    if ( is_node_type(get_node(index), access_control) ) {
+
+     value = cfggen_get_string_value_from_node(get_node(index),source_code) ;
+
+     if ( scmp(value, "private") ) access_control = private ;
+
+     if ( scmp(value, "protected") ) access_control = protected ;
+
+     if ( scmp(value, "publish") ) access_control = publish ;
+
+     free(value) ;
+
+     index++ ;
+
+    }
+
+    if ( is_node_type(get_node(index), is_function ) ) is_function = 1 ;
+
+   index++ ;
+
+    if ( !is_node_type(get_node(index), identifier) ) {
+
+        printf("On line: %d, %s is not an identifier.\n",get_line,cfggen_get_string_value_from_node(get_node(index),source_code)) ;
+
+        exit(EXIT_FAILURE) ;
+    }
+
+    value = cfggen_get_string_value_from_node(get_node(index),source_code) ;
+
+    cfg_function_signature function_signature = cfg_new_function_signature(RKString_NewStringFromCString(value), is_function) ;
+
+    cfg_function_body new_function = cfg_new_function_body(function_signature) ;
+
+    cfg_add_function_to_module(new_function, module) ;
+
+    function_signature->access_control = access_control ;
+
+    index++ ;
+
+    if ( is_node_type(get_node(index), parameter_list) ) {
+
+      i = 0 ;
+
+      subnode = get_node(index) ;
+
+      while ( i < ts_node_named_child_count(subnode) ) {
+
+       if ( is_node_type(get_node(i),variable_definition) ) printf("%s\n", ts_node_type(ts_node_named_child(subnode,i))) ;
+
+       i++ ;
+
+     }
+
+    }
+
+    printf("%s\n",RKString_GetString(new_function->signature->func_name)) ;
+
+    free(value) ;
+
+    return (marshmallow_entity)new_function ;
+
+  }
+
+
+  return NULL ;
+
  }
 
- static void cfggen_generate_control_flow_graph( marshmallow_context context, TSNode node, char* source_code ) {
-
-   int dispatched = 0 ;
-
-   cfg_module m = NULL ;
-
-   cfg_module* module = &m ;
-
-   cfg_function_body f = NULL ;
-
-   cfg_function_body* function = &f ;
-
-   dispatch(source_file) ;
-
-   if ( !dispatched ) {
-
-     printf("On line: %d, error parsing source file at root.\n",get_line) ;
-
-     exit(EXIT_FAILURE) ;
-
-   }
-
- }
-
- void marshmallow_parse_string_and_gen_cfg( marshmallow_context context, char* source_code ) {
+ void marshmallow_parse_string_and_gen_cfg( marshmallow_context context, marshmallow_entity module, marshmallow_entity scope, char* source_code ) {
 
   if ( context->parser == NULL ) {
 
@@ -309,7 +254,19 @@
 
   TSNode root_node = ts_tree_root_node(tree) ;
 
-  cfggen_generate_control_flow_graph(context,root_node,source_code) ;
+  marshmallow_entity error = cfggen_generate_control_flow_graph(context, (cfg_module)module, scope, root_node, source_code) ;
+
+  if ( error == NULL ) {
+
+    printf("On line: %d, error parsing source file at root.\n",ts_node_start_point(root_node).row+1) ;
+
+    exit(EXIT_FAILURE) ;
+
+  } else {
+
+    free(error) ;
+
+  }
 
   ts_tree_delete(tree) ;
 
@@ -321,7 +278,7 @@
 
   //printf("%s\n",source_code) ;
 
-  marshmallow_parse_string_and_gen_cfg(context,source_code) ;
+  marshmallow_parse_string_and_gen_cfg(context,NULL,NULL,source_code) ;
 
   free(source_code) ;
 
