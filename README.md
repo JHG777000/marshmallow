@@ -3,7 +3,7 @@
 
 Marshmallow is a work in progress programming language.
 
-The goal is to create a language comparable to C in terms of flexibility, and closeness to the underlying hardware. With a more friendly syntax and modern language features.
+The goal is to create a language comparable to C in terms of flexibility, and closeness to the underlying hardware, with a more friendly syntax and modern language features.
 
 Marshmallow aims to be an object-oriented language with support for lambdas, bounds-checking, multiple returns, and an advanced macro system that supports generics and metaprogramming.
 

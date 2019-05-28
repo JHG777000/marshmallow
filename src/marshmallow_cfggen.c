@@ -83,6 +83,69 @@
 
  #define get_node(index) ts_node_named_child(node,index)
 
+ static RKStack cfggen_new_scope_stack( void ) {
+
+  return RKStack_NewStack() ;
+
+ }
+
+ static void cfggen_destroy_scope_stack( RKStack scope_stack ) {
+
+  RKStack_DestroyStack(scope_stack) ;
+
+ }
+
+ static void cfggen_add_to_scope_stack( marshmallow_entity entity, RKStack scope_stack, TSNode node ) {
+
+  switch (entity->entity_type) {
+
+    case entity_module:
+
+        if ( !RKStack_IsEmpty(scope_stack) ) {
+
+            printf("On line: %d, module does not end.\n",get_line) ;
+
+            exit(EXIT_FAILURE) ;
+        }
+
+        break;
+
+     case entity_function:
+
+        if ( RKStack_IsEmpty(scope_stack) ) {
+
+            printf("On line: %d, no scope.\n",get_line) ;
+
+            exit(EXIT_FAILURE) ;
+        }
+
+        if ( !(((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type == entity_module) ) {
+
+            printf("On line: %d, expected module. Function and methods must exist within a module.\n",get_line) ;
+
+            exit(EXIT_FAILURE) ;
+        }
+
+        if ( ((cfg_function_body)entity)->signature->is_declared ) {
+
+            cfg_add_declaration_to_module(entity, RKStack_Peek(scope_stack)) ;
+
+        } else {
+
+            cfg_add_function_to_module((cfg_function_body)entity, RKStack_Peek(scope_stack)) ;
+
+            RKStack_Push(scope_stack, entity) ;
+        }
+
+        break;
+
+        default:
+         break;
+
+  }
+
+ }
+
  static marshmallow_entity cfggen_generate_control_flow_graph( marshmallow_context context,
   cfg_module module, marshmallow_entity scope, TSNode node, char* source_code ) {
 
