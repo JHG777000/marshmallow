@@ -75,6 +75,7 @@
 
  }
 
+
  #define is_node_type(node,type) (strcmp(ts_node_type(node), #type) == 0)
 
  #define scmp(s0,s1) (strcmp(s0,s1) == 0)
@@ -82,6 +83,7 @@
  #define get_line (ts_node_start_point(node).row+1)
 
  #define get_node(index) ts_node_named_child(node,index)
+
 
  static RKStack cfggen_new_scope_stack( void ) {
 

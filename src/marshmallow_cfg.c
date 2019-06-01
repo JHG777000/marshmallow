@@ -61,94 +61,50 @@ static void DeleteDeclarationInListOrStore( void* data ) {
 }
 
 
-int cfg_is_token_named_root_type( marshmallow_keyword token ) {
+int cfg_is_type_root_type( cfg_type type ) {
 
- switch (token) {
+  static RKStore root_types = NULL ;
 
-  case mgk(i8type):
+  if ( type->root_type != unknown ) return 1 ;
 
-      return 1 ;
+  if ( root_types == NULL ) {
 
-      break;
+   root_types = RKStore_NewStore() ;
 
-   case mgk(u8type):
+   RKStore_AddItem(root_types,NULL,"i8") ;
 
-      return 1 ;
+   RKStore_AddItem(root_types,NULL,"u8") ;
 
-      break;
+   RKStore_AddItem(root_types,NULL,"i16") ;
 
-   case mgk(i16type):
+   RKStore_AddItem(root_types,NULL,"u16") ;
 
-      return 1 ;
+   RKStore_AddItem(root_types,NULL,"i32") ;
 
-      break;
+   RKStore_AddItem(root_types,NULL,"u32") ;
 
-   case mgk(u16type):
+   RKStore_AddItem(root_types,NULL,"i64") ;
 
-      return 1 ;
+   RKStore_AddItem(root_types,NULL,"u64") ;
 
-      break;
+   RKStore_AddItem(root_types,NULL,"f32") ;
 
-   case mgk(i32type):
+   RKStore_AddItem(root_types,NULL,"f64") ;
 
-      return 1 ;
+   RKStore_AddItem(root_types,NULL,"s8") ;
 
-      break;
+   RKStore_AddItem(root_types,NULL,"s16") ;
 
-   case mgk(u32type):
+   RKStore_AddItem(root_types,NULL,"s32") ;
 
-      return 1 ;
+   RKStore_AddItem(root_types,NULL,"ptrsize") ;
 
-      break;
+  }
 
-   case mgk(i64type):
+  if ( RKStore_ItemExists(root_types,RKString_GetString(type->type_name)) ) return 1 ;
 
-      return 1 ;
+  return 0 ;
 
-      break;
-
-  case mgk(u64type):
-
-      return 1 ;
-
-      break;
-
-   case mgk(string8):
-
-      return 1 ;
-
-      break;
-
-   case mgk(string16):
-
-      return 1 ;
-
-      break;
-
-   case mgk(string32):
-
-      return 1 ;
-
-      break;
-
-   case mgk(floattype):
-
-      return 1 ;
-
-      break;
-
-   case mgk(doubletype):
-
-      return 1 ;
-
-      break;
-
-   default:
-      break;
-
-    }
-
-    return 0 ;
 }
 
 int cfg_is_type_float( cfg_type type ) {
@@ -936,13 +892,7 @@ void cfg_add_declaration_to_module( marshmallow_entity entity, cfg_module module
 
 void cfg_add_type_to_module( cfg_type type, cfg_module module ) {
 
-    if (RKStore_ItemExists(module->context->words,RKString_GetString(type->type_name))) {
-
-      marshmallow_keyword token = rkget(int,RKStore_GetItem(module->context->words,RKString_GetString(type->type_name)));
-
-      if ( cfg_is_token_named_root_type(token) ) goto add_type ;
-
-    }
+    if ( cfg_is_type_root_type(type) ) goto add_type ;
 
     if (!cfg_verify_identifier(NULL, module, (marshmallow_entity)type)) {
 
