@@ -60,7 +60,6 @@ static void DeleteDeclarationInListOrStore( void* data ) {
     if ( ((cfg_variable)data)->entity_type == entity_variable ) DeleteVariableInListOrStore(data) ;
 }
 
-
 int cfg_is_type_root_type( cfg_type type ) {
 
   static RKStore root_types = NULL ;

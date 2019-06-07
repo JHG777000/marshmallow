@@ -110,6 +110,33 @@
             exit(EXIT_FAILURE) ;
         }
 
+        RKStack_Push(scope_stack, entity) ;
+
+        break;
+
+   case entity_data_type:
+
+        if ( RKStack_IsEmpty(scope_stack) ) {
+
+            printf("On line: %d, no scope.\n",get_line) ;
+
+            exit(EXIT_FAILURE) ;
+        }
+
+        if ( ((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type != entity_module ) {
+
+            printf("On line: %d, expected module. typedefs must exist within a module, not a function or method.\n",get_line) ;
+
+            exit(EXIT_FAILURE) ;
+        }
+
+        if ( ((marshmallow_type)entity)->root_type == enum_type ) {
+
+            cfg_add_enums_to_module((cfg_type)entity, RKStack_Peek(scope_stack)) ;
+        }
+
+        cfg_add_type_to_module((cfg_type)entity, RKStack_Peek(scope_stack)) ;
+
         break;
 
      case entity_function:
@@ -143,7 +170,6 @@
 
         default:
          break;
-
   }
 
  }
