@@ -50,15 +50,13 @@
 
  -- marshmallow low-level bytecode --
 
- Will allow for additional optimization, such as inlining.
-
  Will be three-address code.
 
  Will be transformed into C code, or other backend.
 
  --- Overview of codegen ---------------------------------------------------------------------------------------------
 
- mib(first intermediate) -> mob(stack based, optimization) -> mlb(three-address code, inlining) -> C(or other backend)
+ mib(first intermediate) -> mob(stack based, optimization) -> mlb(three-address code) -> C(or other backend)
 
  ---------------------------------------------------------------------------------------------------------------------
 

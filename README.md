@@ -15,39 +15,6 @@ The following is an example of what marshmallow aims to be:
 
     use module marshmallow.
 
-    build.
-
-      in state os(macOS | Windows | Linux).
-
-      files MyAppSourceFiles("MyOtherFile.msrc", "Folder/SourceFile.msrc").
-
-      files MyAppLibraryFiles("libs/libm.a", "libs/OtherModule.mmod", "libs/SomeMarshmallowLibrary.mpck").
-
-      sources MyAppSource(MyAppSourceFiles,MyAppLibraryFiles).
-
-      if ( os == macOS ).
-
-        compiler CompilerFlags("macOS").
-
-      else if ( os == Windows ).
-
-        compiler CompilerFlags("Windows").
-
-      else if ( os == Linux ).
-
-        compiler CompilerFlags("Linux").
-
-      end if.
-
-      toolchain ToolChain(c_backend,CompilerFlags).
-
-      output(mod,MyAppSource,ToolChain). // app(executable file) or pck(package file)
-                                     or mod(module file) or lib(archive file) or obj(object file)
-
-      install("mymod","1.0.0",require_install).
-      
-     end build.
-
      typedef [int][3][x,y,z] vectype.
 
      function main( args main_args ).
@@ -144,10 +111,6 @@ The following is an example of what marshmallow aims to be:
 
     end module.
 
-### Module System:
-
-The concept for marshmallow is that it be based around an advanced module system; that allows macros and high-level type information to be stored along with code in binary files using bytecode. Marshmallow would use an [AOT](https://en.wikipedia.org/wiki/Ahead-of-time_compilation) based system, with each "compiled" module stored in a high-level bytecode file(.mmod), and distributed in a platform neutral manner. This removes the need for header files and allows for an advanced macro and type system, while maintaining native performance. In addition the possibility for a package file exists(.mpck), a binary archive file that includes many (.mmod) files as well as additional resources.
-
 ### Current Backend:
 
 Marshmallow currently compiles to C. A [LLVM](https://llvm.org) or [QBE](https://c9x.me/compile/) backend may be implemented in the future.
@@ -161,14 +124,6 @@ Marshmallow as of now, is very much a work in progress. Core language features h
 The compiler is full of bugs and memory leaks, as such marshmallow has a long way to go before v1.0, however work is ongoing and active.
 
 helloworld.msrc provides a working example of marshmallow, while helloworld\_C\_output/module_mymod.c is the C code marshmallow will  generate from helloworld.msrc.
-
-### File Extensions:
-
-##### .msrc - marshmallow source
-
-##### .mmod - marshmallow module
-
-##### .mpck - marshmallow package
 
 ## Building marshmallow
 
