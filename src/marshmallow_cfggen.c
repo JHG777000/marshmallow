@@ -97,6 +97,12 @@
 
  }
 
+static void cfggen_remove_from_scope_stack( RKStack scope_stack ) {
+
+ RKStack_Pop(scope_stack) ;
+
+}
+
  static void cfggen_add_to_scope_stack( marshmallow_entity entity, RKStack scope_stack, TSNode node ) {
 
   switch (entity->entity_type) {
@@ -200,8 +206,7 @@
 
  }
 
- static marshmallow_entity cfggen_generate_control_flow_graph( marshmallow_context context,
-  cfg_module module, marshmallow_entity scope, TSNode node, char* source_code ) {
+ static marshmallow_entity cfggen_generate_control_flow_graph( marshmallow_context context, RKStack scope_stack, TSNode node, char* source_code ) {
 
   int i = 0 ;
 
@@ -235,13 +240,11 @@
 
       printf("%s\n",ts_node_type(subnode)) ;
 
-      entity = cfggen_generate_control_flow_graph(context, module, scope, subnode, source_code) ;
+      entity = cfggen_generate_control_flow_graph(context, scope_stack, subnode, source_code) ;
 
       if ( entity == NULL ) return NULL ;
 
-      if ( entity->entity_type == entity_module ) module = (cfg_module)entity ;
-
-      if ( entity->entity_type == entity_function ) scope = entity ;
+      cfggen_add_to_scope_stack(entity, scope_stack, subnode) ;
 
       i++ ;
 
@@ -359,6 +362,8 @@
 
  void marshmallow_parse_string_and_gen_cfg( marshmallow_context context, marshmallow_entity module, marshmallow_entity scope, char* source_code ) {
 
+  RKStack scope_stack = RKStack_NewStack() ;
+
   if ( context->parser == NULL ) {
 
     context->parser = ts_parser_new() ;
@@ -371,7 +376,7 @@
 
   TSNode root_node = ts_tree_root_node(tree) ;
 
-  marshmallow_entity error = cfggen_generate_control_flow_graph(context, (cfg_module)module, scope, root_node, source_code) ;
+  marshmallow_entity error = cfggen_generate_control_flow_graph(context, scope_stack, root_node, source_code) ;
 
   if ( error == NULL ) {
 
@@ -384,6 +389,8 @@
     free(error) ;
 
   }
+
+  RKStack_DestroyStack(scope_stack) ;
 
   ts_tree_delete(tree) ;
 
