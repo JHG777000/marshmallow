@@ -168,6 +168,32 @@
 
         break;
 
+        case entity_variable:
+
+            if ( RKStack_IsEmpty(scope_stack) ) {
+
+                printf("On line: %d, no scope.\n",get_line) ;
+
+                exit(EXIT_FAILURE) ;
+            }
+
+
+            if ( ((cfg_variable)entity)->is_declared ) {
+
+              cfg_add_declaration_to_module(entity, RKStack_Peek(scope_stack)) ;
+
+            } else {
+
+              if (((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type == entity_module)
+              cfg_add_variable_to_module((cfg_variable)entity, RKStack_Peek(scope_stack)) ;
+
+              if (((marshmallow_entity)RKStack_Peek(scope_stack))->entity_type == entity_function)
+              cfg_add_variable_to_function((cfg_variable)entity, RKStack_Peek(scope_stack)) ;
+
+            }
+
+            break;
+
         default:
          break;
   }

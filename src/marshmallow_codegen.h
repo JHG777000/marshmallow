@@ -44,7 +44,7 @@
 
  -- marshmallow optimizing bytecode --
 
- Will be a stack based intermediate, will be taking inspiration from WebAssembly.
+ Will be a stack based intermediate.
 
  Will allow for per routine optimization.
 
