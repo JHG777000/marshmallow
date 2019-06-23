@@ -83,7 +83,7 @@ The following is an example of what marshmallow aims to be:
 
       end if.
 
-    end template.
+     end template.
 
      function free(freeable blank* ptr).
 
