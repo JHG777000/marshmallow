@@ -29,7 +29,7 @@
 
  marshmallow_mob.c -- Optimize mob per routine, transform mob into mlb, provide support and infrastructure for mob.
 
- marshmallow_mlb.c -- Validate mlb, optimize mlb context wide, send mlb and the cg_context to a backend,
+ marshmallow_mlb.c -- Validate mlb, send mlb and the cg_context to a backend,
  provide support and infrastructure for mlb.
 
   Backend files:
@@ -46,7 +46,7 @@
 
  Will be a stack based intermediate.
 
- Will allow for per routine optimization.
+ Will allow for per routine optimization via abstract interpretation.
 
  -- marshmallow low-level bytecode --
 

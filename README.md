@@ -71,15 +71,21 @@ The following is an example of what marshmallow aims to be:
 
      end function.
 
-     function alloc(type type_to_alloc) returns blank*.
+     template alloc(template type_to_alloc: type, template allocator: symbol := mmalloc).
 
-       if ( _is_ptr(type_to_alloc) ) return _init(malloc(_sizeof(_typeofptr(type_to_alloc)))).
+      if ( _is_ptr(type_to_alloc) ).
 
-       return _init(malloc(_sizeof(type_to_alloc))).
+       eval "_init(" + allocator + "(_sizeof(_typeofptr(type_to_alloc)))).".
 
-     end function.
+      else.
 
-     function freer free(blank* ptr).
+       eval "_init(" + allocator + "(_sizeof(type_to_alloc)))".
+
+      end if.
+
+    end template.
+
+     function free(freeable blank* ptr).
 
       mfree(ptr).
 

@@ -28,7 +28,7 @@ int main(int argc, const char **argv) {
 
     cg_add_module_to_context(my_module, my_context) ;
 
-    cg_variable my_class = cg_new_class( rkstr("myclass"), my_module ) ;
+    cg_variable my_class = cg_new_class(rkstr("myclass"), my_module) ;
 
     cg_variable var_a = cg_new_variable(rkstr("var_a"), i32, -1, -1, 0, 0) ;
 
