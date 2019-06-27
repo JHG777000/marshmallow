@@ -101,9 +101,9 @@ The following is an example of what marshmallow aims to be:
 
      end function.
 
-     declare function overridable new.
+     declare overridable function new returns.
 
-     function override new returns List.
+     override function new returns List.
 
       return List_NewList().
 

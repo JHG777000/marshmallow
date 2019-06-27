@@ -70,29 +70,29 @@ int main(int argc, const char **argv) {
 
     cfg_block b0 = cfg_new_block(statement_block) ;
 
-    b0->op = assignment ;
+    cfg_set_block_op(b0,assignment) ;
 
-    cfg_add_block_to_block_output((cfg_block)x, b0, "lhs") ;
+    cfg_add_block_to_block_output((cfg_block)x, b0, lhs_block) ;
 
-    cfg_add_block_to_block_output(b0, my_function->entry_block, "next") ;
+    cfg_add_block_to_block_output(b0, my_function->entry_block, next_block) ;
 
     cfg_block b1 = cfg_new_block(statement_block) ;
 
-    b1->op = add ;
+    cfg_set_block_op(b1,add) ;
 
-    cfg_add_block_to_block_output((cfg_block)y, b1, "lhs") ;
+    cfg_add_block_to_block_output((cfg_block)y, b1, lhs_block) ;
 
-    cfg_add_block_to_block_output(b1, b0, "rhs") ;
+    cfg_add_block_to_block_output(b1, b0, rhs_block) ;
 
     cfg_block b2 = cfg_new_block(statement_block) ;
 
-    b2->op = add ;
+    cfg_set_block_op(b2,add) ;
 
-    cfg_add_block_to_block_output((cfg_block)one, b2, "lhs") ;
+    cfg_add_block_to_block_output((cfg_block)one, b2, lhs_block) ;
 
-    cfg_add_block_to_block_output((cfg_block)x, b2, "rhs") ;
+    cfg_add_block_to_block_output((cfg_block)x, b2, rhs_block) ;
 
-    cfg_add_block_to_block_output(b2, b1, "rhs") ;
+    cfg_add_block_to_block_output(b2, b1, rhs_block) ;
 
     marshmallow_destroy_context(context) ;
 

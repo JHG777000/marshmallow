@@ -325,8 +325,6 @@ static void cfggen_remove_from_scope_stack( RKStack scope_stack ) {
 
     cfg_function_body new_function = cfg_new_function_body(function_signature) ;
 
-    cfg_add_function_to_module(new_function, module) ;
-
     function_signature->access_control = access_control ;
 
     index++ ;
@@ -356,13 +354,50 @@ static void cfggen_remove_from_scope_stack( RKStack scope_stack ) {
   }
 
 
+  if ( is_node_type(node,variable_definition) ) {
+
+    index = 0 ;
+
+    int is_readonly = 0 ;
+
+    access_control = public ;
+
+    if ( is_node_type(get_node(index), access_control) ) {
+
+     value = cfggen_get_string_value_from_node(get_node(index),source_code) ;
+
+     if ( scmp(value, "private") ) access_control = private ;
+
+     if ( scmp(value, "protected") ) access_control = protected ;
+
+     if ( scmp(value, "publish") ) access_control = publish ;
+
+     free(value) ;
+
+     index++ ;
+
+    }
+
+    if ( is_node_type(get_node(index), readonly ) ) {
+
+         is_readonly = 1 ;
+    }
+
+
+
+  }
+
   return NULL ;
 
  }
 
- void marshmallow_parse_string_and_gen_cfg( marshmallow_context context, marshmallow_entity module, marshmallow_entity scope, char* source_code ) {
+ void marshmallow_parse_string_and_gen_cfg( marshmallow_context context, RKStack scope_stack, char* source_code ) {
 
-  RKStack scope_stack = RKStack_NewStack() ;
+  if ( scope_stack == NULL ) {
+
+     scope_stack = cfggen_new_scope_stack() ;
+
+  }
 
   if ( context->parser == NULL ) {
 
@@ -372,7 +407,7 @@ static void cfggen_remove_from_scope_stack( RKStack scope_stack ) {
 
   }
 
-  TSTree *tree = ts_parser_parse_string(context->parser, NULL, source_code, strlen(source_code));
+  TSTree *tree = ts_parser_parse_string(context->parser, NULL, source_code, strlen(source_code)) ;
 
   TSNode root_node = ts_tree_root_node(tree) ;
 
@@ -390,7 +425,7 @@ static void cfggen_remove_from_scope_stack( RKStack scope_stack ) {
 
   }
 
-  RKStack_DestroyStack(scope_stack) ;
+  cfggen_destroy_scope_stack(scope_stack) ;
 
   ts_tree_delete(tree) ;
 
@@ -402,7 +437,7 @@ static void cfggen_remove_from_scope_stack( RKStack scope_stack ) {
 
   //printf("%s\n",source_code) ;
 
-  marshmallow_parse_string_and_gen_cfg(context,NULL,NULL,source_code) ;
+  marshmallow_parse_string_and_gen_cfg(context,NULL,source_code) ;
 
   free(source_code) ;
 

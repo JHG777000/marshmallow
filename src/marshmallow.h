@@ -140,7 +140,7 @@ void marshmallow_compile_file( marshmallow_context context, const char* in_file,
 
 void marshmallow_parse_file_and_gen_cfg( marshmallow_context context, FILE* file ) ;
 
-void marshmallow_parse_string_and_gen_cfg( marshmallow_context context, marshmallow_entity module, marshmallow_entity scope, char* source_code ) ;
+void marshmallow_parse_string_and_gen_cfg( marshmallow_context context, RKStack scope_stack, char* source_code ) ;
 
 //ast
 

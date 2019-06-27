@@ -20,6 +20,10 @@
 
 typedef enum { entry_block, terminate_block, statement_block, if_block, while_block, switch_block, case_block } cfg_block_type ;
 
+typedef enum { next_block = 0, lhs_block = 1, rhs_block = 2, then_block = 1, else_block = 2,
+
+conditional_block = 3, cases_block = 1 } cfg_block_output_type ;
+
 typedef struct cfg_class_s *cfg_class ;
 
 typedef struct cfg_enum_s *cfg_enum ;
@@ -37,7 +41,7 @@ typedef struct cfg_module_s *cfg_module ;
 
 typedef struct cfg_block_s { marshmallow_entity_type entity_type ; cfg_block_type block_type ; cfg_variable retvar ;
 
-marshmallow_op_type op ; struct cfg_block_s* input_block ; RKStore output_blocks ; } *cfg_block ;
+marshmallow_op_type op ; struct cfg_block_s* input_block ; void* output_blocks[4] ; } *cfg_block ;
 
 
 struct cfg_class_s { marshmallow_entity_type entity_type ; RKString class_name ;
@@ -109,11 +113,11 @@ cfg_block cfg_new_block( cfg_block_type block_type ) ;
 
 void cfg_destroy_block( cfg_block block ) ;
 
-void cfg_set_block_statement( cfg_block block, marshmallow_op_type op_type ) ;
+void cfg_set_block_op( cfg_block block, marshmallow_op_type op_type ) ;
 
-void cfg_add_block_to_block_output( cfg_block block_to_add, cfg_block block, const char* output_name ) ;
+void cfg_add_block_to_block_output( cfg_block block_to_add, cfg_block block, cfg_block_output_type block_output_type ) ;
 
-cfg_block cfg_get_block_from_block_output( cfg_block block, const char* output_name ) ;
+cfg_block cfg_get_block_from_block_output( cfg_block block, cfg_block_output_type block_output_type ) ;
 
 cfg_variable cfg_new_variable( void ) ;
 

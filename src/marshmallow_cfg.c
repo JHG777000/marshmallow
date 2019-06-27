@@ -34,13 +34,6 @@ static void DeleteVariableInListOrStore( void* data ) {
     cfg_destroy_variable(data) ;
 }
 
-static void DeleteBlockInListOrStore( void* data ) {
-
-    if ( ((cfg_variable)data)->entity_type != entity_block ) return ;
-
-    cfg_destroy_block(data) ;
-}
-
 static void DeleteTypeInListOrStore( void* data ) {
 
     if ( ((cfg_variable)data)->entity_type != entity_data_type ) return ;
@@ -563,8 +556,6 @@ cfg_block cfg_new_block( cfg_block_type block_type ) {
 
     block->input_block = NULL ;
 
-    block->output_blocks = NULL ;
-
     return block ;
 }
 
@@ -579,19 +570,15 @@ void cfg_destroy_block( cfg_block block ) {
 
     if ( block->retvar != NULL ) cfg_destroy_variable(block->retvar) ;
 
-    if ( block->output_blocks != NULL ) RKStore_IterateStoreWith(DeleteBlockInListOrStore, block->output_blocks) ;
-
-    if ( block->output_blocks != NULL ) RKStore_DestroyStore(block->output_blocks) ;
-
     free(block) ;
 }
 
-void cfg_set_block_statement( cfg_block block, marshmallow_op_type op_type ) {
+void cfg_set_block_op( cfg_block block, marshmallow_op_type op_type ) {
 
     block->op = op_type ;
 }
 
-void cfg_add_block_to_block_output( cfg_block block_to_add, cfg_block block, const char* output_name ) {
+void cfg_add_block_to_block_output( cfg_block block_to_add, cfg_block block, cfg_block_output_type block_output_type ) {
 
     if ( block_to_add == NULL ) return ;
 
@@ -599,18 +586,15 @@ void cfg_add_block_to_block_output( cfg_block block_to_add, cfg_block block, con
 
     if ( block_to_add->entity_type == entity_block ) block_to_add->input_block = block ;
 
-    if ( block->output_blocks == NULL ) block->output_blocks = RKStore_NewStore() ;
+    block->output_blocks[block_output_type] = block_to_add ;
 
-    RKStore_AddItem(block->output_blocks, block_to_add, output_name) ;
 }
 
-cfg_block cfg_get_block_from_block_output( cfg_block block, const char* output_name ) {
+cfg_block cfg_get_block_from_block_output( cfg_block block, cfg_block_output_type block_output_type ) {
 
     if ( block == NULL ) return NULL ;
 
-    if ( block->output_blocks == NULL ) block->output_blocks = RKStore_NewStore() ;
-
-    return RKStore_GetItem(block->output_blocks, output_name) ;
+    return block->output_blocks[block_output_type] ;
 }
 
 cfg_variable cfg_new_variable( void ) {
