@@ -556,6 +556,14 @@ cfg_block cfg_new_block( cfg_block_type block_type ) {
 
     block->input_block = NULL ;
 
+    block->output_blocks[0] = NULL ;
+
+    block->output_blocks[1] = NULL ;
+
+    block->output_blocks[2] = NULL ;
+
+    block->output_blocks[3] = NULL ;
+
     return block ;
 }
 

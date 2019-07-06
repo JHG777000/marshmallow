@@ -18,7 +18,7 @@
 #include "marshmallow.h"
 #include "marshmallow_codegen.h"
 
-typedef struct c_backend_s { RKStore banned_symbols ; cg_routine memcpy_routine ; } *c_backend ;
+typedef struct c_backend_s { cg_routine memcpy_routine ; } *c_backend ;
 
 static void* get_static_assignment( cg_variable variable ) {
 
@@ -1053,13 +1053,6 @@ static void output_variable_name( FILE* file, cg_variable variable, c_backend c 
         return ;
     }
 
-    if ( RKStore_ItemExists(c->banned_symbols, RKString_GetString(name)) ) {
-
-        printf("codegen error: symbol '%s', already exists.\n",RKString_GetString(name)) ;
-
-        exit(EXIT_FAILURE) ;
-    }
-
     fprintf(file, "%s", RKString_GetString(name)) ;
 }
 
@@ -1442,16 +1435,9 @@ get_builder(C) {
 
 }
 
-static void DeleteStringInListOrStore(void* data) {
-
-    RKString_DestroyString(data) ;
-}
-
 get_destroyer(C) {
 
-    RKStore_IterateStoreWith(DeleteStringInListOrStore, ((c_backend)backend->backend_ptr)->banned_symbols) ;
-
-    RKStore_DestroyStore(((c_backend)backend->backend_ptr)->banned_symbols) ;
+    cg_destroy_routine(((c_backend)backend->backend_ptr)->memcpy_routine) ;
 
     free(backend->backend_ptr) ;
 }
@@ -1467,8 +1453,6 @@ new_backend(C) {
     backend->destroyer_callback = get_callback(C, get_destroyer) ;
 
     c_backend c = RKMem_NewMemOfType(struct c_backend_s) ;
-
-    c->banned_symbols = RKStore_NewStore() ;
 
     backend->backend_ptr = c ;
 
@@ -1503,6 +1487,4 @@ new_backend(C) {
     mlb_validate_routine(memcpy_routine) ;
 
     c->memcpy_routine = memcpy_routine ;
-
-    RKStore_AddItem(c->banned_symbols, rkstr("memcpy"), "memcpy") ;
 }

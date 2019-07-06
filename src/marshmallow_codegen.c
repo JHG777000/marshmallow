@@ -1893,7 +1893,7 @@ codegen_backend codegen_new_backend( codegen_backend_type backend_type, const ch
     codegen_backend backend = RKMem_NewMemOfType(struct codegen_backend_s) ;
 
     backend->output_dir = RKString_NewStringFromCString(out_directory) ;
-    
+
     init_backend(C) ;
 
     return backend ;
