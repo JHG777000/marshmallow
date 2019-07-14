@@ -1437,8 +1437,6 @@ get_builder(C) {
 
 get_destroyer(C) {
 
-    cg_destroy_routine(((c_backend)backend->backend_ptr)->memcpy_routine) ;
-
     free(backend->backend_ptr) ;
 }
 
