@@ -40,6 +40,16 @@ static RKList_node mib_process_statement( cg_routine routine, RKList_node node, 
 
             case mib_endgroup:
 
+                if ( operator_for_group == cg_noop ) {
+
+                    printf("codegen error: failed to validate a mib statement. There should be no noop.\n") ;
+
+                    printf("Noop came from empty group, with end.\n") ;
+
+                    exit(EXIT_FAILURE) ;
+
+                }
+
                 (*group_balance)-- ;
 
                 mob_add_statement(operator_for_group, routine, NULL) ;
@@ -49,6 +59,16 @@ static RKList_node mib_process_statement( cg_routine routine, RKList_node node, 
                 break;
 
             case mib_exitgroup:
+
+               if ( operator_for_group == cg_noop ) {
+
+                 printf("codegen error: failed to validate a mib statement. There should be no noop.\n") ;
+
+                 printf("Noop came from empty group, with exit.\n") ;
+
+                 exit(EXIT_FAILURE) ;
+
+                }
 
                 (*group_balance)-- ;
 

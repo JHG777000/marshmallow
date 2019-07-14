@@ -124,8 +124,6 @@ int main(int argc, const char **argv) {
 
     mib_add_statement(mib_group, other_routine, NULL) ;
 
-    mib_add_statement(mib_group, other_routine, NULL) ;
-
     mib_add_statement(cg_section, other_routine, section_var) ;
 
     mib_add_statement(cg_if, other_routine, NULL) ;
@@ -161,8 +159,6 @@ int main(int argc, const char **argv) {
 
     mib_add_statement(mib_exitgroup, other_routine, NULL) ;
 
-
-    mib_add_statement(mib_endgroup, other_routine, NULL) ;
 
     mib_add_statement(cg_goto, other_routine, section_var) ;
 
@@ -375,8 +371,8 @@ int main(int argc, const char **argv) {
 
     mib_add_statement(cg_endcase, my_routine, NULL) ;
 
-
     mib_add_statement(cg_endswitch, my_routine, NULL) ;
+
 
     mib_add_statement(mib_group, my_routine, NULL) ;
 
@@ -404,6 +400,7 @@ int main(int argc, const char **argv) {
 
     mib_add_statement(mib_exitgroup, my_routine, NULL) ;
 
+
     mib_add_statement(mib_group, my_routine, NULL) ;
 
     mib_add_statement(cg_if, my_routine, NULL) ;
@@ -420,15 +417,10 @@ int main(int argc, const char **argv) {
 
     mib_add_statement(mib_endgroup, my_routine, NULL) ;
 
-    mib_add_statement(mib_group, my_routine, NULL) ;
-
-    mib_add_statement(mib_endgroup, my_routine, NULL) ;
 
     mib_add_statement(cg_else, my_routine, NULL) ;
 
-    mib_add_statement(mib_group, my_routine, NULL) ;
 
-    mib_add_statement(mib_endgroup, my_routine, NULL) ;
 
     mib_add_statement(cg_endif, my_routine, NULL) ;
 
