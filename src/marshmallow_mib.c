@@ -193,5 +193,19 @@ cg_statement mib_add_statement( cg_op_type op, cg_routine routine, cg_variable v
         exit(EXIT_FAILURE) ;
     }
 
+    if ( op == mlb_set ) {
+
+        printf("codegen error: failed to validate a mib statement.\n") ;
+
+        exit(EXIT_FAILURE) ;
+    }
+
+    if ( op == mlb_external_return ) {
+
+        printf("codegen error: failed to validate a mib statement.\n") ;
+
+        exit(EXIT_FAILURE) ;
+    }
+
     return statement ;
 }
