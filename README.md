@@ -11,17 +11,59 @@ Marshmallow aims to be an object-oriented language with support for lambdas, bou
 
 The following is an example of what marshmallow aims to be:
 
-	module mymod.
+	package mypackage.
 
-    use module marshmallow.
+     use source "main.msrc".
 
-     typedef [int][3][x,y,z] vectype.
+     use package "marshmallow_standard_libary/package.msrc".
 
-     function main( args main_args ).
+     myflag: flag := yes.
 
-      [int][3] vector.
+    end package.
 
-      [byte][3][r,g,b][red,green,blue] pixel.
+    module mymod.
+
+     use module marshmallow.
+
+     if ( mypackage::myflag == yes ).
+
+      value: symbol := foo.
+
+     else.
+
+      value: symbol := bar.
+
+     end if.
+
+     typedef v3i32xyz vectype.
+
+     typedef v3i8rbg#red#green#blue pixeltype.
+
+     class myclass.
+
+      private system_readwrite u32 a := 42.
+
+      private readonly u32 b := 42.
+
+      protected private_write u32 c := 42.
+
+      protected system_readwrite u32 d := 42.
+
+      protected writelimited u32 e := 42.
+
+      private writelimited u32 f := 42.
+
+      system_readwrite u32 g := 42.
+
+      private_write u32 h := 42.
+
+     end class.
+
+     function main( args_class args ).
+
+      vectype vector.
+
+      pixeltype pixel.
 
       vectype vector2.
 
@@ -51,7 +93,9 @@ The following is an example of what marshmallow aims to be:
 
       y := ($$float(i)).
 
-      List list := new().
+      list_class list := new().
+
+      generic_list_class list2 := new(myclass).
 
       int* ptr := null.
 
@@ -61,51 +105,153 @@ The following is an example of what marshmallow aims to be:
 
       int value3 := func().
 
+      lambda function() returns int mylambda := _get_lambda(func).
+
+      int value4 := mylambda().
+
       { value2, value3 } := MyFunc().
 
-      lambda() returns int func := lambda_start.
+      function func() returns int.
 
        return 1.
 
-      end lambda.      
+      end function.
 
      end function.
 
-     template alloc(template type_to_alloc: type, template allocator: symbol := mmalloc).
+     function alloc( type_to_alloc: type, allocator: identifier := mmalloc ) returns blank*.
 
-      if ( _is_ptr(type_to_alloc) ).
+     if ( _is_ptr(type_to_alloc) ).
 
-       eval "_init(" + allocator + "(_sizeof(_typeofptr(type_to_alloc)))).".
+      type_to_alloc retval := allocator(_sizeof(_typeofptr(type_to_alloc))).
 
-      else.
+     else.
 
-       eval "_init(" + allocator + "(_sizeof(type_to_alloc)))".
+      type_to_alloc* retval := allocator(_sizeof(type_to_alloc)).
 
-      end if.
+     end if.
 
-     end template.
+     if ( _is_class(type_to_alloc) ) _init(retval).
 
-     function free(freeable blank* ptr).
+     return retval.
 
-      mfree(ptr).
+    end function.
 
-     end function.
+    function free( freeable blank* ptr ).
 
-     class ( int num_of_nodes, list_node first, list_node last ) *List.
+     mfree(ptr).
 
-     function List_NewList returns List.
+    end function.
 
-       List newlist := alloc(List).
+    class *list_class.
 
-       return newlist.
+     private long num_of_nodes.
 
-     end function.
+     private list_node first.
 
-     declare overridable function new returns.
+     private list_node last.
 
-     override function new returns List.
+     class *list_node.
 
-      return List_NewList().
+      private list_node before.
+
+      private list_node after.
+
+      private blank* data.
+
+     end class.
+
+    end class.
+
+    class *generic_list_class( dataype: type ).
+
+     private list_type: type := dataype.
+
+     private long num_of_nodes.
+
+     private list_node first.
+
+     private list_node last.
+
+     class *list_node( dataype: type ).
+
+      private list_node before.
+
+      private list_node after.
+
+      private dataype data.
+
+     end class.
+
+    end class.
+
+    method add_to_list( list_class list, blank* data ) returns list_node.
+
+     if ( list->num_of_nodes == 0 ).
+
+      list->first := alloc(list_class::list_node).
+
+      list->last := list->first.
+
+     else.
+
+      list->last->after := alloc(list_class::list_node).
+
+      list->last->after->before := list->last.
+
+      list->last := list->last->after.
+
+     end if.
+
+     list->last->data := data.
+
+     list->num_of_nodes++.
+
+     return list->last.
+
+    end method.
+
+    method add_to_list( generic_list_class list, data: list->list_type ) returns list_node.
+
+     if ( list->num_of_nodes == 0 ).
+
+      list->first := alloc(generic_list_class::list_node(list->list_type)).
+
+       list->last := list->first.
+
+     else.
+
+      list->last->after := alloc(generic_list_class::list_node(list->list_type)).
+
+      list->last->after->before := list->last.
+
+      list->last := list->last->after.
+
+     end if.
+
+     list->last->data := data.
+
+     list->num_of_nodes++.
+
+     return list->last.
+
+    end method.
+
+    overridable function new() returns.
+
+    override function new( allocator: identifier := mmalloc ) returns list_class.
+
+     list_class list := alloc(list_class,allocator).
+
+     return list.
+
+    end function.
+
+    override function new( list_type: type, allocator: identifier := mmalloc ) returns generic_list_class.
+
+      generic_list_class list := alloc(generic_list_class(list_type),allocator).
+
+      return list.
 
      end function.
 
