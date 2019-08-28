@@ -163,9 +163,11 @@ The following is an example of what marshmallow aims to be:
 
     end class.
 
-    class *generic_list_class( dataype: type ).
+    class *generic_list_class( dataype: type, allocator: identifier ).
 
      private list_type: type := dataype.
+     
+     private memalloc: identifier := allocator.
 
      private long num_of_nodes.
 
@@ -215,13 +217,13 @@ The following is an example of what marshmallow aims to be:
 
      if ( list->num_of_nodes == 0 ).
 
-      list->first := alloc(generic_list_class::list_node(list->list_type)).
+      list->first := alloc(generic_list_class::list_node(list->list_type),list->memalloc).
 
-       list->last := list->first.
+      list->last := list->first.
 
      else.
 
-      list->last->after := alloc(generic_list_class::list_node(list->list_type)).
+      list->last->after := alloc(generic_list_class::list_node(list->list_type),list->memalloc).
 
       list->last->after->before := list->last.
 
@@ -249,7 +251,7 @@ The following is an example of what marshmallow aims to be:
 
     override function new( list_type: type, allocator: identifier := mmalloc ) returns generic_list_class.
 
-      generic_list_class list := alloc(generic_list_class(list_type),allocator).
+      generic_list_class list := alloc(generic_list_class(list_type,allocator),allocator).
 
       return list.
 
