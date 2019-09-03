@@ -161,29 +161,33 @@ The following is an example of what marshmallow aims to be:
 
      end class.
 
-    end class.
+    end class.     
 
-    class *generic_list_class#(list_type: type).
+    generic( list_type: type ).
+
+     class *generic_list_class.
      
-     private allocator_type memalloc := _get_lambda(mmalloc).
+      private allocator_type memalloc := _get_lambda(mmalloc).
 
-     private long num_of_nodes.
+      private long num_of_nodes.
 
-     private first: list_node.
+      private list_node# first.
 
-     private last: list_node.
+      private list_node# last.
 
-     class *list_node#( list_type ).
+      class *list_node( list_type ).
 
-      private before: list_node.
+       private list_node# before.
 
-      private after: list_node.
+       private list_node# after.
 
-      private list_type data.
+       private list_type data.
+
+      end class.
 
      end class.
-
-    end class.
+    
+    end generic.
 
     method add_to_list( list_class list, blank* data ) returns list_node.
 
@@ -211,7 +215,7 @@ The following is an example of what marshmallow aims to be:
 
     end method.
 
-    method add_to_list( list: generic_list_class, list#list_type data ) returns :list_node.
+    method add_to_list( generic_list_class# list, list->list_type data ) returns list_node#.
 
      if ( list->num_of_nodes == 0 ).
 
@@ -247,9 +251,9 @@ The following is an example of what marshmallow aims to be:
 
      end function.
 
-     override function new( allocator_type allocator := _get_lambda(mmalloc) ) returns :generic_list_class.
+     override function new( allocator_type allocator := _get_lambda(mmalloc) ) returns generic_list_class#.
 
-      list: generic_list_class := alloc(:generic_list_class,allocator).
+      generic_list_class# list := alloc(generic_list_class#,allocator).
 
       list->memalloc := allocator.
 
