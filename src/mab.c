@@ -30,6 +30,8 @@ mab_list mab_new_list( mab_op op ) {
 
  new_list->scope = NULL ;
 
+ return new_list ;
+
 }
 
 void mab_destroy_list( mab_list list ) {
@@ -46,11 +48,11 @@ void mab_add_to_list( mab_list list, void* item ) {
 
  if ( list->array == NULL ) {
 
-   list->array = RKMem_CArray(list->num_of_elements,void**) ;
+   list->array = RKMem_CArray(list->num_of_elements,void*) ;
 
  } else if ( list->array != NULL ) {
 
-   list->array = RKMem_Realloc(list->array,list->num_of_elements,list->num_of_elements-1,void**,1) ;
+   list->array = RKMem_Realloc(list->array,list->num_of_elements,list->num_of_elements-1,void*,1) ;
 
  }
 
