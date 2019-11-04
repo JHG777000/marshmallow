@@ -76,7 +76,7 @@
 
             local i32 z ;
 
-            call other_routine {1,1,x,y} ;
+            call other_routine {1.i32,1.i32,x.var,y.var} ;
 
             group ;
 
@@ -176,7 +176,7 @@ mob:
 
             local i32 z ;
 
-            call other_routine {1,1,x,y} ;
+            call other_routine {1.i32,1.i32,x.var,y.var} ;
 
             push z ;
 
@@ -236,7 +236,7 @@ mob:
 
             local i32 z ;
 
-            call other_routine {1,1,x,y} ;
+            call other_routine {1.i32,1.i32,x.var,y.var} ;
 
             z.var := GR0.i32 ;
 

@@ -154,7 +154,7 @@ static void output_routine( FILE* file, cg_routine routine, c_backend c ) {
 
         while ( node != NULL ) {
 
-            output_statement(file, RKList_GetData(node),&last_routine_to_be_called) ;
+            output_statement(file, RKList_GetData(node), &last_routine_to_be_called) ;
 
             node = RKList_GetNextNode(node) ;
         }

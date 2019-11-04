@@ -133,7 +133,7 @@ The following is an example of what marshmallow aims to be:
 
      if ( _is_class(type_to_alloc) ) _init(retval).
 
-     return retval.
+     return ($$blank*(retval)).
 
     end function.
 
