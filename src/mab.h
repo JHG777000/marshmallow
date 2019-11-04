@@ -33,10 +33,16 @@ mab_while, mab_switch, mab_case, mab_default, mab_goto, mab_section, mab_equals,
 mab_greaterthan, mab_lessthan, mab_greaterthan_or_equals, mab_lessthan_or_equals, mab_call, mab_return } mab_op ;
 
 
-typedef struct { mab_op op ; void* scope ; RKUInt num_of_elements ; void* array ; } *mab_list ;
+typedef struct mab_list_s { mab_op op ; void* scope ; RKUInt num_of_elements ; void** array ; } *mab_list ;
 
 
 typedef struct mab_scope_s { RKStore definitions ; void* super_scope ; } *mab_scope ;
 
+
+mab_list mab_new_list( mab_op op ) ;
+
+void mab_destroy_list( mab_list list ) ;
+
+void mab_add_to_list( mab_list list, void* item ) ;
 
 #endif /* marshmallow_mab_h */

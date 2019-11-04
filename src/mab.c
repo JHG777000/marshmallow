@@ -17,3 +17,43 @@
 
 #include "marshmallow.h"
 #include "mab.h"
+
+mab_list mab_new_list( mab_op op ) {
+
+ mab_list new_list = RKMem_NewMemOfType(struct mab_list_s) ;
+
+ new_list->array = NULL ;
+
+ new_list->num_of_elements = 0 ;
+
+ new_list->op = op ;
+
+ new_list->scope = NULL ;
+
+}
+
+void mab_destroy_list( mab_list list ) {
+
+ free(list->array) ;
+
+ free(list) ;
+
+}
+
+void mab_add_to_list( mab_list list, void* item ) {
+
+ list->num_of_elements++ ;
+
+ if ( list->array == NULL ) {
+
+   list->array = RKMem_CArray(list->num_of_elements,void**) ;
+
+ } else if ( list->array != NULL ) {
+
+   list->array = RKMem_Realloc(list->array,list->num_of_elements,list->num_of_elements-1,void**,1) ;
+
+ }
+
+ if ( list->array != NULL ) list->array[list->num_of_elements-1] = item ;
+
+}
