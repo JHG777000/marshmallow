@@ -2330,7 +2330,7 @@ cg_variable cg_new_class( RKString class_name, cg_module module ) {
 
     cg_variable new_class = cg_new_variable(class_name, class, -1, -1, 0, 0) ;
 
-    new_class->value = rkstr("myclass") ;
+    new_class->value = RKString_CopyString(class_name) ;
 
     new_class->class_values = RKStore_NewStore() ;
 

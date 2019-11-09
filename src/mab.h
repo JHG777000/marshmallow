@@ -20,7 +20,7 @@
 
 typedef enum { mab_noop, mab_context, mab_package, mab_module, mab_function, mab_method, mab_procedure, mab_extension,
 
-mab_definition, mab_declare, mab_external, mab_type, mab_contains, mab_variable, mab_literal, mab_identifier,
+mab_define, mab_declare, mab_external, mab_type, mab_contains, mab_variable, mab_literal, mab_identifier,
 
 mab_assignment, mab_static_assignment, mab_add, mab_sub, mab_mult, mab_div, mab_rem, mab_rshift,
 
@@ -40,7 +40,18 @@ void** array ; RKUInt num_of_elements_list_array ; struct mab_list_s** list_arra
 RKUInt num_of_elements_string_array ; RKString* string_array ; } *mab_list ;
 
 
-typedef struct mab_scope_s { RKStore definitions ; void* super_scope ; } *mab_scope ;
+
+typedef struct mab_function_scope_s { RKStore definitions ; void* super_scope ; void* module ; } *mab_function_scope ;
+
+
+typedef struct mab_module_scope_s { RKStore definitions ; void* super_scope ; RKStore used_namespaces ;
+
+RKStore required_namespaces ; void* package ; } *mab_module_scope ;
+
+
+typedef struct mab_package_scope_s { RKStore definitions ; void* super_scope ; RKStore used_namespaces ;
+
+RKStore required_namespaces ; RKStore files ; } *mab_package_scope ;
 
 
 mab_list mab_new_list( mab_op op ) ;

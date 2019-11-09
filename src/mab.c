@@ -88,6 +88,8 @@ void mab_add_to_list( mab_list list, void* item, int item_is_list ) {
 
  if ( list->array != NULL ) list->array[list->num_of_elements-1] = item ;
 
+ if ( item_is_list == -1 ) return ;
+
  if ( item_is_list ) {
 
    list->num_of_elements_list_array++ ;
