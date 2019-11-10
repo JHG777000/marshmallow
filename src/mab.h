@@ -34,9 +34,9 @@ mab_while, mab_switch, mab_case, mab_default, mab_goto, mab_section, mab_equals,
 
 mab_greaterthan, mab_lessthan, mab_greaterthan_or_equals, mab_lessthan_or_equals,
 
-mab_inc, mab_dec, mab_call, mab_return, mab_i8, mab_i16, mab_i32, mab_i64, mab_i8,
+mab_inc, mab_dec, mab_call, mab_return, mab_i8, mab_i16, mab_i32, mab_i64,
 
-mab_u16, mab_u32, mab_u64, mab_f32, mab_f64  } mab_op ;
+mab_u8, mab_u16, mab_u32, mab_u64, mab_f32, mab_f64  } mab_op ;
 
 
 typedef struct mab_list_s { mab_op op ; void* scope ; RKUInt num_of_elements ;
