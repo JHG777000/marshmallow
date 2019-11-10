@@ -18,19 +18,25 @@
 #ifndef marshmallow_mab_h
 #define marshmallow_mab_h
 
-typedef enum { mab_noop, mab_context, mab_package, mab_module, mab_function, mab_method, mab_procedure, mab_extension,
+typedef enum { mab_noop, mab_package, mab_module, mab_function, mab_method, mab_procedure, mab_extension,
 
-mab_define, mab_declare, mab_external, mab_type, mab_contains, mab_variable, mab_literal, mab_identifier,
+mab_use, mab_require, mab_define, mab_declare, mab_external, mab_scope, mab_scope_op, mab_type, mab_contains,
 
-mab_assignment, mab_static_assignment, mab_add, mab_sub, mab_mult, mab_div, mab_rem, mab_rshift,
+mab_class, mab_enum, mab_file, mab_typedef, mab_variable, mab_parameter, mab_literal, mab_identifier,
 
-mab_lshift, mab_and, mab_or, mab_xor, mab_not, mab_logic_and, mab_logic_or, mab_logic_not,
+mab_assignment, mab_array_assignment, mab_static_assignment, mab_add, mab_sub, mab_mult, mab_div, mab_rem,
 
-mab_deref, mab_addrof, mab_sizeof, mab_cast, mab_force_type, mab_if, mab_else, mab_else_if,
+mab_rshift, mab_lshift, mab_and, mab_or, mab_xor, mab_not, mab_logic_and, mab_logic_or,
+
+mab_logic_not, mab_deref, mab_addrof, mab_sizeof, mab_itemsof, mab_cast, mab_force_type, mab_if, mab_else, mab_else_if,
 
 mab_while, mab_switch, mab_case, mab_default, mab_goto, mab_section, mab_equals, mab_not_equals,
 
-mab_greaterthan, mab_lessthan, mab_greaterthan_or_equals, mab_lessthan_or_equals, mab_call, mab_return } mab_op ;
+mab_greaterthan, mab_lessthan, mab_greaterthan_or_equals, mab_lessthan_or_equals,
+
+mab_inc, mab_dec, mab_call, mab_return, mab_i8, mab_i16, mab_i32, mab_i64, mab_i8,
+
+mab_u16, mab_u32, mab_u64, mab_f32, mab_f64  } mab_op ;
 
 
 typedef struct mab_list_s { mab_op op ; void* scope ; RKUInt num_of_elements ;
