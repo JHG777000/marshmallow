@@ -34,12 +34,14 @@ mab_while, mab_switch, mab_case, mab_default, mab_goto, mab_section, mab_equals,
 
 mab_greaterthan, mab_lessthan, mab_greaterthan_or_equals, mab_lessthan_or_equals,
 
-mab_inc, mab_dec, mab_call, mab_return, mab_i8, mab_i16, mab_i32, mab_i64,
+mab_inc, mab_dec, mab_call, mab_return, mab_returns, mab_i8, mab_i16, mab_i32, mab_i64,
 
-mab_u8, mab_u16, mab_u32, mab_u64, mab_f32, mab_f64  } mab_op ;
+mab_u8, mab_u16, mab_u32, mab_u64, mab_f32, mab_f64 } mab_op ;
 
 
-typedef struct mab_list_s { mab_op op ; void* scope ; RKUInt num_of_elements ;
+typedef mab_op mab_scope_type ;
+
+typedef struct mab_list_s { mab_op op ; RKByte args ; void* scope ; RKUInt num_of_elements ;
 
 void** array ; RKUInt num_of_elements_list_array ; struct mab_list_s** list_array ;
 
@@ -47,17 +49,17 @@ RKUInt num_of_elements_string_array ; RKString* string_array ; } *mab_list ;
 
 
 
-typedef struct mab_function_scope_s { RKStore definitions ; void* super_scope ; void* module ; } *mab_function_scope ;
+typedef struct mab_function_scope_s { mab_scope_type scope_type ; RKStore definitions ;
+
+void* super_scope ; void* module ; } *mab_function_scope ;
 
 
-typedef struct mab_module_scope_s { RKStore definitions ; void* super_scope ; RKStore used_namespaces ;
+typedef struct mab_module_scope_s { mab_scope_type scope_type ; RKStore definitions ;
 
-RKStore required_namespaces ; void* package ; } *mab_module_scope ;
+void* super_scope ; RKStore used_namespaces ; RKStore required_namespaces ; void* package_or_files ; } *mab_module_scope ;
 
 
-typedef struct mab_package_scope_s { RKStore definitions ; void* super_scope ; RKStore used_namespaces ;
-
-RKStore required_namespaces ; RKStore files ; } *mab_package_scope ;
+typedef mab_module_scope mab_package_scope ;
 
 
 mab_list mab_new_list( mab_op op ) ;
