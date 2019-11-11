@@ -20,7 +20,7 @@
 
 typedef enum { mab_noop, mab_package, mab_module, mab_function, mab_method, mab_procedure, mab_extension,
 
-mab_use, mab_require, mab_define, mab_declare, mab_external, mab_scope, mab_scope_op, mab_type, mab_contains,
+mab_use, mab_require, mab_access_control, mab_define, mab_declare, mab_external, mab_scope, mab_scope_op, mab_type, mab_contains,
 
 mab_class, mab_enum, mab_file, mab_typedef, mab_variable, mab_parameter, mab_literal, mab_identifier,
 
@@ -34,14 +34,49 @@ mab_while, mab_switch, mab_case, mab_default, mab_goto, mab_section, mab_equals,
 
 mab_greaterthan, mab_lessthan, mab_greaterthan_or_equals, mab_lessthan_or_equals,
 
-mab_inc, mab_dec, mab_call, mab_return, mab_returns, mab_i8, mab_i16, mab_i32, mab_i64,
-
-mab_u8, mab_u16, mab_u32, mab_u64, mab_f32, mab_f64 } mab_op ;
-
+mab_inc, mab_dec, mab_call, mab_return, mab_returns } mab_op ;
 
 typedef mab_op mab_scope_type ;
 
-typedef struct mab_list_s { mab_op op ; RKByte args ; void* scope ; RKUInt num_of_elements ;
+typedef enum {
+
+  mab_flag_none,
+
+  mab_flag_type_i8,
+
+  mab_flag_type_u8,
+
+  mab_flag_type_i16,
+
+  mab_flag_type_u16,
+
+  mab_flag_type_i32,
+
+  mab_flag_type_u32,
+
+  mab_flag_type_i64,
+
+  mab_flag_type_u64,
+
+  mab_flag_type_f32,
+
+  mab_flag_type_f64,
+
+  mab_flag_type_ptrsize,
+
+  mab_flag_type_pointer,
+
+  mab_flag_type_blank,
+
+  mab_flag_access_control_public,
+
+  mab_flag_access_control_private,
+
+  mab_flag_access_control_protected,
+
+  } mab_flags ;
+
+typedef struct mab_list_s { mab_op op ; RKByte flags ; void* scope ; RKUInt num_of_elements ;
 
 void** array ; RKUInt num_of_elements_list_array ; struct mab_list_s** list_array ;
 
