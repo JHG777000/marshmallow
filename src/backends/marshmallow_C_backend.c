@@ -1448,7 +1448,7 @@ new_backend(C) {
 
     backend->builder_callback = get_callback(C,get_builder) ;
 
-    backend->destroyer_callback = get_callback(C, get_destroyer) ;
+    backend->destroyer_callback = get_callback(C,get_destroyer) ;
 
     c_backend c = RKMem_NewMemOfType(struct c_backend_s) ;
 

@@ -17,7 +17,7 @@
 
 #include "marshmallow.h"
 #include "marshmallow_cfg.h"
-
+#if 0
 static int cfg_verify_identifier( cfg_function_body function, cfg_module module, marshmallow_entity identifier ) ;
 
 static void DeleteFunctionInListOrStore( void* data ) {
@@ -941,3 +941,6 @@ void cfg_add_enums_to_module( cfg_type type, cfg_module module ) {
         }
     }
 }
+
+
+#endif

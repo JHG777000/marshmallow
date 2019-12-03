@@ -1,6 +1,6 @@
 project := "MarshmallowProject".
 
-project_version := "0.1.219".
+project_version := "0.1.220".
 
 buildfile_version := "1.0".
 
@@ -14,11 +14,11 @@ build MarshmallowBuild.
 
   on toolchain_select("-s", "--select_toolchain=tool", "Select toolchain.").
 
-  on leak_test_enable("-l", "--leak_test", "Enable marshmallow leak tests.").
-
   on cfg_test_enable("-c", "--cfg_test", "Enable marshmallow cfg tests.").
 
   on mib_test_enable("-m", "--mib_test_enable", "Enable marshmallow mib tests.").
+
+  on mab_test_enable("-a", "--mab_test_enable", "Enable marshmallow mab tests.").
 
   on tree_sitter_enable("-p", "--parser_tree_sitter", "Enable marshmallow tree sitter tests.").
 
@@ -28,21 +28,13 @@ build MarshmallowBuild.
 
  get toolchain_select.
 
- get leak_test_enable.
-
  get cfg_test_enable.
 
  get mib_test_enable.
 
+ get mab_test_enable.
+
  get tree_sitter_enable.
-
- if ( leak_test_enable && !is_mac ).
-
-  message("leak_test is a macOS only feature.").
-
-  bool leak_test_enable := false.
-
- end if.
 
  if ( toolchain_select == nil ).
 
@@ -68,8 +60,6 @@ build MarshmallowBuild.
 
  grab tree_sitter_lib from tree_sitter_project.
 
- grab tree_sitter_dep_utf8proc_lib from tree_sitter_dep_utf8proc_project.
-
  files Files("src.directories").
 
  files Main("main.directories").
@@ -90,17 +80,25 @@ build MarshmallowBuild.
 
  end if.
 
+ if ( mab_test_enable ).
+
+  message("Running marshmallow mab_tests...").
+
+  files Main("tests/mab_tests.c").
+
+ end if.
+
  if ( tree_sitter_enable ).
 
   files Main("tests/tree_sitter_tests.c").
 
-  sources Source(Files,Main,tree_sitter_marshmallow_parser_lib,tree_sitter_lib,tree_sitter_dep_utf8proc_lib,RKLib).
+  sources Source(Files,Main,tree_sitter_marshmallow_parser_lib,tree_sitter_lib,RKLib).
 
  end if.
 
  if ( !tree_sitter_enable ).
 
-  sources Source(Files,Main,tree_sitter_marshmallow_parser_lib,tree_sitter_lib,tree_sitter_dep_utf8proc_lib,RKLib).
+  sources Source(Files,Main,tree_sitter_marshmallow_parser_lib,tree_sitter_lib,RKLib).
 
  end if.
 
@@ -170,6 +168,30 @@ build MarshmallowBuild.
 
  end if.
 
+ if ( mab_test_enable ).
+
+  make filepath marshmallow_path from "project" to "marshmallow".
+
+  make filepath mib_output_path from "resources" to "tests/mib_C_output".
+
+  run(marshmallow_path + " " + mib_output_path).
+
+  //files Files("tests/mib_C_output/module_mymod_mib.c").
+
+  //sources Source(Files).
+
+  //compiler CompilerFlags("-w").
+
+  //toolchain ToolChain(toolchain_select,CompilerFlags).
+
+  //output marshmallow_test("application",Source,ToolChain).
+
+  //launch(marshmallow_test).
+
+  message("Ran mab tests.").
+
+ end if.
+
  if ( tree_sitter_enable ).
 
   make filepath marshmallow_path from "project" to "marshmallow".
@@ -180,36 +202,9 @@ build MarshmallowBuild.
 
  end if.
 
-if ( cfg_test_enable && !leak_test_enable  ).
+if ( cfg_test_enable ).
 
  launch(marshmallow).
-
-end if.
-
-if ( leak_test_enable ).
-
- make filepath marshmallow_path from "project" to "marshmallow".
-
- make filepath helloworld_msrc_path from "resources" to "helloworld.msrc".
-
- make filepath marshmallow_c_output_path from "resources" to "helloworld_C_output".
-
- make filepath trace_file_path from "project" to "marshmallow.trace".
-
-  if ( !cfg_test_enable ).
-
-   run("instruments -t \"Leaks\" -D" + " " + trace_file_path +
-   " " +  marshmallow_path + " " + helloworld_msrc_path + " " + marshmallow_c_output_path).
-
- end if.
-
-  if ( cfg_test_enable ).
-
-   run("instruments -t \"Leaks\" -D" + " " + trace_file_path + " " + marshmallow_path).
-
-  end if.
-
-  run("open /Applications/Xcode.app/Contents/Applications/Instruments.app" + " " + trace_file_path).
 
 end if.
 

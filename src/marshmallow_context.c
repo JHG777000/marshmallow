@@ -25,7 +25,7 @@ static void DeleteModuleInListOrStore( void* data ) {
 
     if ( ((cfg_variable)data)->entity_type != entity_module ) return ;
 
-    cfg_destroy_module(data) ;
+    //cfg_destroy_module(data) ;
 }
 
 static void DeleteWordsInListOrStore( void* data ) {

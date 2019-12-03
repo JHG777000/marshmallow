@@ -18,11 +18,11 @@
 #ifndef marshmallow_mab_h
 #define marshmallow_mab_h
 
-typedef enum { mab_noop, mab_package, mab_module, mab_function, mab_method, mab_procedure, mab_extension,
+typedef enum { mab_noop,
 
-mab_use, mab_require, mab_access_control, mab_define, mab_declare, mab_external, mab_scope, mab_scope_op, mab_type, mab_contains,
+mab_use, mab_require, mab_access_control, mab_define, mab_declare, mab_external, mab_scope, mab_type, mab_contains,
 
-mab_class, mab_enum, mab_file, mab_typedef, mab_variable, mab_parameter, mab_literal, mab_identifier,
+mab_class, mab_enum, mab_file, mab_typedef, mab_parameter, mab_literal, mab_identifier,
 
 mab_assignment, mab_array_assignment, mab_static_assignment, mab_add, mab_sub, mab_mult, mab_div, mab_rem,
 
@@ -35,8 +35,6 @@ mab_while, mab_switch, mab_case, mab_default, mab_goto, mab_section, mab_equals,
 mab_greaterthan, mab_lessthan, mab_greaterthan_or_equals, mab_lessthan_or_equals,
 
 mab_inc, mab_dec, mab_call, mab_return, mab_returns } mab_op ;
-
-typedef mab_op mab_scope_type ;
 
 typedef enum {
 
@@ -74,20 +72,20 @@ typedef enum {
 
   mab_flag_access_control_protected,
 
-  } mab_flags ;
+} mab_flags ;
 
-typedef struct mab_list_s { mab_op op ; RKByte flags ; void* scope ; RKUInt num_of_elements ;
+//mab_package, mab_module, mab_function, mab_method, mab_procedure, mab_extension
 
-void** array ; RKUInt num_of_elements_list_array ; struct mab_list_s** list_array ;
+typedef struct mab_statement_s { RKULong op ; RKULong data ; struct mab_statement_s* block ; } mab_statement ;
 
-RKUInt num_of_elements_string_array ; RKString* string_array ; } *mab_list ;
+typedef struct mab_variable_s { RKUInt flags ; RKULong data ; } mab_variable ;
+
+typedef struct mab_definition_s { RKList_node mab_statement_node ; void* scope ;
+
+RKIndex arguments ; RKIndex returns ; } mab_definition ;
 
 
-
-typedef struct mab_function_scope_s { mab_scope_type scope_type ; RKStore definitions ;
-
-void* super_scope ; void* module ; } *mab_function_scope ;
-
+typedef enum { mab_module, mab_package, mab_function } mab_scope_type ;
 
 typedef struct mab_module_scope_s { mab_scope_type scope_type ; RKStore definitions ;
 
@@ -97,10 +95,12 @@ void* super_scope ; RKStore used_namespaces ; RKStore required_namespaces ; void
 typedef mab_module_scope mab_package_scope ;
 
 
-mab_list mab_new_list( mab_op op ) ;
+typedef struct mab_function_scope_s { mab_scope_type scope_type ; RKStore definitions ;
 
-void mab_destroy_list( mab_list list ) ;
+void* super_scope ; mab_module_scope module ; } *mab_function_scope ;
 
-void mab_add_to_list( mab_list list, void* item, int item_is_list ) ;
+
+
+typedef struct mab_context_s { mab_package_scope package ; } *mab_context ;
 
 #endif /* marshmallow_mab_h */

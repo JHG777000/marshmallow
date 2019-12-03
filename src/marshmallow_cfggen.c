@@ -104,7 +104,7 @@ static void cfggen_remove_from_scope_stack( RKStack scope_stack ) {
 }
 
  static void cfggen_add_to_scope_stack( marshmallow_entity entity, RKStack scope_stack, TSNode node ) {
-
+/*
   switch (entity->entity_type) {
 
     case entity_module:
@@ -203,7 +203,7 @@ static void cfggen_remove_from_scope_stack( RKStack scope_stack ) {
         default:
          break;
   }
-
+*/
  }
 
  static marshmallow_entity cfggen_generate_control_flow_graph( marshmallow_context context, RKStack scope_stack, TSNode node, char* source_code ) {
@@ -229,7 +229,7 @@ static void cfggen_remove_from_scope_stack( RKStack scope_stack ) {
     no_error->entity_type = entity_nothing ;
 
   }
-
+/*
   if ( is_node_type(node,source_file) || is_node_type(node,definition) ) {
 
     i = 0 ;
@@ -386,6 +386,8 @@ static void cfggen_remove_from_scope_stack( RKStack scope_stack ) {
 
 
   }
+
+  */
 
   return NULL ;
 
