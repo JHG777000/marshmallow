@@ -23,7 +23,7 @@
  The marshmallow codegen infrastructure will consist of:
 
  marshmallow_codegen.c -- Manage the codegen process, provide support and infrastructure that are common to the intermediates,
- provide any needed codegen APIs to the rest of the compiler, and transform the marshmallow cfg(control flow graph) to mib.
+ provide any needed codegen APIs to the rest of the compiler, and transform mab(marshmallow abstract bytecode) to mib.
 
  marshmallow_mib.c -- Transform mib into mob, provide support and infrastructure for mib.
 
@@ -178,7 +178,7 @@ mob:
 
             call other_routine {1.i32,1.i32,x.var,y.var} ;
 
-            push z ;
+            push z.var ;
 
             get_return ;
 
@@ -186,13 +186,13 @@ mob:
 
             // x := ( y + ( 1 + x ) ) ;
 
-            push x ;
+            push x.var ;
 
-            push y ;
+            push y.var ;
 
             push 1.i32 ;
 
-            push x ;
+            push x.var ;
 
             add.i32 ; //adds the last two objects pushed to the stack, then pops them and pushes the result
 
@@ -200,9 +200,9 @@ mob:
 
             assignment ;
 
-            push x ;
+            push x.var ;
 
-            push y ;
+            push y.var ;
 
             greaterthan ;
 
