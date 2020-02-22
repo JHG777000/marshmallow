@@ -44,40 +44,41 @@ typedef struct { union { void* val_ptr ; RKSByte val_i8 ; RKByte val_u8 ; RKShor
 
  RKULong val_u64 ; RKFloat val_f32 ; RKDouble val_f64 ; } ;
 
- RKUInt flags ;  int index ; } mab_data ;
+ RKUInt flags ; } mab_data ;
 
 //mab_package, mab_module, mab_function, mab_method, mab_procedure, mab_extension
 
 typedef struct mab_statement_s { RKUInt op ; mab_data data ; } mab_statement ;
 
-typedef struct mab_definition_s { RKList_node mab_statement_node ; void* definition_set ;
-
-RKIndex arguments ; RKIndex returns ; } mab_definition ;
-
-typedef struct mab_module_s { RKList mab_statements ; void* definition_set ; RKByte phase ; } *mab_module ;
-
-typedef struct mab_context_s { RKStore packages ; RKStore modules ; } *mab_context ;
+typedef struct mab_context_s { RKList modules ; } *mab_context ;
 
 
-typedef enum { mab_module_dt, mab_package_dt, mab_function_dt } mab_definition_set_type ;
+typedef enum { mab_module_dt, mab_package_dt, mab_code_dt, mab_variable_dt } mab_definition_set_type ;
 
 
 
-typedef struct mab_module_definition_set_s { mab_definition_set_type definition_set_type ; RKStore definitions ;
+typedef struct mab_module_definition_set_s { mab_definition_set_type definition_set_type ; RKUInt flags ; RKStore definitions ; RKList used_modules ;
 
-RKList used_external_modules ; RKStore required_external_modules ; RKList used_local_namespaces ;
-
-RKStore required_local_namespaces ; void* package ; } *mab_module_definition_set ;
+RKStore required_modules ; RKStore attributes ; RKStore properties ; void* package ; } *mab_module_definition_set ;
 
 
-typedef struct mab_package_definition_set_s { mab_definition_set_type definition_set_type ; RKStore set_values ;
+typedef struct mab_package_definition_set_s { mab_definition_set_type definition_set_type ; RKUInt flags ; RKStore modules ;
 
-RKList used_packages ; RKStore required_packages ; RKStore properties ; RKList files ; } *mab_package_definition_set ;
+RKList used_packages ; RKStore required_packages ; RKStore properties ;
+
+RKStore attributes ; RKList files ; } *mab_package_definition_set ;
 
 
-typedef struct mab_function_definition_set_s { mab_definition_set_type definition_set_type ; RKStore definitions ; RKList let_blocks ;
+typedef struct mab_code_definition_set_s { mab_definition_set_type definition_set_type ; RKUInt flags ; RKStore definitions ;
 
-void* super_definition_set ; mab_module_definition_set module ; RKList_node returns ; } *mab_function_definition_set ;
+void* super_definition_set ; mab_module_definition_set module ; RKStore attributes ; RKStore properties ;
+
+RKStore parameters ; RKList returns ; } *mab_code_definition_set ;
+
+
+typedef struct mab_variable_definition_set_s { mab_definition_set_type definition_set_type ; RKUInt flags ; mab_data data ;
+
+RKStore attributes ; RKStore properties ; } *mab_variable_definition_set ;
 
 
 #endif /* marshmallow_mab_h */

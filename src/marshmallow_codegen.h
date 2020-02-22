@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2018-2019 Jacob Gordon. All rights reserved.
+ Copyright (c) 2018-2020 Jacob Gordon. All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -40,7 +40,7 @@
 
  Will be the first intermediate stage in marshmallow's codegen.
 
- Mib's only purpose is to aid the transformation of the marshmallow cfg into mob.
+ Mib's only purpose is to aid the transformation of mab into mob.
 
  -- marshmallow optimizing bytecode --
 
