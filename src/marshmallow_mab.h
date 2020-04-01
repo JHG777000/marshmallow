@@ -18,9 +18,13 @@
 #ifndef marshmallow_mab_h
 #define marshmallow_mab_h
 
+//mab_package, mab_module, mab_function, mab_method, mab_procedure, mab_extension
+
+//containers, blocks, values
+
 typedef enum { mab_noop, mab_define, mab_assignment, mab_static_assignment, mab_add, mab_sub, mab_mult, mab_div, mab_rem, mab_rshift,
 
- mab_lshift, mab_and, mab_or, mab_xor, mab_not, mab_logic_and, mab_logic_or, mab_logic_not, mab_deref, mab_addrof,
+mab_lshift, mab_and, mab_or, mab_xor, mab_not, mab_logic_and, mab_logic_or, mab_logic_not, mab_deref, mab_addrof,
 
 mab_sizeof, mab_itemsof, mab_cast, mab_reinterpret, mab_convert, mab_force_type, mab_if, mab_then, mab_else, mab_else_if,
 
@@ -30,6 +34,7 @@ mab_greaterthan, mab_lessthan, mab_greaterthan_or_equals, mab_lessthan_or_equals
 
 mab_inc, mab_dec, mab_call, mab_return } mab_op ;
 
+
 typedef enum { mab_flag_none, mab_flag_type_i8, mab_flag_type_u8, mab_flag_type_i16, mab_flag_type_u16,
 
 mab_flag_type_i32, mab_flag_type_u32, mab_flag_type_i64, mab_flag_type_u64, mab_flag_type_f32,
@@ -38,47 +43,40 @@ mab_flag_type_f64, mab_flag_type_ptrsize, mab_flag_literal, mab_flag_identifier,
 
 mab_flag_result, mab_flag_exit } mab_flags ;
 
-typedef struct { union { void* val_ptr ; RKSByte val_i8 ; RKByte val_u8 ; RKShort val_i16 ;
 
- RKUShort val_u16 ; RKInt val_i32 ; RKUInt val_u32 ; RKLong val_i64 ;
+typedef struct { union { void* val_ptr ; struct { RKStore parameters ; RKList returns ; RKList statements ; } code ;
 
- RKULong val_u64 ; RKFloat val_f32 ; RKDouble val_f64 ; } ;
+struct { RKULong num_of_elements ; void* base_type ; } type ; RKSByte val_i8 ; RKByte val_u8 ; RKShort val_i16 ;
 
- RKUInt flags ; } mab_data ;
+RKUShort val_u16 ; RKInt val_i32 ; RKUInt val_u32 ; RKLong val_i64 ;
 
-//mab_package, mab_module, mab_function, mab_method, mab_procedure, mab_extension
+RKULong val_u64 ;  RKFloat val_f32 ; RKDouble val_f64 ; } ;
 
-typedef struct mab_statement_s { RKUInt op ; mab_data data ; } mab_statement ;
-
-typedef struct mab_context_s { RKList modules ; } *mab_context ;
+RKUInt flags ; } mab_value ;
 
 
-typedef enum { mab_module_dt, mab_package_dt, mab_code_dt, mab_variable_dt } mab_definition_set_type ;
+typedef struct mab_container_s* mab_container;
+
+typedef struct mab_active_block_s* mab_active_block;
+
+typedef struct mab_passive_block_s* mab_passive_block;
+
+typedef struct mab_statement_s { RKUInt op ; mab_value value ; }* mab_statement ;
 
 
+struct mab_container_s { RKUInt flags ; RKString name ; RKStore properties ; RKStore attributes ;
 
-typedef struct mab_module_definition_set_s { mab_definition_set_type definition_set_type ; RKUInt flags ; RKStore definitions ; RKList used_modules ;
-
-RKStore required_modules ; RKStore attributes ; RKStore properties ; void* package ; } *mab_module_definition_set ;
-
-
-typedef struct mab_package_definition_set_s { mab_definition_set_type definition_set_type ; RKUInt flags ; RKStore modules ;
-
-RKList used_packages ; RKStore required_packages ; RKStore properties ;
-
-RKStore attributes ; RKList files ; } *mab_package_definition_set ;
+mab_active_block active_block ; mab_value value ; } ;
 
 
-typedef struct mab_code_definition_set_s { mab_definition_set_type definition_set_type ; RKUInt flags ; RKStore definitions ;
+struct mab_active_block_s { RKByte block_byte ; RKStore definitions ; RKList used_blocks ; RKStore required_blocks ;
 
-void* super_definition_set ; mab_module_definition_set module ; RKStore attributes ; RKStore properties ;
-
-RKStore parameters ; RKList returns ; } *mab_code_definition_set ;
+mab_passive_block sub_block ; mab_container container ; } ;
 
 
-typedef struct mab_variable_definition_set_s { mab_definition_set_type definition_set_type ; RKUInt flags ; mab_data data ;
+struct mab_passive_block_s { RKByte block_byte ; RKStore definitions ; mab_active_block active_block ;
 
-RKStore attributes ; RKStore properties ; } *mab_variable_definition_set ;
+mab_passive_block super_block ; mab_passive_block sub_block ; } ;
 
 
 #endif /* marshmallow_mab_h */
