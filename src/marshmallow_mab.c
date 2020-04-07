@@ -17,3 +17,37 @@
 
 #include "marshmallow.h"
 #include "marshmallow_mab.h"
+
+static mab_container mab_new_container() {
+
+  mab_container container = RKMem_NewMemOfType(struct mab_container_s);
+
+  container->name = NULL ;
+
+  container->properties = NULL ;
+
+  container->attributes = NULL ;
+
+  container->active_block = NULL ;
+
+  return container ;
+
+}
+
+static void mab_destroy_container( mab_container container ) {
+
+ RKString_DestroyString(container->name) ;
+
+ free(container) ;
+
+}
+
+mab_container mab_new_module( RKString name ) {
+
+ mab_container container = mab_new_container() ;
+
+ container->name = RKString_CopyString(name) ;
+
+ return container;
+
+}

@@ -42,7 +42,7 @@ To run tests, add -i __t:
 ## License
 
 
- Copyright (c) 2017-2019 Jacob Gordon. All rights reserved.
+ Copyright (c) 2017-2020 Jacob Gordon. All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
