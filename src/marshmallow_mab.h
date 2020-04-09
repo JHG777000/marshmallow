@@ -43,7 +43,7 @@ mab_type_f64, mab_type_ptrsize, mab_type_s8,
 
 mab_type_s16, mab_type_s32, mab_type_class,
 
-mab_type_enum, mab_type_lambda } mab_root_types ;
+mab_type_enum, mab_type_lambda, mab_type_array } mab_root_types ;
 
 
 typedef struct { enum {base_readability,readonly,writelimited,private_write,protected_write,
@@ -51,13 +51,25 @@ typedef struct { enum {base_readability,readonly,writelimited,private_write,prot
 system_readwrite,thread_readwrite} readability ; RKULong affect_index ; } mab_readability ;
 
 
-typedef struct mab_flags { enum {mab_package,mab_module,mab_class,mab_enum,mab_code} definition_type ;
+typedef enum {mab_public,mab_private,mab_protected,mab_inherit} mab_access_control ;
 
-enum {mab_public,mab_private,mab_protected,mab_inherit} access_control ; union { enum {final,abstract,protocol} class_flags ;
+typedef enum {mab_function, mab_method, mab_procedure, mab_extension, mab_operator} mab_code_type ;
+
+typedef enum {export, override, overridable, omega} mab_code_definition_type ;
+
+typedef struct mab_flags { enum {mab_type,mab_package,mab_module,mab_class,mab_enum,mab_code} definition_type ;
+
+mab_access_control access_control ; union {
+
+struct { mab_root_types root_type ; RKULong num_of_elements ; RKByte is_array_safe ; void* base_type ; } type ;
+
+struct { enum {final,abstract,protocol} class_type ; RKULong num_of_soa_elements ; RKULong pointers ; RKByte is_array_safe ; RKULong num_of_elements ; } class_flags ;
 
 struct { RKByte is_export ; RKByte is_in_union ; mab_readability readability ; } variable_flags ;
 
-struct { RKStore parameters ; RKList returns ; } code_flags ; struct { RKByte is_preserved ; RKByte is_persistent ;
+struct { mab_code_type code_type ; mab_code_definition_type code_definition_type ; RKStore parameters ; RKList returns ;
+
+mab_access_control extension_access_control ; } code_flags ; struct { RKByte is_preserved ; RKByte is_persistent ;
 
 enum {base_inoutpass,in,out,inout,pass} inoutpass ; } local_variable_flags ; } ; } mab_flags ;
 
@@ -69,7 +81,7 @@ mab_flag_zero, mab_flag_one, local_variable } value_flag ; mab_root_types root_t
 
 typedef struct { union { void* val_ptr ; struct { RKList statements ; } code ;
 
-struct { mab_root_types root_type ; RKULong num_of_elements ; void* base_type ; } type ; RKSByte val_i8 ; RKByte val_u8 ; RKShort val_i16 ;
+RKSByte val_i8 ; RKByte val_u8 ; RKShort val_i16 ;
 
 RKUShort val_u16 ; RKInt val_i32 ; RKUInt val_u32 ; RKLong val_i64 ;
 
