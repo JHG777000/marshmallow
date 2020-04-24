@@ -57,13 +57,19 @@ typedef enum {mab_function, mab_method, mab_procedure, mab_extension, mab_operat
 
 typedef enum {export, override, overridable, omega} mab_code_definition_type ;
 
-typedef struct mab_flags { enum {mab_type,mab_package,mab_module,mab_class,mab_enum,mab_code} definition_type ;
+typedef struct mab_flags { enum {mab_type,mab_package,mab_module,mab_declaration,mab_class,mab_enum,mab_code} definition_type ;
 
 mab_access_control access_control ; union {
 
-struct { mab_root_types root_type ; RKULong num_of_elements ; RKByte is_array_safe ; void* base_type ; } type ;
+struct { mab_root_types root_type ; RKULong num_of_elements ; RKByte is_array_safe ; void* base_type ; } type_flags ;
 
-struct { enum {final,abstract,protocol} class_type ; RKULong num_of_soa_elements ; RKULong pointers ; RKByte is_array_safe ; RKULong num_of_elements ; } class_flags ;
+struct { mab_container default_type ; RKLong base_count ; } enum_flags ;
+
+struct { enum {declare,external,protocol} declaration_type ; RKString real_name ; } declaration_flags ;
+
+struct { enum {final,abstract,protocol} class_type ;
+
+RKULong num_of_soa_elements ; RKULong pointers ; RKByte is_array_safe ; RKULong num_of_elements ; } class_flags ;
 
 struct { RKByte is_export ; RKByte is_in_union ; mab_readability readability ; } variable_flags ;
 
