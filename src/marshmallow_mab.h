@@ -57,6 +57,14 @@ typedef enum {mab_function, mab_method, mab_procedure, mab_extension, mab_operat
 
 typedef enum {export, override, overridable, omega} mab_code_definition_type ;
 
+
+typedef struct mab_container_s* mab_container;
+
+typedef struct mab_active_block_s* mab_active_block;
+
+typedef struct mab_passive_block_s* mab_passive_block;
+
+
 typedef struct mab_flags { enum {mab_type,mab_package,mab_module,mab_declaration,mab_class,mab_enum,mab_code} definition_type ;
 
 mab_access_control access_control ; union {
@@ -65,9 +73,9 @@ struct { mab_root_types root_type ; RKULong num_of_elements ; RKByte is_array_sa
 
 struct { mab_container default_type ; RKLong base_count ; } enum_flags ;
 
-struct { enum {declare,external,protocol} declaration_type ; RKString real_name ; } declaration_flags ;
+struct { enum {mab_declare,mab_external,mab_declaration_protocol} declaration_type ; RKString real_name ; } declaration_flags ;
 
-struct { enum {final,abstract,protocol} class_type ;
+struct { enum {mab_final,mab_abstract,mab_class_protocol} class_type ;
 
 RKULong num_of_soa_elements ; RKULong pointers ; RKByte is_array_safe ; RKULong num_of_elements ; } class_flags ;
 
@@ -80,9 +88,9 @@ mab_access_control extension_access_control ; } code_flags ; struct { RKByte is_
 enum {base_inoutpass,in,out,inout,pass} inoutpass ; } local_variable_flags ; } ; } mab_flags ;
 
 
-typedef struct { enum { mab_flag_literal, mab_flag_identifier, mab_flag_result, mab_flag_exit,
+typedef struct { enum { mab_no_value, mab_flag_literal, mab_flag_identifier, mab_flag_result, mab_flag_exit,
 
-mab_flag_zero, mab_flag_one, local_variable } value_flag ; mab_root_types root_type ; } mab_value_flags ;
+mab_flag_zero, mab_flag_one, mab_local_variable } value_flag ; mab_root_types root_type ; } mab_value_flags ;
 
 
 typedef struct { union { void* val_ptr ; struct { RKList statements ; } code ;
@@ -95,12 +103,6 @@ RKULong val_u64 ;  RKFloat val_f32 ; RKDouble val_f64 ; } ;
 
 mab_value_flags flags ; } mab_value ;
 
-
-typedef struct mab_container_s* mab_container;
-
-typedef struct mab_active_block_s* mab_active_block;
-
-typedef struct mab_passive_block_s* mab_passive_block;
 
 typedef struct mab_statement_s { mab_op op ; mab_value value ; }* mab_statement ;
 
@@ -115,12 +117,10 @@ struct mab_active_block_s { RKByte block_byte ; RKStore definitions ; RKList use
 mab_passive_block sub_block ; mab_container container ; } ;
 
 
-struct mab_passive_block_s { RKByte block_byte ; RKStore definitions ; mab_active_block active_block ;
-
-mab_passive_block super_block ; mab_passive_block sub_block ; } ;
+struct mab_passive_block_s { RKByte block_byte ; RKStore definitions ; mab_active_block active_block ; } ;
 
 
-mab_container mab_new_module( RKString name ) ;
+mab_container mab_new_module( mab_access_control access_control, RKString name ) ;
 
 
 #endif /* marshmallow_mab_h */

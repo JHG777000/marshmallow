@@ -42,11 +42,23 @@ static void mab_destroy_container( mab_container container ) {
 
 }
 
-mab_container mab_new_module( RKString name ) {
+mab_container mab_new_module( mab_access_control access_control, RKString name ) {
 
  mab_container container = mab_new_container() ;
 
  container->name = RKString_CopyString(name) ;
+
+ container->properties = NULL ;
+
+ container->attributes = NULL ;
+
+ container->value.flags.root_type = mab_notype ;
+
+ container->value.flags.value_flag = mab_no_value ;
+
+ container->flags.access_control = access_control ;
+
+ container->flags.definition_type = mab_module ;
 
  return container;
 
