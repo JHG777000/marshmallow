@@ -18,9 +18,7 @@
 #ifndef marshmallow_mab_h
 #define marshmallow_mab_h
 
-//mab_package, mab_module, mab_function, mab_method, mab_procedure, mab_extension
-
-//containers, blocks, values
+//packages, modules, blocks, definitions, values
 
 typedef enum { mab_noop, mab_define, mab_assignment, mab_static_assignment, mab_add, mab_sub, mab_mult, mab_div, mab_rem, mab_rshift,
 
@@ -35,92 +33,59 @@ mab_greaterthan, mab_lessthan, mab_greaterthan_or_equals, mab_lessthan_or_equals
 mab_inc, mab_dec, mab_call, mab_return } mab_op ;
 
 
-typedef enum { mab_notype, mab_type_i8, mab_type_u8, mab_type_i16, mab_type_u16,
+typedef enum { mab_notype, mab_type_i8, mab_type_u8, mab_type_i16, mab_type_u16, mab_type_i32, mab_type_u32, mab_type_i64,
 
-mab_type_i32, mab_type_u32, mab_type_i64, mab_type_u64, mab_type_f32,
+mab_type_u64, mab_type_f32, mab_type_f64, mab_type_ptrsize, mab_type_s8, mab_type_s16, mab_type_s32,
 
-mab_type_f64, mab_type_ptrsize, mab_type_s8,
+mab_non_root } mab_root_types ;
 
-mab_type_s16, mab_type_s32, mab_type_class,
+typedef enum { mab_flag_no_value, mab_flag_literal, mab_flag_string, mab_flag_identifier, mab_flag_result, mab_flag_exit,
 
-mab_type_enum, mab_type_lambda, mab_type_array } mab_root_types ;
-
-
-typedef struct { enum {base_readability,readonly,writelimited,private_write,protected_write,
-
-system_readwrite,thread_readwrite} readability ; RKULong affect_index ; } mab_readability ;
+mab_flag_zero, mab_flag_one, mab_flag_two, mab_flag_type }  mab_value_flags ;
 
 
-typedef enum {mab_public,mab_private,mab_protected,mab_inherit} mab_access_control ;
-
-typedef enum {mab_function, mab_method, mab_procedure, mab_extension, mab_operator} mab_code_type ;
-
-typedef enum {export, override, overridable, omega} mab_code_definition_type ;
-
-
-typedef struct mab_container_s* mab_container;
-
-typedef struct mab_active_block_s* mab_active_block;
-
-typedef struct mab_passive_block_s* mab_passive_block;
-
-
-typedef struct mab_flags { enum {mab_type,mab_package,mab_module,mab_declaration,mab_class,mab_enum,mab_code} definition_type ;
-
-mab_access_control access_control ; union {
-
-struct { mab_root_types root_type ; RKULong num_of_elements ; RKByte is_array_safe ; void* base_type ; } type_flags ;
-
-struct { mab_container default_type ; RKLong base_count ; } enum_flags ;
-
-struct { enum {mab_declare,mab_external,mab_declaration_protocol} declaration_type ; RKString real_name ; } declaration_flags ;
-
-struct { enum {mab_final,mab_abstract,mab_class_protocol} class_type ;
-
-RKULong num_of_soa_elements ; RKULong pointers ; RKByte is_array_safe ; RKULong num_of_elements ; } class_flags ;
-
-struct { RKByte is_export ; RKByte is_in_union ; mab_readability readability ; } variable_flags ;
-
-struct { mab_code_type code_type ; mab_code_definition_type code_definition_type ; RKStore parameters ; RKList returns ;
-
-mab_access_control extension_access_control ; } code_flags ; struct { RKByte is_preserved ; RKByte is_persistent ;
-
-enum {base_inoutpass,in,out,inout,pass} inoutpass ; } local_variable_flags ; } ; } mab_flags ;
-
-
-typedef struct { enum { mab_no_value, mab_flag_literal, mab_flag_identifier, mab_flag_result, mab_flag_exit,
-
-mab_flag_zero, mab_flag_one, mab_local_variable } value_flag ; mab_root_types root_type ; } mab_value_flags ;
-
-
-typedef struct { union { void* val_ptr ; struct { RKList statements ; } code ;
-
-RKSByte val_i8 ; RKByte val_u8 ; RKShort val_i16 ;
+typedef struct { union { void* val_ptr ; RKSByte val_i8 ; RKByte val_u8 ; RKShort val_i16 ;
 
 RKUShort val_u16 ; RKInt val_i32 ; RKUInt val_u32 ; RKLong val_i64 ;
 
 RKULong val_u64 ;  RKFloat val_f32 ; RKDouble val_f64 ; } ;
 
-mab_value_flags flags ; } mab_value ;
+mab_value_flags flags ; mab_root_types root_type ; } mab_value ;
 
 
 typedef struct mab_statement_s { mab_op op ; mab_value value ; }* mab_statement ;
 
 
-struct mab_container_s { mab_flags flags ; RKString name ; RKStore properties ; RKStore attributes ;
+typedef struct mab_package_s* mab_package ;
 
-mab_active_block active_block ; mab_value value ; } ;
+typedef struct mab_module_s* mab_module ;
+
+typedef struct mab_block_s* mab_block ;
+
+typedef struct mab_definition_s* mab_definition ;
+
+typedef enum {mab_entity_package,mab_entity_module,mab_entity_block,mab_entity_definition} mab_entity_type ;
+
+typedef enum {mab_typedef,mab_declaration,mab_class,mab_enum,mab_code,mab_scope} mab_definition_type ;
 
 
-struct mab_active_block_s { RKByte block_byte ; RKStore definitions ; RKList used_blocks ; RKStore required_blocks ;
+struct mab_package_s { mab_entity_type entity_type ; RKString name ; RKStore properties ; RKStore attributes ;
 
-mab_passive_block sub_block ; mab_container container ; } ;
-
-
-struct mab_passive_block_s { RKByte block_byte ; RKStore definitions ; mab_active_block active_block ; } ;
+RKList source_file ; RKList used_packages ; RKStore required_packages ; } ;
 
 
-mab_container mab_new_module( mab_access_control access_control, RKString name ) ;
+struct mab_module_s { mab_entity_type entity_type ; RKString name ; RKStore properties ; RKStore attributes ;
 
+mab_package package ; RKList used_modules ; RKStore required_modules ; RKList used_packages ; RKStore required_packages ; } ;
+
+
+struct mab_block_s { mab_entity_type entity_type ; RKString name ; mab_definition definition ;
+
+mab_block* blocks ; void* code ; } ;
+
+
+struct mab_definition_s { mab_entity_type entity_type ; RKString name ; RKStore properties ; RKStore attributes ;
+
+mab_definition_type definition_type ; RKStore definitions ; RKString type_string ; void* val ; } ;
 
 #endif /* marshmallow_mab_h */

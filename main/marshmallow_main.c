@@ -16,7 +16,6 @@
  */
 
 #include "marshmallow.h"
-#include "marshmallow_mab.h"
 
 int main(int argc, const char **argv) {
 
@@ -30,8 +29,6 @@ int main(int argc, const char **argv) {
     marshmallow_context context = marshmallow_new_context() ;
 
     marshmallow_compile_file(context, argv[1], argv[2]) ;
-
-    mab_container container = mab_new_module(mab_public,rkstr("Name"));
 
     return 0 ;
 }
