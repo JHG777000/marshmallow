@@ -39,6 +39,7 @@ mab_type_u64, mab_type_f32, mab_type_f64, mab_type_ptrsize, mab_type_s8, mab_typ
 
 mab_non_root, mab_block_address } mab_root_types ;
 
+
 typedef enum { mab_flag_no_value, mab_flag_literal, mab_flag_string, mab_flag_identifier, mab_flag_result, mab_flag_exit,
 
 mab_flag_zero, mab_flag_one, mab_flag_two, mab_flag_type }  mab_value_flags ;
@@ -66,7 +67,11 @@ typedef struct mab_definition_s* mab_definition ;
 
 typedef enum {mab_entity_package,mab_entity_module,mab_entity_block,mab_entity_definition} mab_entity_type ;
 
-typedef enum {mab_typedef,mab_declaration,mab_class,mab_enum,mab_code,mab_scope} mab_definition_type ;
+typedef enum {mab_declare,mab_external,mab_protocol,mab_type,
+
+mab_code,mab_override_code,mab_overridable_code,mab_omega_code,
+
+mab_scope,mab_module_scope,mab_local_variable,mab_global_variable} mab_definition_type ;
 
 
 struct mab_package_s { mab_entity_type entity_type ; RKString name ; RKStore properties ; RKStore attributes ;
@@ -76,7 +81,9 @@ RKList source_files ; RKList used_packages ; RKStore required_packages ; } ;
 
 struct mab_module_s { mab_entity_type entity_type ; RKString name ; RKStore properties ; RKStore attributes ;
 
-mab_package package ; RKList used_modules ; RKStore required_modules ; RKList used_packages ; RKStore required_packages ; } ;
+mab_package package ; RKList used_modules ; RKStore required_modules ; RKList used_packages ;
+
+RKStore required_packages ; mab_block root_block ; } ;
 
 
 struct mab_block_s { mab_entity_type entity_type ; RKString name ; mab_definition definition ;

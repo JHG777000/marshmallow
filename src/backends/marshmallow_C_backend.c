@@ -346,7 +346,7 @@ static void output_statement( FILE* file, mlb_statement statement, cg_routine* l
 
             if ( list != NULL ) {
 
-              node = RKList_GetFirstNode(statement->A->values) ;
+              node = RKList_GetFirstNode(list) ;
 
               last_routine_to_be_called = RKList_GetData(node) ;
 
