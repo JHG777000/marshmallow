@@ -64,19 +64,24 @@ typedef enum {mab_public,mab_private,mab_protected,mab_inherit} mab_access_contr
 typedef enum {mab_function, mab_method, mab_procedure, mab_extension, mab_operator} mab_code_type ;
 
  struct mab_type_s {
-  mab_access_control access_control ;
-  RKULong pointers ;
-  mab_type base_type ;
-  RKByte is_array_safe ;
-  RKULong num_of_elements ;
   mab_root_types root_type ;
   mab_non_root_types non_root_type ;
   mab_readability readability ;
+  mab_access_control access_control ;
+  RKULong pointers ;
+  mab_type base_type ;
+  //array
+  RKByte is_array_safe ;
+  RKULong num_of_elements ;
+  //code
   mab_code_type code_type ;
   mab_definition* parameters ;
   RKULong num_of_parameters ;
   mab_type* returns ;
   RKULong num_of_returns ;
+  //variable
+  RKByte is_local ;
+  RKByte is_in_class ;
   RKByte is_in_union ;
   RKByte is_preserved ;
   RKByte is_persistent ;
@@ -86,15 +91,13 @@ typedef enum {mab_function, mab_method, mab_procedure, mab_extension, mab_operat
     inout,
     pass}
     inoutpass ;
-    enum {mab_basic_class,
-      mab_final,
-      mab_abstract,
-      mab_class_protocol} class_type ;
-    RKULong num_of_soa_elements ;
-    RKLong base_count ;
-
-
-
+  //class
+  enum {mab_basic_class,
+    mab_final,
+    mab_abstract,
+    mab_class_protocol} class_type ;
+  RKULong num_of_soa_elements ;
+  RKLong base_count ;
 } ;
 
 
