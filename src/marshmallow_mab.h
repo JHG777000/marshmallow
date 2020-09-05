@@ -85,18 +85,25 @@ typedef enum {mab_function, mab_method, mab_procedure, mab_extension, mab_operat
   RKByte is_in_union ;
   RKByte is_preserved ;
   RKByte is_persistent ;
-  enum {none,
+  enum {
+    none,
     in,
     out,
     inout,
-    pass}
-    inoutpass ;
+    pass
+  } inoutpass ;
   //class
-  enum {mab_basic_class,
+  enum {
+    mab_basic_class,
     mab_final,
     mab_abstract,
-    mab_class_protocol} class_type ;
+    mab_class_protocol
+  } class_type ;
   RKULong num_of_soa_elements ;
+  RKByte is_managed ;
+  mab_definition manager ;
+  mab_definition init_code ;
+  //enum
   RKLong base_count ;
 } ;
 
