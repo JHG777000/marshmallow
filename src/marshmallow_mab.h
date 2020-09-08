@@ -54,6 +54,16 @@ typedef enum { mab_non_root_type_notype, mab_non_root_type_typedef, mab_non_root
 
 mab_non_root_type_array, mab_non_root_type_vector, mab_non_root_type_lambda, mab_non_root_type_static } mab_non_root_types ;
 
+
+typedef enum { mab_static_type_notype, mab_static_type_datum, mab_static_type_field,
+
+mab_static_type_anyvar, mab_static_type_vardef, mab_static_type_subclass,
+
+mab_static_type_polymorph, mab_static_type_arguments,
+
+mab_static_type_identifier } mab_static_types ;
+
+
 typedef struct { enum {base_readability, readonly, writelimited, private_write, protected_write,
 
 system_readwrite, thread_readwrite} readability ; RKULong affect_index ; } mab_readability ;
@@ -65,6 +75,7 @@ typedef enum { mab_function, mab_method, mab_procedure, mab_extension, mab_opera
  struct mab_type_s {
   mab_root_types root_type ;
   mab_non_root_types non_root_type ;
+  mab_static_types static_type ;
   mab_readability readability ;
   mab_access_control access_control ;
   RKULong pointers ;
@@ -136,7 +147,7 @@ mab_package package ; RKList used_modules ; RKStore required_modules ; RKList us
 RKStore required_packages ; mab_node root_node ; } ;
 
 
-struct mab_node_s { mab_entity_type entity_type ; mab_definition definition ; mab_node nodes[2] ; } ;
+struct mab_node_s { mab_entity_type entity_type ; mab_definition definition ; mab_node supernode ; mab_node nodes[2] ; } ;
 
 
 struct mab_definition_s { mab_entity_type entity_type ; RKString name ; RKStore properties ; RKStore attributes ;
