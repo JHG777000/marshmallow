@@ -40,7 +40,7 @@ mab_while, mab_switch, mab_case, mab_default, mab_goto, mab_section, mab_equals,
 
 mab_greaterthan, mab_lessthan, mab_greaterthan_or_equals, mab_lessthan_or_equals,
 
-mab_inc, mab_dec, mab_call, mab_return } mab_op ;
+mab_inc, mab_dec, mab_call, mab_return } mab_node_type ;
 
 
 typedef enum { mab_type_notype, mab_type_i8, mab_type_u8, mab_type_i16, mab_type_u16, mab_type_i32, mab_type_u32, mab_type_i64,
@@ -64,15 +64,19 @@ mab_static_type_polymorph, mab_static_type_arguments,
 mab_static_type_identifier } mab_static_types ;
 
 
-typedef struct { enum {base_readability, readonly, writelimited, private_write, protected_write,
+typedef struct { int is_base_readability, is_readonly, is_writelimited, is_private_write, is_protected_write,
 
-system_readwrite, thread_readwrite} readability ; RKULong affect_index ; } mab_readability ;
+is_system_readwrite, is_thread_readwrite ; RKULong affect_index ; } mab_readability ;
+
 
 typedef enum { mab_public, mab_private, mab_protected, mab_inherit } mab_access_control ;
 
+
 typedef enum { mab_function, mab_method, mab_procedure, mab_extension, mab_operator } mab_code_type ;
 
+
  struct mab_type_s {
+   //base
   mab_root_types root_type ;
   mab_non_root_types non_root_type ;
   mab_static_types static_type ;
@@ -80,6 +84,7 @@ typedef enum { mab_function, mab_method, mab_procedure, mab_extension, mab_opera
   mab_access_control access_control ;
   RKULong pointers ;
   mab_type base_type ;
+  mab_definition base_definition ;
   //array
   RKByte is_array_safe ;
   RKULong num_of_elements ;
@@ -87,6 +92,8 @@ typedef enum { mab_function, mab_method, mab_procedure, mab_extension, mab_opera
   mab_code_type code_type ;
   mab_definition* parameters ;
   RKULong num_of_parameters ;
+  mab_definition* inoutpasses ;
+  RKULong num_of_inoutpasses ;
   mab_type* returns ;
   RKULong num_of_returns ;
   //variable
@@ -104,10 +111,10 @@ typedef enum { mab_function, mab_method, mab_procedure, mab_extension, mab_opera
   } inoutpass ;
   //class
   enum {
-    mab_basic_class,
+    mab_basic,
     mab_final,
     mab_abstract,
-    mab_class_protocol
+    mab_protocol
   } class_type ;
   RKULong num_of_soa_elements ;
   RKByte is_managed ;
@@ -115,11 +122,14 @@ typedef enum { mab_function, mab_method, mab_procedure, mab_extension, mab_opera
   mab_definition init_code ;
   //enum
   RKLong base_count ;
+  //declare as
+  RKString true_name ;
 } ;
 
 typedef enum { mab_entity_package, mab_entity_module, mab_entity_node, mab_entity_definition, mab_entity_value } mab_entity_type ;
 
-typedef struct { mab_entity_type entity_type ; union { void* val_ptr ; RKSByte val_i8 ; RKByte val_u8 ; RKShort val_i16 ;
+
+typedef struct { union { void* val_ptr ; RKSByte val_i8 ; RKByte val_u8 ; RKShort val_i16 ;
 
 RKUShort val_u16 ; RKInt val_i32 ; RKUInt val_u32 ; RKLong val_i64 ;
 
@@ -147,11 +157,13 @@ mab_package package ; RKList used_modules ; RKStore required_modules ; RKList us
 RKStore required_packages ; mab_node root_node ; } ;
 
 
-struct mab_node_s { mab_entity_type entity_type ; mab_definition definition ; mab_node supernode ; mab_node nodes[2] ; } ;
+struct mab_node_s { mab_entity_type entity_type ; mab_definition definition ; mab_node_type node_type ;
+
+mab_value value ; mab_node supernode ; mab_node subnodes[2] ; } ;
 
 
 struct mab_definition_s { mab_entity_type entity_type ; RKString name ; RKStore properties ; RKStore attributes ;
 
-mab_definition_type definition_type ; RKStore definitions ; mab_type type ; } ;
+mab_definition_type definition_type ; RKStore definitions ; mab_type type ; int is_evaluating ; int is_evaluated ; int is_processed ; } ;
 
 #endif /* marshmallow_mab_h */
