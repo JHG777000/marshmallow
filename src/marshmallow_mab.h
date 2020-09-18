@@ -48,7 +48,7 @@ mab_node_section, mab_node_equals, mab_node_not_equals, mab_node_greaterthan, ma
 
 mab_node_greaterthan_or_equals, mab_node_lessthan_or_equals, mab_node_inc, mab_node_dec, mab_node_call,
 
-mab_node_return, mab_node_returns, mab_node_function, mab_node_method, mab_node_procedure, mab_node_extension,
+mab_node_return, mab_node_returns, mab_node_parameter, mab_node_function, mab_node_method, mab_node_procedure, mab_node_extension,
 
 mab_node_operator, mab_node_one_word_operator  } mab_node_type ;
 
@@ -169,12 +169,12 @@ RKStore required_modules ; RKList used_packages ; RKStore required_packages ; ma
 
 struct mab_node_s { mab_entity_type entity_type ; mab_definition definition ; mab_node_type node_type ;
 
-mab_value value ; mab_node supernode ; mab_node subnodes[2] ; } ;
+mab_value value ; mab_node supernode ; mab_node subnodes[2] ; mab_node* array_of_nodes ; RKULong num_of_nodes ; } ;
 
 
 struct mab_definition_s { mab_entity_type entity_type ; RKString name ; RKStore properties ; RKStore attributes ;
 
-int is_evaluating ; int is_evaluated ; int is_processed ; mab_definition_type definition_type ;
+int is_evaluating ; int is_evaluated ; int is_processed ; mab_definition_type definition_type ; mab_node type_tree ;
 
 RKStore definitions ; mab_type type ;  } ;
 
