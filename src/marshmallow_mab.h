@@ -30,7 +30,9 @@ typedef struct mab_type_s* mab_type ;
 
 typedef struct mab_definition_s* mab_definition ;
 
-typedef enum { mab_node_no_node, mab_node_module, mab_node_variable, mab_node_local, mab_node_identifier, mab_node_literal,
+typedef enum { mab_node_no_node, mab_node_module, mab_node_use_module, mab_node_require_module,
+
+mab_node_use_package, mab_node_require_package, mab_node_variable, mab_node_local, mab_node_identifier, mab_node_literal,
 
 mab_node_define, mab_node_generate, mab_node_assignment, mab_node_static_assignment, mab_node_add,
 
