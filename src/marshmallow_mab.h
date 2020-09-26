@@ -18,13 +18,15 @@
 #ifndef marshmallow_mab_h
 #define marshmallow_mab_h
 
-//packages, modules, nodes, definitions, values
+//packages, modules, instructions, definitions, values
 
 typedef struct mab_package_s* mab_package ;
 
 typedef struct mab_module_s* mab_module ;
 
-typedef struct mab_node_s* mab_node ;
+typedef struct mab_instruction_s* mab_instruction ;
+
+typedef struct mab_collection_s* mab_collection ;
 
 typedef struct mab_type_s* mab_type ;
 
@@ -52,7 +54,7 @@ mab_node_greaterthan_or_equals, mab_node_lessthan_or_equals, mab_node_inc, mab_n
 
 mab_node_return, mab_node_returns, mab_node_parameter, mab_node_function, mab_node_method, mab_node_procedure, mab_node_extension,
 
-mab_node_operator, mab_node_one_word_operator  } mab_node_type ;
+mab_node_operator, mab_node_one_word_operator  } mab_op_type ;
 
 
 typedef enum { mab_type_notype, mab_type_i8, mab_type_u8, mab_type_i16, mab_type_u16, mab_type_i32, mab_type_u32, mab_type_i64,
@@ -152,31 +154,38 @@ mab_root_types root_type ; } mab_value ;
 
 typedef enum { mab_define_declare, mab_define_external, mab_define_protocol, mab_define_type,
 
-mab_define_code, mab_define_override_code, mab_define_overridable_code, mab_define_omega_code,
+mab_define_code, mab_define_override_code, mab_define_overridable_code,
 
-mab_define_scope, mab_define_module_scope, mab_define_local_variable, mab_define_global_variable } mab_definition_type ;
+mab_define_omega_code, mab_define_scope, mab_define_module,
 
+mab_define_package, mab_define_local_variable,
 
-struct mab_package_s { mab_entity_type entity_type ; RKString name ; RKStore properties ; RKStore attributes ;
-
-RKList source_files ; RKStore modules ; RKList used_packages ; RKStore required_packages ; } ;
-
-
-struct mab_module_s { mab_entity_type entity_type ; RKString name ; RKStore properties ; RKStore attributes ;
-
-int is_evaluating ; int is_evaluated ; int is_processed ; mab_package package ; RKList used_modules ;
-
-RKStore required_modules ; RKList used_packages ; RKStore required_packages ; mab_node root_node ; } ;
+mab_define_variable } mab_definition_type ;
 
 
-struct mab_node_s { mab_entity_type entity_type ; mab_definition definition ; mab_node_type node_type ;
+struct mab_package_s { mab_entity_type entity_type ; RKList source_files ; RKStore modules ;
 
-mab_value value ; mab_node supernode ; mab_node subnodes[2] ; mab_node* array_of_nodes ; RKULong num_of_nodes ; } ;
+RKList used_packages ; RKStore required_packages ; } ;
+
+
+struct mab_module_s { mab_entity_type entity_type ; int is_evaluating ; int is_evaluated ;
+
+int is_processed ; mab_package package ; RKList used_modules ; RKStore required_modules ;
+
+RKList used_packages ; RKStore required_packages ; mab_collection instructions ; } ;
+
+
+struct mab_collection_s { mab_entity_type entity_type ; void* array_of_items ; RKULong num_of_items ; } ;
+
+
+struct mab_statement_s { mab_entity_type entity_type ; mab_op_type node_type ;
+
+mab_value a ; mab_value b ; mab_value c ; } ;
 
 
 struct mab_definition_s { mab_entity_type entity_type ; RKString name ; RKStore properties ; RKStore attributes ;
 
-int is_evaluating ; int is_evaluated ; int is_processed ; mab_definition_type definition_type ; mab_node type_tree ;
+int is_evaluating ; int is_evaluated ; int is_processed ; mab_definition_type definition_type ; mab_collection type_tree ;
 
 RKStore definitions ; mab_type type ;  } ;
 
