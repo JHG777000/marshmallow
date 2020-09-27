@@ -18,6 +18,48 @@
 #include "marshmallow.h"
 #include "marshmallow_mab.h"
 
+mab_collection mab_new_collection( void ) {
+
+  mab_collection collection = RKMem_NewMemOfType(struct mab_collection_s) ;
+
+  collection->entity_type = entity_collection ;
+
+  collection->array_of_items = NULL ;
+
+  collection->num_of_items = 0 ;
+
+  return collection ;
+
+}
+
+void mab_destroy_collection( mab_collection collection ) {
+
+  free(collection->array_of_items) ;
+
+  free(collection) ;
+}
+
+void mab_add_item_to_collection( void* item, mab_collection collection ) {
+
+  collection->num_of_items++ ;
+
+  if ( collection->array_of_items == NULL ) {
+
+     collection->array_of_items = RKMem_CArray(collection->num_of_items,void*) ;
+
+  } else {
+
+    collection->array_of_items = RKMem_Realloc(collection->array_of_items,
+      collection->num_of_items,
+      collection->num_of_items-1,
+      void*,
+      1);
+
+  }
+  
+   collection->array_of_items[collection->num_of_items-1] = item ;
+}
+
 mab_definition mab_new_definition( RKString name, mab_definition_type definition_type ) {
 
   mab_definition definition = RKMem_NewMemOfType(struct mab_definition_s) ;
@@ -37,6 +79,8 @@ mab_definition mab_new_definition( RKString name, mab_definition_type definition
   definition->type = NULL ;
 
   definition->type_tree = NULL ;
+
+  definition->eval_count = 0 ;
 
   definition->is_evaluating = 0 ;
 

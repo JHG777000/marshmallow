@@ -59,9 +59,11 @@ mab_node_operator, mab_node_one_word_operator  } mab_op_type ;
 
 typedef enum { mab_type_notype, mab_type_i8, mab_type_u8, mab_type_i16, mab_type_u16, mab_type_i32, mab_type_u32, mab_type_i64,
 
-mab_type_u64, mab_type_f32, mab_type_f64, mab_type_ptrsize, mab_type_s8, mab_type_s16, mab_type_s32,
+mab_type_u64, mab_type_f32, mab_type_f64, mab_type_ptrsize, mab_type_s8, mab_type_s16, mab_type_s32, mab_type_non_root,
 
-mab_type_non_root, mab_type_value_datum, mab_type_value_field, mab_type_value_polymorph } mab_root_types ;
+mab_type_value_datum, mab_type_value_field, mab_type_value_polymorph, mab_type_value_definition,
+
+mab_type_value_collection } mab_root_types ;
 
 
 typedef enum { mab_non_root_type_notype, mab_non_root_type_typedef, mab_non_root_type_class, mab_non_root_type_enum, mab_non_root_type_enum_element,
@@ -140,16 +142,16 @@ typedef enum { mab_function, mab_method, mab_procedure, mab_extension, mab_opera
   RKString true_name ;
 } ;
 
-typedef enum { mab_entity_package, mab_entity_module, mab_entity_node, mab_entity_definition, mab_entity_value } mab_entity_type ;
+typedef enum { mab_entity_package, mab_entity_module, mab_entity_instruction, mab_entity_collection,
+
+mab_entity_definition, mab_entity_value } mab_entity_type ;
 
 
-typedef struct { union { void* val_ptr ; RKSByte val_i8 ; RKByte val_u8 ; RKShort val_i16 ;
+typedef struct { union { void* val_ptr ; RKSByte val_i8 ; RKByte val_u8 ; RKShort val_i16 ;  RKUShort val_u16 ;
 
-RKUShort val_u16 ; RKInt val_i32 ; RKUInt val_u32 ; RKLong val_i64 ;
+RKInt val_i32 ; RKUInt val_u32 ; RKLong val_i64 ; RKULong val_u64 ;  RKFloat val_f32 ; RKDouble val_f64 ; } ;
 
-RKULong val_u64 ;  RKFloat val_f32 ; RKDouble val_f64 ; } ;
-
-mab_root_types root_type ; } mab_value ;
+RKULong index ; RKByte is_array_safe ; RKString access ; mab_root_types root_type ; } mab_value ;
 
 
 typedef enum { mab_define_declare, mab_define_external, mab_define_protocol, mab_define_type,
@@ -175,18 +177,18 @@ int is_processed ; mab_package package ; RKList used_modules ; RKStore required_
 RKList used_packages ; RKStore required_packages ; mab_collection instructions ; } ;
 
 
-struct mab_collection_s { mab_entity_type entity_type ; void* array_of_items ; RKULong num_of_items ; } ;
+struct mab_collection_s { mab_entity_type entity_type ; void** array_of_items ; RKULong num_of_items ; } ;
 
 
-struct mab_statement_s { mab_entity_type entity_type ; mab_op_type node_type ;
+struct mab_instruction_s { mab_entity_type entity_type ; mab_op_type op ;
 
 mab_value a ; mab_value b ; mab_value c ; } ;
 
 
-struct mab_definition_s { mab_entity_type entity_type ; RKString name ; RKStore properties ; RKStore attributes ;
+struct mab_definition_s { mab_entity_type entity_type ; RKString name ; RKStore properties ; RKStore attributes ; int eval_count ;
 
 int is_evaluating ; int is_evaluated ; int is_processed ; mab_definition_type definition_type ; mab_collection type_tree ;
 
-RKStore definitions ; mab_type type ;  } ;
+RKStore definitions ; mab_type type ; } ;
 
 #endif /* marshmallow_mab_h */
