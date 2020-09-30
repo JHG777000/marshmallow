@@ -18,11 +18,16 @@
 #include "marshmallow.h"
 #include "marshmallow_mab.h"
 
+static void DeleteValueInCollection( void* data ) {
+
+    if (((mab_value*)data)->entity_type == mab_entity_value) free(data) ;
+}
+
 mab_collection mab_new_collection( void ) {
 
   mab_collection collection = RKMem_NewMemOfType(struct mab_collection_s) ;
 
-  collection->entity_type = entity_collection ;
+  collection->entity_type = mab_entity_collection ;
 
   collection->array_of_items = NULL ;
 
@@ -32,7 +37,26 @@ mab_collection mab_new_collection( void ) {
 
 }
 
+static void iterate_with( RKMemIteratorFuncType iterator, mab_collection collection ) {
+
+     int i = 0 ;
+
+     void* data = NULL ;
+
+     while ( i < collection->num_of_items ) {
+
+         data = collection->array_of_items[i] ;
+
+         iterator(data) ;
+
+         i++ ;
+     }
+
+}
+
 void mab_destroy_collection( mab_collection collection ) {
+
+  iterate_with(DeleteValueInCollection, collection) ;
 
   free(collection->array_of_items) ;
 
@@ -56,8 +80,16 @@ void mab_add_item_to_collection( void* item, mab_collection collection ) {
       1);
 
   }
-  
+
    collection->array_of_items[collection->num_of_items-1] = item ;
+}
+
+void mab_add_value_to_collection( mab_value value, mab_collection collection ) {
+
+  value.entity_type = mab_entity_value ;
+
+  mab_add_item_to_collection(rkany(value), collection) ;
+
 }
 
 mab_definition mab_new_definition( RKString name, mab_definition_type definition_type ) {
@@ -87,6 +119,8 @@ mab_definition mab_new_definition( RKString name, mab_definition_type definition
   definition->is_evaluated = 0 ;
 
   definition->is_processed = 0 ;
+
+  definition->id = 0 ;
 
   return definition ;
 

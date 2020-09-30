@@ -147,7 +147,7 @@ typedef enum { mab_entity_package, mab_entity_module, mab_entity_instruction, ma
 mab_entity_definition, mab_entity_value } mab_entity_type ;
 
 
-typedef struct { union { void* val_ptr ; RKSByte val_i8 ; RKByte val_u8 ; RKShort val_i16 ;  RKUShort val_u16 ;
+typedef struct { mab_entity_type entity_type ; union { void* val_ptr ; RKSByte val_i8 ; RKByte val_u8 ; RKShort val_i16 ;  RKUShort val_u16 ;
 
 RKInt val_i32 ; RKUInt val_u32 ; RKLong val_i64 ; RKULong val_u64 ;  RKFloat val_f32 ; RKDouble val_f64 ; } ;
 
@@ -187,8 +187,8 @@ mab_value a ; mab_value b ; mab_value c ; } ;
 
 struct mab_definition_s { mab_entity_type entity_type ; RKString name ; RKStore properties ; RKStore attributes ; int eval_count ;
 
-int is_evaluating ; int is_evaluated ; int is_processed ; mab_definition_type definition_type ; mab_collection type_tree ;
+int is_evaluating ; int is_evaluated ; int is_processed ; RKULong id ; mab_definition_type definition_type ;
 
-RKStore definitions ; mab_type type ; } ;
+mab_collection type_tree ; RKStore definitions ; mab_type type ; } ;
 
 #endif /* marshmallow_mab_h */
