@@ -32,29 +32,27 @@ typedef struct mab_type_s* mab_type ;
 
 typedef struct mab_definition_s* mab_definition ;
 
-typedef enum { mab_node_no_node, mab_node_module, mab_node_use_module, mab_node_require_module,
+typedef enum { mab_node_no_op, mab_op_module, mab_op_use_module, mab_op_require_module,
 
-mab_node_use_package, mab_node_require_package, mab_node_variable, mab_node_local, mab_node_identifier, mab_node_literal,
+mab_op_use_package, mab_op_require_package, mab_op_variable, mab_op_local, mab_op_identifier, mab_op_literal,
 
-mab_node_define, mab_node_generate, mab_node_assignment, mab_node_static_assignment, mab_node_add,
+mab_op_define, mab_op_generate, mab_op_assignment, mab_op_static_assignment, mab_op_add,
 
-mab_node_sub, mab_node_mult, mab_node_div, mab_node_rem, mab_node_rshift, mab_node_lshift,
+mab_op_sub, mab_op_mult, mab_op_div, mab_op_rem, mab_op_rshift, mab_op_lshift,
 
-mab_node_and, mab_node_or, mab_node_xor, mab_node_not, mab_node_logic_and, mab_node_logic_or,
+mab_op_and, mab_op_or, mab_op_xor, mab_op_not, mab_op_logic_and, mab_op_logic_or,
 
-mab_node_logic_not, mab_node_deref, mab_node_addrof, mab_node_sizeof,
+mab_op_logic_not, mab_op_deref, mab_op_addrof, mab_op_sizeof,
 
-mab_node_itemsof, mab_node_cast, mab_node_reinterpret, mab_node_convert,
+mab_op_itemsof, mab_op_cast, mab_op_reinterpret, mab_op_convert, mab_op_force_type,
 
-mab_node_force_type, mab_node_if, mab_node_while, mab_node_switch, mab_node_goto,
+mab_op_go, mab_op_to, mab_op_iff, mab_op_loop, mab_op_break_on, mab_op_next, mab_op_section,
 
-mab_node_section, mab_node_equals, mab_node_not_equals, mab_node_greaterthan, mab_node_lessthan,
+mab_op_equals, mab_op_not_equals, mab_op_greaterthan, mab_op_lessthan,
 
-mab_node_greaterthan_or_equals, mab_node_lessthan_or_equals, mab_node_inc, mab_node_dec, mab_node_call,
+mab_op_greaterthan_or_equals, mab_op_lessthan_or_equals, mab_op_inc, mab_op_dec, mab_op_call,
 
-mab_node_return, mab_node_returns, mab_node_parameter, mab_node_function, mab_node_method, mab_node_procedure, mab_node_extension,
-
-mab_node_operator, mab_node_one_word_operator  } mab_op_type ;
+mab_op_return, mab_op_returns, mab_op_parameter, mab_op_one_word_operator } mab_op_type ;
 
 
 typedef enum { mab_type_notype, mab_type_i8, mab_type_u8, mab_type_i16, mab_type_u16, mab_type_i32, mab_type_u32, mab_type_i64,
@@ -185,10 +183,12 @@ struct mab_instruction_s { mab_entity_type entity_type ; mab_op_type op ;
 mab_value a ; mab_value b ; mab_value c ; } ;
 
 
-struct mab_definition_s { mab_entity_type entity_type ; RKString name ; RKStore properties ; RKStore attributes ; int eval_count ;
+struct mab_definition_s { mab_entity_type entity_type ; RKString name ; RKStore properties ;
 
-int is_evaluating ; int is_evaluated ; int is_processed ; RKULong id ; mab_definition_type definition_type ;
+RKStore attributes ; int eval_count ; int is_evaluating ; int is_evaluated ; int is_processed ;
 
-mab_collection type_tree ; RKStore definitions ; mab_type type ; } ;
+RKULong id ; mab_collection static_scope ; mab_definition_type definition_type ; mab_collection type_tree ;
+
+RKStore definitions ; mab_type type ; } ;
 
 #endif /* marshmallow_mab_h */
