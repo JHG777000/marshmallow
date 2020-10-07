@@ -59,9 +59,9 @@ typedef enum { mab_type_notype, mab_type_i8, mab_type_u8, mab_type_i16, mab_type
 
 mab_type_u64, mab_type_f32, mab_type_f64, mab_type_ptrsize, mab_type_s8, mab_type_s16, mab_type_s32, mab_type_non_root,
 
-mab_type_value_datum, mab_type_value_field, mab_type_value_polymorph, mab_type_value_definition,
+mab_type_value_datum, mab_type_value_field, mab_type_value_polymorph, mab_type_value_definition, mab_type_value_identifier,
 
-mab_type_value_collection } mab_root_types ;
+mab_type_value_ssa, mab_type_value_collection } mab_root_types ;
 
 
 typedef enum { mab_non_root_type_notype, mab_non_root_type_typedef, mab_non_root_type_class, mab_non_root_type_enum, mab_non_root_type_enum_element,
@@ -90,13 +90,14 @@ typedef enum { mab_function, mab_method, mab_procedure, mab_extension, mab_opera
 
 
  struct mab_type_s {
-   //base
+  //base
   mab_root_types root_type ;
   mab_non_root_types non_root_type ;
   mab_static_types static_type ;
   mab_readability readability ;
   mab_access_control access_control ;
   RKULong pointers ;
+  RKULong pointers_after_array ;
   mab_type base_type ;
   mab_definition base_definition ;
   //array
@@ -116,6 +117,7 @@ typedef enum { mab_function, mab_method, mab_procedure, mab_extension, mab_opera
   RKByte is_in_union ;
   RKByte is_preserved ;
   RKByte is_persistent ;
+  RKByte is_freeable ;
   enum {
     none,
     in,
@@ -168,9 +170,7 @@ struct mab_package_s { mab_entity_type entity_type ; RKList source_files ; RKSto
 RKList used_packages ; RKStore required_packages ; } ;
 
 
-struct mab_module_s { mab_entity_type entity_type ; int is_evaluating ; int is_evaluated ;
-
-int is_processed ; mab_package package ; RKList used_modules ; RKStore required_modules ;
+struct mab_module_s { mab_entity_type entity_type ; mab_package package ; RKList used_modules ; RKStore required_modules ;
 
 RKList used_packages ; RKStore required_packages ; mab_collection instructions ; } ;
 
