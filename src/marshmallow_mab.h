@@ -61,7 +61,7 @@ mab_type_u64, mab_type_f32, mab_type_f64, mab_type_ptrsize, mab_type_s8, mab_typ
 
 mab_type_value_datum, mab_type_value_field, mab_type_value_polymorph, mab_type_value_definition, mab_type_value_identifier,
 
-mab_type_value_ssa, mab_type_value_collection } mab_root_types ;
+mab_type_value_collection } mab_root_types ;
 
 
 typedef enum { mab_non_root_type_notype, mab_non_root_type_typedef, mab_non_root_type_class, mab_non_root_type_enum, mab_non_root_type_enum_element,
@@ -69,13 +69,9 @@ typedef enum { mab_non_root_type_notype, mab_non_root_type_typedef, mab_non_root
 mab_non_root_type_array, mab_non_root_type_vector, mab_non_root_type_lambda, mab_non_root_type_static } mab_non_root_types ;
 
 
-typedef enum { mab_static_type_notype, mab_static_type_datum, mab_static_type_field,
+typedef enum { mab_static_type_notype, mab_static_type_datum, mab_static_type_field, mab_static_type_subclass, mab_static_type_inferred,
 
-mab_static_type_anyvar, mab_static_type_vardef, mab_static_type_subclass,
-
-mab_static_type_polymorph, mab_static_type_arguments,
-
-mab_static_type_identifier } mab_static_types ;
+mab_static_type_polymorph, mab_static_type_arguments, mab_static_type_identifier } mab_static_types ;
 
 
 typedef struct { int is_base_readability, is_readonly, is_writelimited, is_private_write, is_protected_write,
@@ -151,7 +147,7 @@ typedef struct { mab_entity_type entity_type ; union { void* val_ptr ; RKSByte v
 
 RKInt val_i32 ; RKUInt val_u32 ; RKLong val_i64 ; RKULong val_u64 ;  RKFloat val_f32 ; RKDouble val_f64 ; } ;
 
-RKULong index ; RKByte is_array_safe ; RKString access ; mab_root_types root_type ; } mab_value ;
+RKULong index ; RKByte is_array_safe ; RKULong ssa_index ; RKString access ; mab_root_types root_type ; } mab_value ;
 
 
 typedef enum { mab_define_declare, mab_define_external, mab_define_protocol, mab_define_type,
