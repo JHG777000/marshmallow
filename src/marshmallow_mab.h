@@ -147,7 +147,7 @@ typedef struct { mab_entity_type entity_type ; union { void* val_ptr ; RKSByte v
 
 RKInt val_i32 ; RKUInt val_u32 ; RKLong val_i64 ; RKULong val_u64 ;  RKFloat val_f32 ; RKDouble val_f64 ; } ;
 
-RKULong index ; RKByte is_array_safe ; RKULong ssa_index ; RKString access ; mab_root_types root_type ; } mab_value ;
+RKULong index ; RKByte is_ssa_or_gr ; mab_root_types root_type ; } mab_value ;
 
 
 typedef enum { mab_define_declare, mab_define_external, mab_define_protocol, mab_define_type,
@@ -181,9 +181,9 @@ mab_value a ; mab_value b ; mab_value c ; } ;
 
 struct mab_definition_s { mab_entity_type entity_type ; RKString name ; RKStore properties ;
 
-RKStore attributes ; int eval_count ; int is_evaluating ; int is_evaluated ; int is_processed ;
+RKStore attributes ; int is_evaluating ; int is_evaluated ; int is_processed ;
 
-RKULong id ; mab_collection static_scope ; mab_definition_type definition_type ; mab_collection type_tree ;
+mab_definition_type definition_type ; mab_collection type_tree ;
 
 RKStore definitions ; mab_type type ; } ;
 

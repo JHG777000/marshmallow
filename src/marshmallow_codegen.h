@@ -23,7 +23,7 @@
  The marshmallow codegen infrastructure will consist of:
 
  marshmallow_codegen.c -- Manage the codegen process, provide support and infrastructure that are common to the intermediates,
- provide any needed codegen APIs to the rest of the compiler, and transform mab(marshmallow abstract binary tree) to mib.
+ provide any needed codegen APIs to the rest of the compiler, and transform mab(marshmallow abstract bytecode) to mib.
 
  marshmallow_mib.c -- Transform mib into mob, provide support and infrastructure for mib.
 

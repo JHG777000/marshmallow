@@ -112,17 +112,11 @@ mab_definition mab_new_definition( RKString name, mab_definition_type definition
 
   definition->type_tree = NULL ;
 
-  definition->static_scope = NULL ;
-
-  definition->eval_count = 0 ;
-
   definition->is_evaluating = 0 ;
 
   definition->is_evaluated = 0 ;
 
   definition->is_processed = 0 ;
-
-  definition->id = 0 ;
 
   return definition ;
 

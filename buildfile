@@ -1,6 +1,6 @@
 project := "MarshmallowProject".
 
-project_version := "0.1.245".
+project_version := "0.1.246".
 
 buildfile_version := "1.0".
 
@@ -196,7 +196,7 @@ build MarshmallowBuild.
 
   make filepath marshmallow_path from "project" to "marshmallow".
 
-  make filepath marshmallow_src_path from "resources" to "tests/test.msrc" from tree_sitter_marshmallow_project.
+  make filepath marshmallow_src_path from "resources" to "tests/test2.msrc" from tree_sitter_marshmallow_project.
 
   run(marshmallow_path + " " + marshmallow_src_path).
 
