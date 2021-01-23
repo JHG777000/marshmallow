@@ -1,6 +1,6 @@
 project := "MarshmallowProject".
 
-project_version := "0.1.246".
+project_version := "0.1.247".
 
 buildfile_version := "1.0".
 
@@ -46,9 +46,13 @@ build MarshmallowBuild.
 
  subproject tree_sitter_marshmallow_project("local",tree_sitter_marshmallow_buildfile,nil).
 
- url URLForRKLib("https://raw.githubusercontent.com/JHG777000/RKLib/master/buildfile").
+ url URLForFudge("https://raw.githubusercontent.com/JHG777000/Fudge/master/buildfile").
 
- subproject RKLibProject("local",URLForRKLib,nil).
+ subproject FudgeProject("local",URLForFudge,nil).
+
+ grab Fudge from FudgeProject.
+
+ grab RKLibProject from FudgeProject.
 
  grab RKLib from RKLibProject.
 
@@ -92,13 +96,13 @@ build MarshmallowBuild.
 
   files Main("tests/tree_sitter_tests.c").
 
-  sources Source(Files,Main,tree_sitter_marshmallow_parser_lib,tree_sitter_lib,RKLib).
+  sources Source(Files,Main,tree_sitter_marshmallow_parser_lib,tree_sitter_lib,Fudge,RKLib).
 
  end if.
 
  if ( !tree_sitter_enable ).
 
-  sources Source(Files,Main,tree_sitter_marshmallow_parser_lib,tree_sitter_lib,RKLib).
+  sources Source(Files,Main,tree_sitter_marshmallow_parser_lib,tree_sitter_lib,Fudge,RKLib).
 
  end if.
 

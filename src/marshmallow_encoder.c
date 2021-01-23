@@ -21,7 +21,7 @@
 
 extern const TSLanguage *tree_sitter_marshmallow() ;
 
-char* readfile_for_tree_sitter( FILE* file ) {
+static char* readfile_for_tree_sitter( FILE* file ) {
 
   int c = 0 ;
 
@@ -47,7 +47,7 @@ char* readfile_for_tree_sitter( FILE* file ) {
 
 }
 
-char* get_string_value_from_node( TSNode node, char* source_code ) {
+static char* get_string_value_from_node( TSNode node, char* source_code ) {
 
  int start = ts_node_start_byte(node) ;
 
@@ -82,7 +82,7 @@ void marshmallow_encode( char* filename ) {
   ts_parser_set_language(parser, tree_sitter_marshmallow()) ;
 
   // Build a syntax tree based on source code stored in a string.
-  char* source_code = readfile_for_tree_sitter(fopen(argv[1], "r")) ;
+  char* source_code = readfile_for_tree_sitter(fopen(filename, "r")) ;
 
   printf("%s\n",source_code) ;
 
