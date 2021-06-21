@@ -1,10 +1,10 @@
 project := "MarshmallowProject".
 
-project_version := "0.1.247".
+project_version := "0.1.248".
 
 buildfile_version := "1.0".
 
-url_to_src := "https://github.com/JHG777000/marshmallow/archive/master.zip".
+url_to_src := "https://github.com/JHG777000/marshmallow/archive/main.zip".
 
 build MarshmallowBuild.
 
@@ -42,11 +42,11 @@ build MarshmallowBuild.
 
  end if.
 
- url tree_sitter_marshmallow_buildfile("https://raw.githubusercontent.com/JHG777000/tree-sitter-marshmallow/master/buildfile").
+ url tree_sitter_marshmallow_buildfile("https://raw.githubusercontent.com/JHG777000/tree-sitter-marshmallow/main/buildfile").
 
  subproject tree_sitter_marshmallow_project("local",tree_sitter_marshmallow_buildfile,nil).
 
- url URLForFudge("https://raw.githubusercontent.com/JHG777000/Fudge/master/buildfile").
+ url URLForFudge("https://raw.githubusercontent.com/JHG777000/Fudge/main/buildfile").
 
  subproject FudgeProject("local",URLForFudge,nil).
 
@@ -216,11 +216,11 @@ end build.
 
 build clean_build.
 
- url tree_sitter_marshmallow_buildfile("https://raw.githubusercontent.com/JHG777000/tree-sitter-marshmallow/master/buildfile").
+ url tree_sitter_marshmallow_buildfile("https://raw.githubusercontent.com/JHG777000/tree-sitter-marshmallow/main/buildfile").
 
  subproject tree_sitter_marshmallow_project("local",tree_sitter_marshmallow_buildfile,"-b clean_build").
 
- url URLForRKLib("https://raw.githubusercontent.com/JHG777000/RKLib/master/buildfile").
+ url URLForRKLib("https://raw.githubusercontent.com/JHG777000/RKLib/main/buildfile").
 
  subproject RKLibProject("local",URLForRKLib,"-b clean_build").
 

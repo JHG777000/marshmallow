@@ -34,11 +34,11 @@ Marshmallow defaults to using the clang compiler in its buildfile.
 
 To download and build use this command:
 
-	builder -u https://raw.githubusercontent.com/JHG777000/marshmallow/master/buildfile
+	builder -u https://raw.githubusercontent.com/JHG777000/marshmallow/main/buildfile
 
 To run tests, add -i __t:
 
-	builder -i __t -u https://raw.githubusercontent.com/JHG777000/marshmallow/master/buildfile
+	builder -i __t -u https://raw.githubusercontent.com/JHG777000/marshmallow/main/buildfile
 ## License
 
 

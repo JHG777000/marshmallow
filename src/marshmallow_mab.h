@@ -79,7 +79,7 @@ typedef struct { int is_base_readability, is_readonly, is_writelimited, is_priva
 is_system_readwrite, is_thread_readwrite ; RKULong affect_index ; } mab_readability ;
 
 
-typedef enum { mab_public, mab_private, mab_protected, mab_inherit } mab_access_control ;
+typedef enum { mab_public, mab_private, mab_protected, mab_inherit, mab_friend } mab_access_control ;
 
 
 typedef enum { mab_function, mab_method, mab_procedure, mab_extension, mab_operator } mab_code_type ;
